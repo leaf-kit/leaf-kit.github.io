@@ -18,16 +18,23 @@
     a{color:var(--primary);text-decoration:none}
     code{font-family:'JetBrains Mono',monospace;font-size:.82rem;background:rgba(37,99,235,.06);color:#1E40AF;padding:.1rem .35rem;border-radius:3px}
 
-    .container{max-width:1100px;margin:0 auto;padding:2rem}
+    .page{display:flex;max-width:1400px;margin:0 auto}
+    .sidebar{width:260px;position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.5rem 1rem;border-right:1px solid var(--border);background:var(--surface);flex-shrink:0;scrollbar-width:thin}
+    .sidebar::-webkit-scrollbar{width:4px}
+    .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+    .main{flex:1;min-width:0;padding:2rem 2.5rem 4rem}
 
-    .header{text-align:center;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:2px solid var(--border)}
-    .header h1{font-size:2rem;font-weight:900}
+    .sidebar-brand{font-size:.88rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.35rem;margin-bottom:1.25rem;text-decoration:none;letter-spacing:-.01em}
+    .sidebar-brand:hover{text-decoration:none;color:var(--primary)}
+    .sidebar-nav{display:flex;flex-direction:column;gap:1px;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+    .sidebar-nav a{font-size:.82rem;font-weight:500;padding:.35rem .6rem;color:var(--text2);text-decoration:none;transition:all .12s;border-radius:5px;display:block}
+    .sidebar-nav a:hover{color:var(--text);background:rgba(0,0,0,.03);text-decoration:none}
+    .sidebar-nav a.active{color:var(--primary);font-weight:700;background:rgba(37,99,235,.06)}
+
+    .header{margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+    .header h1{font-size:1.8rem;font-weight:900}
     .header h1 span{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .header p{color:var(--text2);font-size:.9rem;margin-top:.3rem}
-    .header-nav{display:inline-flex;gap:0;justify-content:center;margin-top:1rem;border-bottom:1px solid var(--border)}
-    .header-nav a{font-size:.82rem;font-weight:500;padding:.5rem 1rem;color:var(--text2);transition:all .12s;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px}
-    .header-nav a:hover{color:var(--text);text-decoration:none}
-    .header-nav a.active{color:var(--primary);font-weight:700;border-bottom-color:var(--primary)}
 
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
     .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
@@ -47,14 +54,16 @@
 
     @media print{
       body{background:#fff;font-size:14px}
-      .header-nav,.print-btn,.footer{display:none}
+      .sidebar,.print-btn,.footer{display:none}
+      .main{padding:1rem}
       .header h1 span{-webkit-text-fill-color:#1a1a2e !important;background:none !important;color:#1a1a2e !important}
       .card{break-inside:avoid;border:1px solid #ccc}
       .card-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
       .grid{grid-template-columns:repeat(2,1fr);gap:.5rem}
     }
-    @media(max-width:700px){
-      .container{padding:1rem}
+    @media(max-width:900px){
+      .sidebar{display:none}
+      .main{padding:1.5rem 1rem}
       .grid{grid-template-columns:1fr}
       .header h1{font-size:1.5rem}
     }
@@ -62,20 +71,25 @@
 </head>
 <body>
 
-<div class="container">
+<div class="page">
+
+<aside class="sidebar">
+  <a class="sidebar-brand" href="../">리프 Markdown Guide</a>
+  <div class="sidebar-nav">
+    <a href="../">표준 문법</a>
+    <a href="../extended/">변형 문법</a>
+    <a href="../history/">역사</a>
+    <a href="../ai-strategy/">국가AI전략위</a>
+    <a href="../cheatsheet/" class="active">퀵시트</a>
+    <a href="../playground/">Playground</a>
+  </div>
+</aside>
+
+<main class="main">
 
 <div class="header">
   <h1><span>Markdown</span> Cheatsheet</h1>
   <p>마크다운 문법을 한 장에 압축 — 복사해서 바로 쓰세요</p>
-  <div class="header-nav">
-    <a href="../">표준 문법</a>
-    <a href="../extended/">변형 문법</a>
-    <a href="../history/">역사</a>
-    <a href="../cheatsheet/" class="active">퀵시트</a>
-    <a href="../playground/">Playground</a>
-    <a href="../ai-strategy/">국가AI전략위</a>
-  
-  </div>
   <button class="print-btn" onclick="window.print()">
     <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/></svg>
     인쇄 / PDF 저장
@@ -231,10 +245,11 @@
     </table></div>
   </div>
 
+</main>
 </div>
 
 <footer class="footer">
-  <p>리프의 Markdown Guide Markdown Cheatsheet &mdash; leaf-kit.github.io/markdown</p>
+  <p>리프 Markdown Guide &mdash; leaf-kit.github.io/markdown</p>
   <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
     <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
     <a href="https://x.com/intent/post?text=%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%ED%80%B5%EC%8B%9C%ED%8A%B8%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fmarkdown%2Fcheatsheet%2F%0A%0A%40leafeditor%20%23Markdown" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
@@ -242,6 +257,5 @@
   <div style="margin-top:.5rem;font-size:.65rem;color:rgba(100,116,139,.5)">Release v2026.04.02 · 2026-04-02</div>
 </footer>
 
-</div>
 </body>
 </html>
