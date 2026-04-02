@@ -141,9 +141,11 @@ function renderList(containerId, companies, links){
       <div class="cf-links">
         <a class="hire" href="${link?.recruit||'#'}" target="_blank">채용 페이지</a>
         <a href="${link?.homepage||'#'}" target="_blank">홈페이지</a>
-        <a href="https://www.saramin.co.kr/zf_user/search?searchword=${encodeURIComponent(co.name)}" target="_blank" style="color:#0066FF;font-weight:600">사람인</a>
-        <a href="https://www.jobkorea.co.kr/Search/?stext=${encodeURIComponent(co.name)}" target="_blank" style="color:#00A13A;font-weight:600">잡코리아</a>
-        <a href="https://www.jobplanet.co.kr/search?query=${encodeURIComponent(co.name)}" target="_blank" style="color:#00C362;font-weight:600">잡플래닛</a>
+      </div>
+      <div style="display:flex;gap:.3rem;margin-top:.35rem">
+        <a href="https://www.saramin.co.kr/zf_user/search?searchword=${encodeURIComponent(co.name)}" target="_blank" style="flex:1;text-align:center;font-size:.72rem;padding:.25rem .4rem;border:1px solid #DBEAFE;border-radius:4px;color:#0066FF;font-weight:500;text-decoration:none">사람인</a>
+        <a href="https://www.jobkorea.co.kr/Search/?stext=${encodeURIComponent(co.name)}" target="_blank" style="flex:1;text-align:center;font-size:.72rem;padding:.25rem .4rem;border:1px solid #D1FAE5;border-radius:4px;color:#00A13A;font-weight:500;text-decoration:none">잡코리아</a>
+        <a href="https://www.jobplanet.co.kr/search?query=${encodeURIComponent(co.name)}" target="_blank" style="flex:1;text-align:center;font-size:.72rem;padding:.25rem .4rem;border:1px solid #D1FAE5;border-radius:4px;color:#00C362;font-weight:500;text-decoration:none">잡플래닛</a>
       </div>`;
     container.appendChild(card);
   });
