@@ -535,7 +535,17 @@ function createJobItem(job,catId){
 function openJobModal(job,catId){
   // Set hashbang URL
   history.replaceState(null,null,'#job/'+encodeURIComponent(job.name));
-  const news=newsSources.filter(n=>n.category===catId||n.related_jobs?.includes(job.name));
+  // 1순위: related_jobs에 직업명 포함, 2순위: 유사 직업명 포함, 3순위: 같은 카테고리 (폴백)
+  const exactMatch=newsSources.filter(n=>n.related_jobs?.includes(job.name));
+  const similarMatch=exactMatch.length<3?newsSources.filter(n=>
+    !exactMatch.includes(n)&&n.related_jobs?.some(rj=>
+      (job.similar_jobs||[]).includes(rj)||rj.includes(job.name)||job.name.includes(rj)
+    )
+  ):[];
+  const catFallback=(exactMatch.length+similarMatch.length)<2?newsSources.filter(n=>
+    !exactMatch.includes(n)&&!similarMatch.includes(n)&&n.category===catId
+  ).slice(0,2-exactMatch.length-similarMatch.length):[];
+  const news=[...exactMatch,...similarMatch,...catFallback];
   const naverUrl=`https://m.search.naver.com/search.naver?ssc=tab.m_news.all&where=m_news&sm=mtb_jum&query=${encodeURIComponent(job.news_query||job.name+' AI 대체')}`;
   const jobUrl=`https://leaf-kit.github.io/airisk/#job/${encodeURIComponent(job.name)}`;
   const tweetText=encodeURIComponent(`AI 리스크 분석: ${job.name} — 대체 가능성 ${job.risk}%\n\n${jobUrl}\n\n@leafeditor #AI #직업리스크 #AIrisk`);
