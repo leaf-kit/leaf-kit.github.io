@@ -97,6 +97,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://leaf-kit.github.io/markdown/history/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://leaf-kit.github.io/markdown/playground/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
