@@ -5,47 +5,130 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>leaf-kit</title>
   <meta name="description" content="leaf-kit — 마크다운으로 정보를 조직화합니다.">
-  <meta property="og:title" content="leaf-kit">
-  <meta property="og:description" content="마크다운으로 정보를 조직화합니다.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    :root{--bg:#FAFAFA;--text:#111;--sub:#888;--accent:#10B981;--border:#E5E5E5;--card:#FFF}
-    @media(prefers-color-scheme:dark){
-      :root{--bg:#0A0A0A;--text:#E5E5E5;--sub:#666;--accent:#34D399;--border:#1F1F1F;--card:#111}
+    body{
+      font-family:'Noto Sans KR',sans-serif;
+      background:#fff;color:#1a1a1a;
+      min-height:100vh;display:flex;flex-direction:column;
+      justify-content:center;align-items:center;
+      padding:2rem;position:relative;overflow:hidden;
     }
-    html{font-size:16px}
-    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem}
 
-    .brand{text-align:center;margin-bottom:4rem}
-    .logo{font-size:3rem;margin-bottom:1.5rem;line-height:1}
-    .name{font-size:1.8rem;font-weight:700;letter-spacing:-.02em}
-    .tagline{color:var(--sub);font-size:.95rem;font-weight:300;margin-top:.6rem;line-height:1.6}
+    /* Floating leaves background */
+    .bg-leaves{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+    .bg-leaf{
+      position:absolute;opacity:0;
+      animation:leafFall linear infinite;
+    }
+    @keyframes leafFall{
+      0%{transform:translateY(-60px) rotate(0deg) scale(.8);opacity:0}
+      10%{opacity:.15}
+      90%{opacity:.15}
+      100%{transform:translateY(calc(100vh + 60px)) rotate(360deg) scale(.6);opacity:0}
+    }
 
-    .links{display:flex;flex-direction:column;gap:.75rem;width:100%;max-width:320px}
-    .links a{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.8rem 1.2rem;border:1px solid var(--border);border-radius:8px;color:var(--text);text-decoration:none;font-size:.9rem;font-weight:400;background:var(--card);transition:border-color .2s,transform .15s}
-    .links a:hover{border-color:var(--accent);transform:translateY(-1px)}
-    .links a span.icon{font-size:1rem;width:1.2rem;text-align:center}
+    /* Stripe overlay */
+    body::before{
+      content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+      background:repeating-linear-gradient(120deg,transparent,transparent 80px,rgba(0,0,0,.006) 80px,rgba(0,0,0,.006) 81px);
+      pointer-events:none;z-index:1;
+    }
 
-    .footer{position:fixed;bottom:1.5rem;color:var(--sub);font-size:.75rem;font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
+    .content{position:relative;z-index:2;text-align:center}
+
+    /* Leaf icon with gentle float */
+    .leaf-icon{width:56px;height:56px;margin:0 auto 1.5rem;animation:float 4s ease-in-out infinite}
+    .leaf-icon svg{width:100%;height:100%}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+    /* Fade-in entrance */
+    .name{
+      font-size:1.6rem;font-weight:700;letter-spacing:-.03em;color:#111;
+      opacity:0;animation:fadeUp .8s ease forwards .3s;
+    }
+    .tagline{
+      color:#888;font-size:.88rem;font-weight:300;margin-top:.5rem;line-height:1.6;
+      opacity:0;animation:fadeUp .8s ease forwards .5s;
+    }
+    .links{
+      display:flex;gap:1.5rem;margin-top:2.5rem;justify-content:center;align-items:center;
+      opacity:0;animation:fadeUp .8s ease forwards .7s;
+    }
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(12px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    .links a{
+      display:inline-flex;align-items:center;gap:.4rem;
+      color:#555;font-size:.85rem;font-weight:400;
+      text-decoration:none;transition:color .2s,transform .15s;
+    }
+    .links a:hover{color:#111;transform:translateY(-1px)}
+    .links a svg{width:18px;height:18px;flex-shrink:0}
+    .divider{width:1px;height:16px;background:#ddd}
+
+    .footer{
+      position:fixed;bottom:1.5rem;z-index:2;
+      color:#bbb;font-size:.7rem;
+      font-family:'JetBrains Mono',monospace;
+      letter-spacing:.03em;
+      opacity:0;animation:fadeUp .8s ease forwards 1s;
+    }
   </style>
 </head>
 <body>
 
-  <div class="brand">
-    <div class="logo">🍃</div>
+  <!-- Floating leaves -->
+  <div class="bg-leaves" id="bg-leaves"></div>
+
+  <div class="content">
+    <div class="leaf-icon">
+      <svg viewBox="0 0 48 48" fill="none">
+        <path d="M24 4C14 14 8 24 10 34C12 38 16 42 24 44C32 42 36 38 38 34C40 24 34 14 24 4Z" fill="#22C55E" opacity=".15"/>
+        <path d="M24 4C14 14 8 24 10 34C12 38 16 42 24 44C32 42 36 38 38 34C40 24 34 14 24 4Z" stroke="#22C55E" stroke-width="1.5" fill="none"/>
+        <path d="M24 12V38" stroke="#22C55E" stroke-width="1" opacity=".6"/>
+        <path d="M24 20C20 18 16 20 14 24" stroke="#22C55E" stroke-width="1" opacity=".4" fill="none"/>
+        <path d="M24 26C28 24 32 26 34 30" stroke="#22C55E" stroke-width="1" opacity=".4" fill="none"/>
+      </svg>
+    </div>
     <div class="name">leaf-kit</div>
     <p class="tagline">마크다운으로 정보를 조직화합니다.</p>
-  </div>
 
-  <nav class="links">
-    <a href="trend/"><span class="icon">📡</span> IT Trend Radar</a>
-    <a href="recruit/"><span class="icon">💼</span> 구직 레이더</a>
-    <a href="https://github.com/leaf-kit" target="_blank"><span class="icon">↗</span> GitHub</a>
-  </nav>
+    <div class="links">
+      <a href="https://github.com/leaf-kit" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+        GitHub
+      </a>
+      <span class="divider"></span>
+      <a href="https://x.com/leafeditor" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Twitter
+      </a>
+    </div>
+  </div>
 
   <div class="footer">leaf-kit.github.io</div>
 
+  <script>
+  // Generate floating leaf particles
+  (function(){
+    const container = document.getElementById('bg-leaves');
+    const leafSvg = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M12 2C7 7 4 12 5 17c1 2 3 4 7 5 4-1 6-3 7-5 1-5-2-10-7-15z" fill="#22C55E" opacity=".3"/></svg>`;
+    for(let i=0;i<12;i++){
+      const el = document.createElement('div');
+      el.className = 'bg-leaf';
+      el.innerHTML = leafSvg;
+      el.style.left = Math.random()*100+'%';
+      el.style.animationDuration = (8+Math.random()*12)+'s';
+      el.style.animationDelay = (Math.random()*15)+'s';
+      el.style.fontSize = (.6+Math.random()*.6)+'rem';
+      container.appendChild(el);
+    }
+  })();
+  </script>
 </body>
 </html>

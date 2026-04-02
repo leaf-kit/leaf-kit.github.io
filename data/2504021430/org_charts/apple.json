@@ -1,0 +1,41 @@
+{
+  "company": "Apple",
+  "ceo": "Tim Cook",
+  "divisions": [
+    {
+      "name": "Software Engineering",
+      "head": "Craig Federighi",
+      "teams": ["iOS", "macOS", "Siri", "Safari", "Developer Tools"]
+    },
+    {
+      "name": "Hardware Engineering",
+      "head": "John Ternus",
+      "teams": ["iPhone", "Mac", "iPad", "Apple Watch", "AirPods"]
+    },
+    {
+      "name": "Machine Learning & AI Strategy",
+      "head": "John Giannandrea",
+      "teams": ["Apple Intelligence", "Siri AI", "On-device ML", "Core ML"]
+    },
+    {
+      "name": "Services",
+      "head": "Eddy Cue",
+      "teams": ["App Store", "Apple Music", "Apple TV+", "iCloud", "Apple Pay"]
+    },
+    {
+      "name": "Hardware Technologies",
+      "head": "Johny Srouji",
+      "teams": ["Apple Silicon", "M-series Chips", "Modem", "Custom SoC"]
+    },
+    {
+      "name": "Vision Products Group",
+      "head": "Mike Rockwell",
+      "teams": ["Vision Pro", "visionOS", "Spatial Computing", "AR/VR Hardware"]
+    },
+    {
+      "name": "Worldwide Marketing",
+      "head": "Greg Joswiak",
+      "teams": ["Product Marketing", "Brand", "Communications"]
+    }
+  ]
+}

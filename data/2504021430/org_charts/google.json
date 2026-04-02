@@ -1,0 +1,41 @@
+{
+  "company": "Alphabet (Google)",
+  "ceo": "Sundar Pichai",
+  "divisions": [
+    {
+      "name": "Google DeepMind",
+      "head": "Demis Hassabis",
+      "teams": ["Gemini", "AlphaFold", "AI Research", "AI Safety"]
+    },
+    {
+      "name": "Google Cloud",
+      "head": "Thomas Kurian",
+      "teams": ["GCP Infrastructure", "Cloud AI", "Workspace", "Data Analytics"]
+    },
+    {
+      "name": "Knowledge & Information",
+      "head": "Prabhakar Raghavan",
+      "teams": ["Search", "Ads", "News", "Assistant"]
+    },
+    {
+      "name": "Platforms & Ecosystems",
+      "head": "Hiroshi Lockheimer",
+      "teams": ["Android", "Chrome", "ChromeOS", "Play"]
+    },
+    {
+      "name": "YouTube",
+      "head": "Neal Mohan",
+      "teams": ["YouTube Premium", "YouTube Music", "YouTube Shorts", "YouTube TV"]
+    },
+    {
+      "name": "Waymo",
+      "head": "Tekedra Mawakana",
+      "teams": ["Self-Driving Technology", "Rider Operations", "Vehicle Fleet"]
+    },
+    {
+      "name": "Other Bets",
+      "head": "Various",
+      "teams": ["Verily (Health)", "Wing (Drone Delivery)", "Intrinsic (Robotics)", "Calico (Biotech)"]
+    }
+  ]
+}

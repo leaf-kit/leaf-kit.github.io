@@ -5,27 +5,55 @@
     {
       "name": "AI/ML",
       "roles": [
-        {"title": "AI Engineer", "demand": "🔥급상승", "count": 450, "delta": 120, "skills": ["Python", "PyTorch", "LLM", "RAG"]},
-        {"title": "MLOps Engineer", "demand": "📈상승", "count": 280, "delta": 45, "skills": ["Kubernetes", "Docker", "MLflow", "AWS"]},
-        {"title": "Prompt Engineer", "demand": "🔥급상승", "count": 350, "delta": 180, "skills": ["LLM", "GPT", "Claude", "Prompt Design"]},
-        {"title": "Data Scientist", "demand": "📈유지", "count": 520, "delta": 15, "skills": ["Python", "SQL", "Statistics", "ML"]}
+        {"title": "AI Engineer", "demand": "🔥급상승", "count": 450, "delta": 120, "skills": ["Python", "PyTorch", "LLM", "RAG", "LangChain", "Vector DB"]},
+        {"title": "MLOps Engineer", "demand": "📈상승", "count": 280, "delta": 45, "skills": ["Kubernetes", "Docker", "MLflow", "AWS", "Kubeflow"]},
+        {"title": "Prompt Engineer", "demand": "🔥급상승", "count": 350, "delta": 180, "skills": ["LLM", "GPT", "Claude", "Prompt Design", "Fine-tuning"]},
+        {"title": "Data Scientist", "demand": "➡️유지", "count": 520, "delta": 15, "skills": ["Python", "SQL", "Statistics", "ML", "Pandas"]},
+        {"title": "Computer Vision Engineer", "demand": "📈상승", "count": 180, "delta": 55, "skills": ["OpenCV", "PyTorch", "YOLO", "Diffusion Models", "3D Vision"]},
+        {"title": "NLP Engineer", "demand": "🔥급상승", "count": 320, "delta": 95, "skills": ["Transformers", "LLM", "HuggingFace", "spaCy", "Tokenization", "RLHF"]},
+        {"title": "AI Researcher", "demand": "📈상승", "count": 150, "delta": 40, "skills": ["PyTorch", "Paper Implementation", "Math", "Statistics", "CUDA", "Distributed Training"]},
+        {"title": "Robotics Engineer", "demand": "🔥급상승", "count": 120, "delta": 65, "skills": ["ROS", "C++", "Python", "Computer Vision", "Reinforcement Learning", "Simulation"]}
       ]
     },
     {
       "name": "Development",
       "roles": [
-        {"title": "Backend Engineer", "demand": "📈유지", "count": 680, "delta": 20, "skills": ["Java", "Spring", "Node.js", "Go"]},
-        {"title": "Frontend Engineer", "demand": "📈유지", "count": 520, "delta": 10, "skills": ["React", "TypeScript", "Next.js", "Vue"]},
-        {"title": "DevOps Engineer", "demand": "📈상승", "count": 380, "delta": 55, "skills": ["AWS", "Kubernetes", "Terraform", "CI/CD"]},
-        {"title": "Full-Stack Engineer", "demand": "📈유지", "count": 420, "delta": 25, "skills": ["React", "Node.js", "TypeScript", "AWS"]}
+        {"title": "Backend Engineer", "demand": "➡️유지", "count": 680, "delta": 20, "skills": ["Java", "Spring", "Node.js", "Go", "PostgreSQL"]},
+        {"title": "Frontend Engineer", "demand": "➡️유지", "count": 520, "delta": 10, "skills": ["React", "TypeScript", "Next.js", "Vue", "Tailwind CSS"]},
+        {"title": "DevOps Engineer", "demand": "📈상승", "count": 380, "delta": 55, "skills": ["AWS", "Kubernetes", "Terraform", "CI/CD", "ArgoCD"]},
+        {"title": "Full-Stack Engineer", "demand": "➡️유지", "count": 420, "delta": 25, "skills": ["React", "Node.js", "TypeScript", "AWS", "PostgreSQL"]},
+        {"title": "Blockchain Developer", "demand": "📉하락", "count": 80, "delta": -20, "skills": ["Solidity", "Ethereum", "Rust", "Web3.js", "Smart Contracts"]},
+        {"title": "Embedded Engineer", "demand": "📈상승", "count": 250, "delta": 50, "skills": ["C", "C++", "RTOS", "ARM", "Linux Kernel", "Device Driver"]},
+        {"title": "Security Engineer", "demand": "🔥급상승", "count": 310, "delta": 85, "skills": ["Penetration Testing", "SIEM", "Cloud Security", "Zero Trust", "Incident Response"]},
+        {"title": "Site Reliability Engineer", "demand": "📈상승", "count": 220, "delta": 60, "skills": ["Kubernetes", "Prometheus", "Grafana", "Go", "Terraform", "Incident Management"]},
+        {"title": "Mobile Developer (iOS/Android)", "demand": "➡️유지", "count": 380, "delta": 10, "skills": ["Swift", "Kotlin", "Flutter", "React Native", "iOS", "Android"]}
       ]
     },
     {
       "name": "Design/기획",
       "roles": [
-        {"title": "Product Manager", "demand": "📈상승", "count": 350, "delta": 40, "skills": ["Agile", "Data Analysis", "UX", "AI Product"]},
-        {"title": "UX Designer", "demand": "➡️유지", "count": 280, "delta": 5, "skills": ["Figma", "User Research", "Prototyping"]},
-        {"title": "Product Designer", "demand": "📈상승", "count": 220, "delta": 35, "skills": ["Figma", "Design System", "UX Writing"]}
+        {"title": "Product Manager", "demand": "📈상승", "count": 350, "delta": 40, "skills": ["Agile", "Data Analysis", "UX", "AI Product", "SQL"]},
+        {"title": "UX Designer", "demand": "➡️유지", "count": 280, "delta": 5, "skills": ["Figma", "User Research", "Prototyping", "Usability Testing"]},
+        {"title": "Product Designer", "demand": "📈상승", "count": 220, "delta": 35, "skills": ["Figma", "Design System", "UX Writing", "Interaction Design"]},
+        {"title": "Data Analyst", "demand": "📈상승", "count": 400, "delta": 65, "skills": ["SQL", "Python", "Tableau", "Google Analytics", "A/B Testing", "Statistics"]},
+        {"title": "Technical Writer", "demand": "📈상승", "count": 90, "delta": 30, "skills": ["Documentation", "API Docs", "Markdown", "Git", "Technical Communication"]},
+        {"title": "Growth Hacker", "demand": "📈상승", "count": 150, "delta": 45, "skills": ["Google Analytics", "SQL", "A/B Testing", "Marketing Automation", "SEO", "Funnel Analysis"]}
+      ]
+    },
+    {
+      "name": "Data",
+      "roles": [
+        {"title": "Data Engineer", "demand": "🔥급상승", "count": 420, "delta": 110, "skills": ["Spark", "Airflow", "Kafka", "SQL", "Python", "dbt"]},
+        {"title": "Analytics Engineer", "demand": "🔥급상승", "count": 180, "delta": 95, "skills": ["dbt", "SQL", "Snowflake", "Looker", "Python", "Data Modeling"]},
+        {"title": "Database Administrator", "demand": "➡️유지", "count": 150, "delta": 5, "skills": ["PostgreSQL", "MySQL", "Oracle", "MongoDB", "Performance Tuning", "Backup/Recovery"]}
+      ]
+    },
+    {
+      "name": "Infrastructure",
+      "roles": [
+        {"title": "Cloud Architect", "demand": "🔥급상승", "count": 280, "delta": 90, "skills": ["AWS", "GCP", "Azure", "Terraform", "Kubernetes", "Architecture Design"]},
+        {"title": "Network Engineer", "demand": "➡️유지", "count": 200, "delta": 10, "skills": ["TCP/IP", "Cisco", "SD-WAN", "Firewall", "Load Balancer", "BGP"]},
+        {"title": "Platform Engineer", "demand": "🔥급상승", "count": 250, "delta": 120, "skills": ["Kubernetes", "Docker", "Terraform", "IaC", "GitOps", "Service Mesh"]}
       ]
     }
   ]

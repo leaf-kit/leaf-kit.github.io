@@ -1,0 +1,36 @@
+{
+  "company": "NVIDIA",
+  "ceo": "Jensen Huang",
+  "divisions": [
+    {
+      "name": "Data Center & AI",
+      "head": "Ian Buck",
+      "teams": ["GPU Architecture", "DGX Systems", "NIM Microservices", "Networking (Mellanox)"]
+    },
+    {
+      "name": "Gaming",
+      "head": "Jeff Fisher",
+      "teams": ["GeForce", "RTX Technology", "GeForce NOW", "G-SYNC"]
+    },
+    {
+      "name": "Professional Visualization",
+      "head": "Bob Pette",
+      "teams": ["Quadro/RTX", "Omniverse", "Digital Twins"]
+    },
+    {
+      "name": "Automotive & Robotics",
+      "head": "Ali Kani",
+      "teams": ["DRIVE Platform", "Physical AI", "GR00T", "Isaac Sim"]
+    },
+    {
+      "name": "NVIDIA Research",
+      "head": "Bill Dally",
+      "teams": ["AI Research", "Graphics Research", "Robotics Research", "Chip Architecture"]
+    },
+    {
+      "name": "Software & CUDA",
+      "head": "Dwight Diercks",
+      "teams": ["CUDA Toolkit", "TensorRT", "cuDNN", "RAPIDS", "Developer Relations"]
+    }
+  ]
+}

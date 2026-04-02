@@ -1,0 +1,36 @@
+{
+  "company": "SK하이닉스",
+  "ceo": "곽노정",
+  "divisions": [
+    {
+      "name": "DRAM 개발",
+      "head": "DRAM 개발 담당",
+      "teams": ["DDR5 개발", "HBM 개발", "LPDDR 개발", "CXL 메모리"]
+    },
+    {
+      "name": "NAND 개발",
+      "head": "NAND 개발 담당",
+      "teams": ["3D NAND", "eSSD", "UFS", "솔루션 개발"]
+    },
+    {
+      "name": "제조기술",
+      "head": "제조기술 담당",
+      "teams": ["이천 팹", "청주 팹", "공정 기술", "장비 기술"]
+    },
+    {
+      "name": "AI 인프라 사업부",
+      "head": "AI 인프라 담당",
+      "teams": ["AI 메모리 솔루션", "HBM 사업", "데이터센터 솔루션"]
+    },
+    {
+      "name": "패키징 기술",
+      "head": "패키징 담당",
+      "teams": ["Advanced Packaging", "TSV 기술", "MR-MUF", "CoWoS 대응"]
+    },
+    {
+      "name": "품질경영",
+      "head": "품질 담당",
+      "teams": ["신뢰성", "품질보증", "고객기술지원"]
+    }
+  ]
+}
