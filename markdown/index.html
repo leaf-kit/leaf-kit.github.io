@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>완벽한 마크다운 가이드 — Markdown Tutorial</title>
-  <meta property="og:title" content="완벽한 마크다운 가이드">
+  <title>리프의 마크다운 가이드 — Markdown Tutorial</title>
+  <meta property="og:title" content="리프의 마크다운 가이드">
   <meta property="og:description" content="마크다운의 기원부터 확장 문법, Mermaid, LaTeX까지 한 페이지 가이드.">
   <meta property="og:url" content="https://leaf-kit.github.io/markdown/">
   <meta property="og:type" content="website">
@@ -33,10 +33,10 @@
     .sidebar-brand{font-size:.88rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.35rem;margin-bottom:1.25rem;text-decoration:none;letter-spacing:-.01em}
     .sidebar-brand:hover{text-decoration:none;color:var(--primary)}
     .sidebar-brand svg{flex-shrink:0}
-    .sidebar-nav{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:0}
-    .sidebar-nav a{font-size:.75rem;font-weight:500;padding:.5rem .1rem;color:var(--text2);text-decoration:none;transition:all .12s;flex:1;text-align:center;border-bottom:2px solid transparent;margin-bottom:-1px}
-    .sidebar-nav a:hover{color:var(--text);text-decoration:none}
-    .sidebar-nav a.active{color:var(--primary);font-weight:700;border-bottom-color:var(--primary)}
+    .sidebar-nav{display:flex;flex-direction:column;gap:1px;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+    .sidebar-nav a{font-size:.82rem;font-weight:500;padding:.35rem .6rem;color:var(--text2);text-decoration:none;transition:all .12s;border-radius:5px;display:block}
+    .sidebar-nav a:hover{color:var(--text);background:rgba(0,0,0,.03);text-decoration:none}
+    .sidebar-nav a.active{color:var(--primary);font-weight:700;background:rgba(37,99,235,.06)}
     .sidebar-section{font-size:.68rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin:1.2rem 0 .4rem;padding-left:.5rem}
     .sidebar-link{display:block;font-size:.8rem;color:var(--text2);padding:.25rem .5rem;border-radius:4px;margin-bottom:.1rem;transition:all .15s;text-decoration:none;border-left:2px solid transparent}
     .sidebar-link:hover{color:var(--primary);background:rgba(37,99,235,.04);text-decoration:none}
@@ -133,7 +133,7 @@
 <aside class="sidebar">
   <a class="sidebar-brand" href="../">
     <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/></svg>
-    Markdown Guide
+    리프 Markdown Guide
   </a>
   <div class="sidebar-nav">
     <a href="./" class="active">표준 문법</a>
@@ -176,7 +176,7 @@
 <main class="main">
 
 <div class="hero">
-  <h1>완벽한 <span>마크다운</span> 가이드</h1>
+  <h1>리프의 <span>마크다운</span> 가이드</h1>
   <p class="lead">2004년, 존 그루버는 "읽히는 소스코드"라는 하나의 아이디어로 기술 문서의 판을 바꿨다. 이 페이지는 그 마크다운의 모든 것을 담고 있다. 기초 문법부터 Mermaid 다이어그램, LaTeX 수식까지.</p>
   <div class="hero-meta">
     <span><svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>표준 + 확장 문법 완벽 수록</span>
@@ -689,7 +689,7 @@ gitGraph
 </section>
 
 <footer class="footer">
-  <p>Markdown Guide &mdash; leaf-kit.github.io/markdown</p>
+  <p>리프 Markdown Guide &mdash; leaf-kit.github.io/markdown</p>
   <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
     <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
     <a href="https://x.com/intent/post?text=%EC%99%84%EB%B2%BD%ED%95%9C%20%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%EA%B0%80%EC%9D%B4%EB%93%9C%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fmarkdown%2F%0A%0A%40leafeditor%20%23Markdown%20%23%EA%B0%9C%EB%B0%9C" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>

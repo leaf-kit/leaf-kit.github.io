@@ -27,10 +27,10 @@
     .main{flex:1;min-width:0;padding:2.5rem 3rem 4rem}
     .sidebar-brand{font-size:.88rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.35rem;margin-bottom:1.25rem;text-decoration:none;letter-spacing:-.01em}
     .sidebar-brand:hover{text-decoration:none;color:var(--primary)}
-    .sidebar-nav{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:0}
-    .sidebar-nav a{font-size:.75rem;font-weight:500;padding:.5rem .1rem;color:var(--text2);text-decoration:none;transition:all .12s;flex:1;text-align:center;border-bottom:2px solid transparent;margin-bottom:-1px}
-    .sidebar-nav a:hover{color:var(--text);text-decoration:none}
-    .sidebar-nav a.active{color:var(--primary);font-weight:700;border-bottom-color:var(--primary)}
+    .sidebar-nav{display:flex;flex-direction:column;gap:1px;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+    .sidebar-nav a{font-size:.82rem;font-weight:500;padding:.35rem .6rem;color:var(--text2);text-decoration:none;transition:all .12s;border-radius:5px;display:block}
+    .sidebar-nav a:hover{color:var(--text);background:rgba(0,0,0,.03);text-decoration:none}
+    .sidebar-nav a.active{color:var(--primary);font-weight:700;background:rgba(37,99,235,.06)}
     .sidebar-section{font-size:.68rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin:1.2rem 0 .4rem;padding-left:.5rem}
     .sidebar-link{display:block;font-size:.8rem;color:var(--text2);padding:.25rem .5rem;border-radius:4px;margin-bottom:.1rem;transition:all .15s;text-decoration:none;border-left:2px solid transparent}
     .sidebar-link:hover{color:var(--primary);background:rgba(124,58,237,.04);text-decoration:none}
@@ -91,7 +91,7 @@
 
 <div class="page">
 <aside class="sidebar">
-  <a class="sidebar-brand" href="../">Markdown Guide</a>
+  <a class="sidebar-brand" href="../">리프 Markdown Guide</a>
   <div class="sidebar-nav">
     <a href="../">표준 문법</a>
     <a href="../extended/" class="active">변형 문법</a>
@@ -455,7 +455,7 @@ $$\frac{\partial f}{\partial x} = 2x$$</code></pre>
 </section>
 
 <footer class="footer">
-  <p>Markdown Guide &mdash; leaf-kit.github.io/markdown</p>
+  <p>리프 Markdown Guide &mdash; leaf-kit.github.io/markdown</p>
   <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
     <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
     <a href="https://x.com/intent/post?text=%EB%B3%80%ED%98%95%20%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%EB%AC%B8%EB%B2%95%20%EA%B0%80%EC%9D%B4%EB%93%9C%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fmarkdown%2Fextended%2F%0A%0A%40leafeditor%20%23Markdown" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
