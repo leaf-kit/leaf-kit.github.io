@@ -24,10 +24,10 @@
     .header h1{font-size:2rem;font-weight:900}
     .header h1 span{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .header p{color:var(--text2);font-size:.9rem;margin-top:.3rem}
-    .header-nav{display:inline-flex;gap:4px;justify-content:center;margin-top:1rem;background:#F1F5F9;padding:4px;border-radius:8px}
-    .header-nav a{font-size:.8rem;font-weight:600;padding:.4rem .85rem;border-radius:6px;color:var(--text2);transition:all .12s;text-decoration:none}
+    .header-nav{display:inline-flex;gap:0;justify-content:center;margin-top:1rem;border-bottom:1px solid var(--border)}
+    .header-nav a{font-size:.82rem;font-weight:500;padding:.5rem 1rem;color:var(--text2);transition:all .12s;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px}
     .header-nav a:hover{color:var(--text);text-decoration:none}
-    .header-nav a.active{color:var(--primary);background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+    .header-nav a.active{color:var(--primary);font-weight:700;border-bottom-color:var(--primary)}
 
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
     .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
