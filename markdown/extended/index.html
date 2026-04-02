@@ -7,8 +7,8 @@
   <meta name="description" content="표준 마크다운 외 GFM, Obsidian, Notion 등 플랫폼별 확장·변형 문법을 정리합니다.">
   <meta property="og:title" content="변형 마크다운 문법 가이드">
   <meta property="og:description" content="표준 마크다운 외 플랫폼별 확장·변형 문법을 정리합니다.">
-  <meta property="og:url" content="https://leaf-kit.github.io/markdown/extended.html">
-  <link rel="canonical" href="https://leaf-kit.github.io/markdown/extended.html">
+  <meta property="og:url" content="https://leaf-kit.github.io/markdown/extended/">
+  <link rel="canonical" href="https://leaf-kit.github.io/markdown/extended/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -25,11 +25,14 @@
     .sidebar::-webkit-scrollbar{width:4px}
     .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
     .main{flex:1;min-width:0;padding:2.5rem 3rem 4rem}
-    .sidebar-brand{font-size:1rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.4rem;margin-bottom:.75rem;text-decoration:none}
-    .sidebar-brand:hover{text-decoration:none}
-    .sidebar-nav{display:flex;gap:.3rem;margin-bottom:1rem}
-    .sidebar-nav a{font-size:.72rem;font-weight:600;padding:.25rem .5rem;border-radius:4px;border:1px solid var(--border);color:var(--text2)}
-    .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--primary);border-color:var(--primary);background:rgba(124,58,237,.04);text-decoration:none}
+    .sidebar-brand{font-size:.88rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.35rem;margin-bottom:1.25rem;text-decoration:none;letter-spacing:-.01em}
+    .sidebar-brand:hover{text-decoration:none;color:var(--primary)}
+    .sidebar-nav{display:flex;flex-direction:column;gap:2px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+    .sidebar-nav a{font-size:.8rem;font-weight:500;padding:.4rem .6rem;border-radius:6px;color:var(--text2);text-decoration:none;transition:all .12s;display:flex;align-items:center;gap:.4rem}
+    .sidebar-nav a:hover{color:var(--text);background:rgba(0,0,0,.03);text-decoration:none}
+    .sidebar-nav a.active{color:var(--primary);font-weight:700;background:rgba(124,58,237,.06)}
+    .sidebar-nav a::before{content:'';width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.4;flex-shrink:0}
+    .sidebar-nav a.active::before{opacity:1;width:4px;height:4px}
     .sidebar-section{font-size:.68rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin:1.2rem 0 .4rem;padding-left:.5rem}
     .sidebar-link{display:block;font-size:.8rem;color:var(--text2);padding:.25rem .5rem;border-radius:4px;margin-bottom:.1rem;transition:all .15s;text-decoration:none;border-left:2px solid transparent}
     .sidebar-link:hover{color:var(--primary);background:rgba(124,58,237,.04);text-decoration:none}
@@ -90,12 +93,12 @@
 
 <div class="page">
 <aside class="sidebar">
-  <a class="sidebar-brand" href="./">Markdown Guide</a>
+  <a class="sidebar-brand" href="../">Markdown Guide</a>
   <div class="sidebar-nav">
-    <a href="./">표준 문법</a>
-    <a href="./extended.html" class="active">변형 문법</a>
-    <a href="./cheatsheet.html">퀵시트</a>
-    <a href="./playground.html">Playground</a>
+    <a href="../">표준 문법</a>
+    <a href="../extended/" class="active">변형 문법</a>
+    <a href="../cheatsheet/">퀵시트</a>
+    <a href="../playground/">Playground</a>
   </div>
 
   <div class="sidebar-section">GFM 확장</div>
@@ -133,7 +136,7 @@
   <p class="lead">존 그루버의 원본 마크다운에는 없지만, 각 플랫폼과 도구가 추가한 확장 문법들. 표준과 헷갈리지 않도록 별도로 정리했다.</p>
 </div>
 
-<div class="warn"><strong>이 페이지의 모든 문법은 "비표준"입니다.</strong> 원본 마크다운(Gruber 스펙)에는 존재하지 않으며, 특정 플랫폼에서만 작동합니다. 표준 문법은 <a href="./" style="color:#991B1B;font-weight:700">표준 마크다운 가이드</a>를 참고하세요.</div>
+<div class="warn"><strong>이 페이지의 모든 문법은 "비표준"입니다.</strong> 원본 마크다운(Gruber 스펙)에는 존재하지 않으며, 특정 플랫폼에서만 작동합니다. 표준 문법은 <a href="../" style="color:#991B1B;font-weight:700">표준 마크다운 가이드</a>를 참고하세요.</div>
 
 <!-- GFM -->
 <section class="section" id="gfm">
@@ -148,7 +151,7 @@
     <li>자동 링크 — URL을 그냥 쓰면 자동으로 링크</li>
     <li>멘션 / 이슈 참조 — <code>@user</code>, <code>#123</code></li>
   </ul>
-  <div class="note">표, 취소선, 작업 목록은 이미 <a href="./" style="color:#1E40AF">표준 가이드</a>의 확장 섹션에서 다뤘다. 여기서는 GFM 고유의 추가 기능을 다룬다.</div>
+  <div class="note">표, 취소선, 작업 목록은 이미 <a href="../" style="color:#1E40AF">표준 가이드</a>의 확장 섹션에서 다뤘다. 여기서는 GFM 고유의 추가 기능을 다룬다.</div>
 </section>
 
 <section class="section" id="gfm-autolink">
@@ -456,7 +459,7 @@ $$\frac{\partial f}{\partial x} = 2x$$</code></pre>
   <p>Markdown Guide &mdash; leaf-kit.github.io/markdown</p>
   <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
     <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
-    <a href="https://x.com/intent/post?text=%EB%B3%80%ED%98%95%20%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%EB%AC%B8%EB%B2%95%20%EA%B0%80%EC%9D%B4%EB%93%9C%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fmarkdown%2Fextended.html%0A%0A%40leafeditor%20%23Markdown" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+    <a href="https://x.com/intent/post?text=%EB%B3%80%ED%98%95%20%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%EB%AC%B8%EB%B2%95%20%EA%B0%80%EC%9D%B4%EB%93%9C%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fmarkdown%2Fextended%2F%0A%0A%40leafeditor%20%23Markdown" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
   </div>
 </footer>
 

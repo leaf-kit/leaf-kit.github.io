@@ -30,11 +30,15 @@
     .main{flex:1;min-width:0;padding:2.5rem 3rem 4rem}
 
     /* Sidebar */
-    .sidebar-brand{font-size:1rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.4rem;margin-bottom:.75rem;text-decoration:none}
-    .sidebar-brand:hover{text-decoration:none}
-    .sidebar-nav{display:flex;gap:.3rem;margin-bottom:1rem}
-    .sidebar-nav a{font-size:.72rem;font-weight:600;padding:.25rem .5rem;border-radius:4px;border:1px solid var(--border);color:var(--text2);text-decoration:none}
-    .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--primary);border-color:var(--primary);background:rgba(37,99,235,.04)}
+    .sidebar-brand{font-size:.88rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.35rem;margin-bottom:1.25rem;text-decoration:none;letter-spacing:-.01em}
+    .sidebar-brand:hover{text-decoration:none;color:var(--primary)}
+    .sidebar-brand svg{flex-shrink:0}
+    .sidebar-nav{display:flex;flex-direction:column;gap:2px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+    .sidebar-nav a{font-size:.8rem;font-weight:500;padding:.4rem .6rem;border-radius:6px;color:var(--text2);text-decoration:none;transition:all .12s;display:flex;align-items:center;gap:.4rem}
+    .sidebar-nav a:hover{color:var(--text);background:rgba(0,0,0,.03);text-decoration:none}
+    .sidebar-nav a.active{color:var(--primary);font-weight:700;background:rgba(37,99,235,.06)}
+    .sidebar-nav a::before{content:'';width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.4;flex-shrink:0}
+    .sidebar-nav a.active::before{opacity:1;width:4px;height:4px}
     .sidebar-section{font-size:.68rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin:1.2rem 0 .4rem;padding-left:.5rem}
     .sidebar-link{display:block;font-size:.8rem;color:var(--text2);padding:.25rem .5rem;border-radius:4px;margin-bottom:.1rem;transition:all .15s;text-decoration:none;border-left:2px solid transparent}
     .sidebar-link:hover{color:var(--primary);background:rgba(37,99,235,.04);text-decoration:none}
@@ -135,9 +139,9 @@
   </a>
   <div class="sidebar-nav">
     <a href="./" class="active">표준 문법</a>
-    <a href="./extended.html">변형 문법</a>
-    <a href="./cheatsheet.html">퀵시트</a>
-    <a href="./playground.html">Playground</a>
+    <a href="./extended/">변형 문법</a>
+    <a href="./cheatsheet/">퀵시트</a>
+    <a href="./playground/">Playground</a>
   </div>
 
   <div class="sidebar-section">기원</div>

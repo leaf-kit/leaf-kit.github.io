@@ -7,7 +7,7 @@
   <meta name="description" content="마크다운 문법을 한 장에 압축. 복사해서 바로 쓸 수 있는 치트시트.">
   <meta property="og:title" content="마크다운 퀵시트">
   <meta property="og:description" content="마크다운 문법을 한 장에 압축한 치트시트.">
-  <link rel="canonical" href="https://leaf-kit.github.io/markdown/cheatsheet.html">
+  <link rel="canonical" href="https://leaf-kit.github.io/markdown/cheatsheet/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -24,9 +24,10 @@
     .header h1{font-size:2rem;font-weight:900}
     .header h1 span{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .header p{color:var(--text2);font-size:.9rem;margin-top:.3rem}
-    .header-nav{display:flex;gap:.4rem;justify-content:center;margin-top:1rem}
-    .header-nav a{font-size:.78rem;font-weight:600;padding:.3rem .7rem;border-radius:5px;border:1px solid var(--border);color:var(--text2)}
-    .header-nav a:hover,.header-nav a.active{color:var(--primary);border-color:var(--primary);background:rgba(37,99,235,.04);text-decoration:none}
+    .header-nav{display:flex;gap:.25rem;justify-content:center;margin-top:1rem;background:var(--bg);padding:.3rem;border-radius:8px;display:inline-flex}
+    .header-nav a{font-size:.8rem;font-weight:500;padding:.35rem .75rem;border-radius:6px;border:none;color:var(--text2);transition:all .12s}
+    .header-nav a:hover{color:var(--text);background:rgba(0,0,0,.04);text-decoration:none}
+    .header-nav a.active{color:var(--primary);font-weight:700;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.06)}
 
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
     .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
@@ -47,7 +48,9 @@
     @media print{
       body{background:#fff;font-size:14px}
       .header-nav,.print-btn,.footer{display:none}
+      .header h1 span{-webkit-text-fill-color:#1a1a2e !important;background:none !important;color:#1a1a2e !important}
       .card{break-inside:avoid;border:1px solid #ccc}
+      .card-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
       .grid{grid-template-columns:repeat(2,1fr);gap:.5rem}
     }
     @media(max-width:700px){
@@ -65,10 +68,10 @@
   <h1><span>Markdown</span> Cheatsheet</h1>
   <p>마크다운 문법을 한 장에 압축 — 복사해서 바로 쓰세요</p>
   <div class="header-nav">
-    <a href="./">표준 문법</a>
-    <a href="./extended.html">변형 문법</a>
-    <a href="./cheatsheet.html" class="active">퀵시트</a>
-    <a href="./playground.html">Playground</a>
+    <a href="../">표준 문법</a>
+    <a href="../extended/">변형 문법</a>
+    <a href="../cheatsheet/" class="active">퀵시트</a>
+    <a href="../playground/">Playground</a>
   </div>
   <button class="print-btn" onclick="window.print()">
     <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/></svg>
@@ -231,7 +234,7 @@
   <p>Markdown Cheatsheet &mdash; leaf-kit.github.io/markdown</p>
   <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
     <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
-    <a href="https://x.com/intent/post?text=%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%ED%80%B5%EC%8B%9C%ED%8A%B8%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fmarkdown%2Fcheatsheet.html%0A%0A%40leafeditor%20%23Markdown" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+    <a href="https://x.com/intent/post?text=%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%ED%80%B5%EC%8B%9C%ED%8A%B8%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fmarkdown%2Fcheatsheet%2F%0A%0A%40leafeditor%20%23Markdown" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
   </div>
 </footer>
 
