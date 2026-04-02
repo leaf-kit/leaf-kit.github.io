@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 리스크와 건강 — 직업 불안이 가져오는 심신 건강 문제와 관리법</title>
+  <meta name="description" content="AI 직업 대체 불안이 유발하는 정신건강·신체건강 문제를 심리학·정신의학적으로 분석하고 관리법을 제시합니다.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#2563EB;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--radius:8px}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+    a{color:var(--primary);text-decoration:none}
+
+    .nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:#fff}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions::-webkit-scrollbar{display:none}
+    .nav-actions a{color:rgba(255,255,255,.5);font-size:.78rem;font-weight:500;padding:.4rem .55rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:#fff;background:rgba(255,255,255,.1);text-decoration:none}
+
+    @keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .container{max-width:960px;margin:0 auto;padding:0 2rem}
+
+    /* Hero */
+    .health-hero{text-align:center;padding:4rem 2rem 3rem;background:linear-gradient(160deg,#1E293B 0%,#312E81 40%,#4C1D95 100%);color:#fff;position:relative;overflow:hidden}
+    .health-hero::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,.15) 0%,transparent 60%);pointer-events:none}
+    .health-hero h1{font-size:2rem;font-weight:900;opacity:0;animation:fu .7s ease forwards .2s}
+    .health-hero .sub{color:rgba(255,255,255,.55);font-size:.92rem;margin-top:.6rem;max-width:620px;margin-left:auto;margin-right:auto;opacity:0;animation:fu .7s ease forwards .4s}
+
+    /* TOC */
+    .toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin:2rem 0}
+    .toc h3{font-size:.88rem;font-weight:700;margin-bottom:.5rem;color:var(--primary)}
+    .toc ol{padding-left:1.2rem;columns:2;column-gap:2rem}
+    .toc li{font-size:.82rem;margin-bottom:.3rem}
+    .toc a{color:var(--text);font-weight:500}
+    .toc a:hover{color:var(--primary)}
+
+    /* Section */
+    .section{padding:2.5rem 0;border-bottom:1px solid var(--border)}
+    .section:last-of-type{border-bottom:none}
+    .section h2{font-size:1.3rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;scroll-margin-top:60px}
+    .section-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;color:#fff;font-size:.82rem;font-weight:800;flex-shrink:0}
+    .section p{font-size:.88rem;color:var(--text2);line-height:1.8;margin-bottom:.75rem}
+    .section h3{font-size:1.05rem;font-weight:700;margin:1.5rem 0 .5rem}
+
+    /* Highlight */
+    .hl{border-radius:var(--radius);padding:1.2rem 1.4rem;margin:1rem 0;font-size:.86rem;line-height:1.7}
+    .hl.red{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+    .hl.purple{background:#F5F3FF;border:1px solid #DDD6FE;color:#5B21B6}
+    .hl.green{background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46}
+    .hl.amber{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+    .hl.blue{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+
+    /* Symptom cards */
+    .symptom-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin:1.5rem 0}
+    .symptom-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.25rem;transition:transform .2s,box-shadow .2s}
+    .symptom-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.05)}
+    .symptom-icon{font-size:1.8rem;margin-bottom:.5rem}
+    .symptom-name{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+    .symptom-desc{font-size:.8rem;color:var(--text2);line-height:1.6}
+    .symptom-tag{display:inline-block;font-size:.65rem;font-weight:600;padding:.1rem .35rem;border-radius:3px;margin-top:.4rem}
+
+    /* Phase flow */
+    .phase-flow{display:flex;gap:0;margin:1.5rem 0;flex-wrap:wrap;justify-content:center}
+    .phase-item{flex:1;min-width:140px;max-width:200px;text-align:center;padding:1rem;position:relative}
+    .phase-item::after{content:'→';position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-size:1.2rem;color:var(--border);font-weight:700}
+    .phase-item:last-child::after{display:none}
+    .phase-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;color:#fff;font-weight:800;font-size:.85rem}
+    .phase-title{font-size:.85rem;font-weight:700}
+    .phase-desc{font-size:.72rem;color:var(--text2);margin-top:.2rem}
+
+    /* Management cards */
+    .mgmt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:1.5rem 0}
+    .mgmt-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.25rem;position:relative;overflow:hidden}
+    .mgmt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .mgmt-icon{font-size:1.5rem;margin-bottom:.5rem}
+    .mgmt-title{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+    .mgmt-desc{font-size:.8rem;color:var(--text2);line-height:1.6}
+    .mgmt-list{margin-top:.5rem;padding-left:1rem}
+    .mgmt-list li{font-size:.78rem;color:var(--text2);line-height:1.7}
+
+    /* Resource link */
+    .resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:.75rem;margin:1.5rem 0}
+    .resource-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;transition:border-color .2s}
+    .resource-card:hover{border-color:var(--primary)}
+    .resource-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+    .resource-info{flex:1;min-width:0}
+    .resource-name{font-size:.88rem;font-weight:700}
+    .resource-desc{font-size:.72rem;color:var(--text2);margin-top:.1rem}
+    .resource-link{flex-shrink:0;font-size:.72rem;font-weight:600;color:var(--primary)}
+
+    /* News evidence */
+    .news-list{display:flex;flex-direction:column;gap:.4rem;margin:1rem 0}
+    .news-item{display:flex;align-items:center;gap:.5rem;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.82rem}
+    .news-item:last-child{border-bottom:none}
+    .news-src{font-size:.65rem;font-weight:600;padding:.1rem .3rem;border-radius:3px;color:#fff;white-space:nowrap;flex-shrink:0}
+    .news-item a{flex:1;color:var(--text);font-weight:500}
+    .news-item a:hover{color:var(--primary)}
+
+    /* Emergency */
+    .emergency{background:linear-gradient(135deg,#991B1B,#7F1D1D);color:#fff;border-radius:12px;padding:2rem;margin:2rem 0}
+    .emergency h3{font-size:1.1rem;font-weight:800;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+    .emergency p{font-size:.88rem;color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:.5rem}
+    .emergency-contacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin-top:1rem}
+    .emergency-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.75rem 1rem}
+    .emergency-card .ec-name{font-weight:700;font-size:.9rem}
+    .emergency-card .ec-num{font-size:1.2rem;font-weight:900;margin-top:.15rem;font-family:'JetBrains Mono',monospace}
+    .emergency-card .ec-desc{font-size:.7rem;color:rgba(255,255,255,.6);margin-top:.15rem}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .container{padding:0 1rem}
+      .health-hero h1{font-size:1.5rem}
+      .symptom-grid,.mgmt-grid{grid-template-columns:1fr}
+      .resource-grid{grid-template-columns:1fr}
+      .toc ol{columns:1}
+      .phase-flow{flex-direction:column;align-items:center}
+      .phase-item::after{display:none}
+      .nav{padding:0 .75rem;height:auto;min-height:44px;flex-wrap:wrap}
+      .nav-brand{padding:.4rem 0;font-size:.85rem}
+      .nav-actions{width:100%;padding-bottom:.35rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>
+    AI 리스크
+  </a>
+  <div class="nav-actions">
+    <a href="./">직업 분석</a>
+    <a href="./news.html">근거 뉴스</a>
+    <a href="./departments.html">학과 분석</a>
+    <a href="./agents.html">AI 도구</a>
+    <a href="./survival.html">생존 가이드</a>
+    <a href="./health.html" class="active">건강 관리</a>
+    <a href="./risk-guide.html">리스크 가이드</a>
+    <a href="./game.html">게임</a>
+    <a href="./about.html">About</a>
+  </div>
+</nav>
+
+<section class="health-hero">
+  <h1>AI가 당신의 건강을 위협하고 있습니다</h1>
+  <p class="sub">직업 대체 불안은 단순한 걱정이 아닙니다. 우울증, 불안장애, 심혈관 질환까지 — 심리학·정신의학적 분석과 과학적 건강 관리법을 제시합니다.</p>
+</section>
+
+<main class="container">
+
+  <div class="toc">
+    <h3>목차</h3>
+    <ol>
+      <li><a href="#s1">AI 직업 불안이 건강에 미치는 영향</a></li>
+      <li><a href="#s2">정신건강: 심리학적 분석</a></li>
+      <li><a href="#s3">신체건강: 의학적 분석</a></li>
+      <li><a href="#s4">스트레스 진행 단계</a></li>
+      <li><a href="#s5">과학적 건강 관리법</a></li>
+      <li><a href="#s6">근거 뉴스</a></li>
+      <li><a href="#s7">관련 의료기관 및 상담 서비스</a></li>
+      <li><a href="#s8">추천 도서</a></li>
+      <li><a href="#s9">긴급 도움이 필요할 때</a></li>
+    </ol>
+  </div>
+
+  <!-- 1 -->
+  <section class="section" id="s1">
+    <h2><span class="section-num" style="background:#7C3AED">1</span> AI 직업 불안이 건강에 미치는 영향</h2>
+
+    <div class="hl red">
+      <p><strong>WHO(세계보건기구)와 ILO(국제노동기구)에 따르면,</strong> 직업 불안정성은 주요 건강 위험 요인 중 하나입니다. AI로 인한 직업 대체 공포는 전통적인 실직 스트레스에 "기술적 무력감"이 더해져 더욱 심각한 건강 문제를 유발합니다.</p>
+    </div>
+
+    <p>AI 시대의 직업 불안은 과거의 산업 혁명과 다른 특징을 가집니다. 이전에는 주로 육체 노동자가 영향을 받았지만, 현재는 <strong>화이트칼라, 전문직, 창작자</strong>까지 위협받으면서 사회 전반에 걸쳐 불안이 확산되고 있습니다.</p>
+
+    <div class="symptom-grid">
+      <div class="symptom-card">
+        <div class="symptom-icon">&#x1F9E0;</div>
+        <div class="symptom-name">테크노 불안 (Techno-Anxiety)</div>
+        <div class="symptom-desc">AI/자동화 기술이 자신의 직업을 대체할 것이라는 만성적 공포. 새로운 기술을 학습해야 한다는 압박감이 동반됩니다.</div>
+        <span class="symptom-tag" style="background:#F5F3FF;color:#7C3AED">심리적 증상</span>
+      </div>
+      <div class="symptom-card">
+        <div class="symptom-icon">&#x1F614;</div>
+        <div class="symptom-name">학습된 무력감 (Learned Helplessness)</div>
+        <div class="symptom-desc">"아무리 노력해도 AI를 이길 수 없다"는 체념. 심리학자 마틴 셀리그만이 정의한 우울증의 핵심 메커니즘과 동일합니다.</div>
+        <span class="symptom-tag" style="background:#FEF2F2;color:#991B1B">위험 신호</span>
+      </div>
+      <div class="symptom-card">
+        <div class="symptom-icon">&#x1F525;</div>
+        <div class="symptom-name">기술 소진 (Tech Burnout)</div>
+        <div class="symptom-desc">끊임없이 새 기술을 학습해야 한다는 압박에 의한 극심한 피로. "러닝 커브 번아웃"이라고도 불립니다.</div>
+        <span class="symptom-tag" style="background:#FFFBEB;color:#92400E">복합 증상</span>
+      </div>
+      <div class="symptom-card">
+        <div class="symptom-icon">&#x1F494;</div>
+        <div class="symptom-name">정체성 위기 (Identity Crisis)</div>
+        <div class="symptom-desc">직업이 자아 정체성의 핵심인 사람에게 직업 대체 위협은 존재 자체에 대한 위기로 경험됩니다.</div>
+        <span class="symptom-tag" style="background:#F5F3FF;color:#7C3AED">실존적 위기</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="section" id="s2">
+    <h2><span class="section-num" style="background:#8B5CF6">2</span> 정신건강: 심리학적·정신분석학적 분석</h2>
+
+    <h3>주요 정신건강 질환</h3>
+    <div class="symptom-grid">
+      <div class="symptom-card" style="border-left:3px solid var(--red)">
+        <div class="symptom-name">범불안장애 (GAD)</div>
+        <div class="symptom-desc">미래 직업에 대한 과도하고 지속적인 걱정. 6개월 이상 거의 매일 걱정이 지속되며, 집중력 저하·근육 긴장·수면 장애가 동반됩니다.</div>
+        <div class="symptom-tag" style="background:#FEF2F2;color:#991B1B">유병률 증가 중</div>
+      </div>
+      <div class="symptom-card" style="border-left:3px solid var(--amber)">
+        <div class="symptom-name">적응장애 (Adjustment Disorder)</div>
+        <div class="symptom-desc">업무 환경 변화(AI 도입, 조직 개편)에 적응하지 못하여 발생하는 정서적·행동적 증상. 우울감, 불안, 업무 회피가 나타납니다.</div>
+        <div class="symptom-tag" style="background:#FFFBEB;color:#92400E">가장 흔한 진단</div>
+      </div>
+      <div class="symptom-card" style="border-left:3px solid #7C3AED">
+        <div class="symptom-name">우울증 (Major Depression)</div>
+        <div class="symptom-desc">지속적인 무기력, 흥미 상실, 자존감 저하. 특히 "나는 쓸모없는 존재"라는 인지 왜곡이 AI 대체 불안과 결합하면 심각해집니다.</div>
+        <div class="symptom-tag" style="background:#F5F3FF;color:#5B21B6">인지 치료 효과적</div>
+      </div>
+      <div class="symptom-card" style="border-left:3px solid #0F172A">
+        <div class="symptom-name">번아웃 증후군 (Burnout)</div>
+        <div class="symptom-desc">WHO가 2019년 공식 인정한 직업 관련 증후군. 정서적 고갈, 비인격화(냉소), 개인 성취감 감소의 3요소로 구성됩니다.</div>
+        <div class="symptom-tag" style="background:var(--surface);color:var(--text)">WHO 공식 인정</div>
+      </div>
+    </div>
+
+    <h3>정신분석학적 관점</h3>
+    <div class="hl purple">
+      <p><strong>프로이트(Freud)의 관점:</strong> 직업 상실에 대한 공포는 "거세 불안"의 현대적 변형입니다. 생계 능력의 상실은 무의식적으로 자기 존재의 절단으로 경험됩니다.</p>
+      <p style="margin-top:.5rem"><strong>에릭슨(Erikson)의 관점:</strong> 성인기의 핵심 발달 과제인 "생산성 vs 침체" 단계에서, AI에 의한 직업 대체는 "침체" 방향으로 퇴행을 유발합니다.</p>
+      <p style="margin-top:.5rem"><strong>프랑클(Frankl)의 관점:</strong> 실존적 공허(existential vacuum). 직업을 통해 삶의 의미를 찾던 사람이 그 의미를 잃을 때 발생하는 근원적 허무감.</p>
+    </div>
+
+    <h3>인지행동치료(CBT) 관점에서 본 왜곡된 사고 패턴</h3>
+    <div class="symptom-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+      <div class="symptom-card" style="padding:1rem">
+        <div class="symptom-name" style="font-size:.85rem">파국화</div>
+        <div class="symptom-desc" style="font-size:.75rem">"AI가 내 직업을 완전히 없앨 것이다"</div>
+      </div>
+      <div class="symptom-card" style="padding:1rem">
+        <div class="symptom-name" style="font-size:.85rem">흑백 사고</div>
+        <div class="symptom-desc" style="font-size:.75rem">"AI를 완벽히 활용하거나 도태되거나"</div>
+      </div>
+      <div class="symptom-card" style="padding:1rem">
+        <div class="symptom-name" style="font-size:.85rem">개인화</div>
+        <div class="symptom-desc" style="font-size:.75rem">"내가 뒤처지는 것은 내 능력이 부족해서"</div>
+      </div>
+      <div class="symptom-card" style="padding:1rem">
+        <div class="symptom-name" style="font-size:.85rem">과잉 일반화</div>
+        <div class="symptom-desc" style="font-size:.75rem">"모든 직업이 결국 AI에 대체될 것"</div>
+      </div>
+      <div class="symptom-card" style="padding:1rem">
+        <div class="symptom-name" style="font-size:.85rem">감정적 추론</div>
+        <div class="symptom-desc" style="font-size:.75rem">"불안하니까 정말 위험한 거야"</div>
+      </div>
+      <div class="symptom-card" style="padding:1rem">
+        <div class="symptom-name" style="font-size:.85rem">선택적 추상화</div>
+        <div class="symptom-desc" style="font-size:.75rem">"AI 대체 뉴스만 보이고 새 기회는 안 보임"</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="section" id="s3">
+    <h2><span class="section-num" style="background:var(--red)">3</span> 신체건강: 의학적 분석</h2>
+    <p>만성 스트레스는 코르티솔(cortisol) 수치를 지속적으로 높여 다양한 신체 질환을 유발합니다. 직업 불안이 장기화되면 다음과 같은 의학적 문제가 나타납니다.</p>
+
+    <div class="symptom-grid">
+      <div class="symptom-card" style="border-top:3px solid var(--red)">
+        <div class="symptom-icon">&#x2764;</div>
+        <div class="symptom-name">심혈관계 질환</div>
+        <div class="symptom-desc">만성 스트레스 → 교감신경 항진 → 혈압 상승, 심박수 증가. 실직 스트레스 경험자의 심근경색 위험이 <strong>35~44% 증가</strong>한다는 연구 결과 (Archives of Internal Medicine).</div>
+        <div class="symptom-tag" style="background:#FEF2F2;color:#991B1B">고위험</div>
+      </div>
+      <div class="symptom-card" style="border-top:3px solid var(--amber)">
+        <div class="symptom-icon">&#x1F6CC;</div>
+        <div class="symptom-name">수면 장애</div>
+        <div class="symptom-desc">미래 불안 → 과각성 상태 지속 → 입면 장애, 중도 각성, 악몽. 수면 부족은 면역력 저하, 인지 기능 감소, 비만으로 이어지는 악순환을 만듭니다.</div>
+        <div class="symptom-tag" style="background:#FFFBEB;color:#92400E">악순환 주의</div>
+      </div>
+      <div class="symptom-card" style="border-top:3px solid #7C3AED">
+        <div class="symptom-icon">&#x1F9EC;</div>
+        <div class="symptom-name">면역력 저하</div>
+        <div class="symptom-desc">코르티솔 과다 → 면역세포(T세포, NK세포) 기능 억제. 감기, 대상포진 등 감염질환 증가. 만성 염증 유발로 각종 질환 위험 상승.</div>
+        <div class="symptom-tag" style="background:#F5F3FF;color:#5B21B6">만성 염증</div>
+      </div>
+      <div class="symptom-card" style="border-top:3px solid var(--green)">
+        <div class="symptom-icon">&#x1F3CB;</div>
+        <div class="symptom-name">근골격계 질환</div>
+        <div class="symptom-desc">스트레스 → 근육 긴장 → 만성 두통, 어깨·목·허리 통증. 장시간 앉아서 AI 학습/업무를 하는 자세가 근골격계 문제를 악화시킵니다.</div>
+        <div class="symptom-tag" style="background:#ECFDF5;color:#065F46">자세 교정 필요</div>
+      </div>
+      <div class="symptom-card" style="border-top:3px solid #F97316">
+        <div class="symptom-icon">&#x1F37D;</div>
+        <div class="symptom-name">소화기 질환</div>
+        <div class="symptom-desc">스트레스 → 장-뇌 축(Gut-Brain Axis) 교란 → 과민성 대장 증후군(IBS), 위산 과다, 식욕 변화. 폭식 또는 식욕 부진으로 체중 변동.</div>
+        <div class="symptom-tag" style="background:#FFF7ED;color:#C2410C">장-뇌 연결</div>
+      </div>
+      <div class="symptom-card" style="border-top:3px solid #6366F1">
+        <div class="symptom-icon">&#x1F9D1;&#x200D;&#x1F4BB;</div>
+        <div class="symptom-name">디지털 피로 증후군</div>
+        <div class="symptom-desc">과도한 디지털 기기 사용 → 안구 건조, 시력 저하, 디지털 치매(기억력 감퇴). AI 도구 학습 과정에서 특히 심화됩니다.</div>
+        <div class="symptom-tag" style="background:#EEF2FF;color:#4338CA">현대 직업병</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="section" id="s4">
+    <h2><span class="section-num" style="background:var(--amber)">4</span> AI 직업 불안 스트레스 진행 단계</h2>
+    <p>한스 셀리에(Hans Selye)의 일반적응증후군(GAS) 이론을 AI 직업 불안에 적용하면:</p>
+
+    <div class="phase-flow">
+      <div class="phase-item">
+        <div class="phase-num" style="background:var(--amber)">1</div>
+        <div class="phase-title">경보 반응</div>
+        <div class="phase-desc">AI 대체 뉴스 접촉. 심박수 증가, 불안감. "나도 대체되나?"</div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-num" style="background:var(--red)">2</div>
+        <div class="phase-title">저항 단계</div>
+        <div class="phase-desc">AI 학습 과몰입, 과잉 대비. 만성 피로 시작. 수면 부족.</div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-num" style="background:#991B1B">3</div>
+        <div class="phase-title">소진 단계</div>
+        <div class="phase-desc">번아웃. 무기력. 우울. 체념. "아무것도 하기 싫다."</div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-num" style="background:var(--green)">4</div>
+        <div class="phase-title">회복 또는 만성화</div>
+        <div class="phase-desc">적절한 개입 시 회복. 방치 시 만성 질환으로 발전.</div>
+      </div>
+    </div>
+
+    <div class="hl amber">
+      <p><strong>핵심 메시지:</strong> 3단계(소진)에 도달하기 전에 개입해야 합니다. 2단계에서 "나는 지금 과도한 스트레스 상태에 있다"고 인식하는 것 자체가 치료의 시작입니다.</p>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="section" id="s5">
+    <h2><span class="section-num" style="background:var(--green)">5</span> 과학적 건강 관리법</h2>
+
+    <h3>정신건강 관리</h3>
+    <div class="mgmt-grid">
+      <div class="mgmt-card" style="border-top:3px solid #8B5CF6">
+        <div class="mgmt-icon">&#x1F9D8;</div>
+        <div class="mgmt-title">마음챙김(MBSR) 명상</div>
+        <div class="mgmt-desc">존 카밧-진(Jon Kabat-Zinn)이 개발한 8주 프로그램. 스트레스 호르몬(코르티솔) <strong>23% 감소</strong> 효과 입증.</div>
+        <ul class="mgmt-list">
+          <li>매일 10~20분 호흡 명상</li>
+          <li>바디스캔: 신체 감각에 집중하여 긴장 이완</li>
+          <li>비판단적 관찰: 불안한 생각을 관찰만 하고 흘려보내기</li>
+        </ul>
+      </div>
+      <div class="mgmt-card" style="border-top:3px solid var(--primary)">
+        <div class="mgmt-icon">&#x1F4DD;</div>
+        <div class="mgmt-title">인지행동치료(CBT) 기법</div>
+        <div class="mgmt-desc">왜곡된 사고를 발견하고 교정하는 치료법. 불안장애·우울증에 <strong>가장 효과적인 근거 기반 치료</strong>.</div>
+        <ul class="mgmt-list">
+          <li>사고 기록지: 불안한 생각 → 근거 검토 → 대안적 사고</li>
+          <li>"회계사의 80%가 대체된다" → "AI가 보조하고 복잡한 판단은 여전히 인간"</li>
+          <li>점진적 노출: 불안 유발 상황에 단계적으로 접근</li>
+        </ul>
+      </div>
+      <div class="mgmt-card" style="border-top:3px solid var(--green)">
+        <div class="mgmt-icon">&#x1F4AC;</div>
+        <div class="mgmt-title">수용전념치료(ACT)</div>
+        <div class="mgmt-desc">불안을 제거하려 하지 않고, 있는 그대로 수용하면서 가치 있는 행동에 전념하는 제3세대 인지치료.</div>
+        <ul class="mgmt-list">
+          <li>"AI 불안"을 없애려 하지 말고, 불안과 함께 의미 있는 행동하기</li>
+          <li>가치 명확화: "나에게 정말 중요한 것은 무엇인가?"</li>
+          <li>탈융합: 생각은 생각일 뿐, 사실이 아님을 인식</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>신체건강 관리</h3>
+    <div class="mgmt-grid">
+      <div class="mgmt-card" style="border-top:3px solid var(--red)">
+        <div class="mgmt-icon">&#x1F3C3;</div>
+        <div class="mgmt-title">유산소 운동</div>
+        <div class="mgmt-desc">주 3~5회, 30분 이상. 세로토닌·엔도르핀 분비 촉진. 항우울제와 동등한 효과 (Duke 대학 연구).</div>
+        <ul class="mgmt-list">
+          <li>달리기, 수영, 자전거, 빠른 걷기</li>
+          <li>최소 심박수 120~140bpm 유지</li>
+          <li>자연 속 운동(그린 엑서사이즈)이 효과 배가</li>
+        </ul>
+      </div>
+      <div class="mgmt-card" style="border-top:3px solid var(--amber)">
+        <div class="mgmt-icon">&#x1F6CC;</div>
+        <div class="mgmt-title">수면 위생</div>
+        <div class="mgmt-desc">7~9시간 규칙적 수면. 수면 부족 시 코르티솔 45% 증가, 면역력 50% 저하.</div>
+        <ul class="mgmt-list">
+          <li>취침 1시간 전 디지털 기기 중단</li>
+          <li>일정한 취침·기상 시간 유지</li>
+          <li>카페인은 오후 2시 이전까지만</li>
+          <li>침실: 어둡게, 시원하게(18~20°C)</li>
+        </ul>
+      </div>
+      <div class="mgmt-card" style="border-top:3px solid var(--green)">
+        <div class="mgmt-icon">&#x1F957;</div>
+        <div class="mgmt-title">항스트레스 영양</div>
+        <div class="mgmt-desc">장-뇌 축을 통해 정신건강에 영향. 지중해식 식단이 우울증 위험 33% 감소 (BMJ 메타분석).</div>
+        <ul class="mgmt-list">
+          <li>오메가-3 (연어, 고등어, 호두): 뇌 염증 감소</li>
+          <li>프로바이오틱스 (요거트, 김치): 장-뇌 축 건강</li>
+          <li>마그네슘 (시금치, 아몬드): 근육 이완, 수면 개선</li>
+          <li>비타민 D: 햇빛 노출 또는 보충제</li>
+        </ul>
+      </div>
+      <div class="mgmt-card" style="border-top:3px solid #6366F1">
+        <div class="mgmt-icon">&#x1F4F1;</div>
+        <div class="mgmt-title">디지털 디톡스</div>
+        <div class="mgmt-desc">AI 관련 뉴스·SNS의 과도한 소비가 불안을 증폭시킵니다. 의도적인 정보 차단이 필요합니다.</div>
+        <ul class="mgmt-list">
+          <li>AI 대체 뉴스 알림 끄기</li>
+          <li>주 1회 "노 스크린 데이" 실천</li>
+          <li>SNS 비교 중단: 남의 AI 학습 진도와 비교하지 않기</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6: News - will be filled dynamically or with searched results -->
+  <section class="section" id="s6">
+    <h2><span class="section-num" style="background:var(--primary)">6</span> 근거 뉴스</h2>
+    <p>AI 시대 직업 불안과 건강 문제에 관한 실제 보도입니다.</p>
+    <div class="news-list" id="news-list">
+      <div class="news-item"><span class="news-src" style="background:#8B5CF6">경향신문</span><a href="https://www.khan.co.kr/article/202508181714001" target="_blank">당신도 챗GPT에게 상담받나요…커지는 심리상담 AI 시장</a></div>
+      <div class="news-item"><span class="news-src" style="background:#3B82F6">MIT 테크놀로지 리뷰</span><a href="https://www.technologyreview.kr/%EC%83%9D%EC%84%B1%ED%98%95-ai-%EC%8B%AC%EB%A6%AC-%EC%83%81%EB%8B%B4-%EC%9E%84%EC%83%81%EC%8B%9C%ED%97%98%EC%84%9C-%ED%9A%A8%EA%B3%BC-%EC%9E%85%EC%A6%9D-%ED%95%B5%EC%8B%AC%EC%9D%80-%ED%9B%88/" target="_blank">생성형 AI 심리 상담, 임상시험서 효과 입증</a></div>
+      <div class="news-item"><span class="news-src" style="background:var(--red)">헤럴드경제</span><a href="https://biz.heraldcorp.com/article/10584692" target="_blank">AI역습…당신의 일자리는 안녕한가요? 무너지는 화이트칼라</a></div>
+      <div class="news-item"><span class="news-src" style="background:#F97316">이콘밍글</span><a href="https://econmingle.com/economy/ai-youth-employment-paradox-hiring-cliff/" target="_blank">"경력직은 웃는데 신입은 웁니다"… AI 도입 후 바뀐 채용 공식</a></div>
+      <div class="news-item"><span class="news-src" style="background:#10B981">오마이뉴스</span><a href="https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003215854" target="_blank">초고령사회 돌봄 인력 붕괴 위기... AI·로봇으로 해법 찾을까</a></div>
+      <div class="news-item"><span class="news-src" style="background:var(--amber)">삼일PwC</span><a href="https://www.pwc.com/kr/ko/insights/issue-brief/ai-jobs-future.html" target="_blank">AI와 일자리의 미래</a></div>
+      <div class="news-item"><span class="news-src" style="background:#6366F1">비즈한국</span><a href="https://www.bizhankook.com/bk/article/29401" target="_blank">'민원 늘고 일자리 줄고' AI 콜센터, 누구를 위한 진화인가</a></div>
+      <div class="news-item"><span class="news-src" style="background:#EC4899">인천투데이</span><a href="https://www.incheontoday.com/news/articleView.html?idxno=301688" target="_blank">[특집] AI 시대, 사라지는 일자리와 인간의 불안한 미래</a></div>
+    </div>
+  </section>
+
+  <!-- 7: Institutions -->
+  <section class="section" id="s7">
+    <h2><span class="section-num" style="background:#06B6D4">7</span> 관련 의료기관 및 상담 서비스</h2>
+
+    <h3>무료 상담 서비스</h3>
+    <div class="resource-grid">
+      <a class="resource-card" href="https://www.129.go.kr" target="_blank">
+        <div class="resource-icon" style="background:#EFF6FF">&#x1F3E5;</div>
+        <div class="resource-info"><div class="resource-name">정신건강위기상담 전화 (1577-0199)</div><div class="resource-desc">24시간 무료 정신건강 상담. 자살예방, 우울증, 불안장애 상담.</div></div>
+        <span class="resource-link">바로가기 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://www.mentalhealth.go.kr" target="_blank">
+        <div class="resource-icon" style="background:#ECFDF5">&#x1F49A;</div>
+        <div class="resource-info"><div class="resource-name">국가정신건강정보포털</div><div class="resource-desc">정신건강 자가진단, 전국 정신건강복지센터 검색, 온라인 상담.</div></div>
+        <span class="resource-link">바로가기 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://www.work.go.kr/mentoring" target="_blank">
+        <div class="resource-icon" style="background:#FFFBEB">&#x1F4BC;</div>
+        <div class="resource-info"><div class="resource-name">고용노동부 워크넷 — 직업 상담</div><div class="resource-desc">무료 직업 심리검사, 커리어 상담, 직업전환 지원 프로그램.</div></div>
+        <span class="resource-link">바로가기 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://www.eap.or.kr" target="_blank">
+        <div class="resource-icon" style="background:#F5F3FF">&#x1F91D;</div>
+        <div class="resource-info"><div class="resource-name">근로자 심리상담(EAP) 센터</div><div class="resource-desc">직장인 대상 무료 심리상담 서비스. 스트레스, 우울, 직업 불안 상담.</div></div>
+        <span class="resource-link">바로가기 &nearr;</span>
+      </a>
+    </div>
+
+    <h3>전문 의료기관</h3>
+    <div class="resource-grid">
+      <a class="resource-card" href="https://www.snuh.org/dept/NP/index.do" target="_blank">
+        <div class="resource-icon" style="background:#FEF2F2">&#x1F3E5;</div>
+        <div class="resource-info"><div class="resource-name">서울대병원 정신건강의학과</div><div class="resource-desc">불안장애, 우울증, 적응장애 전문 진료. 인지행동치료 프로그램 운영.</div></div>
+        <span class="resource-link">바로가기 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://www.amc.seoul.kr/asan/depts/dept/deptDetail.do?deptCode=BAH" target="_blank">
+        <div class="resource-icon" style="background:#FEF2F2">&#x1F3E5;</div>
+        <div class="resource-info"><div class="resource-name">서울아산병원 정신건강의학과</div><div class="resource-desc">스트레스 클리닉, 수면 클리닉, 직장인 번아웃 전문 진료.</div></div>
+        <span class="resource-link">바로가기 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://www.samsunghospital.com/dept/main/index.do?DP_CODE=NP" target="_blank">
+        <div class="resource-icon" style="background:#FEF2F2">&#x1F3E5;</div>
+        <div class="resource-info"><div class="resource-name">삼성서울병원 정신건강의학과</div><div class="resource-desc">기분장애, 불안장애 클리닉. 온라인 자가진단 도구 제공.</div></div>
+        <span class="resource-link">바로가기 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://www.nmc.or.kr" target="_blank">
+        <div class="resource-icon" style="background:#ECFDF5">&#x1F3E5;</div>
+        <div class="resource-info"><div class="resource-name">국립정신건강센터</div><div class="resource-desc">국가 정신건강 전문기관. 무료 정신건강 검진, 재활 프로그램.</div></div>
+        <span class="resource-link">바로가기 &nearr;</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 8: Books -->
+  <section class="section" id="s8">
+    <h2><span class="section-num" style="background:#F97316">8</span> 추천 도서</h2>
+
+    <h3>심리학·정신건강</h3>
+    <div class="resource-grid">
+      <a class="resource-card" href="https://search.shopping.naver.com/book/catalog/32481756626" target="_blank">
+        <div class="resource-icon" style="background:#F5F3FF">&#x1F4D6;</div>
+        <div class="resource-info"><div class="resource-name">마음챙김 명상과 자기치유 — 존 카밧-진</div><div class="resource-desc">MBSR 창시자의 대표작. 만성 스트레스, 불안, 통증에 대한 마음챙김 접근법.</div></div>
+        <span class="resource-link">도서 정보 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://search.shopping.naver.com/book/catalog/32436007710" target="_blank">
+        <div class="resource-icon" style="background:#F5F3FF">&#x1F4D6;</div>
+        <div class="resource-info"><div class="resource-name">느낌의 발견 — 매슈 리버만</div><div class="resource-desc">사회신경과학자가 밝힌 감정과 사고의 관계. 불안을 다스리는 뇌과학적 방법.</div></div>
+        <span class="resource-link">도서 정보 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://search.shopping.naver.com/book/catalog/32466588542" target="_blank">
+        <div class="resource-icon" style="background:#F5F3FF">&#x1F4D6;</div>
+        <div class="resource-info"><div class="resource-name">죽음의 수용소에서 — 빅터 프랑클</div><div class="resource-desc">로고테라피 창시자의 자전적 기록. 극한 상황에서 삶의 의미를 찾는 법. 실존적 공허감 극복의 고전.</div></div>
+        <span class="resource-link">도서 정보 &nearr;</span>
+      </a>
+    </div>
+
+    <h3>커리어 전환·회복탄력성</h3>
+    <div class="resource-grid">
+      <a class="resource-card" href="https://search.shopping.naver.com/book/catalog/44189035618" target="_blank">
+        <div class="resource-icon" style="background:#ECFDF5">&#x1F4D6;</div>
+        <div class="resource-info"><div class="resource-name">AI 시대, 나는 이렇게 일합니다</div><div class="resource-desc">AI와 공존하는 커리어 전략. 대체되지 않는 인간 고유 역량 개발 가이드.</div></div>
+        <span class="resource-link">도서 정보 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://search.shopping.naver.com/book/catalog/32441630639" target="_blank">
+        <div class="resource-icon" style="background:#ECFDF5">&#x1F4D6;</div>
+        <div class="resource-info"><div class="resource-name">회복탄력성 — 김주환</div><div class="resource-desc">역경을 이겨내는 힘. 한국인 저자의 회복탄력성 연구와 실전 훈련법.</div></div>
+        <span class="resource-link">도서 정보 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://search.shopping.naver.com/book/catalog/32436011736" target="_blank">
+        <div class="resource-icon" style="background:#ECFDF5">&#x1F4D6;</div>
+        <div class="resource-info"><div class="resource-name">그릿 (GRIT) — 앤절라 더크워스</div><div class="resource-desc">성공의 핵심 요인은 재능이 아니라 열정과 끈기. 장기적 목표 달성을 위한 심리학적 접근.</div></div>
+        <span class="resource-link">도서 정보 &nearr;</span>
+      </a>
+    </div>
+
+    <h3>스트레스 관리·신체건강</h3>
+    <div class="resource-grid">
+      <a class="resource-card" href="https://search.shopping.naver.com/book/catalog/32490498659" target="_blank">
+        <div class="resource-icon" style="background:#FFFBEB">&#x1F4D6;</div>
+        <div class="resource-info"><div class="resource-name">스트레스의 힘 — 켈리 맥고니걸</div><div class="resource-desc">스트레스를 적으로 보지 않고 성장의 도구로 활용하는 법. TED 인기 강연 기반.</div></div>
+        <span class="resource-link">도서 정보 &nearr;</span>
+      </a>
+      <a class="resource-card" href="https://search.shopping.naver.com/book/catalog/32436294062" target="_blank">
+        <div class="resource-icon" style="background:#FFFBEB">&#x1F4D6;</div>
+        <div class="resource-info"><div class="resource-name">수면 혁명 — 아리아나 허핑턴</div><div class="resource-desc">허핑턴포스트 창업자의 수면 과학. 수면이 건강, 성과, 행복에 미치는 영향.</div></div>
+        <span class="resource-link">도서 정보 &nearr;</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 9: Emergency -->
+  <section class="section" id="s9">
+    <div class="emergency">
+      <h3>&#x1F6A8; 긴급 도움이 필요할 때</h3>
+      <p>극심한 우울감, 자해·자살 충동, 공황 발작 등을 경험하고 있다면 즉시 전문가의 도움을 받으세요. 당신은 혼자가 아닙니다.</p>
+      <div class="emergency-contacts">
+        <div class="emergency-card">
+          <div class="ec-name">자살예방상담전화</div>
+          <div class="ec-num">1393</div>
+          <div class="ec-desc">24시간 무료, 전문 상담원 연결</div>
+        </div>
+        <div class="emergency-card">
+          <div class="ec-name">정신건강위기상담전화</div>
+          <div class="ec-num">1577-0199</div>
+          <div class="ec-desc">24시간 무료, 정신건강 전문 상담</div>
+        </div>
+        <div class="emergency-card">
+          <div class="ec-name">근로자 건강센터</div>
+          <div class="ec-num">1588-6497</div>
+          <div class="ec-desc">직장인 무료 건강 상담·검진</div>
+        </div>
+        <div class="emergency-card">
+          <div class="ec-name">응급 정신의료</div>
+          <div class="ec-num">119</div>
+          <div class="ec-desc">공황발작, 자해 위험 시 즉시 연락</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>AI 리스크 &mdash; leaf-kit.github.io/airisk</p>
+  <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
+    <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
+    <a href="https://x.com/intent/post?text=AI%20%EB%A6%AC%EC%8A%A4%ED%81%AC%EC%99%80%20%EA%B1%B4%EA%B0%95%20%E2%80%94%20%EC%A7%81%EC%97%85%20%EB%B6%88%EC%95%88%EC%9D%B4%20%EA%B0%80%EC%A0%B8%EC%98%A4%EB%8A%94%20%EC%8B%AC%EC%8B%A0%20%EA%B1%B4%EA%B0%95%20%EB%AC%B8%EC%A0%9C%EC%99%80%20%EA%B4%80%EB%A6%AC%EB%B2%95%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fairisk%2Fhealth.html%0A%0A%40leafeditor%20%23AI%EB%A6%AC%EC%8A%A4%ED%81%AC%20%23%EC%A0%95%EC%8B%A0%EA%B1%B4%EA%B0%95" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+  </div>
+</footer>
+</body>
+</html>
