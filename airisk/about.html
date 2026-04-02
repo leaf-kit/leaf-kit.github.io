@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — AI 리스크</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#2563EB;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--radius:8px}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+
+    .nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:var(--text)}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0}
+    .nav-actions a{color:var(--text2);font-size:.8rem;font-weight:500;padding:.4rem .6rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:var(--primary);background:#EFF6FF;text-decoration:none}
+
+    .about-hero{text-align:center;padding:5rem 2rem;background:linear-gradient(160deg,#0F172A 0%,#1E293B 40%,#334155 100%);color:#fff;position:relative;overflow:hidden}
+    .about-hero::before{content:'';position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(239,68,68,.12) 0%,transparent 60%);pointer-events:none}
+    .about-hero h1{font-size:2.2rem;font-weight:900;opacity:0;animation:fu .7s ease forwards .2s}
+    .about-hero .tagline{font-size:1rem;color:rgba(255,255,255,.7);margin-top:.75rem;opacity:0;animation:fu .7s ease forwards .4s}
+    @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .container{max-width:900px;margin:0 auto;padding:0 2rem}
+
+    /* Vision section */
+    .vision{padding:4rem 0}
+    .vision h2{font-size:1.5rem;font-weight:800;margin-bottom:1.5rem;text-align:center}
+    .vision-text{font-size:.95rem;color:var(--text2);line-height:2;text-align:center;max-width:700px;margin:0 auto}
+
+    /* Values */
+    .values{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;padding:3rem 0}
+    .value-card{padding:2rem 1.5rem;border:1px solid var(--border);border-radius:12px;text-align:center;transition:transform .2s,box-shadow .2s}
+    .value-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.06)}
+    .value-icon{font-size:2.5rem;margin-bottom:1rem}
+    .value-title{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+    .value-desc{font-size:.84rem;color:var(--text2);line-height:1.7}
+
+    /* Core Logic */
+    .core-logic{padding:4rem 0;background:var(--surface);margin:0 -2rem;padding-left:2rem;padding-right:2rem}
+    .core-logic h2{font-size:1.5rem;font-weight:800;margin-bottom:2rem;text-align:center}
+    .logic-steps{display:flex;flex-direction:column;gap:0;max-width:700px;margin:0 auto}
+    .logic-step{display:flex;gap:1.5rem;position:relative;padding-bottom:2rem}
+    .logic-step:last-child{padding-bottom:0}
+    .logic-step::before{content:'';position:absolute;left:23px;top:48px;width:2px;height:calc(100% - 48px);background:var(--border)}
+    .logic-step:last-child::before{display:none}
+    .step-num{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1E293B,#334155);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;flex-shrink:0;z-index:1}
+    .step-content{flex:1;padding-top:.5rem}
+    .step-title{font-size:1rem;font-weight:700;margin-bottom:.3rem}
+    .step-desc{font-size:.85rem;color:var(--text2);line-height:1.7}
+
+    /* Evolution timeline */
+    .evolution{padding:4rem 0}
+    .evolution h2{font-size:1.5rem;font-weight:800;margin-bottom:2rem;text-align:center}
+    .evo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+    .evo-card{padding:1.5rem;border-radius:12px;text-align:center;color:#fff;position:relative;overflow:hidden}
+    .evo-card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(circle,rgba(255,255,255,.15) 0%,transparent 70%);pointer-events:none}
+    .evo-phase{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;opacity:.7;margin-bottom:.5rem}
+    .evo-title{font-size:1.1rem;font-weight:800}
+    .evo-desc{font-size:.78rem;margin-top:.5rem;opacity:.8;line-height:1.5}
+
+    /* Stats */
+    .about-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;padding:3rem 0}
+    .about-stat{text-align:center;padding:1.5rem}
+    .about-stat .num{font-size:2.5rem;font-weight:900;color:var(--primary);font-variant-numeric:tabular-nums}
+    .about-stat .label{font-size:.78rem;color:var(--text2);margin-top:.2rem}
+
+    /* Data source */
+    .data-source{padding:3rem 0;border-top:1px solid var(--border)}
+    .data-source h2{font-size:1.2rem;font-weight:800;margin-bottom:1.5rem}
+    .source-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.5rem}
+    .source-item{font-size:.82rem;padding:.5rem .75rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text2)}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .about-hero h1{font-size:1.6rem}
+      .values{grid-template-columns:1fr}
+      .evo-grid{grid-template-columns:repeat(2,1fr)}
+      .about-stats{grid-template-columns:repeat(2,1fr)}
+      .container{padding:0 1rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>
+    AI 리스크
+  </a>
+  <div class="nav-actions">
+    <a href="./">직업 분석</a>
+    <a href="./about.html" class="active">About</a>
+  </div>
+</nav>
+
+<section class="about-hero">
+  <h1>AI 리스크</h1>
+  <p class="tagline">단순한 도구를 넘어, 인간의 능력을 대체하고 확장하는 AI의 미래를 분석합니다</p>
+</section>
+
+<main class="container">
+
+  <section class="vision">
+    <h2>우리의 비전</h2>
+    <p class="vision-text">
+      AI는 더 이상 먼 미래의 이야기가 아닙니다. 이미 수많은 직업의 핵심 업무를 대체하고 있으며, 이 변화의 속도는 점점 빨라지고 있습니다.
+      AI 리스크는 이 변화를 외면하지 않고, 데이터와 근거에 기반하여 정확하게 분석합니다.
+      우리는 모든 사람이 AI 시대에 자신의 커리어를 주도적으로 설계할 수 있도록 돕는 것을 목표로 합니다.
+    </p>
+  </section>
+
+  <section class="values">
+    <div class="value-card">
+      <div class="value-icon">&#x1F4CA;</div>
+      <div class="value-title">데이터 기반 분석</div>
+      <div class="value-desc">감정이나 추측이 아닌, 실제 뉴스 보도와 산업 데이터를 기반으로 직업별 AI 대체 위험도를 산정합니다.</div>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">&#x1F50D;</div>
+      <div class="value-title">투명한 근거</div>
+      <div class="value-desc">모든 분석에는 출처가 명시된 뉴스 기사와 보고서가 첨부됩니다. 누구나 검증할 수 있는 투명한 분석을 지향합니다.</div>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">&#x1F680;</div>
+      <div class="value-title">실시간 업데이트</div>
+      <div class="value-desc">AI 기술은 빠르게 진화합니다. 정기적인 데이터 수집과 분석 업데이트로 최신 동향을 반영합니다.</div>
+    </div>
+  </section>
+
+  <section class="core-logic">
+    <h2>분석 방법론</h2>
+    <div class="logic-steps">
+      <div class="logic-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">데이터 수집</div>
+          <div class="step-desc">국내외 주요 매체의 AI 관련 뉴스, 산업 보고서, 기업 도입 사례를 체계적으로 수집합니다. 한국경제, 매일경제, ZDNet Korea 등 30여개 매체를 모니터링합니다.</div>
+        </div>
+      </div>
+      <div class="logic-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">AI 도구 매핑</div>
+          <div class="step-desc">60여 개의 AI 도구와 서비스를 추적하며, 각 도구가 대체할 수 있는 직업 영역을 분류합니다. LLM, 이미지 생성, RPA, 로보틱스 등 12개 카테고리를 분석합니다.</div>
+        </div>
+      </div>
+      <div class="logic-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">위험도 산정</div>
+          <div class="step-desc">기술적 대체 가능성, AI 도구 성숙도, 실제 산업 도입 속도를 종합적으로 고려하여 0~100% 스케일의 위험도를 산정합니다.</div>
+        </div>
+      </div>
+      <div class="logic-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">교차 검증</div>
+          <div class="step-desc">산정된 위험도를 실제 채용 시장 변화, 기업 인력 구조 변화와 대조하여 검증합니다. 뉴스 근거가 부족한 경우 위험도를 하향 조정합니다.</div>
+        </div>
+      </div>
+      <div class="logic-step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">공개 및 업데이트</div>
+          <div class="step-desc">분석 결과를 182개 직업, 9개 직업군으로 정리하여 공개합니다. 새로운 AI 기술 출현이나 산업 변화에 따라 주기적으로 업데이트합니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="evolution">
+    <h2>AI의 진화 단계</h2>
+    <div class="evo-grid">
+      <div class="evo-card" style="background:linear-gradient(135deg,#10B981,#059669)">
+        <div class="evo-phase">Phase 1</div>
+        <div class="evo-title">보조 도구</div>
+        <div class="evo-desc">인간의 업무를 돕는 수준. 맞춤법 검사, 자동 완성 등</div>
+      </div>
+      <div class="evo-card" style="background:linear-gradient(135deg,#F59E0B,#D97706)">
+        <div class="evo-phase">Phase 2</div>
+        <div class="evo-title">부분 자동화</div>
+        <div class="evo-desc">반복 업무를 독립적으로 수행. RPA, 문서 자동 생성 등</div>
+      </div>
+      <div class="evo-card" style="background:linear-gradient(135deg,#EF4444,#DC2626)">
+        <div class="evo-phase">Phase 3</div>
+        <div class="evo-title">핵심 대체</div>
+        <div class="evo-desc">직업의 핵심 업무를 AI가 수행. 코드 생성, 디자인, 분석 등</div>
+      </div>
+      <div class="evo-card" style="background:linear-gradient(135deg,#1E293B,#0F172A)">
+        <div class="evo-phase">Phase 4</div>
+        <div class="evo-title">완전 자율</div>
+        <div class="evo-desc">인간 개입 없이 end-to-end 수행. 자율주행, AI 에이전트 등</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-stats" id="about-stats"></section>
+
+  <section class="data-source">
+    <h2>데이터 출처</h2>
+    <div class="source-list">
+      <div class="source-item">한국경제</div>
+      <div class="source-item">매일경제</div>
+      <div class="source-item">조선일보 / 조선비즈</div>
+      <div class="source-item">중앙일보</div>
+      <div class="source-item">동아일보</div>
+      <div class="source-item">한겨레</div>
+      <div class="source-item">ZDNet Korea</div>
+      <div class="source-item">IT조선</div>
+      <div class="source-item">블로터</div>
+      <div class="source-item">전자신문</div>
+      <div class="source-item">디지털데일리</div>
+      <div class="source-item">법률신문</div>
+      <div class="source-item">메디게이트뉴스</div>
+      <div class="source-item">약사공론</div>
+      <div class="source-item">미디어오늘</div>
+      <div class="source-item">농민신문</div>
+      <div class="source-item">서울경제</div>
+      <div class="source-item">KBS뉴스</div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>AI 리스크 &mdash; leaf-kit.github.io/airisk</p>
+</footer>
+
+<script>
+async function init(){
+  const data=await fetch('data/20260402/processed/jobs_risk.json').then(r=>r.json());
+  const news=await fetch('data/20260402/sources/news_sources.json').then(r=>r.json()).catch(()=>[]);
+  const allJobs=data.categories.flatMap(c=>c.jobs);
+
+  document.getElementById('about-stats').innerHTML=`
+    <div class="about-stat"><div class="num">${allJobs.length}</div><div class="label">분석 직업 수</div></div>
+    <div class="about-stat"><div class="num">${data.categories.length}</div><div class="label">직업군</div></div>
+    <div class="about-stat"><div class="num">60+</div><div class="label">추적 AI 도구</div></div>
+    <div class="about-stat"><div class="num">${news.length}</div><div class="label">참고 뉴스 기사</div></div>
+  `;
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

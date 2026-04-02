@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI vs 인간 — 생존 게임</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0F172A;--text:#fff;--text2:rgba(255,255,255,.6);--red:#EF4444;--green:#10B981;--amber:#F59E0B;--primary:#2563EB}
+    html{font-size:16px}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow:hidden;height:100vh}
+
+    .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,23,42,.9);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.1);padding:0 2rem;height:48px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:#fff}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0}
+    .nav-actions a{color:var(--text2);font-size:.78rem;font-weight:500;padding:.35rem .5rem;border-radius:5px;white-space:nowrap;text-decoration:none}
+    .nav-actions a:hover,.nav-actions a.active{color:#fff;background:rgba(255,255,255,.1)}
+
+    /* Game container */
+    #game-container{position:fixed;top:48px;left:0;right:0;bottom:0;display:flex;flex-direction:column}
+
+    /* Start screen */
+    #start-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem}
+    #start-screen h1{font-size:2.5rem;font-weight:900;margin-bottom:.5rem}
+    #start-screen h1 span{color:var(--red)}
+    #start-screen p{color:var(--text2);font-size:.9rem;max-width:500px;margin:.5rem auto}
+    .start-btn{margin-top:2rem;padding:1rem 3rem;background:linear-gradient(135deg,var(--red),#DC2626);color:#fff;border:none;border-radius:12px;font-size:1.2rem;font-weight:800;cursor:pointer;transition:transform .2s,box-shadow .2s;font-family:inherit}
+    .start-btn:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(239,68,68,.3)}
+    .controls-hint{margin-top:1.5rem;color:var(--text2);font-size:.78rem}
+    .controls-hint kbd{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:.1rem .4rem;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.72rem}
+
+    /* Game canvas */
+    #game-canvas{flex:1;width:100%;cursor:none}
+
+    /* HUD */
+    .hud{position:fixed;top:56px;left:0;right:0;display:flex;justify-content:space-between;padding:.5rem 1.5rem;pointer-events:none;z-index:10}
+    .hud-item{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600}
+    .hud-score{color:var(--green)}
+    .hud-wave{color:var(--amber)}
+    .hud-lives{color:var(--red)}
+
+    /* Game over */
+    #gameover-screen{position:fixed;top:48px;left:0;right:0;bottom:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);z-index:50;padding:2rem}
+    #gameover-screen.active{display:flex}
+    #gameover-screen h2{font-size:2rem;font-weight:900;color:var(--red)}
+    #gameover-screen .final-score{font-size:4rem;font-weight:900;color:var(--amber);margin:1rem 0;font-family:'JetBrains Mono',monospace}
+    #gameover-screen .message{color:var(--text2);font-size:.9rem;max-width:450px;line-height:1.8}
+    .retry-btn{margin-top:1.5rem;padding:.75rem 2rem;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit}
+    .retry-btn:hover{opacity:.9}
+
+    @media(max-width:768px){
+      #start-screen h1{font-size:1.8rem}
+      .hud{padding:.3rem .75rem}
+      .hud-item{font-size:.7rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>
+    AI 리스크
+  </a>
+  <div class="nav-actions">
+    <a href="./">직업 분석</a>
+    <a href="./agents.html">AI 도구</a>
+    <a href="./game.html" class="active">게임</a>
+    <a href="./about.html">About</a>
+  </div>
+</nav>
+
+<div id="game-container">
+  <!-- Start Screen -->
+  <div id="start-screen">
+    <h1>AI <span>vs</span> 인간</h1>
+    <p>당신은 인간 노동자입니다. 사방에서 다가오는 AI 봇들을 피하며 최대한 오래 생존하세요. AI가 직업을 흡수할수록 더 빠르고 강해집니다.</p>
+    <p style="color:var(--amber);font-size:.82rem;margin-top:.5rem">직업을 잃지 않기 위한 당신의 도전이 시작됩니다.</p>
+    <button class="start-btn" onclick="startGame()">게임 시작</button>
+    <div class="controls-hint">
+      <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 또는 <kbd>방향키</kbd> 이동 &nbsp;|&nbsp; <kbd>마우스</kbd> 방향 &nbsp;|&nbsp; <kbd>클릭</kbd> 방어막
+    </div>
+  </div>
+
+  <!-- Game Canvas -->
+  <canvas id="game-canvas" style="display:none"></canvas>
+
+  <!-- HUD -->
+  <div class="hud" id="hud" style="display:none">
+    <div class="hud-item hud-score">SCORE: <span id="hud-score">0</span></div>
+    <div class="hud-item hud-wave">WAVE: <span id="hud-wave">1</span> &mdash; <span id="hud-job"></span></div>
+    <div class="hud-item hud-lives">LIVES: <span id="hud-lives">3</span></div>
+  </div>
+</div>
+
+<!-- Game Over -->
+<div id="gameover-screen">
+  <h2>GAME OVER</h2>
+  <div class="final-score" id="final-score">0</div>
+  <div class="message" id="gameover-msg"></div>
+  <button class="retry-btn" onclick="startGame()">다시 도전</button>
+</div>
+
+<script>
+const jobsForWaves=[
+  {name:'데이터입력원',ai:'RPA 봇',speed:1.5,count:5},
+  {name:'캐셔',ai:'무인 키오스크',speed:1.8,count:6},
+  {name:'콜센터상담원',ai:'AI 챗봇',speed:2.0,count:7},
+  {name:'번역가',ai:'AI 번역기',speed:2.2,count:8},
+  {name:'그래픽디자이너',ai:'Midjourney',speed:2.5,count:9},
+  {name:'회계사',ai:'회계 AI',speed:2.7,count:10},
+  {name:'기자',ai:'AI 기자',speed:3.0,count:12},
+  {name:'소프트웨어개발자',ai:'Devin',speed:3.3,count:14},
+  {name:'변호사',ai:'Harvey AI',speed:3.5,count:15},
+  {name:'의사',ai:'Med-PaLM',speed:3.8,count:18}
+];
+
+const canvas=document.getElementById('game-canvas');
+const ctx=canvas.getContext('2d');
+let W,H;
+let player,enemies,particles,shields;
+let score,lives,wave,waveTimer,gameRunning;
+let keys={},mouseX,mouseY;
+let shieldCooldown=0;
+let absorbedJobs=[];
+
+function resize(){
+  W=canvas.width=canvas.clientWidth;
+  H=canvas.height=canvas.clientHeight;
+}
+
+function startGame(){
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('gameover-screen').classList.remove('active');
+  canvas.style.display='block';
+  document.getElementById('hud').style.display='flex';
+  resize();
+
+  player={x:W/2,y:H/2,radius:14,speed:4,shieldActive:false,shieldTimer:0};
+  enemies=[];
+  particles=[];
+  shields=[];
+  score=0;
+  lives=3;
+  wave=0;
+  waveTimer=0;
+  gameRunning=true;
+  absorbedJobs=[];
+  shieldCooldown=0;
+
+  nextWave();
+  loop();
+}
+
+function nextWave(){
+  if(wave>=jobsForWaves.length){
+    // Victory - loop harder
+    wave=jobsForWaves.length-1;
+  }
+  const w=jobsForWaves[wave];
+  document.getElementById('hud-wave').textContent=wave+1;
+  document.getElementById('hud-job').textContent=`${w.name} vs ${w.ai}`;
+
+  // Spawn enemies
+  for(let i=0;i<w.count;i++){
+    setTimeout(()=>{
+      if(!gameRunning)return;
+      const edge=Math.floor(Math.random()*4);
+      let x,y;
+      if(edge===0){x=Math.random()*W;y=-20}
+      else if(edge===1){x=W+20;y=Math.random()*H}
+      else if(edge===2){x=Math.random()*W;y=H+20}
+      else{x=-20;y=Math.random()*H}
+      enemies.push({
+        x,y,radius:8+Math.random()*4,
+        speed:w.speed*(0.8+Math.random()*0.4),
+        label:w.ai,
+        color:`hsl(${Math.random()*30+350},80%,55%)`
+      });
+    },i*500);
+  }
+  waveTimer=w.count*500+5000;
+}
+
+function spawnParticles(x,y,color,count){
+  for(let i=0;i<count;i++){
+    const angle=Math.random()*Math.PI*2;
+    const speed=1+Math.random()*3;
+    particles.push({
+      x,y,
+      vx:Math.cos(angle)*speed,
+      vy:Math.sin(angle)*speed,
+      life:1,decay:0.02+Math.random()*0.03,
+      radius:1+Math.random()*2,
+      color
+    });
+  }
+}
+
+function activateShield(){
+  if(shieldCooldown>0)return;
+  player.shieldActive=true;
+  player.shieldTimer=60; // frames
+  shieldCooldown=180; // 3 seconds at 60fps
+
+  // Repel all enemies
+  enemies.forEach(e=>{
+    const dx=e.x-player.x;
+    const dy=e.y-player.y;
+    const dist=Math.sqrt(dx*dx+dy*dy)||1;
+    e.x+=dx/dist*100;
+    e.y+=dy/dist*100;
+  });
+  spawnParticles(player.x,player.y,'rgba(37,99,235,.8)',20);
+}
+
+function loop(){
+  if(!gameRunning)return;
+  requestAnimationFrame(loop);
+
+  ctx.fillStyle='#0F172A';
+  ctx.fillRect(0,0,W,H);
+
+  // Grid background
+  ctx.strokeStyle='rgba(255,255,255,.03)';
+  ctx.lineWidth=1;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+  for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+
+  // Player movement
+  let dx=0,dy=0;
+  if(keys['KeyW']||keys['ArrowUp'])dy=-1;
+  if(keys['KeyS']||keys['ArrowDown'])dy=1;
+  if(keys['KeyA']||keys['ArrowLeft'])dx=-1;
+  if(keys['KeyD']||keys['ArrowRight'])dx=1;
+  if(dx||dy){
+    const len=Math.sqrt(dx*dx+dy*dy);
+    player.x+=dx/len*player.speed;
+    player.y+=dy/len*player.speed;
+  }
+  player.x=Math.max(player.radius,Math.min(W-player.radius,player.x));
+  player.y=Math.max(player.radius,Math.min(H-player.radius,player.y));
+
+  // Shield timer
+  if(player.shieldTimer>0)player.shieldTimer--;
+  else player.shieldActive=false;
+  if(shieldCooldown>0)shieldCooldown--;
+
+  // Draw player
+  // Glow
+  const pGlow=ctx.createRadialGradient(player.x,player.y,0,player.x,player.y,30);
+  pGlow.addColorStop(0,'rgba(37,99,235,.3)');
+  pGlow.addColorStop(1,'transparent');
+  ctx.fillStyle=pGlow;
+  ctx.fillRect(player.x-30,player.y-30,60,60);
+
+  // Body
+  ctx.fillStyle=player.shieldActive?'#60A5FA':'#3B82F6';
+  ctx.beginPath();
+  ctx.arc(player.x,player.y,player.radius,0,Math.PI*2);
+  ctx.fill();
+
+  // Eyes (face toward mouse)
+  const angle=Math.atan2((mouseY||H/2)-player.y,(mouseX||W/2)-player.x);
+  const eyeDist=5;
+  ctx.fillStyle='#fff';
+  ctx.beginPath();
+  ctx.arc(player.x+Math.cos(angle-0.3)*eyeDist,player.y+Math.sin(angle-0.3)*eyeDist,2.5,0,Math.PI*2);
+  ctx.arc(player.x+Math.cos(angle+0.3)*eyeDist,player.y+Math.sin(angle+0.3)*eyeDist,2.5,0,Math.PI*2);
+  ctx.fill();
+
+  // Shield ring
+  if(player.shieldActive){
+    ctx.strokeStyle=`rgba(96,165,250,${0.5+Math.sin(Date.now()*0.01)*0.3})`;
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.arc(player.x,player.y,player.radius+8,0,Math.PI*2);
+    ctx.stroke();
+  }
+
+  // Shield cooldown indicator
+  if(shieldCooldown>0){
+    ctx.strokeStyle='rgba(255,255,255,.15)';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.arc(player.x,player.y+player.radius+14,5,0,Math.PI*2);
+    ctx.stroke();
+    ctx.strokeStyle='rgba(96,165,250,.6)';
+    ctx.beginPath();
+    ctx.arc(player.x,player.y+player.radius+14,5,-Math.PI/2,-Math.PI/2+(1-shieldCooldown/180)*Math.PI*2);
+    ctx.stroke();
+  }
+
+  // Enemies
+  enemies=enemies.filter(e=>{
+    // Move toward player
+    const edx=player.x-e.x;
+    const edy=player.y-e.y;
+    const dist=Math.sqrt(edx*edx+edy*edy)||1;
+    e.x+=edx/dist*e.speed;
+    e.y+=edy/dist*e.speed;
+
+    // Collision
+    if(dist<player.radius+e.radius){
+      if(player.shieldActive){
+        spawnParticles(e.x,e.y,e.color,8);
+        score+=10;
+        return false;
+      }
+      lives--;
+      spawnParticles(player.x,player.y,'rgba(239,68,68,.8)',15);
+      document.getElementById('hud-lives').textContent=lives;
+      if(lives<=0)gameOver();
+      // Respawn player to center
+      player.x=W/2;player.y=H/2;
+      return false;
+    }
+
+    // Draw enemy glow
+    const eGlow=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.radius*2);
+    eGlow.addColorStop(0,e.color.replace(')',',0.2)').replace('hsl','hsla'));
+    eGlow.addColorStop(1,'transparent');
+    ctx.fillStyle=eGlow;
+    ctx.fillRect(e.x-e.radius*2,e.y-e.radius*2,e.radius*4,e.radius*4);
+
+    // Draw enemy
+    ctx.fillStyle=e.color;
+    ctx.beginPath();
+    ctx.arc(e.x,e.y,e.radius,0,Math.PI*2);
+    ctx.fill();
+
+    // Enemy eye (red dot)
+    ctx.fillStyle='rgba(0,0,0,.6)';
+    const eAngle=Math.atan2(player.y-e.y,player.x-e.x);
+    ctx.beginPath();
+    ctx.arc(e.x+Math.cos(eAngle)*3,e.y+Math.sin(eAngle)*3,2,0,Math.PI*2);
+    ctx.fill();
+
+    return true;
+  });
+
+  // Particles
+  particles=particles.filter(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    p.life-=p.decay;
+    if(p.life<=0)return false;
+    ctx.globalAlpha=p.life;
+    ctx.fillStyle=p.color;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.radius*p.life,0,Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha=1;
+    return true;
+  });
+
+  // Score
+  score++;
+  document.getElementById('hud-score').textContent=score;
+
+  // Wave management
+  waveTimer-=16.67;
+  if(waveTimer<=0&&enemies.length===0){
+    absorbedJobs.push(jobsForWaves[wave].name);
+    wave++;
+    if(wave>=jobsForWaves.length){
+      gameOver(true);
+    }else{
+      nextWave();
+    }
+  }
+}
+
+function gameOver(victory){
+  gameRunning=false;
+  document.getElementById('gameover-screen').classList.add('active');
+  document.getElementById('final-score').textContent=score;
+
+  let msg;
+  if(victory){
+    msg=`<strong style="color:#10B981">축하합니다! 모든 웨이브를 돌파했습니다!</strong><br><br>
+    하지만 현실에서는... AI의 진화는 멈추지 않습니다.<br>
+    당신이 방어한 ${absorbedJobs.length}개 직업군:<br>
+    <span style="color:#F59E0B">${absorbedJobs.join(', ')}</span><br><br>
+    이 직업들은 이미 AI에 의해 변화하고 있습니다.`;
+  }else{
+    const waveName=jobsForWaves[Math.min(wave,jobsForWaves.length-1)].name;
+    msg=`<strong>Wave ${wave+1}에서 패배했습니다.</strong><br><br>
+    AI가 <strong style="color:var(--red)">${waveName}</strong>을(를) 대체하는 것을 막지 못했습니다.<br><br>
+    ${wave>0?`돌파한 직업: <span style="color:#F59E0B">${absorbedJobs.join(', ')}</span><br><br>`:''}
+    게임에서는 졌지만, 현실에서는 아직 기회가 있습니다.<br>
+    <a href="./" style="color:var(--primary)">내 직업의 AI 리스크 확인하기 &rarr;</a>`;
+  }
+  document.getElementById('gameover-msg').innerHTML=msg;
+}
+
+// Input
+document.addEventListener('keydown',e=>keys[e.code]=true);
+document.addEventListener('keyup',e=>keys[e.code]=false);
+canvas.addEventListener('mousemove',e=>{
+  const rect=canvas.getBoundingClientRect();
+  mouseX=e.clientX-rect.left;
+  mouseY=e.clientY-rect.top;
+});
+canvas.addEventListener('click',()=>activateShield());
+window.addEventListener('resize',()=>{if(gameRunning)resize()});
+</script>
+</body>
+</html>

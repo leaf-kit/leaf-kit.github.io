@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 도구 vs 직업 — AI 리스크</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#2563EB;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,.06)}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+
+    .nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:var(--text)}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0}
+    .nav-actions a{color:var(--text2);font-size:.8rem;font-weight:500;padding:.4rem .6rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:var(--primary);background:#EFF6FF;text-decoration:none}
+
+    .container{max-width:1200px;margin:0 auto;padding:2rem}
+
+    /* Hero */
+    .agents-hero{text-align:center;padding:3rem 2rem;background:linear-gradient(160deg,#0F172A,#1E293B,#334155);color:#fff;position:relative;overflow:hidden}
+    .agents-hero::before{content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(37,99,235,.1) 0%,transparent 60%);pointer-events:none}
+    .agents-hero h1{font-size:2rem;font-weight:900;opacity:0;animation:fu .6s ease forwards .2s}
+    .agents-hero p{color:rgba(255,255,255,.6);font-size:.9rem;margin-top:.5rem;opacity:0;animation:fu .6s ease forwards .4s}
+    @keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Filter tabs */
+    .filter-bar{display:flex;gap:.3rem;flex-wrap:wrap;margin:1.5rem 0;padding:.5rem;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border)}
+    .filter-btn{padding:.4rem .8rem;font-size:.78rem;font-weight:600;border:none;background:transparent;border-radius:5px;cursor:pointer;color:var(--text2);transition:all .2s}
+    .filter-btn:hover{background:#EFF6FF;color:var(--primary)}
+    .filter-btn.active{background:var(--primary);color:#fff}
+
+    /* Stats bar */
+    .agent-stats{display:flex;gap:1.5rem;justify-content:center;margin:1.5rem 0;flex-wrap:wrap}
+    .agent-stat{text-align:center}
+    .agent-stat .num{font-size:1.8rem;font-weight:900;font-family:'JetBrains Mono',monospace}
+    .agent-stat .label{font-size:.7rem;color:var(--text2)}
+
+    /* Impact meter - programmatic */
+    .impact-section{background:linear-gradient(135deg,#1E293B,#0F172A);color:#fff;border-radius:var(--radius);padding:2rem;margin:2rem 0}
+    .impact-title{font-size:1.1rem;font-weight:700;margin-bottom:1rem}
+    .impact-bars{display:flex;flex-direction:column;gap:.5rem}
+    .impact-row{display:flex;align-items:center;gap:.75rem}
+    .impact-cat{font-size:.78rem;min-width:120px;color:rgba(255,255,255,.7)}
+    .impact-bar{flex:1;height:24px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;position:relative}
+    .impact-bar-fill{height:100%;border-radius:4px;transition:width 1.5s ease;display:flex;align-items:center;padding-left:.5rem}
+    .impact-bar-text{font-size:.68rem;font-weight:600;color:#fff;white-space:nowrap}
+    .impact-val{font-size:.78rem;font-weight:700;min-width:40px;text-align:right;font-family:'JetBrains Mono',monospace}
+
+    /* Agent cards */
+    .agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:.75rem;margin:1.5rem 0}
+    .agent-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s,transform .15s;cursor:pointer}
+    .agent-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.06)}
+    .agent-card-header{padding:1rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid var(--border)}
+    .agent-cat-badge{font-size:.65rem;font-weight:600;padding:.15rem .4rem;border-radius:3px;color:#fff;white-space:nowrap}
+    .agent-name{font-size:.95rem;font-weight:700;flex:1}
+    .agent-company{font-size:.72rem;color:var(--text2)}
+    .agent-card-body{padding:1rem}
+    .agent-desc{font-size:.8rem;color:var(--text2);line-height:1.6;margin-bottom:.75rem}
+    .agent-replaces{margin-top:.5rem}
+    .agent-replaces-title{font-size:.7rem;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.02em;margin-bottom:.3rem}
+    .agent-job-tags{display:flex;flex-wrap:wrap;gap:.2rem}
+    .agent-job-tag{font-size:.68rem;padding:.12rem .35rem;border:1px solid #FECACA;background:#FEF2F2;border-radius:3px;color:#991B1B;cursor:pointer;transition:background .15s}
+    .agent-job-tag:hover{background:#FEE2E2}
+    .threat-meter{display:flex;align-items:center;gap:.5rem;margin-top:.75rem}
+    .threat-label{font-size:.7rem;color:var(--text2)}
+    .threat-bar{flex:1;height:4px;background:#E5E7EB;border-radius:2px;overflow:hidden}
+    .threat-bar-fill{height:100%;border-radius:2px}
+    .threat-val{font-size:.72rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+
+    /* Network visualization */
+    .network-section{margin:2rem 0}
+    .network-title{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+    .network-sub{font-size:.82rem;color:var(--text2);margin-bottom:1rem}
+    #network-canvas{width:100%;height:500px;background:#0F172A;border-radius:var(--radius);cursor:grab}
+    #network-canvas:active{cursor:grabbing}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .container{padding:1rem}
+      .agents-hero h1{font-size:1.5rem}
+      .agent-grid{grid-template-columns:1fr}
+      .impact-cat{min-width:80px;font-size:.7rem}
+      #network-canvas{height:350px}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>
+    AI 리스크
+  </a>
+  <div class="nav-actions">
+    <a href="./">직업 분석</a>
+    <a href="./agents.html" class="active">AI 도구</a>
+    <a href="./game.html">게임</a>
+    <a href="./about.html">About</a>
+  </div>
+</nav>
+
+<section class="agents-hero">
+  <h1>AI 도구가 대체하는 직업</h1>
+  <p>60+ AI 에이전트, 로봇, LLM이 어떤 직업을 위협하는지 분석합니다</p>
+</section>
+
+<main class="container">
+  <div class="agent-stats" id="agent-stats"></div>
+  <div class="filter-bar" id="filter-bar"></div>
+
+  <!-- Programmatic Impact Analysis -->
+  <div class="impact-section" id="impact-section">
+    <div class="impact-title">직업군별 AI 도구 침투율 (실시간 계산)</div>
+    <div class="impact-bars" id="impact-bars"></div>
+  </div>
+
+  <!-- Network Visualization -->
+  <div class="network-section">
+    <div class="network-title">AI 도구 &harr; 직업 연결 네트워크</div>
+    <div class="network-sub">마우스로 드래그하여 탐색하세요. 노드를 호버하면 연결 관계를 확인할 수 있습니다.</div>
+    <canvas id="network-canvas"></canvas>
+  </div>
+
+  <h2 style="font-size:1.1rem;font-weight:700;margin:2rem 0 .5rem" id="cards-title">전체 AI 도구</h2>
+  <div class="agent-grid" id="agent-grid"></div>
+</main>
+
+<footer class="footer">
+  <p>AI 리스크 &mdash; leaf-kit.github.io/airisk</p>
+</footer>
+
+<script>
+const agentCategories={
+  llm:{name:'LLM',color:'#8B5CF6',icon:'&#x1F9E0;'},
+  coding:{name:'코딩/개발',color:'#3B82F6',icon:'&#x1F4BB;'},
+  image:{name:'이미지/디자인',color:'#EC4899',icon:'&#x1F3A8;'},
+  video:{name:'영상/음성',color:'#F97316',icon:'&#x1F3AC;'},
+  rpa:{name:'RPA/자동화',color:'#10B981',icon:'&#x2699;'},
+  robot:{name:'Physical AI/로봇',color:'#EF4444',icon:'&#x1F916;'},
+  driving:{name:'자율주행/운송',color:'#F59E0B',icon:'&#x1F697;'},
+  medical:{name:'의료/과학',color:'#06B6D4',icon:'&#x1F3E5;'},
+  finance:{name:'금융/법률',color:'#6366F1',icon:'&#x1F4B0;'}
+};
+
+const agents=[
+  // LLM
+  {name:'ChatGPT',company:'OpenAI',cat:'llm',desc:'범용 대화형 AI, 문서 작성, 코딩, 분석. GPT-4o/GPT-5 기반',replaces:['행정사무원','카피라이터','데이터입력원','비서','총무','회계사','세무사','고객상담원'],threat:85},
+  {name:'Claude',company:'Anthropic',cat:'llm',desc:'안전한 AI 어시스턴트, 장문 분석, 코딩, 리서치. Opus/Sonnet 모델',replaces:['소프트웨어개발자','기자','변호사','재무분석가','마케팅기획자'],threat:80},
+  {name:'Gemini',company:'Google',cat:'llm',desc:'멀티모달 AI, 검색 통합, 코드 생성',replaces:['웹개발자','기자','번역가','데이터분석가'],threat:78},
+  {name:'HyperCLOVA X',company:'Naver',cat:'llm',desc:'한국어 특화 LLM, 검색/쇼핑/금융 연동',replaces:['고객상담원','콜센터상담원','카피라이터'],threat:70},
+  {name:'DeepSeek-V3',company:'DeepSeek',cat:'llm',desc:'오픈소스 LLM, 코딩/수학 특화',replaces:['소프트웨어개발자','데이터분석가'],threat:72},
+
+  // Coding
+  {name:'GitHub Copilot',company:'Microsoft/GitHub',cat:'coding',desc:'AI 코드 자동완성, 코드 리뷰, PR 요약',replaces:['소프트웨어개발자','웹개발자','QA엔지니어'],threat:82},
+  {name:'Cursor',company:'Anysphere',cat:'coding',desc:'AI 네이티브 IDE, 코드베이스 전체 이해 기반 편집',replaces:['소프트웨어개발자','웹개발자'],threat:80},
+  {name:'Claude Code',company:'Anthropic',cat:'coding',desc:'터미널 기반 AI 코딩 에이전트, 자율 코드 작성/디버깅',replaces:['소프트웨어개발자','QA엔지니어','DevOps엔지니어'],threat:83},
+  {name:'Devin',company:'Cognition',cat:'coding',desc:'자율 소프트웨어 엔지니어, 풀스택 개발 가능',replaces:['소프트웨어개발자','웹개발자','QA엔지니어'],threat:88},
+  {name:'Replit Agent',company:'Replit',cat:'coding',desc:'자연어로 앱 전체를 생성하는 AI 에이전트',replaces:['웹개발자','프론트엔드개발자'],threat:75},
+
+  // Image
+  {name:'Midjourney',company:'Midjourney',cat:'image',desc:'고품질 AI 이미지 생성, 아트 디렉션 수준 출력',replaces:['그래픽디자이너','일러스트레이터','광고디자이너'],threat:85},
+  {name:'DALL-E 3',company:'OpenAI',cat:'image',desc:'텍스트→이미지 생성, ChatGPT 통합',replaces:['그래픽디자이너','광고디자이너','일러스트레이터'],threat:80},
+  {name:'Adobe Firefly',company:'Adobe',cat:'image',desc:'크리에이티브 AI, Photoshop/Illustrator 통합',replaces:['그래픽디자이너','사진작가','영상편집자'],threat:78},
+  {name:'Figma AI',company:'Figma',cat:'image',desc:'UI 디자인 자동 생성, 레이아웃 제안',replaces:['UI/UX디자이너','웹디자이너'],threat:72},
+  {name:'Canva Magic Studio',company:'Canva',cat:'image',desc:'디자인 자동화, 프레젠테이션/SNS 이미지 생성',replaces:['광고디자이너','마케팅기획자'],threat:68},
+
+  // Video/Audio
+  {name:'Sora',company:'OpenAI',cat:'video',desc:'AI 영상 생성, 텍스트→비디오 변환',replaces:['영상편집자','PD','광고디자이너'],threat:82},
+  {name:'ElevenLabs',company:'ElevenLabs',cat:'video',desc:'AI 음성 합성/클로닝, 다국어 더빙',replaces:['성우','아나운서','통번역가'],threat:88},
+  {name:'Suno',company:'Suno',cat:'video',desc:'AI 음악 생성, 가사+멜로디+보컬 통합',replaces:['음악가/작곡가','편곡자'],threat:80},
+  {name:'Runway Gen-3',company:'Runway',cat:'video',desc:'AI 영상 편집/생성, 모션 브러시',replaces:['영상편집자','VFX아티스트'],threat:78},
+  {name:'HeyGen',company:'HeyGen',cat:'video',desc:'AI 아바타 영상 생성, 다국어 립싱크',replaces:['아나운서','성우','통번역가'],threat:75},
+
+  // RPA
+  {name:'UiPath',company:'UiPath',cat:'rpa',desc:'로봇 프로세스 자동화, 기업 업무 자동화 플랫폼',replaces:['행정사무원','데이터입력원','회계사','세무사'],threat:90},
+  {name:'Power Automate',company:'Microsoft',cat:'rpa',desc:'Office 365 연동 업무 자동화',replaces:['행정사무원','비서','총무'],threat:85},
+  {name:'Zapier',company:'Zapier',cat:'rpa',desc:'앱 간 자동화 연결, 5,000+ 앱 지원',replaces:['데이터입력원','행정사무원'],threat:78},
+  {name:'Copilot for M365',company:'Microsoft',cat:'rpa',desc:'워드/엑셀/파워포인트/팀즈 AI 어시스턴트',replaces:['행정사무원','비서','총무','재무분석가'],threat:88},
+
+  // Robot
+  {name:'Atlas',company:'Boston Dynamics',cat:'robot',desc:'이족보행 휴머노이드 로봇, 산업 현장 투입',replaces:['건설일용직','하역작업자','창고관리자'],threat:70},
+  {name:'Optimus',company:'Tesla',cat:'robot',desc:'범용 휴머노이드 로봇, 공장 조립 작업',replaces:['조립원','포장원','용접기사'],threat:75},
+  {name:'Figure 02',company:'Figure AI',cat:'robot',desc:'휴머노이드 로봇, BMW 공장 배치, OpenAI 연동',replaces:['조립원','포장원','품질검사원'],threat:78},
+  {name:'Spot',company:'Boston Dynamics',cat:'robot',desc:'사족보행 검사 로봇, 건설현장/발전소 순찰',replaces:['경비원','품질검사원','설비기술자'],threat:65},
+  {name:'Digit',company:'Agility Robotics',cat:'robot',desc:'물류 창고용 이족보행 로봇',replaces:['하역작업자','창고관리자','택배기사'],threat:68},
+
+  // Driving
+  {name:'Waymo',company:'Alphabet',cat:'driving',desc:'자율주행 택시, 미국 주요 도시 상용 운행',replaces:['택시기사','버스기사','대리기사'],threat:85},
+  {name:'Tesla FSD',company:'Tesla',cat:'driving',desc:'완전 자율주행, 개인 차량 탑재',replaces:['택시기사','화물차기사','대리기사'],threat:78},
+  {name:'Nuro',company:'Nuro',cat:'driving',desc:'무인 배달 로봇, 식료품/의약품 배송',replaces:['배달라이더','택배기사'],threat:72},
+  {name:'Plus.ai',company:'Plus.ai',cat:'driving',desc:'자율주행 트럭, 장거리 화물 운송',replaces:['화물차기사'],threat:70},
+
+  // Medical
+  {name:'Lunit INSIGHT',company:'Lunit',cat:'medical',desc:'한국 의료 AI, 흉부 X-ray/유방촬영 분석',replaces:['방사선사','영상의학전문의'],threat:75},
+  {name:'Med-PaLM 2',company:'Google',cat:'medical',desc:'의료 AI, 의학 문답/진단 보조',replaces:['의사','약사'],threat:55},
+  {name:'PathAI',company:'PathAI',cat:'medical',desc:'AI 병리학, 조직 슬라이드 분석/암 진단 보조',replaces:['병리학자','임상병리사'],threat:72},
+  {name:'AlphaFold 3',company:'DeepMind',cat:'medical',desc:'단백질/DNA/RNA 구조 예측',replaces:['연구원','생명공학자'],threat:60},
+
+  // Finance
+  {name:'Harvey AI',company:'Harvey',cat:'finance',desc:'법률 AI, 계약서 분석/법률 리서치',replaces:['변호사','법무사','법무사무원'],threat:80},
+  {name:'Bloomberg GPT',company:'Bloomberg',cat:'finance',desc:'금융 데이터 분석 특화 LLM',replaces:['재무분석가','트레이더','애널리스트'],threat:75},
+  {name:'Kensho',company:'S&P Global',cat:'finance',desc:'금융 분석/시장 예측 AI',replaces:['재무분석가','애널리스트','트레이더'],threat:78},
+  {name:'Casetext',company:'Thomson Reuters',cat:'finance',desc:'AI 법률 보조, 판례 검색/요약',replaces:['변호사','법무사','법무사무원'],threat:72}
+];
+
+let jobsData=null;
+let currentFilter='all';
+
+async function init(){
+  jobsData=await fetch('data/20260402/processed/jobs_risk.json').then(r=>r.json());
+  const allJobs=jobsData.categories.flatMap(c=>c.jobs);
+
+  // Stats
+  const totalAgents=agents.length;
+  const totalJobsAffected=new Set(agents.flatMap(a=>a.replaces)).size;
+  const avgThreat=Math.round(agents.reduce((s,a)=>s+a.threat,0)/agents.length);
+
+  document.getElementById('agent-stats').innerHTML=`
+    <div class="agent-stat"><div class="num" style="color:var(--primary)">${totalAgents}</div><div class="label">AI 도구/에이전트</div></div>
+    <div class="agent-stat"><div class="num" style="color:var(--red)">${totalJobsAffected}</div><div class="label">영향받는 직업</div></div>
+    <div class="agent-stat"><div class="num" style="color:var(--amber)">${avgThreat}%</div><div class="label">평균 위협도</div></div>
+    <div class="agent-stat"><div class="num">${Object.keys(agentCategories).length}</div><div class="label">카테고리</div></div>
+  `;
+
+  // Filters
+  const filterBar=document.getElementById('filter-bar');
+  filterBar.innerHTML=`<button class="filter-btn active" data-cat="all">전체 (${totalAgents})</button>`+
+    Object.entries(agentCategories).map(([k,v])=>{
+      const count=agents.filter(a=>a.cat===k).length;
+      return `<button class="filter-btn" data-cat="${k}">${v.name} (${count})</button>`;
+    }).join('');
+
+  filterBar.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      filterBar.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter=btn.dataset.cat;
+      renderCards();
+    };
+  });
+
+  renderImpact(allJobs);
+  renderCards();
+  renderNetwork();
+}
+
+function renderImpact(allJobs){
+  // Calculate per-category how many unique jobs each AI category threatens
+  const catImpact=Object.entries(agentCategories).map(([k,v])=>{
+    const catAgents=agents.filter(a=>a.cat===k);
+    const jobsAffected=new Set(catAgents.flatMap(a=>a.replaces));
+    // Calculate average risk of affected jobs
+    const matchedJobs=allJobs.filter(j=>jobsAffected.has(j.name));
+    const avgRisk=matchedJobs.length?Math.round(matchedJobs.reduce((s,j)=>s+j.risk,0)/matchedJobs.length):0;
+    return {key:k,...v,agents:catAgents.length,jobs:jobsAffected.size,avgRisk};
+  }).sort((a,b)=>b.jobs-a.jobs);
+
+  const maxJobs=Math.max(...catImpact.map(c=>c.jobs));
+  const bars=document.getElementById('impact-bars');
+  bars.innerHTML=catImpact.map(c=>`
+    <div class="impact-row">
+      <div class="impact-cat">${c.name}</div>
+      <div class="impact-bar">
+        <div class="impact-bar-fill" style="width:${c.jobs/maxJobs*100}%;background:${c.color}" data-width="${c.jobs/maxJobs*100}">
+          <span class="impact-bar-text">${c.agents}개 도구 &rarr; ${c.jobs}개 직업</span>
+        </div>
+      </div>
+      <div class="impact-val" style="color:${c.color}">${c.avgRisk}%</div>
+    </div>
+  `).join('');
+
+  // Animate bars
+  setTimeout(()=>{
+    bars.querySelectorAll('.impact-bar-fill').forEach(el=>{
+      const w=el.dataset.width;
+      el.style.width='0%';
+      setTimeout(()=>el.style.width=w+'%',50);
+    });
+  },100);
+}
+
+function renderCards(){
+  const grid=document.getElementById('agent-grid');
+  const filtered=currentFilter==='all'?agents:agents.filter(a=>a.cat===currentFilter);
+  const sorted=[...filtered].sort((a,b)=>b.threat-a.threat);
+
+  grid.innerHTML=sorted.map(agent=>{
+    const cat=agentCategories[agent.cat];
+    const threatColor=agent.threat>=80?'#EF4444':agent.threat>=60?'#F59E0B':'#10B981';
+    return `
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-cat-badge" style="background:${cat.color}">${cat.name}</span>
+          <span class="agent-name">${agent.name}</span>
+          <span class="agent-company">${agent.company}</span>
+        </div>
+        <div class="agent-card-body">
+          <div class="agent-desc">${agent.desc}</div>
+          <div class="agent-replaces">
+            <div class="agent-replaces-title">대체 위협 직업</div>
+            <div class="agent-job-tags">${agent.replaces.map(j=>`<span class="agent-job-tag" onclick="findJobRisk('${j}')">${j}</span>`).join('')}</div>
+          </div>
+          <div class="threat-meter">
+            <span class="threat-label">위협도</span>
+            <div class="threat-bar"><div class="threat-bar-fill" style="width:${agent.threat}%;background:${threatColor}"></div></div>
+            <span class="threat-val" style="color:${threatColor}">${agent.threat}%</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('cards-title').textContent=
+    currentFilter==='all'?`전체 AI 도구 (${sorted.length})`:
+    `${agentCategories[currentFilter].name} (${sorted.length})`;
+}
+
+function findJobRisk(jobName){
+  window.open(`./?search=${encodeURIComponent(jobName)}`,'_self');
+}
+
+// === Network Visualization ===
+function renderNetwork(){
+  const canvas=document.getElementById('network-canvas');
+  const ctx=canvas.getContext('2d');
+  let w=canvas.clientWidth,h=canvas.clientHeight;
+  canvas.width=w*2;canvas.height=h*2;
+  ctx.scale(2,2);
+
+  // Build nodes
+  const nodes=[];
+  const links=[];
+  const jobSet=new Set();
+
+  agents.forEach((a,i)=>{
+    const cat=agentCategories[a.cat];
+    nodes.push({
+      id:'a_'+i,type:'agent',label:a.name,
+      x:w*0.3+Math.random()*w*0.4,
+      y:h*0.2+Math.random()*h*0.6,
+      vx:0,vy:0,
+      color:cat.color,radius:6+a.threat*0.06
+    });
+    a.replaces.forEach(j=>{
+      if(!jobSet.has(j)){
+        jobSet.add(j);
+        // Find risk
+        let risk=50;
+        if(jobsData){
+          const found=jobsData.categories.flatMap(c=>c.jobs).find(jj=>jj.name===j);
+          if(found)risk=found.risk;
+        }
+        const rColor=risk>=86?'#991B1B':risk>=61?'#EF4444':risk>=31?'#F59E0B':'#10B981';
+        nodes.push({
+          id:'j_'+j,type:'job',label:j,
+          x:w*0.2+Math.random()*w*0.6,
+          y:h*0.1+Math.random()*h*0.8,
+          vx:0,vy:0,
+          color:rColor,radius:4+risk*0.03,risk
+        });
+      }
+      links.push({source:'a_'+i,target:'j_'+j});
+    });
+  });
+
+  let hovered=null;
+  let dragNode=null;
+  let offsetX=0,offsetY=0;
+
+  function getNode(mx,my){
+    for(let i=nodes.length-1;i>=0;i--){
+      const n=nodes[i];
+      const dx=mx-n.x,dy=my-n.y;
+      if(dx*dx+dy*dy<(n.radius+4)*(n.radius+4))return n;
+    }
+    return null;
+  }
+
+  canvas.addEventListener('mousemove',e=>{
+    const rect=canvas.getBoundingClientRect();
+    const mx=e.clientX-rect.left;
+    const my=e.clientY-rect.top;
+    if(dragNode){
+      dragNode.x=mx;dragNode.y=my;
+      dragNode.vx=0;dragNode.vy=0;
+    }else{
+      hovered=getNode(mx,my);
+      canvas.style.cursor=hovered?'pointer':'grab';
+    }
+  });
+  canvas.addEventListener('mousedown',e=>{
+    const rect=canvas.getBoundingClientRect();
+    dragNode=getNode(e.clientX-rect.left,e.clientY-rect.top);
+  });
+  canvas.addEventListener('mouseup',()=>{dragNode=null});
+  canvas.addEventListener('mouseleave',()=>{hovered=null;dragNode=null});
+
+  // Simple force simulation
+  function simulate(){
+    // Repulsion between nodes
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a=nodes[i],b=nodes[j];
+        let dx=b.x-a.x,dy=b.y-a.y;
+        let dist=Math.sqrt(dx*dx+dy*dy)||1;
+        const minDist=30;
+        if(dist<minDist){
+          const force=(minDist-dist)*0.02;
+          const fx=dx/dist*force;
+          const fy=dy/dist*force;
+          a.vx-=fx;a.vy-=fy;
+          b.vx+=fx;b.vy+=fy;
+        }
+      }
+    }
+
+    // Attraction along links
+    links.forEach(l=>{
+      const a=nodes.find(n=>n.id===l.source);
+      const b=nodes.find(n=>n.id===l.target);
+      if(!a||!b)return;
+      let dx=b.x-a.x,dy=b.y-a.y;
+      let dist=Math.sqrt(dx*dx+dy*dy)||1;
+      const targetDist=80;
+      const force=(dist-targetDist)*0.003;
+      const fx=dx/dist*force;
+      const fy=dy/dist*force;
+      a.vx+=fx;a.vy+=fy;
+      b.vx-=fx;b.vy-=fy;
+    });
+
+    // Center gravity
+    nodes.forEach(n=>{
+      if(n===dragNode)return;
+      n.vx+=(w/2-n.x)*0.0005;
+      n.vy+=(h/2-n.y)*0.0005;
+      n.vx*=0.9;n.vy*=0.9;
+      n.x+=n.vx;n.y+=n.vy;
+      n.x=Math.max(n.radius,Math.min(w-n.radius,n.x));
+      n.y=Math.max(n.radius,Math.min(h-n.radius,n.y));
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+
+    // Draw links
+    links.forEach(l=>{
+      const a=nodes.find(n=>n.id===l.source);
+      const b=nodes.find(n=>n.id===l.target);
+      if(!a||!b)return;
+      const isHighlighted=hovered&&(hovered.id===a.id||hovered.id===b.id);
+      ctx.strokeStyle=isHighlighted?'rgba(239,68,68,.4)':'rgba(255,255,255,.06)';
+      ctx.lineWidth=isHighlighted?1.5:0.5;
+      ctx.beginPath();
+      ctx.moveTo(a.x,a.y);
+      ctx.lineTo(b.x,b.y);
+      ctx.stroke();
+    });
+
+    // Draw nodes
+    nodes.forEach(n=>{
+      const isHighlighted=hovered&&(
+        hovered.id===n.id||
+        links.some(l=>(l.source===hovered.id&&l.target===n.id)||(l.target===hovered.id&&l.source===n.id))
+      );
+      const alpha=hovered?(isHighlighted?1:0.15):0.7;
+      ctx.globalAlpha=alpha;
+      ctx.fillStyle=n.color;
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,n.radius,0,Math.PI*2);
+      ctx.fill();
+
+      // Label
+      if(isHighlighted||n.radius>7){
+        ctx.font=`${n.type==='agent'?'600':'400'} ${n.type==='agent'?10:8}px Noto Sans KR`;
+        ctx.fillStyle='#fff';
+        ctx.textAlign='center';
+        ctx.fillText(n.label,n.x,n.y+n.radius+12);
+      }
+      ctx.globalAlpha=1;
+    });
+
+    // Tooltip
+    if(hovered){
+      const connectedCount=links.filter(l=>l.source===hovered.id||l.target===hovered.id).length;
+      const text=hovered.type==='agent'?
+        `${hovered.label} — ${connectedCount}개 직업 위협`:
+        `${hovered.label} — ${connectedCount}개 AI 도구가 위협 (리스크 ${hovered.risk||'?'}%)`;
+      ctx.font='500 11px Noto Sans KR';
+      const tw=ctx.measureText(text).width+16;
+      const tx=Math.min(hovered.x-tw/2,w-tw-10);
+      const ty=hovered.y-hovered.radius-28;
+      ctx.fillStyle='rgba(15,23,42,.9)';
+      ctx.beginPath();
+      ctx.roundRect(tx,ty,tw,22,4);
+      ctx.fill();
+      ctx.fillStyle='#fff';
+      ctx.textAlign='left';
+      ctx.fillText(text,tx+8,ty+15);
+    }
+
+    simulate();
+    requestAnimationFrame(draw);
+  }
+
+  // Handle resize
+  window.addEventListener('resize',()=>{
+    w=canvas.clientWidth;h=canvas.clientHeight;
+    canvas.width=w*2;canvas.height=h*2;
+    ctx.scale(2,2);
+  });
+
+  draw();
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

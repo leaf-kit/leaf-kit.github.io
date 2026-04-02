@@ -126,6 +126,15 @@
     .shock-item .shock-num.green{color:#6EE7B7}
     .shock-item .shock-label{font-size:.72rem;color:rgba(255,255,255,.7);margin-top:.15rem}
 
+    /* Collection meta */
+    .collection-meta{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-top:.75rem;opacity:0;animation:fu .6s ease forwards .65s}
+    .meta-chip{display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;color:var(--text2);background:rgba(255,255,255,.7);padding:.2rem .6rem;border-radius:2rem;border:1px solid var(--border)}
+    .meta-chip svg{width:12px;height:12px;opacity:.6}
+
+    /* Shock clickable */
+    .shock-item{cursor:pointer;border-radius:6px;padding:.75rem;transition:background .2s}
+    .shock-item:hover{background:rgba(255,255,255,.08)}
+
     /* Footer */
     .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
     .disclaimer{margin:1.5rem 0 0;padding:.75rem 1rem;background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--radius);font-size:.78rem;line-height:1.5;color:#92400E}
@@ -152,8 +161,9 @@
   </a>
   <div class="nav-actions">
     <a href="./" class="active">직업 분석</a>
-    <a href="../recruit/">리프취준랩</a>
-    <a href="../recruit/graph/">기술 그래프</a>
+    <a href="./agents.html">AI 도구</a>
+    <a href="./game.html">게임</a>
+    <a href="./about.html">About</a>
     <a href="https://x.com/leafeditor" target="_blank">Twitter</a>
   </div>
 </nav>
@@ -167,7 +177,9 @@
     <div class="hero-stat"><div class="num" id="h-total">0</div><div class="label">분석 직업</div></div>
     <div class="hero-stat"><div class="num" id="h-high" style="color:var(--red)">0</div><div class="label">고위험 직업</div></div>
     <div class="hero-stat"><div class="num" id="h-agents">0</div><div class="label">추적 AI 도구</div></div>
+    <div class="hero-stat"><div class="num" id="h-news" style="color:var(--primary)">0</div><div class="label">근거 뉴스</div></div>
   </div>
+  <div class="collection-meta" id="collection-meta"></div>
 </section>
 
 <main class="container">
@@ -244,10 +256,27 @@ async function init(){
   animateNum('h-total',allJobs.length);
   animateNum('h-high',highRisk);
   animateNum('h-agents',60);
+  animateNum('h-news',newsSources.length);
 
+  renderCollectionMeta();
   renderShock(allJobs);
   renderCategories();
   initSearch(allJobs);
+}
+
+function renderCollectionMeta(){
+  const meta=data.collection_meta;
+  if(!meta)return;
+  const collected=new Date(meta.collected_at);
+  const dateStr=`${collected.getFullYear()}.${String(collected.getMonth()+1).padStart(2,'0')}.${String(collected.getDate()).padStart(2,'0')}`;
+  const timeStr=`${String(collected.getHours()).padStart(2,'0')}:${String(collected.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('collection-meta').innerHTML=`
+    <span class="meta-chip"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg> 수집일: ${dateStr}</span>
+    <span class="meta-chip"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.828a1 1 0 101.415-1.414L11 9.586V6z" clip-rule="evenodd"/></svg> 수집 시간: ${timeStr} KST</span>
+    <span class="meta-chip"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg> 수집 ${meta.collection_count}기</span>
+    <span class="meta-chip"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg> 참고 기사: ${meta.sources_count}건</span>
+    <span class="meta-chip"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> 분석 기간: ${meta.data_period}</span>
+  `;
 }
 
 function renderShock(jobs){
@@ -258,10 +287,10 @@ function renderShock(jobs){
   const safe=jobs.filter(j=>j.risk<=30).length;
 
   document.getElementById('shock-banner').innerHTML=`
-    <div class="shock-item"><div class="shock-num red">${critical}</div><div class="shock-label">대체 진행 중인 직업</div></div>
-    <div class="shock-item"><div class="shock-num amber">${avgRisk}%</div><div class="shock-label">전체 평균 리스크</div></div>
-    <div class="shock-item"><div class="shock-num green">${safe}</div><div class="shock-label">저위험 직업</div></div>
-    <div class="shock-item"><div class="shock-num red">${top5[0].risk}%</div><div class="shock-label">최고위험: ${top5[0].name}</div></div>
+    <a class="shock-item" href="stats-critical.html" style="color:inherit;text-decoration:none"><div class="shock-num red">${critical}</div><div class="shock-label">대체 진행 중인 직업 &rarr;</div></a>
+    <a class="shock-item" href="stats-average.html" style="color:inherit;text-decoration:none"><div class="shock-num amber">${avgRisk}%</div><div class="shock-label">전체 평균 리스크 &rarr;</div></a>
+    <a class="shock-item" href="stats-safe.html" style="color:inherit;text-decoration:none"><div class="shock-num green">${safe}</div><div class="shock-label">저위험 직업 &rarr;</div></a>
+    <a class="shock-item" href="stats-highest.html" style="color:inherit;text-decoration:none"><div class="shock-num red">${top5[0].risk}%</div><div class="shock-label">최고위험: ${top5[0].name} &rarr;</div></a>
   `;
 }
 

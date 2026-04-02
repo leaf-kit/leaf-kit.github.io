@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 리스크 — 인간의 직업을 흡수하는 AI</title>
+  <meta name="description" content="AI가 인간의 직업을 어떻게 흡수하며 진화하는지 직접 확인하세요.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;height:100%;overflow-x:hidden}
+    body{font-family:'Noto Sans KR',sans-serif;background:#050510;color:#fff;line-height:1.6}
+    a{color:inherit;text-decoration:none}
+
+    /* Scroll sections */
+    .section{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;overflow:hidden;padding:2rem}
+
+    /* Phase 1: Core appears */
+    .phase1{background:radial-gradient(ellipse at center,#0a0a20 0%,#050510 100%)}
+    #core-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+    .phase1-text{position:relative;z-index:2;text-align:center;opacity:0;animation:textFade 1.5s ease 1s forwards}
+    .phase1-text h1{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#fff,#EF4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .phase1-text p{color:rgba(255,255,255,.5);font-size:1rem;margin-top:.5rem}
+
+    /* Phase 2: Jobs floating */
+    .phase2{background:#050510}
+    #absorb-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+    .phase2-text{position:relative;z-index:2;text-align:center}
+    .phase2-text h2{font-size:2rem;font-weight:800;margin-bottom:.5rem}
+    .phase2-text p{color:rgba(255,255,255,.5);font-size:.9rem}
+    .phase2-counter{font-size:4rem;font-weight:900;color:#EF4444;margin-top:1rem;font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace}
+
+    /* Phase 3: Evolved entity */
+    .phase3{background:linear-gradient(180deg,#050510 0%,#0F172A 50%,#1E293B 100%)}
+    .evolved-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem;position:relative;z-index:2}
+    .evo-stat{text-align:center;opacity:0;transform:translateY(30px)}
+    .evo-stat.visible{animation:fu .6s ease forwards}
+    .evo-stat .num{font-size:2.5rem;font-weight:900;font-family:'JetBrains Mono',monospace;background:linear-gradient(135deg,#EF4444,#F59E0B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .evo-stat .label{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:.3rem}
+    .phase3-text{position:relative;z-index:2;text-align:center}
+    .phase3-text h2{font-size:2.2rem;font-weight:900}
+    .phase3-text p{color:rgba(255,255,255,.5);font-size:.95rem;margin-top:.5rem;max-width:600px}
+
+    /* CTA */
+    .cta-section{background:linear-gradient(180deg,#1E293B,#0F172A);padding:4rem 2rem;text-align:center}
+    .cta-btn{display:inline-flex;align-items:center;gap:.5rem;padding:1rem 2.5rem;background:linear-gradient(135deg,#EF4444,#DC2626);color:#fff;border-radius:12px;font-size:1.1rem;font-weight:700;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;text-decoration:none}
+    .cta-btn:hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(239,68,68,.3);color:#fff}
+    .cta-sub{color:rgba(255,255,255,.4);font-size:.8rem;margin-top:1rem}
+
+    /* Scroll indicator */
+    .scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.3);font-size:.75rem;text-align:center;animation:bounce 2s ease infinite}
+    .scroll-hint svg{display:block;margin:0 auto .3rem;opacity:.4}
+    @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+
+    @keyframes textFade{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fu{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+    @media(max-width:768px){
+      .phase1-text h1{font-size:2rem}
+      .phase2-text h2,.phase3-text h2{font-size:1.5rem}
+      .evolved-stats{grid-template-columns:1fr;gap:1rem}
+      .phase2-counter{font-size:2.5rem}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Phase 1: The Core -->
+<section class="section phase1" id="phase1">
+  <canvas id="core-canvas"></canvas>
+  <div class="phase1-text">
+    <h1>AI RISK</h1>
+    <p>인간의 직업을 흡수하며 스스로 진화하는 AI</p>
+  </div>
+  <div class="scroll-hint">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    스크롤하여 계속
+  </div>
+</section>
+
+<!-- Phase 2: Absorbing jobs -->
+<section class="section phase2" id="phase2">
+  <canvas id="absorb-canvas"></canvas>
+  <div class="phase2-text">
+    <h2>직업이 흡수되고 있습니다</h2>
+    <p>AI 코어로 빨려 들어가는 직업들을 지켜보세요</p>
+    <div class="phase2-counter" id="absorb-count">0</div>
+  </div>
+</section>
+
+<!-- Phase 3: Evolved -->
+<section class="section phase3" id="phase3">
+  <div class="phase3-text">
+    <h2>AI는 이미 진화했습니다</h2>
+    <p>182개 직업을 분석한 결과, 절반 이상이 AI에 의해 상당 부분 자동화 가능한 것으로 나타났습니다</p>
+  </div>
+  <div class="evolved-stats" id="evolved-stats">
+    <div class="evo-stat"><div class="num" id="es-total">0</div><div class="label">분석 직업</div></div>
+    <div class="evo-stat"><div class="num" id="es-high">0</div><div class="label">고위험 직업</div></div>
+    <div class="evo-stat"><div class="num" id="es-tools">60+</div><div class="label">추적 AI 도구</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <a class="cta-btn" href="./">
+    당신의 직업은 안전한가요?
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+  </a>
+  <div class="cta-sub">182개 직업의 AI 대체 위험도를 확인하세요</div>
+</section>
+
+<script>
+// === Phase 1: Glowing AI Core ===
+(function(){
+  const canvas=document.getElementById('core-canvas');
+  const ctx=canvas.getContext('2d');
+  let w,h,particles=[];
+
+  function resize(){
+    w=canvas.width=canvas.parentElement.clientWidth;
+    h=canvas.height=canvas.parentElement.clientHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  // Core particles orbiting
+  for(let i=0;i<120;i++){
+    const angle=Math.random()*Math.PI*2;
+    const dist=30+Math.random()*180;
+    particles.push({
+      angle,dist,
+      speed:0.002+Math.random()*0.008,
+      size:1+Math.random()*2,
+      alpha:0.2+Math.random()*0.6,
+      color:Math.random()>0.7?'239,68,68':'255,255,255'
+    });
+  }
+
+  let mouse={x:w/2,y:h/2};
+  canvas.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+
+  function drawCore(){
+    ctx.clearRect(0,0,w,h);
+    const cx=w/2,cy=h/2;
+
+    // Glow
+    const glow=ctx.createRadialGradient(cx,cy,0,cx,cy,200);
+    glow.addColorStop(0,'rgba(239,68,68,.15)');
+    glow.addColorStop(.5,'rgba(239,68,68,.03)');
+    glow.addColorStop(1,'transparent');
+    ctx.fillStyle=glow;
+    ctx.fillRect(0,0,w,h);
+
+    // Inner core
+    const innerGlow=ctx.createRadialGradient(cx,cy,0,cx,cy,40);
+    innerGlow.addColorStop(0,'rgba(255,255,255,.9)');
+    innerGlow.addColorStop(.3,'rgba(239,68,68,.6)');
+    innerGlow.addColorStop(1,'transparent');
+    ctx.fillStyle=innerGlow;
+    ctx.beginPath();
+    ctx.arc(cx,cy,40,0,Math.PI*2);
+    ctx.fill();
+
+    // Mouse influence
+    const mdx=(mouse.x-cx)*0.02;
+    const mdy=(mouse.y-cy)*0.02;
+
+    // Particles
+    particles.forEach(p=>{
+      p.angle+=p.speed;
+      const x=cx+Math.cos(p.angle)*p.dist+mdx;
+      const y=cy+Math.sin(p.angle)*p.dist*0.6+mdy;
+      ctx.fillStyle=`rgba(${p.color},${p.alpha})`;
+      ctx.beginPath();
+      ctx.arc(x,y,p.size,0,Math.PI*2);
+      ctx.fill();
+    });
+
+    requestAnimationFrame(drawCore);
+  }
+  drawCore();
+})();
+
+// === Phase 2: Job Absorption ===
+(function(){
+  const canvas=document.getElementById('absorb-canvas');
+  const ctx=canvas.getContext('2d');
+  let w,h;
+  const jobNames=['회계사','개발자','디자이너','번역가','기자','약사','성우','캐셔','경비원','강사','변호사','의사','작곡가','기사','조립원','상담원','편집자','설계사','검사원','사무원','분석가','마케터','세무사','은행원','바리스타','PD','교사','간호사','농부','기술자'];
+  let floatingJobs=[];
+  let absorbed=0;
+  let coreSize=30;
+  let phase2Active=false;
+
+  function resize(){
+    w=canvas.width=canvas.parentElement.clientWidth;
+    h=canvas.height=canvas.parentElement.clientHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  function spawnJob(){
+    if(floatingJobs.length>=25)return;
+    const edge=Math.floor(Math.random()*4);
+    let x,y;
+    if(edge===0){x=Math.random()*w;y=-30}
+    else if(edge===1){x=w+30;y=Math.random()*h}
+    else if(edge===2){x=Math.random()*w;y=h+30}
+    else{x=-30;y=Math.random()*h}
+
+    floatingJobs.push({
+      x,y,
+      name:jobNames[Math.floor(Math.random()*jobNames.length)],
+      speed:0.3+Math.random()*0.7,
+      alpha:1,
+      absorbed:false
+    });
+  }
+
+  function drawAbsorb(){
+    if(!phase2Active){requestAnimationFrame(drawAbsorb);return}
+    ctx.clearRect(0,0,w,h);
+    const cx=w/2,cy=h/2;
+
+    // Growing core
+    const targetSize=30+absorbed*2;
+    coreSize+=(targetSize-coreSize)*0.05;
+
+    // Core glow
+    const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,coreSize*3);
+    grad.addColorStop(0,`rgba(239,68,68,${0.3+absorbed*0.005})`);
+    grad.addColorStop(.5,'rgba(239,68,68,.05)');
+    grad.addColorStop(1,'transparent');
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,0,w,h);
+
+    // Core
+    const coreGrad=ctx.createRadialGradient(cx,cy,0,cx,cy,coreSize);
+    coreGrad.addColorStop(0,'rgba(255,255,255,.95)');
+    coreGrad.addColorStop(.4,'rgba(239,68,68,.7)');
+    coreGrad.addColorStop(.8,'rgba(153,27,27,.4)');
+    coreGrad.addColorStop(1,'transparent');
+    ctx.fillStyle=coreGrad;
+    ctx.beginPath();
+    ctx.arc(cx,cy,coreSize,0,Math.PI*2);
+    ctx.fill();
+
+    // Spawn
+    if(Math.random()<0.08)spawnJob();
+
+    // Update jobs
+    ctx.font='600 13px Noto Sans KR';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+
+    floatingJobs=floatingJobs.filter(job=>{
+      const dx=cx-job.x;
+      const dy=cy-job.y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+
+      if(dist<coreSize+10){
+        absorbed++;
+        document.getElementById('absorb-count').textContent=absorbed;
+        return false;
+      }
+
+      const pull=Math.max(0.5,200/dist);
+      job.x+=dx/dist*job.speed*pull;
+      job.y+=dy/dist*job.speed*pull;
+
+      job.alpha=Math.min(1,dist/200);
+
+      // Draw connection line
+      if(dist<250){
+        ctx.strokeStyle=`rgba(239,68,68,${(1-dist/250)*0.3})`;
+        ctx.lineWidth=1;
+        ctx.beginPath();
+        ctx.moveTo(job.x,job.y);
+        ctx.lineTo(cx,cy);
+        ctx.stroke();
+      }
+
+      // Draw job text
+      ctx.fillStyle=`rgba(255,255,255,${job.alpha*0.8})`;
+      ctx.fillText(job.name,job.x,job.y);
+
+      return true;
+    });
+
+    requestAnimationFrame(drawAbsorb);
+  }
+  drawAbsorb();
+
+  // Intersection observer to activate
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting)phase2Active=true;
+    });
+  },{threshold:0.3});
+  obs.observe(document.getElementById('phase2'));
+})();
+
+// === Phase 3: Stats animation ===
+(function(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        document.querySelectorAll('.evo-stat').forEach((el,i)=>{
+          setTimeout(()=>el.classList.add('visible'),i*200);
+        });
+        animateNum('es-total',182);
+        animateNum('es-high',98);
+        obs.disconnect();
+      }
+    });
+  },{threshold:0.5});
+  obs.observe(document.getElementById('phase3'));
+
+  function animateNum(id,target){
+    const el=document.getElementById(id);
+    let c=0;
+    const step=Math.max(1,Math.floor(target/30));
+    const t=setInterval(()=>{
+      c+=step;
+      if(c>=target){c=target;clearInterval(t)}
+      el.textContent=c;
+    },25);
+  }
+})();
+</script>
+</body>
+</html>
