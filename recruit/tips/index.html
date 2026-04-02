@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>취준 가이드 — 리프취준랩</title>
+  <meta name="description" content="IT 취준생을 위한 면접 팁, 이력서 작성법, AI 시대 역량, 포트폴리오 전략까지 총정리">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <style>
+    .tips-hero{
+      background:linear-gradient(160deg,#fff 0%,#EFF6FF 50%,#DBEAFE 100%);
+      border-bottom:1px solid var(--c-border);padding:3rem 2rem 2.5rem;text-align:center;
+      position:relative;overflow:hidden;
+    }
+    .tips-hero::before{content:'';position:absolute;top:-40%;right:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(37,99,235,.06) 0%,transparent 70%);pointer-events:none}
+    .tips-hero h1{font-size:1.6rem;font-weight:800;opacity:0;animation:fu .6s ease forwards .15s}
+    .tips-hero .sub{color:var(--c-text2);font-size:.9rem;margin-top:.4rem;opacity:0;animation:fu .6s ease forwards .3s}
+    @keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    .toc{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin:1.5rem 0;opacity:0;animation:fu .6s ease forwards .45s}
+    .toc a{padding:.4rem .8rem;border:1px solid var(--c-border);border-radius:2rem;font-size:.8rem;font-weight:500;color:var(--c-text2);background:#fff}
+    .toc a:hover{border-color:var(--c-primary);color:var(--c-primary);text-decoration:none}
+
+    .guide-section{margin-bottom:2.5rem;scroll-margin-top:70px}
+    .guide-section h2{font-size:1.15rem;font-weight:700;margin-bottom:.25rem;display:flex;align-items:center;gap:.4rem}
+    .guide-section .section-sub{font-size:.82rem;color:var(--c-text2);margin-bottom:1rem}
+
+    .tip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:.75rem}
+    .tip-card{
+      background:#fff;border:1px solid var(--c-border);border-radius:var(--radius);
+      padding:1.1rem;box-shadow:var(--shadow);transition:box-shadow .2s,transform .2s;
+    }
+    .tip-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .tip-card h3{font-size:.92rem;font-weight:700;margin-bottom:.4rem;display:flex;align-items:center;gap:.35rem}
+    .tip-card h3 .tip-num{
+      width:22px;height:22px;border-radius:50%;background:var(--c-primary);color:#fff;
+      font-size:.7rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .tip-card p{font-size:.82rem;line-height:1.6;color:var(--c-text2)}
+    .tip-card .highlight{background:#FEF3C7;padding:.1rem .3rem;border-radius:2px;font-weight:600;color:#92400E}
+    .tip-card ul{font-size:.82rem;color:var(--c-text2);padding-left:1.1rem;margin-top:.3rem;line-height:1.7}
+
+    .big-card{
+      background:#fff;border:1px solid var(--c-border);border-radius:var(--radius);
+      padding:1.5rem;box-shadow:var(--shadow);margin-bottom:.75rem;
+    }
+    .big-card h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+    .big-card p{font-size:.84rem;line-height:1.65;color:var(--c-text2)}
+
+    .skill-roadmap{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
+    .roadmap-card{
+      background:#fff;border:1px solid var(--c-border);border-radius:var(--radius);
+      padding:1rem;box-shadow:var(--shadow);position:relative;overflow:hidden;
+    }
+    .roadmap-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:4px 0 0 4px}
+    .roadmap-card.rc-ai::before{background:#8B5CF6}
+    .roadmap-card.rc-fe::before{background:#F59E0B}
+    .roadmap-card.rc-be::before{background:#10B981}
+    .roadmap-card.rc-devops::before{background:#EF4444}
+    .roadmap-card.rc-data::before{background:#06B6D4}
+    .roadmap-card.rc-pm::before{background:#EC4899}
+    .roadmap-card h4{font-size:.9rem;font-weight:700;margin-bottom:.4rem}
+    .roadmap-card .level{font-size:.7rem;font-weight:600;padding:.1rem .35rem;border-radius:3px;display:inline-block;margin-bottom:.4rem}
+    .roadmap-card ul{font-size:.8rem;color:var(--c-text2);padding-left:1rem;line-height:1.6}
+
+    .checklist{background:#fff;border:1px solid var(--c-border);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow)}
+    .checklist h3{font-size:1rem;font-weight:700;margin-bottom:.75rem}
+    .check-item{display:flex;align-items:flex-start;gap:.5rem;padding:.4rem 0;border-bottom:1px solid var(--c-border);font-size:.84rem}
+    .check-item:last-child{border-bottom:none}
+    .check-box{width:18px;height:18px;border:2px solid var(--c-border);border-radius:4px;flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .check-box.checked{background:var(--c-primary);border-color:var(--c-primary)}
+    .check-box.checked::after{content:'';width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+    .check-label{flex:1;color:var(--c-text2)}
+    .check-label strong{color:var(--c-text)}
+
+    .quote-box{
+      background:linear-gradient(135deg,#EFF6FF,#DBEAFE);
+      border-left:4px solid var(--c-primary);border-radius:0 var(--radius) var(--radius) 0;
+      padding:1rem 1.25rem;margin:1rem 0;
+    }
+    .quote-box p{font-size:.88rem;font-weight:500;color:#1E40AF;line-height:1.6;font-style:italic}
+    .quote-box .author{font-size:.75rem;color:var(--c-text2);margin-top:.3rem;font-style:normal}
+
+    .resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.6rem}
+    .resource-card{
+      background:#fff;border:1px solid var(--c-border);border-radius:var(--radius);
+      padding:.8rem;display:flex;align-items:center;gap:.6rem;font-size:.82rem;
+      text-decoration:none;color:var(--c-text);transition:border-color .15s;
+    }
+    .resource-card:hover{border-color:var(--c-primary);text-decoration:none}
+    .resource-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .resource-card .r-name{font-weight:600}
+    .resource-card .r-desc{font-size:.72rem;color:var(--c-text2)}
+
+    .disclaimer{margin:2rem 0 0;padding:.75rem 1rem;background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--radius);font-size:.78rem;line-height:1.5;color:#92400E}
+
+    @media(max-width:768px){
+      .tip-grid{grid-template-columns:1fr}
+      .skill-roadmap{grid-template-columns:1fr}
+      .resource-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="../">
+    <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2C7 7 4 12 5 17c1 2 3 4 7 5 4-1 6-3 7-5 1-5-2-10-7-15z" stroke="#22C55E" stroke-width="1.5" fill="#22C55E" fill-opacity=".1"/><path d="M12 6v16" stroke="#22C55E" stroke-width=".8" opacity=".5"/></svg>
+    리프취준랩
+  </a>
+  <div class="nav-actions">
+    <a href="../">채용 트렌드</a>
+    <a href="../graph/">그래프 분석</a>
+    <a href="../roles/">직군 상세</a>
+    <a href="./" class="active">취준 가이드</a>
+    <a href="../about/">소개</a>
+  </div>
+</nav>
+
+<section class="tips-hero">
+  <h1>취준 가이드</h1>
+  <p class="sub">IT 취준생이 환장할 면접 팁, 이력서 전략, AI 시대 역량, 포트폴리오 가이드 총정리</p>
+</section>
+
+<main class="container">
+
+  <div class="toc">
+    <a href="#interview">면접 공략</a>
+    <a href="#resume">이력서·자소서</a>
+    <a href="#ai-era">AI 시대 역량</a>
+    <a href="#portfolio">포트폴리오</a>
+    <a href="#roadmap">직군별 로드맵</a>
+    <a href="#company-prep">기업별 준비</a>
+    <a href="#checklist">최종 체크리스트</a>
+    <a href="#resources">추천 리소스</a>
+  </div>
+
+  <!-- ============ 1. 면접 공략 ============ -->
+  <div class="guide-section" id="interview">
+    <h2><svg viewBox="0 0 20 20" fill="var(--c-primary)" width="20" height="20"><path d="M18 10c0 3.866-3.582 7-8 7a8.84 8.84 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7z"/></svg> 면접 완전 공략</h2>
+    <p class="section-sub">IT 기업 면접에서 살아남는 실전 전략</p>
+
+    <div class="tip-grid">
+      <div class="tip-card">
+        <h3><span class="tip-num">1</span> 코딩 테스트 준비</h3>
+        <p>대부분의 IT 기업은 코딩 테스트로 시작합니다. <span class="highlight">최소 3개월 전</span>부터 준비하세요.</p>
+        <ul>
+          <li>프로그래머스, 백준, LeetCode 매일 1문제 이상</li>
+          <li>자주 출제되는 유형: 그래프(BFS/DFS), DP, 이분탐색, 해시맵</li>
+          <li>네카라쿠배 기출 문제 반드시 풀어보기</li>
+          <li>시간 복잡도 분석 습관 들이기 — 면접관이 묻습니다</li>
+          <li>Python이 가장 빠르게 풀 수 있지만, 지원 직군 언어로 연습</li>
+        </ul>
+      </div>
+
+      <div class="tip-card">
+        <h3><span class="tip-num">2</span> 기술 면접 핵심</h3>
+        <p>단순 암기보다 <span class="highlight">왜(Why)를 설명</span>할 수 있어야 합니다.</p>
+        <ul>
+          <li>"이 기술을 왜 선택했나요?" — 트레이드오프를 설명</li>
+          <li>프로젝트에서 겪은 문제 → 해결 과정 → 결과를 스토리로</li>
+          <li>CS 기초: OS, 네트워크, DB, 자료구조는 반드시 복습</li>
+          <li>시스템 디자인 면접은 시니어뿐 아니라 주니어도 기초 필요</li>
+          <li>"모르겠습니다"보다 "이렇게 접근해보겠습니다"가 낫습니다</li>
+        </ul>
+      </div>
+
+      <div class="tip-card">
+        <h3><span class="tip-num">3</span> 인성·컬처핏 면접</h3>
+        <p>기술만큼 중요합니다. 특히 <span class="highlight">스타트업은 컬처핏이 당락</span>을 결정합니다.</p>
+        <ul>
+          <li>STAR 기법: 상황(S) → 과제(T) → 행동(A) → 결과(R)</li>
+          <li>"협업에서 갈등이 생기면?" — 실제 경험 기반으로 준비</li>
+          <li>지원 기업의 핵심가치/미션을 반드시 숙지</li>
+          <li>"왜 이 회사인가?" — 진정성 있는 이유가 필수</li>
+          <li>역질문 준비: "팀의 기술 스택 결정 프로세스는?" 등</li>
+        </ul>
+      </div>
+
+      <div class="tip-card">
+        <h3><span class="tip-num">4</span> 면접 실수 TOP 5</h3>
+        <p>탈락하는 사람들의 공통 패턴이 있습니다.</p>
+        <ul>
+          <li><strong>기업 리서치 안 함</strong> — 최소 IR, 기술 블로그, 최근 뉴스 확인</li>
+          <li><strong>프로젝트를 깊이 설명 못함</strong> — 본인이 한 부분만이라도 디테일하게</li>
+          <li><strong>질문 의도를 파악 못함</strong> — 잠깐 생각하는 시간을 달라고 하세요</li>
+          <li><strong>너무 긴 답변</strong> — 핵심 먼저, 보충은 요청 시에만</li>
+          <li><strong>피드백을 못 받아들이는 태도</strong> — 면접관 힌트에 유연하게 반응</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote-box" style="margin-top:1rem">
+      <p>"면접은 정답을 맞히는 시험이 아니라, 이 사람과 같이 일하고 싶은지를 확인하는 자리입니다. 기술력보다 사고 과정과 소통 능력을 더 많이 봅니다."</p>
+      <div class="author">— 네카라쿠배 출신 시니어 개발자</div>
+    </div>
+  </div>
+
+  <!-- ============ 2. 이력서·자소서 ============ -->
+  <div class="guide-section" id="resume">
+    <h2><svg viewBox="0 0 20 20" fill="var(--c-primary)" width="20" height="20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg> 이력서·자소서 전략</h2>
+    <p class="section-sub">서류 통과율을 3배 높이는 작성법</p>
+
+    <div class="tip-grid">
+      <div class="tip-card">
+        <h3><span class="tip-num">1</span> 이력서 황금 공식</h3>
+        <ul>
+          <li><strong>1장 원칙</strong> — 신입은 절대 2장 넘기지 마세요</li>
+          <li><strong>숫자로 성과 표현</strong>: "성능 개선" → "API 응답 속도 40% 개선"</li>
+          <li><strong>기술 스택 나열만 NO</strong> → 어디서 어떻게 썼는지 맥락 필수</li>
+          <li>프로젝트별로 본인 역할, 기술, 성과 3줄로 요약</li>
+          <li>GitHub 링크, 기술 블로그 URL은 반드시 포함</li>
+        </ul>
+      </div>
+
+      <div class="tip-card">
+        <h3><span class="tip-num">2</span> 자소서 — 이것만 기억</h3>
+        <ul>
+          <li><strong>"왜 이 직군?"</strong> — 개인적 동기와 성장 과정 연결</li>
+          <li><strong>"왜 이 회사?"</strong> — 기업의 기술적 도전과 본인 역량 매칭</li>
+          <li><strong>실패 경험도 OK</strong> — 실패에서 뭘 배웠는지가 핵심</li>
+          <li>추상적 표현 금지: "열정적" → "매일 새벽 5시에 사이드 프로젝트"</li>
+          <li>기업마다 커스터마이즈 — 복붙 티 나면 바로 탈락</li>
+        </ul>
+      </div>
+
+      <div class="tip-card">
+        <h3><span class="tip-num">3</span> 신입이 빠지는 함정</h3>
+        <ul>
+          <li><strong>학원/부트캠프 프로젝트만 나열</strong> → 개인 사이드 프로젝트 1개가 더 강력</li>
+          <li><strong>기술 나열 뿐</strong>: "React, Node.js, MySQL" → 실제로 뭘 만들었는지</li>
+          <li><strong>GitHub 관리 안 함</strong> → 잔디밭 + README 정리는 기본</li>
+          <li><strong>오타·맞춤법 실수</strong> → 꼼꼼함의 척도로 봅니다</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 3. AI 시대 역량 ============ -->
+  <div class="guide-section" id="ai-era">
+    <h2><svg viewBox="0 0 20 20" fill="var(--c-primary)" width="20" height="20"><path d="M13 7H7v6h6V7z"/><path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z" clip-rule="evenodd"/></svg> AI 시대, 이것만큼은 갖추자</h2>
+    <p class="section-sub">2025년, AI가 바꾼 채용 시장에서 살아남는 역량</p>
+
+    <div class="big-card">
+      <h3>개발자에게 AI가 위협일까, 기회일까?</h3>
+      <p>결론부터 말하면 <strong>기회</strong>입니다. AI가 대체하는 건 "코드를 타이핑하는 행위"이지, "무엇을 만들지 결정하고 설계하는 능력"은 오히려 더 귀해졌습니다. Copilot으로 코드를 빠르게 짜는 사람보다, <strong>Copilot이 만든 코드를 올바르게 검증하고 아키텍처를 설계하는 사람</strong>이 더 높은 연봉을 받습니다.</p>
+    </div>
+
+    <div class="tip-grid">
+      <div class="tip-card">
+        <h3><span class="tip-num">1</span> AI 도구 활용 능력</h3>
+        <p>이제 선택이 아니라 <span class="highlight">필수 역량</span>입니다.</p>
+        <ul>
+          <li><strong>GitHub Copilot</strong> — 코드 자동완성 너머, 프롬프트 엔지니어링</li>
+          <li><strong>ChatGPT/Claude</strong> — 코드 리뷰, 디버깅, 문서화 보조</li>
+          <li><strong>Cursor/Windsurf</strong> — AI 네이티브 IDE 경험</li>
+          <li>면접에서 "AI 도구 활용 경험" 질문이 급증하고 있습니다</li>
+        </ul>
+      </div>
+
+      <div class="tip-card">
+        <h3><span class="tip-num">2</span> AI를 쓸 줄 아는 개발자</h3>
+        <p>모든 직군에서 <span class="highlight">LLM API 연동 경험</span>이 차별점입니다.</p>
+        <ul>
+          <li>OpenAI API, Claude API 활용한 사이드 프로젝트</li>
+          <li>RAG(검색증강생성) 파이프라인 구축 경험</li>
+          <li>프롬프트 설계 + 평가 메트릭 이해</li>
+          <li>AI Agent 개발 (LangChain, CrewAI 등)</li>
+        </ul>
+      </div>
+
+      <div class="tip-card">
+        <h3><span class="tip-num">3</span> 대체 불가 역량</h3>
+        <p>AI가 못 하는 것에 집중하세요.</p>
+        <ul>
+          <li><strong>시스템 설계</strong> — 트래픽 100배 증가 시 어떻게 대응?</li>
+          <li><strong>문제 정의</strong> — 무엇을 만들어야 하는지 결정하는 능력</li>
+          <li><strong>코드 리뷰</strong> — AI가 짠 코드의 보안/성능 이슈 감지</li>
+          <li><strong>커뮤니케이션</strong> — 비개발자에게 기술을 설명하는 능력</li>
+          <li><strong>비즈니스 감각</strong> — 기술이 사업에 미치는 임팩트 이해</li>
+        </ul>
+      </div>
+
+      <div class="tip-card">
+        <h3><span class="tip-num">4</span> 2025년 주목 기술 스택</h3>
+        <ul>
+          <li><strong>LLM/RAG</strong> — 거의 모든 IT 기업이 도입 중</li>
+          <li><strong>Rust</strong> — 시스템 프로그래밍의 새 표준, 채용 급증</li>
+          <li><strong>Kubernetes + Platform Engineering</strong> — DevOps 진화형</li>
+          <li><strong>Edge AI</strong> — 디바이스 위에서 돌아가는 AI</li>
+          <li><strong>WebAssembly</strong> — 브라우저 성능의 한계를 넘는 기술</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 4. 포트폴리오 ============ -->
+  <div class="guide-section" id="portfolio">
+    <h2><svg viewBox="0 0 20 20" fill="var(--c-primary)" width="20" height="20"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1H6v8l4-2 4 2V6z" clip-rule="evenodd"/></svg> 포트폴리오 전략</h2>
+    <p class="section-sub">면접관이 "오, 이 사람 한번 만나보자"라고 생각하게 만드는 법</p>
+
+    <div class="tip-grid">
+      <div class="tip-card">
+        <h3><span class="tip-num">1</span> 사이드 프로젝트 1개 > 부트캠프 3개</h3>
+        <p>면접관은 <span class="highlight">직접 기획하고 끝까지 완성한 프로젝트</span>를 가장 높게 평가합니다.</p>
+        <ul>
+          <li>본인이 실제로 겪은 불편을 해결하는 서비스</li>
+          <li>배포까지 완료 (Vercel, AWS, GitHub Pages 등)</li>
+          <li>README에 기술 선택 이유, 아키텍처, 트러블슈팅 기록</li>
+          <li>사용자가 실제로 써볼 수 있는 상태가 최고</li>
+        </ul>
+      </div>
+
+      <div class="tip-card">
+        <h3><span class="tip-num">2</span> GitHub 관리법</h3>
+        <ul>
+          <li><strong>잔디밭(커밋 히스토리)</strong> — 꾸준함의 증거</li>
+          <li><strong>핀 저장소 6개</strong> — 가장 자신 있는 프로젝트로 큐레이션</li>
+          <li><strong>README</strong> — 스크린샷, 데모 링크, 기술 스택 배지 필수</li>
+          <li><strong>이슈/PR 관리</strong> — 협업 능력의 증거</li>
+          <li>오픈소스 기여 경험은 시니어급 평가를 받습니다</li>
+        </ul>
+      </div>
+
+      <div class="tip-card">
+        <h3><span class="tip-num">3</span> 기술 블로그의 힘</h3>
+        <ul>
+          <li>velog, tistory, medium 어디든 좋으니 <strong>꾸준히</strong></li>
+          <li>"배운 것 정리" 보다 "삽질 기록"이 더 매력적</li>
+          <li>주 1회 이상 포스팅 — 검색 유입으로 브랜딩 효과</li>
+          <li>면접에서 "블로그 보고 왔어요"라는 면접관도 있습니다</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5. 직군별 로드맵 ============ -->
+  <div class="guide-section" id="roadmap">
+    <h2><svg viewBox="0 0 20 20" fill="var(--c-primary)" width="20" height="20"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"/></svg> 직군별 신입 로드맵</h2>
+    <p class="section-sub">0에서 취업까지, 6개월 학습 로드맵</p>
+
+    <div class="skill-roadmap">
+      <div class="roadmap-card rc-fe">
+        <h4>Frontend Engineer</h4>
+        <span class="level" style="background:#FEF3C7;color:#B45309">6개월 플랜</span>
+        <ul>
+          <li><strong>1~2개월:</strong> HTML/CSS/JS 기초 → 반응형 웹 1개 완성</li>
+          <li><strong>3~4개월:</strong> React + TypeScript → SPA 프로젝트</li>
+          <li><strong>5개월:</strong> Next.js + 상태관리 + API 연동</li>
+          <li><strong>6개월:</strong> 배포 + 성능 최적화 + 포트폴리오 정리</li>
+        </ul>
+      </div>
+
+      <div class="roadmap-card rc-be">
+        <h4>Backend Engineer</h4>
+        <span class="level" style="background:#D1FAE5;color:#065F46">6개월 플랜</span>
+        <ul>
+          <li><strong>1~2개월:</strong> Java/Python + DB(SQL) 기초</li>
+          <li><strong>3~4개월:</strong> Spring Boot or Django + REST API 설계</li>
+          <li><strong>5개월:</strong> Docker + CI/CD + 인증/인가</li>
+          <li><strong>6개월:</strong> 부하 테스트 + 캐싱 + 배포 + 포트폴리오</li>
+        </ul>
+      </div>
+
+      <div class="roadmap-card rc-ai">
+        <h4>AI Engineer</h4>
+        <span class="level" style="background:#EDE9FE;color:#5B21B6">6개월 플랜</span>
+        <ul>
+          <li><strong>1~2개월:</strong> Python + 수학(선형대수, 확률) + NumPy/Pandas</li>
+          <li><strong>3~4개월:</strong> PyTorch + ML 기초 + 프로젝트 1개</li>
+          <li><strong>5개월:</strong> LLM 파인튜닝 + RAG 구현</li>
+          <li><strong>6개월:</strong> 논문 리뷰 + AI 서비스 배포 + 포트폴리오</li>
+        </ul>
+      </div>
+
+      <div class="roadmap-card rc-devops">
+        <h4>DevOps / SRE</h4>
+        <span class="level" style="background:#FEE2E2;color:#991B1B">6개월 플랜</span>
+        <ul>
+          <li><strong>1~2개월:</strong> Linux + 네트워크 기초 + Git</li>
+          <li><strong>3~4개월:</strong> Docker + CI/CD (GitHub Actions)</li>
+          <li><strong>5개월:</strong> Kubernetes + Terraform + AWS</li>
+          <li><strong>6개월:</strong> 모니터링 + IaC 프로젝트 + 자격증(CKA/AWS SAA)</li>
+        </ul>
+      </div>
+
+      <div class="roadmap-card rc-data">
+        <h4>Data Engineer</h4>
+        <span class="level" style="background:#ECFEFF;color:#155E75">6개월 플랜</span>
+        <ul>
+          <li><strong>1~2개월:</strong> SQL 심화 + Python + 데이터 모델링</li>
+          <li><strong>3~4개월:</strong> Spark + Airflow + ETL 파이프라인</li>
+          <li><strong>5개월:</strong> 클라우드 DW (BigQuery/Redshift)</li>
+          <li><strong>6개월:</strong> 실시간 처리(Kafka) + dbt + 포트폴리오</li>
+        </ul>
+      </div>
+
+      <div class="roadmap-card rc-pm">
+        <h4>Product Manager</h4>
+        <span class="level" style="background:#FCE7F3;color:#9D174D">6개월 플랜</span>
+        <ul>
+          <li><strong>1~2개월:</strong> SQL + 데이터 분석 + 사용자 리서치</li>
+          <li><strong>3~4개월:</strong> Figma + PRD 작성 + 애자일/스크럼</li>
+          <li><strong>5개월:</strong> A/B 테스트 + 지표 설계 + 실전 케이스 스터디</li>
+          <li><strong>6개월:</strong> 사이드 프로젝트 PM 경험 + 포트폴리오</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 6. 기업별 준비 ============ -->
+  <div class="guide-section" id="company-prep">
+    <h2><svg viewBox="0 0 20 20" fill="var(--c-primary)" width="20" height="20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"/></svg> IT 기업 유형별 준비 전략</h2>
+    <p class="section-sub">대기업, 유니콘, 스타트업 — 각각 원하는 인재상이 다릅니다</p>
+
+    <div class="tip-grid">
+      <div class="big-card">
+        <h3>대기업 (삼성, LG, SK, KT 등)</h3>
+        <p><strong>특징:</strong> 구조화된 채용 프로세스, GSAT/직무적성검사 + 코딩테스트 + 직무면접 + 임원면접</p>
+        <p style="margin-top:.4rem"><strong>준비 포인트:</strong></p>
+        <ul style="font-size:.82rem;color:var(--c-text2);padding-left:1.1rem;margin-top:.2rem;line-height:1.6">
+          <li>직무적성검사 별도 준비 (삼성 GSAT, SK SKCT 등)</li>
+          <li>전공 지식 깊이 — CS 기초 질문이 많음</li>
+          <li>조직 적응력, 협업 경험 강조</li>
+          <li>지원 부서의 최근 프로젝트/기술 블로그 숙지</li>
+        </ul>
+      </div>
+
+      <div class="big-card">
+        <h3>네카라쿠배 (네이버, 카카오, 라인, 쿠팡, 배민)</h3>
+        <p><strong>특징:</strong> 기술력 중심 채용, 코딩테스트 난이도 높음, 기술면접 2~3회</p>
+        <p style="margin-top:.4rem"><strong>준비 포인트:</strong></p>
+        <ul style="font-size:.82rem;color:var(--c-text2);padding-left:1.1rem;margin-top:.2rem;line-height:1.6">
+          <li>코딩테스트 상위 난이도(프로그래머스 Lv3~4) 대비</li>
+          <li>기술 면접에서 깊이 있는 follow-up 질문에 대비</li>
+          <li>개인 프로젝트 + 기술 블로그가 큰 가산점</li>
+          <li>각 사 기술 블로그 반드시 읽기 (네이버 D2, 카카오 Tech 등)</li>
+        </ul>
+      </div>
+
+      <div class="big-card">
+        <h3>스타트업 / 유니콘 (토스, 당근, 리디 등)</h3>
+        <p><strong>특징:</strong> 빠른 채용 프로세스, 과제 전형 많음, 컬처핏 매우 중요</p>
+        <p style="margin-top:.4rem"><strong>준비 포인트:</strong></p>
+        <ul style="font-size:.82rem;color:var(--c-text2);padding-left:1.1rem;margin-top:.2rem;line-height:1.6">
+          <li>과제 전형 — 실제 서비스 수준의 완성도 요구</li>
+          <li>"왜 대기업이 아니라 스타트업인가?" 명확한 답변</li>
+          <li>자기주도적 학습 능력, 빠른 적응력 어필</li>
+          <li>해당 서비스를 실제로 써보고 개선점을 제안할 수 있으면 강력</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 7. 최종 체크리스트 ============ -->
+  <div class="guide-section" id="checklist">
+    <h2><svg viewBox="0 0 20 20" fill="var(--c-primary)" width="20" height="20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> 취업 준비 최종 체크리스트</h2>
+    <p class="section-sub">하나씩 체크하면서 준비 상태를 점검하세요</p>
+
+    <div class="checklist" id="checklist-box"></div>
+  </div>
+
+  <!-- ============ 8. 추천 리소스 ============ -->
+  <div class="guide-section" id="resources">
+    <h2><svg viewBox="0 0 20 20" fill="var(--c-primary)" width="20" height="20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1z"/><path fill-rule="evenodd" d="M8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" clip-rule="evenodd"/></svg> 추천 리소스</h2>
+    <p class="section-sub">취준생에게 유용한 사이트와 도구</p>
+
+    <div class="resource-grid">
+      <a class="resource-card" href="https://programmers.co.kr" target="_blank">
+        <div class="resource-icon" style="background:#EFF6FF"><svg viewBox="0 0 20 20" fill="#2563EB" width="18" height="18"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></div>
+        <div><div class="r-name">프로그래머스</div><div class="r-desc">코딩테스트 준비 필수 플랫폼</div></div>
+      </a>
+      <a class="resource-card" href="https://www.acmicpc.net" target="_blank">
+        <div class="resource-icon" style="background:#ECFDF5"><svg viewBox="0 0 20 20" fill="#10B981" width="18" height="18"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838l-3.14 1.346 2.14.916a1 1 0 00.788 0l7-3a1 1 0 000-1.84l-7-3z"/></svg></div>
+        <div><div class="r-name">백준 온라인 저지</div><div class="r-desc">알고리즘 문제 풀이</div></div>
+      </a>
+      <a class="resource-card" href="https://leetcode.com" target="_blank">
+        <div class="resource-icon" style="background:#FEF3C7"><svg viewBox="0 0 20 20" fill="#F59E0B" width="18" height="18"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg></div>
+        <div><div class="r-name">LeetCode</div><div class="r-desc">글로벌 코딩 인터뷰 준비</div></div>
+      </a>
+      <a class="resource-card" href="https://github.com/JaeYeopHan/Interview_Question_for_Beginner" target="_blank">
+        <div class="resource-icon" style="background:#EDE9FE"><svg viewBox="0 0 20 20" fill="#8B5CF6" width="18" height="18"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg></div>
+        <div><div class="r-name">신입 개발자 면접 질문</div><div class="r-desc">GitHub 면접 질문 모음</div></div>
+      </a>
+      <a class="resource-card" href="https://roadmap.sh" target="_blank">
+        <div class="resource-icon" style="background:#FCE7F3"><svg viewBox="0 0 20 20" fill="#EC4899" width="18" height="18"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293z" clip-rule="evenodd"/></svg></div>
+        <div><div class="r-name">roadmap.sh</div><div class="r-desc">직군별 학습 로드맵</div></div>
+      </a>
+      <a class="resource-card" href="https://www.wanted.co.kr" target="_blank">
+        <div class="resource-icon" style="background:#DBEAFE"><svg viewBox="0 0 20 20" fill="#2563EB" width="18" height="18"><path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/></svg></div>
+        <div><div class="r-name">원티드</div><div class="r-desc">IT 채용 플랫폼</div></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>안내</strong> &nbsp;리프취준랩의 데이터는 LLM 기반 분석을 활용하여 생성되었으며, 실제와 다를 수 있습니다. 참고 자료로만 활용해 주시고, 공식 채용 페이지를 직접 확인하시기 바랍니다.
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p style="color:var(--c-text2);font-size:.78rem">리프취준랩 — 데이터 수집일 기준</p>
+</footer>
+
+<script>
+// Checklist items
+const checkItems = [
+  {cat:'기본', items:[
+    '이력서 1장 이내로 정리 완료',
+    '자기소개서 기업별 커스터마이즈',
+    'GitHub 프로필 + 핀 저장소 정리',
+    '포트폴리오 사이트 or README 완성',
+    '기술 블로그 5개 이상 포스팅',
+    'LinkedIn 프로필 영문 작성'
+  ]},
+  {cat:'기술', items:[
+    '코딩테스트 100문제 이상 풀이',
+    'CS 기초 복습 (OS, 네트워크, DB)',
+    '사이드 프로젝트 1개 이상 배포 완료',
+    'Git 커밋 메시지 컨벤션 숙지',
+    'AI 도구(Copilot/ChatGPT) 활용 경험'
+  ]},
+  {cat:'면접', items:[
+    '기술 면접 예상 질문 30개 답변 준비',
+    '인성 면접 STAR 기법 경험 5개 정리',
+    '지원 기업 기술 블로그 읽기',
+    '지원 기업 최근 뉴스 3건 이상 파악',
+    '역질문 3개 이상 준비',
+    '모의 면접 최소 2회 진행'
+  ]}
+];
+
+const box = document.getElementById('checklist-box');
+checkItems.forEach(group=>{
+  box.innerHTML += `<h3 style="margin-top:1rem;margin-bottom:.5rem;font-size:.85rem;color:var(--c-primary)">${group.cat}</h3>`;
+  group.items.forEach(item=>{
+    box.innerHTML += `
+      <div class="check-item">
+        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+        <div class="check-label">${item}</div>
+      </div>`;
+  });
+});
+</script>
+</body>
+</html>
