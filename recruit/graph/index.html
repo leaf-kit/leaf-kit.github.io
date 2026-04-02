@@ -392,6 +392,14 @@ function openPanel(d, nodes, edges){
         <div class="sp-mini-graph" id="mini-graph"></div>
       </div>
 
+      <div class="sp-section">
+        <h4>채용 사이트에서 검색</h4>
+        <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.3rem">
+          <a href="https://www.saramin.co.kr/zf_user/search?searchword=${encodeURIComponent(d.label)}" target="_blank" style="font-size:.75rem;padding:.25rem .45rem;border:1px solid var(--c-border);border-radius:4px;color:var(--c-text2);text-decoration:none"><span style="font-weight:600;color:#0066FF">사람인</span> ↗</a>
+          <a href="https://www.jobkorea.co.kr/Search/?stext=${encodeURIComponent(d.label)}" target="_blank" style="font-size:.75rem;padding:.25rem .45rem;border:1px solid var(--c-border);border-radius:4px;color:var(--c-text2);text-decoration:none"><span style="font-weight:600;color:#00A13A">잡코리아</span> ↗</a>
+        </div>
+      </div>
+
       <div style="margin-top:1rem">
         <a href="../roles/" class="toolbar-btn" style="display:inline-block;text-decoration:none;text-align:center;padding:.4rem .8rem">해당 기술 직군 보기</a>
       </div>
@@ -401,16 +409,44 @@ function openPanel(d, nodes, edges){
   } else if(d.type==='company'){
     const connectedTechIds = edges.filter(e=>(e.source.id||e.source)===d.id).map(e=>e.target.id||e.target);
     const connectedTechs = nodes.filter(n=>connectedTechIds.includes(n.id));
+    const compDesc = graphData.company_descriptions?.[d.id] || {};
+    const searchName = encodeURIComponent(compDesc.nameKr || d.label);
 
     content.innerHTML = `
       <button class="sp-close" onclick="closePanel()">&times;</button>
-      <div class="sp-title">${d.label}</div>
-      <span class="sp-category" style="background:${catColors.company}">${d.region==='korea'?'한국':'글로벌'}</span>
+      <div class="sp-title">${d.label} ${compDesc.nameKr&&compDesc.nameKr!==d.label?'<span style="font-weight:400;color:var(--c-text2);font-size:.85rem">('+compDesc.nameKr+')</span>':''}</div>
+      <span class="sp-category" style="background:${catColors.company}">${d.region==='korea'?'한국':'글로벌'}${compDesc.founded?' · 설립 '+compDesc.founded:''}</span>
+
+      ${compDesc.business?`<div class="sp-section"><h4>기업 소개</h4><p class="sp-desc">${compDesc.business}</p></div>`:''}
+
+      ${compDesc.history?`<div class="sp-section"><h4>기업 연혁</h4><p class="sp-desc">${compDesc.history}</p></div>`:''}
+
+      ${compDesc.keyProducts?`<div class="sp-section"><h4>주요 제품·서비스</h4><div class="sp-tags">${compDesc.keyProducts.map(p=>`<span class="tag" data-cat="Dev">${p}</span>`).join('')}</div></div>`:''}
+
+      ${compDesc.techFocus?`<div class="sp-section"><h4>기술 방향</h4><p class="sp-desc">${compDesc.techFocus}</p></div>`:''}
 
       <div class="sp-section">
         <h4>채용 현황</h4>
         <p class="sp-meta">채용 공고: <strong>${d.openRoles||0}</strong>건</p>
         ${d.marketCap?`<p class="sp-meta">시가총액: ${d.marketCap}</p>`:''}
+      </div>
+
+      <div class="sp-section">
+        <h4>취업 연계 사이트</h4>
+        <div style="display:flex;flex-direction:column;gap:.3rem;margin-top:.3rem">
+          <a href="https://www.saramin.co.kr/zf_user/search?searchword=${searchName}" target="_blank" style="font-size:.8rem;padding:.3rem .5rem;border:1px solid var(--c-border);border-radius:4px;color:var(--c-text2);text-decoration:none;display:flex;align-items:center;gap:.3rem">
+            <span style="font-weight:600;color:#0066FF">사람인</span> ${compDesc.nameKr||d.label} 채용공고
+            <span style="margin-left:auto;font-size:.7rem">↗</span>
+          </a>
+          <a href="https://www.jobkorea.co.kr/Search/?stext=${searchName}" target="_blank" style="font-size:.8rem;padding:.3rem .5rem;border:1px solid var(--c-border);border-radius:4px;color:var(--c-text2);text-decoration:none;display:flex;align-items:center;gap:.3rem">
+            <span style="font-weight:600;color:#00A13A">잡코리아</span> ${compDesc.nameKr||d.label} 채용공고
+            <span style="margin-left:auto;font-size:.7rem">↗</span>
+          </a>
+          <a href="https://www.jobplanet.co.kr/search?query=${searchName}" target="_blank" style="font-size:.8rem;padding:.3rem .5rem;border:1px solid var(--c-border);border-radius:4px;color:var(--c-text2);text-decoration:none;display:flex;align-items:center;gap:.3rem">
+            <span style="font-weight:600;color:#00C362">잡플래닛</span> ${compDesc.nameKr||d.label} 기업리뷰·연봉
+            <span style="margin-left:auto;font-size:.7rem">↗</span>
+          </a>
+        </div>
       </div>
 
       <div class="sp-section">

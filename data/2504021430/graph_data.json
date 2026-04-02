@@ -807,5 +807,257 @@
       "learningDifficulty": "high",
       "avgSalaryRange": "5,500만~10,000만원"
     }
+  },
+  "company_descriptions": {
+    "microsoft": {
+      "name": "Microsoft",
+      "nameKr": "마이크로소프트",
+      "founded": "1975년",
+      "hq": "Redmond, Washington, USA",
+      "business": "클라우드(Azure), 생산성 소프트웨어(Microsoft 365), AI(Copilot/OpenAI 파트너십), 게임(Xbox/Activision), 개발도구(VS Code/GitHub) 등 글로벌 IT 전 분야를 아우르는 빅테크 기업입니다. 엔터프라이즈 소프트웨어 시장에서 압도적 점유율을 보유하고 있습니다.",
+      "history": "1975년 빌 게이츠와 폴 앨런이 창업. Windows OS로 PC 시대를 열었고, Office 제품군으로 생산성 소프트웨어 시장을 장악했습니다. 사티아 나델라 취임(2014) 이후 클라우드·AI 중심으로 대전환에 성공하여 시가총액 3조 달러를 돌파했습니다.",
+      "keyProducts": ["Azure", "Microsoft 365", "Copilot", "GitHub", "VS Code", "Teams", "Xbox", "Windows"],
+      "techFocus": "AI를 전 제품에 통합하는 Copilot 전략과 OpenAI 파트너십을 통한 AI 시대 주도권 확보에 집중하고 있습니다."
+    },
+    "google": {
+      "name": "Google (Alphabet)",
+      "nameKr": "구글 (알파벳)",
+      "founded": "1998년",
+      "hq": "Mountain View, California, USA",
+      "business": "검색 엔진, 온라인 광고, 클라우드(GCP), AI(Gemini/DeepMind), 모바일 OS(Android), 유튜브 등을 운영하는 글로벌 빅테크 기업입니다. 전 세계 검색 시장의 90% 이상을 점유하며, AI 연구에서도 최전선에 있습니다.",
+      "history": "1998년 래리 페이지와 세르게이 브린이 스탠퍼드대에서 창업. 검색 엔진으로 시작하여 광고 사업으로 급성장했습니다. 2015년 지주회사 Alphabet으로 재편하였으며, DeepMind 인수(2014)와 Transformer 논문 발표(2017) 등 AI 분야를 선도하고 있습니다.",
+      "keyProducts": ["Google Search", "YouTube", "Android", "Google Cloud", "Gemini", "Chrome", "Gmail", "Kubernetes"],
+      "techFocus": "Gemini 모델 중심의 AI 통합 전략과 검색·클라우드·모바일 전 영역에서의 AI 네이티브 전환을 추진하고 있습니다."
+    },
+    "amazon": {
+      "name": "Amazon",
+      "nameKr": "아마존",
+      "founded": "1994년",
+      "hq": "Seattle, Washington, USA",
+      "business": "세계 최대 이커머스 플랫폼이자 클라우드 서비스(AWS) 1위 사업자입니다. AWS는 전 세계 클라우드 시장 점유율 1위를 유지하고 있으며, 물류·AI·스트리밍 등 다양한 분야로 사업을 확장하고 있습니다.",
+      "history": "1994년 제프 베조스가 온라인 서점으로 창업. 이커머스에서 출발하여 2006년 AWS를 출시하며 클라우드 시대를 개척했습니다. 현재 앤디 재시 CEO 하에 AI 서비스(Bedrock, Q) 강화와 물류 자동화에 투자를 집중하고 있습니다.",
+      "keyProducts": ["AWS", "Amazon.com", "Prime Video", "Alexa", "Bedrock", "Lambda", "S3", "EC2"],
+      "techFocus": "AWS 기반 생성형 AI 서비스(Bedrock) 확대와 자체 AI 칩(Trainium/Inferentia) 개발로 AI 인프라 경쟁력을 강화하고 있습니다."
+    },
+    "meta": {
+      "name": "Meta Platforms",
+      "nameKr": "메타",
+      "founded": "2004년",
+      "hq": "Menlo Park, California, USA",
+      "business": "Facebook, Instagram, WhatsApp, Threads 등 소셜 미디어 플랫폼을 운영하며, 오픈소스 AI(Llama) 및 메타버스(Reality Labs) 사업을 추진하고 있습니다. 글로벌 소셜 미디어 사용자 수 1위 기업입니다.",
+      "history": "2004년 마크 저커버그가 하버드대 기숙사에서 Facebook으로 창업. 인스타그램(2012), 왓츠앱(2014) 인수로 소셜 제국을 구축했습니다. 2021년 사명을 Meta로 변경하며 메타버스에 투자했으나, 현재는 AI(Llama 모델) 개발에 전사적 역량을 집중하고 있습니다.",
+      "keyProducts": ["Facebook", "Instagram", "WhatsApp", "Threads", "Llama", "PyTorch", "React", "Quest"],
+      "techFocus": "오픈소스 LLM(Llama) 생태계 확장과 AI 기반 광고 최적화, 메타버스 기기(Quest) 개발을 병행하고 있습니다."
+    },
+    "apple": {
+      "name": "Apple",
+      "nameKr": "애플",
+      "founded": "1976년",
+      "hq": "Cupertino, California, USA",
+      "business": "iPhone, Mac, iPad 등 하드웨어와 iOS/macOS 소프트웨어 생태계를 운영하는 기업입니다. App Store, Apple Music, iCloud 등 서비스 사업이 빠르게 성장하고 있으며, Apple Silicon 자체 칩 설계로 하드웨어·소프트웨어 통합 전략을 추구합니다.",
+      "history": "1976년 스티브 잡스, 스티브 워즈니악이 창업. 매킨토시로 PC 혁명을 이끌었고, 2007년 아이폰 출시로 스마트폰 시대를 열었습니다. 팀 쿡 CEO 하에 서비스 사업을 확대하고 있으며, 2020년부터 자체 설계 Apple Silicon 칩으로 전환을 완료했습니다.",
+      "keyProducts": ["iPhone", "Mac", "iPad", "Apple Watch", "Apple Silicon", "iOS", "App Store", "Xcode"],
+      "techFocus": "Apple Intelligence 브랜드 하에 온디바이스 AI를 강화하며, 개인정보 보호 중심의 AI 전략을 전개하고 있습니다."
+    },
+    "nvidia": {
+      "name": "NVIDIA",
+      "nameKr": "엔비디아",
+      "founded": "1993년",
+      "hq": "Santa Clara, California, USA",
+      "business": "GPU(그래픽 처리 장치) 설계 전문 기업으로, AI 학습 및 추론용 가속기 시장을 사실상 독점하고 있습니다. 데이터센터 GPU, 자율주행 플랫폼, 로보틱스, 옴니버스 등 AI 인프라 전반을 아우릅니다.",
+      "history": "1993년 젠슨 황이 공동 창업. 게이밍 GPU로 성장한 후, CUDA 플랫폼(2006)을 통해 범용 GPU 컴퓨팅 시대를 열었습니다. AI 붐으로 H100/B200 등 데이터센터 GPU 수요가 폭발하며 시가총액 2.8조 달러의 AI 시대 핵심 기업이 되었습니다.",
+      "keyProducts": ["H100", "B200", "CUDA", "TensorRT", "Drive", "Omniverse", "DGX", "Jetson"],
+      "techFocus": "차세대 AI 가속기(Blackwell 아키텍처)와 AI 추론 최적화, 로보틱스·자율주행 플랫폼 확장에 집중하고 있습니다."
+    },
+    "openai": {
+      "name": "OpenAI",
+      "nameKr": "오픈AI",
+      "founded": "2015년",
+      "hq": "San Francisco, California, USA",
+      "business": "GPT 시리즈, ChatGPT, DALL-E 등 최첨단 생성형 AI 모델을 개발·서비스하는 AI 연구 기업입니다. API를 통해 전 세계 개발자와 기업에 AI 모델을 제공하며, AGI(범용 인공지능) 달성을 목표로 합니다.",
+      "history": "2015년 샘 알트만, 일론 머스크 등이 비영리 AI 연구소로 설립. GPT-2(2019), GPT-3(2020)로 주목받았고, 2022년 ChatGPT 출시로 생성형 AI 열풍을 촉발했습니다. Microsoft로부터 130억 달러 이상 투자를 유치하며 AI 업계를 이끌고 있습니다.",
+      "keyProducts": ["ChatGPT", "GPT-4o", "DALL-E", "Whisper", "Codex", "OpenAI API", "Sora"],
+      "techFocus": "GPT 시리즈 모델의 지속적 성능 향상과 멀티모달 AI, AI 에이전트 기능 개발에 주력하고 있습니다."
+    },
+    "anthropic": {
+      "name": "Anthropic",
+      "nameKr": "앤스로픽",
+      "founded": "2021년",
+      "hq": "San Francisco, California, USA",
+      "business": "Claude AI 모델을 개발하는 AI 안전 연구 기업입니다. 안전하고 유용한 AI 시스템 구축을 핵심 미션으로 삼으며, Claude API를 통해 기업·개발자에게 AI 서비스를 제공합니다.",
+      "history": "2021년 OpenAI 출신 다리오 아모데이, 다니엘라 아모데이 등이 설립. AI 안전 연구를 중심에 두고 Constitutional AI 등 새로운 정렬 기법을 개발했습니다. Google, Amazon 등으로부터 대규모 투자를 유치하며 빠르게 성장하고 있습니다.",
+      "keyProducts": ["Claude", "Claude API", "Claude Code", "Constitutional AI"],
+      "techFocus": "AI 안전성과 유용성을 동시에 추구하는 Constitutional AI 연구와 장문 컨텍스트 처리, 코딩 능력 강화에 집중하고 있습니다."
+    },
+    "netflix": {
+      "name": "Netflix",
+      "nameKr": "넷플릭스",
+      "founded": "1997년",
+      "hq": "Los Gatos, California, USA",
+      "business": "세계 최대 OTT(스트리밍) 서비스 기업으로, 2억 명 이상의 글로벌 가입자를 보유하고 있습니다. 자체 오리지널 콘텐츠 제작과 개인화 추천 알고리즘 기술로 유명합니다.",
+      "history": "1997년 리드 헤이스팅스가 DVD 대여 서비스로 창업. 2007년 스트리밍 서비스로 전환하며 미디어 산업을 혁신했습니다. Netflix Prize(2006) 등 추천 알고리즘 기술 경진대회를 통해 ML 기술 발전에도 기여했으며, 마이크로서비스 아키텍처의 선구자로도 유명합니다.",
+      "keyProducts": ["Netflix Streaming", "Netflix Originals", "Netflix Games"],
+      "techFocus": "AI 기반 콘텐츠 추천 고도화, 광고 지원 요금제 최적화, 게임 사업 확장에 집중하고 있습니다."
+    },
+    "salesforce": {
+      "name": "Salesforce",
+      "nameKr": "세일즈포스",
+      "founded": "1999년",
+      "hq": "San Francisco, California, USA",
+      "business": "클라우드 기반 CRM(고객 관계 관리) 시장의 글로벌 1위 기업입니다. 영업, 마케팅, 서비스, 커머스 등 비즈니스 프로세스 전반을 지원하는 SaaS 플랫폼을 제공합니다.",
+      "history": "1999년 마크 베니오프가 창업하여 SaaS(서비스형 소프트웨어) 비즈니스 모델을 대중화했습니다. Slack(2021), Tableau(2019), MuleSoft(2018) 등 대형 인수로 플랫폼을 확장했으며, Agentforce 브랜드로 AI 에이전트 시장에 진출했습니다.",
+      "keyProducts": ["Sales Cloud", "Service Cloud", "Slack", "Tableau", "Einstein AI", "Agentforce"],
+      "techFocus": "Agentforce 기반 AI 에이전트 플랫폼 구축과 CRM 전 영역에 생성형 AI 통합을 추진하고 있습니다."
+    },
+    "samsung": {
+      "name": "Samsung Electronics",
+      "nameKr": "삼성전자",
+      "founded": "1969년",
+      "hq": "수원, 경기도, 대한민국",
+      "business": "반도체(메모리/파운드리), 스마트폰(갤럭시), 디스플레이, 가전 등을 생산하는 대한민국 최대 IT 기업입니다. 메모리 반도체 세계 1위, 스마트폰 출하량 세계 1위를 기록하고 있습니다.",
+      "history": "1969년 삼성전자공업으로 설립. 1990년대 메모리 반도체 세계 1위에 올랐고, 2000년대 갤럭시 시리즈로 스마트폰 시장을 석권했습니다. 현재 HBM(고대역폭 메모리), 파운드리, 온디바이스 AI 등 차세대 기술에 대규모 투자를 진행하고 있습니다.",
+      "keyProducts": ["Galaxy 시리즈", "Exynos", "HBM", "OLED 디스플레이", "Tizen", "Samsung AI", "Galaxy AI"],
+      "techFocus": "AI 반도체(HBM/NPU), 온디바이스 AI(Galaxy AI), 파운드리 경쟁력 강화에 집중하고 있습니다."
+    },
+    "sk-hynix": {
+      "name": "SK hynix",
+      "nameKr": "SK하이닉스",
+      "founded": "1983년",
+      "hq": "이천, 경기도, 대한민국",
+      "business": "DRAM, NAND Flash 등 메모리 반도체를 생산하는 글로벌 반도체 기업입니다. 특히 AI 서버용 HBM(고대역폭 메모리) 시장에서 세계 1위를 차지하며 AI 붐의 최대 수혜 기업으로 부상했습니다.",
+      "history": "1983년 현대전자로 설립되어 2001년 하이닉스반도체로 독립, 2012년 SK그룹에 인수되었습니다. NVIDIA와의 HBM 협력으로 AI 시대 핵심 공급업체로 자리잡았으며, 2025년 HBM4 양산을 준비하고 있습니다.",
+      "keyProducts": ["HBM3E", "DDR5", "NAND Flash", "LPDDR5X", "CXL 메모리"],
+      "techFocus": "차세대 HBM4 개발과 AI 데이터센터용 고성능 메모리 솔루션 확대에 집중하고 있습니다."
+    },
+    "naver": {
+      "name": "NAVER",
+      "nameKr": "네이버",
+      "founded": "1999년",
+      "hq": "성남, 경기도, 대한민국",
+      "business": "대한민국 1위 검색 포털이자 IT 플랫폼 기업입니다. 검색, 쇼핑, 웹툰, 클라우드, AI(하이퍼클로바) 등 다양한 서비스를 운영하며, LINE을 통해 일본·동남아 시장에도 진출해 있습니다.",
+      "history": "1999년 이해진이 삼성SDS 사내벤처에서 시작하여 네이버를 설립. 국내 검색 시장을 장악한 후 네이버 쇼핑, 네이버페이, 웹툰 등으로 사업을 확장했습니다. 2021년 한국어 초거대 AI 하이퍼클로바를 발표하며 AI 사업에 본격 진출했습니다.",
+      "keyProducts": ["네이버 검색", "네이버 쇼핑", "네이버 웹툰", "네이버 클라우드", "HyperCLOVA X", "네이버페이", "LINE"],
+      "techFocus": "하이퍼클로바X 기반 AI 서비스 확대와 네이버 클라우드 AI 인프라 강화, 글로벌 웹툰·콘텐츠 플랫폼 성장에 주력하고 있습니다."
+    },
+    "kakao": {
+      "name": "Kakao",
+      "nameKr": "카카오",
+      "founded": "2010년",
+      "hq": "성남, 경기도, 대한민국",
+      "business": "카카오톡 메신저를 기반으로 한 IT 플랫폼 기업입니다. 모빌리티(카카오T), 핀테크(카카오페이/뱅크), 엔터테인먼트, 커머스 등 다양한 영역으로 사업을 확장하고 있습니다.",
+      "history": "2010년 김범수가 카카오(구 카카오톡)를 설립. 카카오톡으로 국민 메신저 지위를 확보한 후 다음커뮤니케이션과 합병(2014)했습니다. 카카오뱅크, 카카오페이 등 핀테크와 카카오엔터테인먼트 등 콘텐츠 사업으로 확장했습니다.",
+      "keyProducts": ["카카오톡", "카카오T", "카카오페이", "카카오뱅크", "카카오엔터", "다음", "카카오맵"],
+      "techFocus": "카카오톡 생태계 내 AI 기능 통합과 플랫폼 서비스 간 시너지 강화에 집중하고 있습니다."
+    },
+    "coupang": {
+      "name": "Coupang",
+      "nameKr": "쿠팡",
+      "founded": "2010년",
+      "hq": "서울, 대한민국 (법인: 미국 델라웨어)",
+      "business": "대한민국 최대 이커머스 기업으로, 로켓배송(자체 물류)으로 유명합니다. 쿠팡이츠(배달), 쿠팡플레이(OTT), 핀테크(쿠팡페이) 등으로 사업을 다각화하고 있으며, 뉴욕증권거래소(NYSE)에 상장되어 있습니다.",
+      "history": "2010년 김범석이 소셜커머스로 창업. 2014년 로켓배송 도입으로 이커머스 혁신을 이끌었고, 전국 물류 인프라를 구축했습니다. 2021년 뉴욕증권거래소에 상장하며 한국 스타트업 최대 IPO를 기록했습니다.",
+      "keyProducts": ["로켓배송", "로켓프레시", "쿠팡이츠", "쿠팡플레이", "쿠팡페이"],
+      "techFocus": "대규모 트래픽 처리를 위한 마이크로서비스 아키텍처 고도화와 물류 자동화 AI, 개인화 추천에 투자하고 있습니다."
+    },
+    "toss": {
+      "name": "Toss (Viva Republica)",
+      "nameKr": "토스 (비바리퍼블리카)",
+      "founded": "2013년",
+      "hq": "서울, 대한민국",
+      "business": "간편 송금 서비스로 시작하여 종합 핀테크 플랫폼으로 성장한 기업입니다. 토스뱅크(인터넷 은행), 토스증권, 토스페이먼츠(결제), 토스보험 등 금융 전 분야로 사업을 확장하고 있습니다.",
+      "history": "2013년 이승건이 창업하여 간편 송금 서비스 '토스'를 출시. 누적 사용자 2,200만 명을 돌파하며 한국 대표 핀테크로 성장했습니다. 토스뱅크(2021), 토스증권(2021) 등 자회사를 설립하며 종합 금융 플랫폼으로 진화 중입니다.",
+      "keyProducts": ["토스 앱", "토스뱅크", "토스증권", "토스페이먼츠", "토스보험", "토스CX"],
+      "techFocus": "프론트엔드(React/Next.js) 기술 리더십과 안정적인 금융 시스템 설계, AI 기반 금융 서비스 개인화에 주력하고 있습니다."
+    },
+    "krafton": {
+      "name": "KRAFTON",
+      "nameKr": "크래프톤",
+      "founded": "2007년",
+      "hq": "서울, 대한민국",
+      "business": "배틀그라운드(PUBG)를 개발한 글로벌 게임 기업입니다. PC·모바일·콘솔 게임 개발 및 퍼블리싱을 주력으로 하며, AI/딥러닝 기반 게임 기술과 인터랙티브 엔터테인먼트 분야에도 투자하고 있습니다.",
+      "history": "2007년 블루홀(현 크래프톤)로 설립. 2017년 배틀그라운드(PUBG) 출시로 글로벌 배틀로얄 장르를 개척했습니다. 2021년 코스피 상장 후 인도 시장 진출(BGMI), AI 기업 투자 등 사업 다각화를 추진하고 있습니다.",
+      "keyProducts": ["PUBG: BATTLEGROUNDS", "PUBG Mobile", "The Callisto Protocol", "inZOI"],
+      "techFocus": "AI/딥러닝 기반 게임 NPC 행동 생성과 컴퓨터 비전 기술, 언리얼 엔진 활용 차세대 게임 개발에 집중하고 있습니다."
+    },
+    "line": {
+      "name": "LINE",
+      "nameKr": "라인",
+      "founded": "2011년",
+      "hq": "도쿄, 일본 (네이버 자회사)",
+      "business": "일본 1위 메신저 앱 LINE을 운영하며, 핀테크(LINE Pay), 콘텐츠(LINE Manga/Music), AI(LINE AI) 등 다양한 서비스를 제공합니다. 일본·태국·대만 등 동아시아 시장에서 강력한 사용자 기반을 보유하고 있습니다.",
+      "history": "2011년 동일본 대지진 이후 네이버 일본법인(NHN Japan)에서 커뮤니케이션 앱으로 출시. 일본에서 2억 다운로드를 돌파하며 국민 앱이 되었습니다. 2021년 야후재팬과 경영통합(Z Holdings)을 완료했으며, 2024년 네이버-소프트뱅크 지분 구조 재편이 진행되었습니다.",
+      "keyProducts": ["LINE 메신저", "LINE Pay", "LINE Manga", "LINE Music", "LINE AI", "Yahoo! JAPAN"],
+      "techFocus": "AI 기반 서비스 고도화와 일본 시장 내 슈퍼앱 전략, 핀테크 사업 확장에 집중하고 있습니다."
+    },
+    "hyundai": {
+      "name": "Hyundai Motor",
+      "nameKr": "현대자동차",
+      "founded": "1967년",
+      "hq": "서울, 대한민국",
+      "business": "글로벌 3위 자동차 제조사로, 전기차(아이오닉), 수소차(넥쏘), 자율주행, UAM(도심항공모빌리티), 로보틱스(보스턴 다이나믹스) 등 미래 모빌리티 전반에 투자하고 있습니다.",
+      "history": "1967년 정주영이 설립. 포니(1975)로 자동차 산업에 진출하여 기아 인수(1998) 후 현대차그룹으로 성장했습니다. 전기차 전용 플랫폼 E-GMP 출시(2021), 보스턴 다이나믹스 인수(2021) 등 소프트웨어 중심 모빌리티 기업으로 전환 중입니다.",
+      "keyProducts": ["아이오닉", "넥쏘", "제네시스", "보스턴 다이나믹스", "SDV", "E-GMP"],
+      "techFocus": "소프트웨어 정의 차량(SDV), 자율주행 기술, 로보틱스·AI 융합, 전동화 전략을 추진하고 있습니다."
+    },
+    "lg-electronics": {
+      "name": "LG Electronics",
+      "nameKr": "LG전자",
+      "founded": "1958년",
+      "hq": "서울, 대한민국",
+      "business": "가전(냉장고/세탁기/TV), 전장부품, B2B 솔루션 등을 생산하는 글로벌 전자기업입니다. 프리미엄 가전 시장에서 강한 입지를 가지고 있으며, 전장(VS) 사업과 스마트홈 AI 플랫폼 사업을 확대하고 있습니다.",
+      "history": "1958년 금성사로 창업하여 한국 최초의 라디오를 생산. LG전자로 사명 변경(1995) 후 OLED TV, 프리미엄 가전 등으로 글로벌 시장을 공략했습니다. 2021년 스마트폰 사업 철수 후 전장부품, AI 가전, B2B 솔루션에 집중하고 있습니다.",
+      "keyProducts": ["LG OLED TV", "LG ThinQ", "webOS", "전장부품", "LG 시그니처"],
+      "techFocus": "온디바이스 AI 가전(ThinQ), 자동차 전장부품(인포테인먼트/ADAS), B2B 솔루션 사업 강화에 집중하고 있습니다."
+    },
+    "skt": {
+      "name": "SK Telecom",
+      "nameKr": "SKT",
+      "founded": "1984년",
+      "hq": "서울, 대한민국",
+      "business": "대한민국 1위 이동통신사이자 AI·반도체·클라우드 사업에 투자하는 ICT 기업입니다. 5G 네트워크 운영, AI 서비스(에이닷), 데이터센터 등 디지털 인프라 전반에서 사업을 영위합니다.",
+      "history": "1984년 한국이동통신으로 설립되어 SKT로 성장. 국내 이동통신 시장 점유율 1위를 유지하며, 2023년 자체 AI 서비스 '에이닷(A.)'을 출시했습니다. SK하이닉스를 자회사로 두고 AI 반도체·인프라 통합 전략을 추진하고 있습니다.",
+      "keyProducts": ["T 멤버십", "에이닷(A.)", "5G 네트워크", "NUGU", "ifland"],
+      "techFocus": "자체 AI 모델 개발(에이닷)과 통신·AI·반도체를 아우르는 AI 인프라 밸류체인 구축에 집중하고 있습니다."
+    },
+    "kt": {
+      "name": "KT",
+      "nameKr": "KT",
+      "founded": "1981년",
+      "hq": "성남, 경기도, 대한민국",
+      "business": "대한민국 2위 통신사이자 AICT(AI+ICT) 기업으로의 전환을 추진 중입니다. 유무선 통신, 인터넷(KT 기가인터넷), 클라우드, AI 서비스, 미디어(시즌) 등을 운영합니다.",
+      "history": "1981년 한국전기통신공사로 설립되어 2002년 민영화. 초고속 인터넷으로 한국 인터넷 보급을 이끌었습니다. 최근 AICT 기업으로의 전환을 선언하며 AI 컨택센터, 스마트팩토리, 디지털 헬스케어 등 B2B AI 솔루션에 주력하고 있습니다.",
+      "keyProducts": ["KT 기가인터넷", "KT 클라우드", "AI 컨택센터", "KT 시즌", "KT AICA"],
+      "techFocus": "B2B AI 솔루션(컨택센터/스마트팩토리)과 KT 클라우드 기반 AI 인프라 서비스 강화에 집중하고 있습니다."
+    },
+    "samsung-sds": {
+      "name": "Samsung SDS",
+      "nameKr": "삼성SDS",
+      "founded": "1985년",
+      "hq": "서울, 대한민국",
+      "business": "삼성그룹의 IT 서비스 전문 기업으로, 클라우드, 물류(첼로), AI, 보안 등 엔터프라이즈 IT 솔루션을 제공합니다. 삼성 계열사 IT 인프라 운영과 외부 고객 대상 디지털 전환 사업을 병행합니다.",
+      "history": "1985년 삼성데이타시스템으로 설립. 삼성그룹 IT 인프라를 담당하며 성장했고, 물류 플랫폼 첼로(Cello), 블록체인 솔루션 넥스레저 등을 개발했습니다. 클라우드·AI 기반 엔터프라이즈 솔루션 기업으로 전환을 추진하고 있습니다.",
+      "keyProducts": ["Samsung Cloud Platform", "Cello", "Brity AI", "Nexledger", "Enterprise Solution"],
+      "techFocus": "생성형 AI 기반 엔터프라이즈 솔루션(Brity)과 클라우드 전환, 물류 플랫폼 글로벌 확장에 집중하고 있습니다."
+    },
+    "ncsoft": {
+      "name": "NCSoft",
+      "nameKr": "엔씨소프트",
+      "founded": "1997년",
+      "hq": "성남, 경기도, 대한민국",
+      "business": "리니지 시리즈 등 대규모 온라인 게임을 개발·운영하는 한국 대표 게임 기업입니다. MMORPG에 강점이 있으며, AI 연구소(NC Research)를 통해 NLP, 음성합성, 게임 AI 등 첨단 AI 기술을 개발하고 있습니다.",
+      "history": "1997년 김택진이 설립. 리니지(1998), 아이온, 블레이드&소울 등 MMORPG 명작을 연달아 출시했습니다. 리니지M(2017)으로 모바일 게임 시장에서도 대성공을 거두었으며, AI 연구에 대규모 투자를 진행하고 있습니다.",
+      "keyProducts": ["리니지", "리니지M", "리니지W", "블레이드&소울", "VARCO LLM", "TL"],
+      "techFocus": "자체 LLM(VARCO) 개발과 게임 AI(NPC 행동/자연어 대화), 음성합성 기술 고도화에 집중하고 있습니다."
+    },
+    "karrot": {
+      "name": "Karrot (Danggeun Market)",
+      "nameKr": "당근마켓",
+      "founded": "2015년",
+      "hq": "서울, 대한민국",
+      "business": "지역 기반 중고거래 플랫폼으로 시작하여 동네 생활 슈퍼앱으로 진화한 기업입니다. 월간 활성 사용자 1,800만 명 이상을 보유하며, 중고거래·동네 가게·부동산·알바·커뮤니티 등 하이퍼로컬 서비스를 제공합니다.",
+      "history": "2015년 김용현, 김재현이 판교장터에서 시작하여 당근마켓으로 성장. 지역 기반 C2C 거래의 새로운 패러다임을 만들며 한국 대표 유니콘으로 성장했습니다. 일본(마켓 카루젯), 영국(Karrot), 캐나다 등 해외 진출도 추진 중입니다.",
+      "keyProducts": ["당근 앱", "당근 중고거래", "당근 동네가게", "당근 알바", "당근 부동산", "당근 커뮤니티"],
+      "techFocus": "하이퍼로컬 추천 AI, 사기 탐지 ML 모델, 검색 최적화, Kotlin/React 기반 기술 스택 고도화에 주력하고 있습니다."
+    }
   }
 }

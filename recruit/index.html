@@ -322,6 +322,8 @@ function renderCompanyRecruit(containerId, companies, companyLinks){
       <div class="cr-links">
         <a class="primary" href="${recruitUrl}" target="_blank">채용 페이지</a>
         <a href="${homepageUrl}" target="_blank">홈페이지</a>
+        <a href="https://www.saramin.co.kr/zf_user/search?searchword=${encodeURIComponent(co.name)}" target="_blank" title="사람인에서 검색" style="flex:0;padding:.3rem .4rem;font-size:.7rem;color:#0066FF;font-weight:600">사람인</a>
+        <a href="https://www.jobkorea.co.kr/Search/?stext=${encodeURIComponent(co.name)}" target="_blank" title="잡코리아에서 검색" style="flex:0;padding:.3rem .4rem;font-size:.7rem;color:#00A13A;font-weight:600">잡코리아</a>
       </div>`;
     container.appendChild(card);
   });
@@ -399,6 +401,14 @@ function openTechPopup(techName){
     </div>
 
     ${related.length?`<div class="tp-section"><h4>연관 기술</h4><div class="tp-related">${related.map(r=>`<span class="tag clickable-tag" data-cat="Dev" onclick="closeTechPopup();setTimeout(()=>openTechPopup('${r}'),200)">${r}</span>`).join('')}</div></div>`:''}
+
+    <div class="tp-section">
+      <h4>채용 사이트에서 검색</h4>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.25rem">
+        <a href="https://www.saramin.co.kr/zf_user/search?searchword=${encodeURIComponent(node.label)}" target="_blank" style="font-size:.75rem;padding:.25rem .5rem;border:1px solid var(--c-border);border-radius:4px;color:var(--c-text2);text-decoration:none"><span style="font-weight:600;color:#0066FF">사람인</span> ↗</a>
+        <a href="https://www.jobkorea.co.kr/Search/?stext=${encodeURIComponent(node.label)}" target="_blank" style="font-size:.75rem;padding:.25rem .5rem;border:1px solid var(--c-border);border-radius:4px;color:var(--c-text2);text-decoration:none"><span style="font-weight:600;color:#00A13A">잡코리아</span> ↗</a>
+      </div>
+    </div>
 
     <a href="graph/" class="tp-link">그래프에서 통찰 보기 &rarr;</a>
   `;
