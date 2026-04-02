@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기술 트렌드 그래프 — 리프취준랩</title>
+  <meta name="description" content="기술-기업-직군 간 연관 관계를 인터랙티브 그래프로 시각화합니다.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    .graph-page{display:flex;flex-direction:column;height:calc(100vh - 56px)}
+    .graph-toolbar{
+      display:flex;gap:.5rem;padding:.75rem 1.5rem;
+      border-bottom:1px solid var(--c-border);background:#fff;
+      flex-wrap:wrap;align-items:center;
+    }
+    .toolbar-group{display:flex;gap:.3rem;align-items:center}
+    .toolbar-label{font-size:.72rem;font-weight:600;color:var(--c-text2);text-transform:uppercase;letter-spacing:.03em;margin-right:.25rem}
+    .toolbar-btn{
+      padding:.3rem .6rem;border:1px solid var(--c-border);border-radius:4px;
+      font-size:.75rem;font-weight:500;cursor:pointer;background:#fff;color:var(--c-text2);
+      transition:all .15s;
+    }
+    .toolbar-btn:hover{border-color:var(--c-primary);color:var(--c-primary)}
+    .toolbar-btn.active{background:var(--c-primary);color:#fff;border-color:var(--c-primary)}
+    .toolbar-sep{width:1px;height:20px;background:var(--c-border);margin:0 .25rem}
+
+    /* Dashboard cards */
+    .dash-row{display:flex;gap:.75rem;padding:.75rem 1.5rem;overflow-x:auto;background:var(--c-surface);border-bottom:1px solid var(--c-border)}
+    .dash-card{
+      background:#fff;border:1px solid var(--c-border);border-radius:var(--radius);
+      padding:.6rem .9rem;min-width:200px;flex-shrink:0;
+    }
+    .dash-card h4{font-size:.7rem;font-weight:600;color:var(--c-text2);text-transform:uppercase;letter-spacing:.03em;margin-bottom:.35rem}
+    .dash-item{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;padding:.15rem 0}
+    .dash-item .name{font-weight:500}
+    .dash-item .val{font-weight:700;color:var(--c-primary)}
+    .dash-item .trend-up{color:var(--c-green)}
+    .dash-item .trend-down{color:var(--c-red)}
+
+    /* Graph container */
+    .graph-main{flex:1;display:flex;position:relative;overflow:hidden}
+    .graph-canvas{flex:1;background:#FAFBFC}
+    .graph-canvas svg{width:100%;height:100%}
+
+    /* Side panel */
+    .side-panel{
+      width:0;overflow:hidden;border-left:1px solid var(--c-border);
+      background:#fff;transition:width .3s ease;flex-shrink:0;
+    }
+    .side-panel.open{width:340px}
+    .side-panel-inner{width:340px;padding:1.25rem;overflow-y:auto;height:100%}
+    .sp-close{float:right;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--c-text2);padding:.15rem}
+    .sp-title{font-size:1.1rem;font-weight:700;margin-bottom:.15rem}
+    .sp-category{font-size:.72rem;padding:.12rem .4rem;border-radius:3px;color:#fff;font-weight:600;display:inline-block;margin-bottom:.75rem}
+    .sp-section{margin-top:1rem}
+    .sp-section h4{font-size:.78rem;font-weight:600;color:var(--c-primary);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.02em}
+    .sp-desc{font-size:.84rem;line-height:1.6;color:var(--c-text2)}
+    .sp-meta{font-size:.8rem;color:var(--c-text2);margin:.2rem 0}
+    .sp-companies{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.35rem}
+    .sp-company{font-size:.72rem;padding:.15rem .4rem;border:1px solid var(--c-border);border-radius:3px;cursor:pointer;transition:all .15s}
+    .sp-company:hover{border-color:var(--c-primary);color:var(--c-primary)}
+    .sp-mini-graph{width:100%;height:180px;border:1px solid var(--c-border);border-radius:var(--radius);margin-top:.5rem;background:var(--c-surface)}
+    .sp-tags{display:flex;flex-wrap:wrap;gap:.2rem}
+    .sp-salary{font-size:.85rem;font-weight:600;color:var(--c-primary)}
+
+    /* Legend */
+    .graph-legend{
+      position:absolute;bottom:1rem;left:1rem;
+      background:rgba(255,255,255,.95);border:1px solid var(--c-border);
+      border-radius:var(--radius);padding:.6rem .8rem;font-size:.72rem;
+      display:flex;flex-direction:column;gap:.25rem;box-shadow:var(--shadow);
+    }
+    .legend-item{display:flex;align-items:center;gap:.35rem}
+    .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+    /* Tooltip */
+    .graph-tooltip{
+      position:absolute;pointer-events:none;
+      background:rgba(17,24,39,.9);color:#fff;
+      padding:.4rem .6rem;border-radius:4px;font-size:.75rem;
+      opacity:0;transition:opacity .15s;z-index:10;
+      max-width:220px;
+    }
+    .graph-tooltip.show{opacity:1}
+
+    /* Skeleton loader */
+    .skeleton{animation:shimmer 1.5s infinite}
+    @keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
+
+    @media(max-width:768px){
+      .side-panel.open{width:100%;position:absolute;top:0;right:0;height:100%;z-index:50}
+      .dash-row{padding:.5rem 1rem}
+      .graph-toolbar{padding:.5rem 1rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="../">
+    <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2C7 7 4 12 5 17c1 2 3 4 7 5 4-1 6-3 7-5 1-5-2-10-7-15z" stroke="#22C55E" stroke-width="1.5" fill="#22C55E" fill-opacity=".1"/><path d="M12 6v16" stroke="#22C55E" stroke-width=".8" opacity=".5"/></svg>
+    리프취준랩
+  </a>
+  <div class="nav-actions">
+    <a href="../">채용 트렌드</a>
+    <a href="./" class="active">그래프 분석</a>
+    <a href="../roles/">직군 상세</a>
+    <a href="../companies/">기업 정보</a>
+    <a href="../about/">소개</a>
+  </div>
+</nav>
+
+<div class="graph-page">
+
+  <!-- Dashboard -->
+  <div class="dash-row" id="dashboard">
+    <div class="dash-card skeleton" style="min-width:200px;height:90px"></div>
+    <div class="dash-card skeleton" style="min-width:200px;height:90px"></div>
+    <div class="dash-card skeleton" style="min-width:200px;height:90px"></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="graph-toolbar">
+    <div class="toolbar-group">
+      <span class="toolbar-label">노드</span>
+      <button class="toolbar-btn active" data-filter="all">전체</button>
+      <button class="toolbar-btn" data-filter="tech">기술</button>
+      <button class="toolbar-btn" data-filter="company">기업</button>
+      <button class="toolbar-btn" data-filter="role">직군</button>
+    </div>
+    <span class="toolbar-sep"></span>
+    <div class="toolbar-group">
+      <span class="toolbar-label">카테고리</span>
+      <button class="toolbar-btn cat-btn active" data-cat="all">전체</button>
+      <button class="toolbar-btn cat-btn" data-cat="ai">AI/ML</button>
+      <button class="toolbar-btn cat-btn" data-cat="frontend">Frontend</button>
+      <button class="toolbar-btn cat-btn" data-cat="backend">Backend</button>
+      <button class="toolbar-btn cat-btn" data-cat="infra">Infra</button>
+      <button class="toolbar-btn cat-btn" data-cat="data">Data</button>
+    </div>
+    <span class="toolbar-sep"></span>
+    <div class="toolbar-group">
+      <span class="toolbar-label">지역</span>
+      <button class="toolbar-btn region-btn active" data-region="all">전체</button>
+      <button class="toolbar-btn region-btn" data-region="global">글로벌</button>
+      <button class="toolbar-btn region-btn" data-region="korea">한국</button>
+    </div>
+  </div>
+
+  <!-- Main area -->
+  <div class="graph-main">
+    <div class="graph-canvas" id="graph-canvas">
+      <svg id="graph-svg"></svg>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="side-panel" id="side-panel">
+      <div class="side-panel-inner" id="sp-content"></div>
+    </div>
+
+    <!-- Legend -->
+    <div class="graph-legend">
+      <div class="legend-item"><span class="legend-dot" style="background:#3B82F6"></span> 기업</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span> Frontend</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#10B981"></span> Backend</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#8B5CF6"></span> AI/ML</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#EF4444"></span> Infra/DevOps</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#06B6D4"></span> Data</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#EC4899"></span> 직군</div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="graph-tooltip" id="tooltip"></div>
+  </div>
+
+</div>
+
+<script>
+const catColors = {
+  company:'#3B82F6', frontend:'#F59E0B', backend:'#10B981',
+  ai:'#8B5CF6', infra:'#EF4444', data:'#06B6D4',
+  language:'#84CC16', mobile:'#F97316', design:'#EC4899',
+  security:'#EF4444', blockchain:'#8B5CF6', role:'#EC4899'
+};
+
+let graphData = null;
+let simulation = null;
+let selectedNode = null;
+let currentFilter = 'all';
+let currentCat = 'all';
+let currentRegion = 'all';
+
+async function init(){
+  const indexRes = await fetch('../../data/index.json');
+  const indexData = await indexRes.json();
+  const folderId = indexData.collections[0].folder_id;
+
+  const res = await fetch(`../../data/${folderId}/graph_data.json`);
+  graphData = await res.json();
+
+  renderDashboard();
+  renderGraph();
+  bindToolbar();
+}
+
+function renderDashboard(){
+  const techs = graphData.nodes.filter(n=>n.type==='tech');
+  const companies = graphData.nodes.filter(n=>n.type==='company');
+
+  const topTrend = [...techs].sort((a,b)=>parseFloat(b.trend)-parseFloat(a.trend)).slice(0,5);
+  const topHire = [...companies].sort((a,b)=>(b.openRoles||0)-(a.openRoles||0)).slice(0,5);
+
+  // Region stats
+  const globalCo = companies.filter(c=>c.region==='global').length;
+  const koreaCo = companies.filter(c=>c.region==='korea').length;
+
+  document.getElementById('dashboard').innerHTML = `
+    <div class="dash-card">
+      <h4>급상승 기술 Top 5</h4>
+      ${topTrend.map(t=>`<div class="dash-item"><span class="name">${t.label}</span><span class="val trend-up">${t.trend}</span></div>`).join('')}
+    </div>
+    <div class="dash-card">
+      <h4>채용 활발 기업 Top 5</h4>
+      ${topHire.map(c=>`<div class="dash-item"><span class="name">${c.label}</span><span class="val">${c.openRoles||0}건</span></div>`).join('')}
+    </div>
+    <div class="dash-card">
+      <h4>그래프 현황</h4>
+      <div class="dash-item"><span class="name">기술 노드</span><span class="val">${techs.length}개</span></div>
+      <div class="dash-item"><span class="name">기업 노드</span><span class="val">${companies.length}개 (글로벌 ${globalCo} / 한국 ${koreaCo})</span></div>
+      <div class="dash-item"><span class="name">연결선</span><span class="val">${graphData.edges.length}개</span></div>
+    </div>
+  `;
+}
+
+function getVisibleNodes(){
+  return graphData.nodes.filter(n=>{
+    if(currentFilter!=='all' && n.type!==currentFilter) return false;
+    if(currentCat!=='all'){
+      if(n.type==='tech' && n.category!==currentCat) return false;
+      if(n.type==='role' && currentCat!=='all') return true; // roles always visible
+      if(n.type==='company') return true; // companies always visible
+    }
+    if(currentRegion!=='all' && n.type==='company' && n.region!==currentRegion) return false;
+    return true;
+  });
+}
+
+function getVisibleEdges(visibleIds){
+  return graphData.edges.filter(e=>visibleIds.has(e.source.id||e.source) && visibleIds.has(e.target.id||e.target));
+}
+
+function renderGraph(){
+  const svg = d3.select('#graph-svg');
+  svg.selectAll('*').remove();
+
+  const container = document.getElementById('graph-canvas');
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const visibleNodes = getVisibleNodes();
+  const visibleIds = new Set(visibleNodes.map(n=>n.id));
+  const visibleEdges = graphData.edges.filter(e=>visibleIds.has(e.source) && visibleIds.has(e.target));
+
+  // Clone data for D3
+  const nodes = visibleNodes.map(n=>({...n}));
+  const edges = visibleEdges.map(e=>({...e}));
+
+  const g = svg.append('g');
+
+  // Zoom
+  const zoom = d3.zoom().scaleExtent([.3,4]).on('zoom', e=>g.attr('transform',e.transform));
+  svg.call(zoom);
+
+  // Edges
+  const link = g.append('g').selectAll('line').data(edges).join('line')
+    .attr('stroke', d=>{
+      const target = nodes.find(n=>n.id===(d.target.id||d.target));
+      return target ? (catColors[target.category]||'#D1D5DB') : '#D1D5DB';
+    })
+    .attr('stroke-opacity', .2)
+    .attr('stroke-width', d=>Math.max(1, (d.weight||1)*.6));
+
+  // Nodes
+  const node = g.append('g').selectAll('g').data(nodes).join('g')
+    .attr('cursor','pointer')
+    .call(d3.drag().on('start',dragStart).on('drag',dragged).on('end',dragEnd));
+
+  node.append('circle')
+    .attr('r', d=>{
+      if(d.type==='company') return 8 + (d.openRoles||0)*.03;
+      if(d.type==='tech') return 6 + (d.demand||50)*.04;
+      return 7;
+    })
+    .attr('fill', d=>d.type==='company'?catColors.company : d.type==='role'?catColors.role : (catColors[d.category]||'#9CA3AF'))
+    .attr('stroke','#fff')
+    .attr('stroke-width',1.5)
+    .attr('opacity',.85);
+
+  node.append('text')
+    .text(d=>d.label)
+    .attr('dx',12).attr('dy',4)
+    .attr('font-size','10px')
+    .attr('font-weight','500')
+    .attr('fill','#374151')
+    .attr('pointer-events','none');
+
+  // Tooltip
+  const tooltip = document.getElementById('tooltip');
+  node.on('mouseover', (e,d)=>{
+    tooltip.innerHTML = `<strong>${d.label}</strong><br>${d.type==='tech'?'수요: '+d.demand+' | 트렌드: '+d.trend : d.type==='company'?'채용: '+(d.openRoles||0)+'건 | '+d.region : d.category}`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (e.pageX - container.getBoundingClientRect().left + 12)+'px';
+    tooltip.style.top = (e.pageY - container.getBoundingClientRect().top - 56 - 10)+'px';
+  })
+  .on('mouseout', ()=>tooltip.classList.remove('show'))
+  .on('click', (e,d)=>openPanel(d, nodes, edges));
+
+  // Simulation
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(edges).id(d=>d.id).distance(80).strength(.3))
+    .force('charge', d3.forceManyBody().strength(-120))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(20))
+    .on('tick', ()=>{
+      link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y)
+          .attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+      node.attr('transform',d=>`translate(${d.x},${d.y})`);
+    });
+
+  function dragStart(e,d){if(!e.active)simulation.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y}
+  function dragged(e,d){d.fx=e.x;d.fy=e.y}
+  function dragEnd(e,d){if(!e.active)simulation.alphaTarget(0);d.fx=null;d.fy=null}
+}
+
+function openPanel(d, nodes, edges){
+  const panel = document.getElementById('side-panel');
+  const content = document.getElementById('sp-content');
+  panel.classList.add('open');
+
+  if(d.type==='tech'){
+    const desc = graphData.tech_descriptions?.[d.id] || {};
+    const color = catColors[d.category]||'#6366F1';
+
+    // Find connected companies
+    const connectedCompanyIds = edges.filter(e=>(e.target.id||e.target)===d.id && (nodes.find(n=>n.id===(e.source.id||e.source))?.type==='company')).map(e=>e.source.id||e.source);
+    const connectedCompanies = nodes.filter(n=>connectedCompanyIds.includes(n.id));
+
+    // Find related techs
+    const relatedIds = edges.filter(e=>e.type==='related'&&((e.source.id||e.source)===d.id||(e.target.id||e.target)===d.id)).map(e=>(e.source.id||e.source)===d.id?(e.target.id||e.target):(e.source.id||e.source));
+    const relatedTechs = nodes.filter(n=>relatedIds.includes(n.id));
+
+    content.innerHTML = `
+      <button class="sp-close" onclick="closePanel()">&times;</button>
+      <div class="sp-title">${d.label}</div>
+      <span class="sp-category" style="background:${color}">${d.category}</span>
+
+      <div class="sp-section">
+        <h4>설명</h4>
+        <p class="sp-desc">${desc.description||'기술 설명이 없습니다.'}</p>
+      </div>
+
+      ${desc.useCase?`<div class="sp-section"><h4>활용 분야</h4><p class="sp-desc">${desc.useCase}</p></div>`:''}
+
+      <div class="sp-section">
+        <h4>수요 지표</h4>
+        <p class="sp-meta">수요 점수: <strong>${d.demand}</strong> / 100 &nbsp; 트렌드: <strong style="color:var(--c-green)">${d.trend}</strong></p>
+        ${desc.avgSalaryRange?`<p class="sp-meta">예상 연봉: <span class="sp-salary">${desc.avgSalaryRange}</span></p>`:''}
+        ${desc.learningDifficulty?`<p class="sp-meta">학습 난이도: ${desc.learningDifficulty}</p>`:''}
+      </div>
+
+      <div class="sp-section">
+        <h4>채용 중인 기업 (${connectedCompanies.length})</h4>
+        <div class="sp-companies">
+          ${connectedCompanies.map(c=>`<span class="sp-company" onclick="focusNode('${c.id}')">${c.label}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="sp-section">
+        <h4>연관 기술</h4>
+        <div class="sp-tags">
+          ${relatedTechs.map(t=>`<span class="tag" data-cat="Dev" style="cursor:pointer" onclick="focusNode('${t.id}')">${t.label}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="sp-section">
+        <h4>연관 그래프</h4>
+        <div class="sp-mini-graph" id="mini-graph"></div>
+      </div>
+
+      <div style="margin-top:1rem">
+        <a href="../roles/" class="toolbar-btn" style="display:inline-block;text-decoration:none;text-align:center;padding:.4rem .8rem">해당 기술 직군 보기</a>
+      </div>
+    `;
+    renderMiniGraph(d, nodes, edges);
+
+  } else if(d.type==='company'){
+    const connectedTechIds = edges.filter(e=>(e.source.id||e.source)===d.id).map(e=>e.target.id||e.target);
+    const connectedTechs = nodes.filter(n=>connectedTechIds.includes(n.id));
+
+    content.innerHTML = `
+      <button class="sp-close" onclick="closePanel()">&times;</button>
+      <div class="sp-title">${d.label}</div>
+      <span class="sp-category" style="background:${catColors.company}">${d.region==='korea'?'한국':'글로벌'}</span>
+
+      <div class="sp-section">
+        <h4>채용 현황</h4>
+        <p class="sp-meta">채용 공고: <strong>${d.openRoles||0}</strong>건</p>
+        ${d.marketCap?`<p class="sp-meta">시가총액: ${d.marketCap}</p>`:''}
+      </div>
+
+      <div class="sp-section">
+        <h4>사용 기술 (${connectedTechs.length})</h4>
+        <div class="sp-tags">
+          ${connectedTechs.map(t=>`<span class="tag" data-cat="${t.category==='ai'?'AI':'Dev'}" style="cursor:pointer" onclick="focusNode('${t.id}')">${t.label}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="sp-section">
+        <h4>연관 그래프</h4>
+        <div class="sp-mini-graph" id="mini-graph"></div>
+      </div>
+
+      <div style="margin-top:1rem">
+        <a href="../companies/" class="toolbar-btn" style="display:inline-block;text-decoration:none;text-align:center;padding:.4rem .8rem">기업 상세 보기</a>
+      </div>
+    `;
+    renderMiniGraph(d, nodes, edges);
+
+  } else {
+    // Role
+    const connectedTechIds = edges.filter(e=>e.type==='requires'&&(e.source.id||e.source)===d.id).map(e=>e.target.id||e.target);
+    const connectedTechs = nodes.filter(n=>connectedTechIds.includes(n.id));
+
+    content.innerHTML = `
+      <button class="sp-close" onclick="closePanel()">&times;</button>
+      <div class="sp-title">${d.label}</div>
+      <span class="sp-category" style="background:${catColors.role}">직군</span>
+
+      <div class="sp-section">
+        <h4>필요 기술 (${connectedTechs.length})</h4>
+        <div class="sp-tags">
+          ${connectedTechs.map(t=>`<span class="tag" data-cat="Dev" style="cursor:pointer" onclick="focusNode('${t.id}')">${t.label}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="sp-section">
+        <h4>연관 그래프</h4>
+        <div class="sp-mini-graph" id="mini-graph"></div>
+      </div>
+    `;
+    renderMiniGraph(d, nodes, edges);
+  }
+}
+
+function renderMiniGraph(centerNode, allNodes, allEdges){
+  const container = document.getElementById('mini-graph');
+  if(!container) return;
+
+  // Get 1-2 hop neighbors
+  const hop1 = new Set();
+  allEdges.forEach(e=>{
+    const s = e.source.id||e.source, t = e.target.id||e.target;
+    if(s===centerNode.id) hop1.add(t);
+    if(t===centerNode.id) hop1.add(s);
+  });
+  hop1.add(centerNode.id);
+
+  const miniNodes = allNodes.filter(n=>hop1.has(n.id)).map(n=>({...n}));
+  const miniEdges = allEdges.filter(e=>{
+    const s = e.source.id||e.source, t = e.target.id||e.target;
+    return hop1.has(s) && hop1.has(t);
+  }).map(e=>({source:e.source.id||e.source, target:e.target.id||e.target, weight:e.weight}));
+
+  const w = container.clientWidth || 300;
+  const h = 170;
+
+  const svg = d3.select(container).html('').append('svg').attr('width',w).attr('height',h);
+  const g = svg.append('g');
+
+  const link = g.selectAll('line').data(miniEdges).join('line')
+    .attr('stroke','#D1D5DB').attr('stroke-width',.8);
+
+  const node = g.selectAll('circle').data(miniNodes).join('circle')
+    .attr('r', d=>d.id===centerNode.id?8:5)
+    .attr('fill', d=>d.id===centerNode.id?'#111': d.type==='company'?catColors.company : d.type==='role'?catColors.role : (catColors[d.category]||'#9CA3AF'))
+    .attr('stroke','#fff').attr('stroke-width',1)
+    .attr('cursor','pointer')
+    .on('click',(e,d)=>{ if(d.id!==centerNode.id) focusNode(d.id); });
+
+  const text = g.selectAll('text').data(miniNodes).join('text')
+    .text(d=>d.label).attr('dx',8).attr('dy',3)
+    .attr('font-size','8px').attr('fill','#6B7280').attr('pointer-events','none');
+
+  d3.forceSimulation(miniNodes)
+    .force('link', d3.forceLink(miniEdges).id(d=>d.id).distance(40).strength(.5))
+    .force('charge', d3.forceManyBody().strength(-60))
+    .force('center', d3.forceCenter(w/2, h/2))
+    .on('tick', ()=>{
+      link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+      node.attr('cx',d=>d.x).attr('cy',d=>d.y);
+      text.attr('x',d=>d.x).attr('y',d=>d.y);
+    });
+}
+
+function closePanel(){
+  document.getElementById('side-panel').classList.remove('open');
+}
+
+function focusNode(nodeId){
+  // Re-open panel for that node
+  const allNodes = graphData.nodes;
+  const allEdges = graphData.edges;
+  const target = allNodes.find(n=>n.id===nodeId);
+  if(target) openPanel(target, allNodes, allEdges);
+}
+
+function bindToolbar(){
+  // Node type filter
+  document.querySelectorAll('[data-filter]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderGraph();
+    });
+  });
+  // Category filter
+  document.querySelectorAll('.cat-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCat = btn.dataset.cat;
+      renderGraph();
+    });
+  });
+  // Region filter
+  document.querySelectorAll('.region-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.region-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentRegion = btn.dataset.region;
+      renderGraph();
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

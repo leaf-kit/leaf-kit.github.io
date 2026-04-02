@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소개 — 리프취준랩</title>
+  <meta name="description" content="리프취준랩 — 채용 정보, 이제 흐름으로 읽는다.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <style>
+    .about-hero{
+      text-align:center;padding:4rem 2rem 3rem;
+      background:#fff;position:relative;overflow:hidden;
+    }
+    .about-hero::before{
+      content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+      background:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,.04) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .about-hero h1{font-size:2rem;font-weight:800;color:var(--c-text);position:relative}
+    .about-hero .sub{font-size:1rem;color:var(--c-text2);margin-top:.5rem;font-weight:300;position:relative}
+    .about-cta{display:flex;gap:.75rem;justify-content:center;margin-top:1.5rem;position:relative}
+    .btn{
+      padding:.6rem 1.2rem;border-radius:6px;font-size:.85rem;font-weight:600;
+      text-decoration:none;transition:all .15s;display:inline-flex;align-items:center;gap:.3rem;
+    }
+    .btn-primary{background:var(--c-primary);color:#fff;border:1px solid var(--c-primary)}
+    .btn-primary:hover{opacity:.9;text-decoration:none}
+    .btn-outline{background:#fff;color:var(--c-text2);border:1px solid var(--c-border)}
+    .btn-outline:hover{border-color:var(--c-primary);color:var(--c-primary);text-decoration:none}
+
+    /* Value Cards */
+    .values{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;padding:3rem 0}
+    .value-card{
+      text-align:center;padding:1.5rem;
+      background:#fff;border:1px solid var(--c-border);border-radius:var(--radius);
+      box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;
+    }
+    .value-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+    .value-icon{
+      width:48px;height:48px;margin:0 auto .75rem;
+      background:var(--c-surface);border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .value-icon svg{width:24px;height:24px}
+    .value-card h3{font-size:.95rem;font-weight:700;margin-bottom:.35rem}
+    .value-card p{font-size:.82rem;color:var(--c-text2);line-height:1.6}
+
+    /* Story Section */
+    .story{padding:3rem 0;border-top:1px solid var(--c-border)}
+    .story h2{font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;text-align:center}
+    .story-flow{display:flex;gap:0;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+    .story-step{
+      text-align:center;padding:1rem;max-width:200px;position:relative;
+    }
+    .story-step::after{
+      content:'';position:absolute;top:28px;right:-12px;
+      width:24px;height:2px;background:var(--c-border);
+    }
+    .story-step:last-child::after{display:none}
+    .step-num{
+      width:36px;height:36px;border-radius:50%;
+      background:var(--c-primary);color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      font-size:.8rem;font-weight:700;margin:0 auto .6rem;
+    }
+    .story-step h4{font-size:.85rem;font-weight:600;margin-bottom:.25rem}
+    .story-step p{font-size:.75rem;color:var(--c-text2);line-height:1.5}
+
+    /* Stats */
+    .about-stats{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;
+      padding:2rem;background:var(--c-surface);border-radius:var(--radius);
+      margin:2rem 0;border:1px solid var(--c-border);
+    }
+    .about-stat{text-align:center}
+    .about-stat .num{font-size:1.5rem;font-weight:800;color:var(--c-primary)}
+    .about-stat .label{font-size:.72rem;color:var(--c-text2);margin-top:.15rem}
+
+    @media(max-width:768px){
+      .values{grid-template-columns:1fr}
+      .about-stats{grid-template-columns:repeat(2,1fr)}
+      .story-flow{flex-direction:column;align-items:center}
+      .story-step::after{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="../">
+    <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2C7 7 4 12 5 17c1 2 3 4 7 5 4-1 6-3 7-5 1-5-2-10-7-15z" stroke="#22C55E" stroke-width="1.5" fill="#22C55E" fill-opacity=".1"/><path d="M12 6v16" stroke="#22C55E" stroke-width=".8" opacity=".5"/></svg>
+    리프취준랩
+  </a>
+  <div class="nav-actions">
+    <a href="../">채용 트렌드</a>
+    <a href="../graph/">그래프 분석</a>
+    <a href="../roles/">직군 상세</a>
+    <a href="./" class="active">소개</a>
+  </div>
+</nav>
+
+<section class="about-hero">
+  <h1>채용 정보, 이제 흐름으로 읽는다</h1>
+  <p class="sub">취준생부터 경력직까지 — 트렌드 기반 채용 인사이트를 시각적으로 제공합니다</p>
+  <div class="about-cta">
+    <a href="../" class="btn btn-primary">채용 트렌드 보기</a>
+    <a href="../roles/" class="btn btn-outline">직군 둘러보기</a>
+  </div>
+</section>
+
+<main class="container">
+
+  <!-- Values -->
+  <div class="values">
+    <div class="value-card">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.5"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 6-6"/></svg>
+      </div>
+      <h3>트렌드 중심 정보</h3>
+      <p>단순 공고 나열이 아닌, 기술과 기업과 직군의 흐름을 데이터로 시각화합니다</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.07-5.07l-2.83 2.83M9.76 14.24l-2.83 2.83m11.14 0l-2.83-2.83M9.76 9.76L6.93 6.93"/></svg>
+      </div>
+      <h3>대상 맞춤 제공</h3>
+      <p>취준생, 신입, 경력직 각 단계에 맞는 채용 정보를 구분하여 제공합니다</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8m-8 4h5"/></svg>
+      </div>
+      <h3>마크다운 기반 정보</h3>
+      <p>모든 정보는 마크다운을 원천 데이터로 삼아 체계적으로 가공하고 제공됩니다</p>
+    </div>
+  </div>
+
+  <!-- Story -->
+  <div class="story">
+    <h2>어떻게 만들어지나요?</h2>
+    <div class="story-flow">
+      <div class="story-step">
+        <div class="step-num">1</div>
+        <h4>데이터 수집</h4>
+        <p>글로벌·국내 기업의 채용 공고, 기술 키워드, 조직 정보를 주간 단위로 수집</p>
+      </div>
+      <div class="story-step">
+        <div class="step-num">2</div>
+        <h4>구조화 저장</h4>
+        <p>마크다운 + JSON + JSONL 3중 구조로 사람도, 기계도 읽을 수 있게 저장</p>
+      </div>
+      <div class="story-step">
+        <div class="step-num">3</div>
+        <h4>트렌드 분석</h4>
+        <p>이전 회차와 비교하여 기술 키워드 증감, 직군 수요 변화를 자동 분석</p>
+      </div>
+      <div class="story-step">
+        <div class="step-num">4</div>
+        <h4>시각화 제공</h4>
+        <p>그래프, 차트, 카드로 직관적으로 제공. 누적될수록 더 깊은 인사이트</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="about-stats" id="about-stats">
+    <div class="about-stat"><div class="num" id="s-companies">-</div><div class="label">추적 기업</div></div>
+    <div class="about-stat"><div class="num" id="s-techs">-</div><div class="label">기술 키워드</div></div>
+    <div class="about-stat"><div class="num" id="s-roles">-</div><div class="label">직군</div></div>
+    <div class="about-stat"><div class="num" id="s-links">-</div><div class="label">채용 링크</div></div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p style="color:var(--c-text2);font-size:.78rem">리프취준랩 — 마크다운으로 정보를 조직화합니다</p>
+</footer>
+
+<script>
+async function loadStats(){
+  try{
+    const indexRes = await fetch('../../data/index.json');
+    const indexData = await indexRes.json();
+    const folderId = indexData.collections[0].folder_id;
+    const basePath = `../../data/${folderId}/`;
+
+    const [global, korea, jobs, links] = await Promise.all([
+      fetch(basePath+'global_top100.json').then(r=>r.json()),
+      fetch(basePath+'korea_top100.json').then(r=>r.json()),
+      fetch(basePath+'jobs_trend.json').then(r=>r.json()),
+      fetch(basePath+'company_links.jsonl').then(r=>r.text())
+    ]);
+
+    const totalRoles = jobs.categories.reduce((s,c)=>s+c.roles.length, 0);
+    const linkCount = links.trim().split('\n').length;
+
+    animateNumber('s-companies', global.length + korea.length);
+    animateNumber('s-techs', 45);
+    animateNumber('s-roles', totalRoles);
+    animateNumber('s-links', linkCount);
+  }catch(e){}
+}
+
+function animateNumber(id, target){
+  const el = document.getElementById(id);
+  let current = 0;
+  const step = Math.max(1, Math.floor(target/30));
+  const timer = setInterval(()=>{
+    current += step;
+    if(current >= target){current = target; clearInterval(timer);}
+    el.textContent = current;
+  }, 30);
+}
+
+document.addEventListener('DOMContentLoaded', loadStats);
+</script>
+</body>
+</html>
