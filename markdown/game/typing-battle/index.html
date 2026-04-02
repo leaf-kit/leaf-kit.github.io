@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>마크다운 타자대전 — Markdown Typing Battle</title>
+  <meta name="description" content="마크다운 문법을 타이핑으로 익히는 게임. 3단계 난이도, 랭킹 시스템 지원.">
+  <meta property="og:title" content="마크다운 타자대전">
+  <meta property="og:description" content="화면에 뜬 마크다운을 그대로 타이핑! 당신의 마크다운 실력은?">
+  <meta property="og:url" content="https://leaf-kit.github.io/markdown/game/typing-battle/">
+  <link rel="canonical" href="https://leaf-kit.github.io/markdown/game/typing-battle/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0F172A;--surface:#1E293B;--surface2:#334155;
+      --text:#F1F5F9;--text2:#94A3B8;--text3:#64748B;
+      --primary:#3B82F6;--primary-glow:rgba(59,130,246,.25);
+      --accent:#8B5CF6;--accent-glow:rgba(139,92,246,.2);
+      --green:#10B981;--green-bg:rgba(16,185,129,.12);
+      --red:#EF4444;--red-bg:rgba(239,68,68,.12);
+      --amber:#F59E0B;--amber-bg:rgba(245,158,11,.12);
+      --border:#334155;--radius:8px;
+      --font:'Noto Sans KR',sans-serif;
+      --mono:'JetBrains Mono','Fira Code',monospace;
+    }
+    html{font-size:16px}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden}
+    ::selection{background:rgba(59,130,246,.3)}
+
+    /* Layout */
+    .wrap{max-width:720px;margin:0 auto;padding:1rem 1.25rem 3rem}
+
+    /* Back */
+    .back{display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;color:var(--text3);margin-bottom:1.25rem;text-decoration:none;font-weight:500}
+    .back:hover{color:var(--primary)}
+
+    /* Header */
+    .header{text-align:center;margin-bottom:1.5rem}
+    .header h1{font-size:1.5rem;font-weight:800;letter-spacing:-.02em}
+    .header h1 span{color:var(--primary)}
+    .header .sub{font-size:.82rem;color:var(--text2);margin-top:.3rem}
+
+    /* Screen: start */
+    .screen{display:none}
+    .screen.active{display:block}
+
+    /* Level select */
+    .level-grid{display:flex;flex-direction:column;gap:.75rem;margin-top:1.5rem}
+    .level-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+    .level-card:hover{border-color:var(--primary);box-shadow:0 0 20px var(--primary-glow);transform:translateY(-1px)}
+    .level-card .lv-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem}
+    .level-card .lv-badge{font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:20px;color:#fff;text-transform:uppercase}
+    .lv1 .lv-badge{background:var(--green)}
+    .lv2 .lv-badge{background:var(--amber)}
+    .lv3 .lv-badge{background:var(--red)}
+    .level-card .lv-title{font-size:1rem;font-weight:700}
+    .level-card .lv-desc{font-size:.8rem;color:var(--text2);line-height:1.5}
+    .level-card .lv-meta{font-size:.72rem;color:var(--text3);margin-top:.4rem}
+
+    /* Info popup */
+    .info-btn{display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;color:var(--text3);background:none;border:1px solid var(--border);border-radius:20px;padding:.3rem .75rem;cursor:pointer;margin-top:1rem;font-family:var(--font);transition:all .15s}
+    .info-btn:hover{color:var(--primary);border-color:var(--primary)}
+    .info-popup{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-top:.75rem;font-size:.82rem;color:var(--text2);line-height:1.7}
+    .info-popup.show{display:block}
+    .info-popup strong{color:var(--text);font-weight:600}
+
+    /* Game screen */
+    .game-bar{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.6rem 1rem;margin-bottom:1rem}
+    .game-bar .stat{text-align:center}
+    .game-bar .stat-label{font-size:.62rem;color:var(--text3);text-transform:uppercase;font-weight:600;letter-spacing:.03em}
+    .game-bar .stat-value{font-size:1.1rem;font-weight:800;font-family:var(--mono)}
+    .stat-value.time{color:var(--amber)}
+    .stat-value.score{color:var(--green)}
+    .stat-value.combo{color:var(--accent)}
+    .stat-value.time.danger{color:var(--red);animation:pulse .5s ease infinite}
+
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+    /* Progress */
+    .progress{height:3px;background:var(--surface2);border-radius:2px;margin-bottom:1.25rem;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:2px;transition:width .3s ease}
+
+    /* Question area */
+    .q-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+    .q-label{font-size:.72rem;color:var(--text3);margin-bottom:.5rem;font-weight:500}
+    .q-text{font-family:var(--mono);font-size:1.35rem;font-weight:600;letter-spacing:.02em;color:var(--text);word-break:break-all;line-height:1.5}
+    .q-hint{font-size:.78rem;color:var(--text3);margin-top:.6rem;font-style:italic}
+    .q-hint code{font-family:var(--mono);font-size:.75rem;background:var(--surface2);padding:.1rem .35rem;border-radius:3px;color:var(--text2)}
+
+    /* Input area */
+    .input-area{display:flex;gap:.5rem}
+    .input-area input{flex:1;font-family:var(--mono);font-size:1rem;padding:.75rem 1rem;background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);color:var(--text);outline:none;transition:border-color .15s}
+    .input-area input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+    .input-area input.correct{border-color:var(--green);box-shadow:0 0 0 3px var(--green-bg)}
+    .input-area input.wrong{border-color:var(--red);box-shadow:0 0 0 3px var(--red-bg);animation:shake .3s}
+    .input-area button{padding:.75rem 1.25rem;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-family:var(--font);font-size:.88rem;font-weight:700;cursor:pointer;transition:background .15s;white-space:nowrap}
+    .input-area button:hover{background:#2563EB}
+
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+
+    /* Feedback toast */
+    .toast{text-align:center;min-height:1.5rem;margin-top:.5rem;font-size:.82rem;font-weight:600;transition:opacity .2s}
+    .toast.good{color:var(--green)}
+    .toast.fast{color:var(--accent)}
+    .toast.miss{color:var(--red)}
+
+    /* Hint button (in-game) */
+    .hint-row{text-align:center;margin-top:.5rem}
+    .hint-btn{font-size:.75rem;color:var(--text3);background:none;border:1px dashed var(--border);border-radius:20px;padding:.25rem .7rem;cursor:pointer;font-family:var(--font);transition:all .15s}
+    .hint-btn:hover{color:var(--amber);border-color:var(--amber)}
+    .hint-btn:disabled{opacity:.3;cursor:default}
+
+    /* Result screen */
+    .result-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:2rem;text-align:center;margin-top:1rem}
+    .result-icon{font-size:3rem;margin-bottom:.75rem}
+    .result-score{font-size:2.8rem;font-weight:900;font-family:var(--mono);background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .result-label{font-size:.82rem;color:var(--text2);margin-bottom:1rem}
+    .result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:1.25rem 0}
+    .result-stat{background:var(--bg);border-radius:var(--radius);padding:.75rem .5rem}
+    .result-stat .rs-val{font-size:1.1rem;font-weight:800;font-family:var(--mono);color:var(--text)}
+    .result-stat .rs-label{font-size:.65rem;color:var(--text3);margin-top:.15rem}
+    .result-tier{font-size:.88rem;font-weight:700;margin:.75rem 0;padding:.5rem 1rem;display:inline-block;border-radius:20px}
+    .tier-master{background:linear-gradient(135deg,#F59E0B,#EF4444);color:#fff}
+    .tier-expert{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff}
+    .tier-intermediate{background:var(--green-bg);color:var(--green)}
+    .tier-beginner{background:rgba(100,116,139,.15);color:var(--text2)}
+
+    .result-actions{display:flex;gap:.5rem;margin-top:1.25rem;justify-content:center;flex-wrap:wrap}
+    .result-actions button{padding:.6rem 1.25rem;border-radius:var(--radius);font-family:var(--font);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .15s;border:none}
+    .btn-retry{background:var(--primary);color:#fff}
+    .btn-retry:hover{background:#2563EB}
+    .btn-share{background:var(--surface2);color:var(--text);border:1px solid var(--border) !important}
+    .btn-share:hover{border-color:var(--primary) !important;color:var(--primary)}
+    .btn-home{background:transparent;color:var(--text3);border:1px solid var(--border) !important}
+    .btn-home:hover{color:var(--text);border-color:var(--text2) !important}
+
+    /* Ranking */
+    .ranking{margin-top:1.5rem}
+    .ranking h3{font-size:.92rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+    .rank-list{list-style:none}
+    .rank-item{display:flex;align-items:center;gap:.6rem;padding:.5rem .75rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.35rem;font-size:.82rem}
+    .rank-item.me{border-color:var(--primary);background:rgba(59,130,246,.06)}
+    .rank-pos{font-weight:800;font-family:var(--mono);width:1.5rem;text-align:center;font-size:.85rem}
+    .rank-pos.gold{color:#F59E0B}
+    .rank-pos.silver{color:#94A3B8}
+    .rank-pos.bronze{color:#CD7F32}
+    .rank-name{flex:1;font-weight:500}
+    .rank-score{font-family:var(--mono);font-weight:700;color:var(--primary)}
+    .rank-empty{font-size:.8rem;color:var(--text3);text-align:center;padding:1rem}
+
+    /* Nickname modal */
+    .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;padding:1rem}
+    .modal-overlay.show{display:flex}
+    .modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.75rem;max-width:360px;width:100%}
+    .modal h3{font-size:1rem;font-weight:700;margin-bottom:.3rem}
+    .modal p{font-size:.8rem;color:var(--text2);margin-bottom:1rem}
+    .modal input{width:100%;font-family:var(--font);font-size:.92rem;padding:.6rem .8rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);outline:none;margin-bottom:.75rem}
+    .modal input:focus{border-color:var(--primary)}
+    .modal button{width:100%;padding:.6rem;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-family:var(--font);font-size:.88rem;font-weight:700;cursor:pointer}
+
+    /* Responsive */
+    @media(max-width:640px){
+      .wrap{padding:.75rem 1rem 2rem}
+      .header h1{font-size:1.2rem}
+      .q-text{font-size:1.1rem}
+      .input-area input{font-size:.92rem;padding:.65rem .75rem}
+      .input-area button{padding:.65rem 1rem;font-size:.82rem}
+      .game-bar{padding:.5rem .6rem;gap:.25rem}
+      .game-bar .stat-value{font-size:.95rem}
+      .result-score{font-size:2.2rem}
+      .result-stats{grid-template-columns:repeat(3,1fr);gap:.35rem}
+    }
+
+    /* Fix for mobile keyboard */
+    @media(max-height:500px){
+      .q-area{min-height:80px;padding:1rem}
+      .q-text{font-size:1rem}
+      .game-bar{padding:.4rem .6rem}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <a href="/markdown/game/" class="back">&larr; 게임 목록</a>
+
+  <div class="header">
+    <h1>&#x2328;&#xFE0F; 마크다운 <span>타자대전</span></h1>
+    <p class="sub">화면에 나타나는 마크다운 문법을 정확히 입력하세요!</p>
+  </div>
+
+  <!-- SCREEN: START -->
+  <div class="screen active" id="screen-start">
+    <div class="level-grid">
+      <div class="level-card lv1" onclick="startGame(1)">
+        <div class="lv-head">
+          <span class="lv-badge">Level 1</span>
+          <span class="lv-title">초급 - 기본 문법</span>
+        </div>
+        <div class="lv-desc"># 제목, **굵게**, *기울임*, - 목록 등 기본 마크다운 문법을 연습합니다.</div>
+        <div class="lv-meta">10문항 / 제한시간 30초 / 빠른 입력 보너스</div>
+      </div>
+      <div class="level-card lv2" onclick="startGame(2)">
+        <div class="lv-head">
+          <span class="lv-badge">Level 2</span>
+          <span class="lv-title">중급 - 확장 문법</span>
+        </div>
+        <div class="lv-desc">링크, 이미지, 코드 블록, 체크박스 등 확장 문법이 포함됩니다.</div>
+        <div class="lv-meta">10문항 / 제한시간 45초 / 오타 페널티 적용</div>
+      </div>
+      <div class="level-card lv3" onclick="startGame(3)">
+        <div class="lv-head">
+          <span class="lv-badge">Level 3</span>
+          <span class="lv-title">상급 - 변환 챌린지</span>
+        </div>
+        <div class="lv-desc">일반 문장을 마크다운으로 변환하세요. 정확한 문법 지식이 필요합니다.</div>
+        <div class="lv-meta">10문항 / 제한시간 60초 / 정확도 중심 채점</div>
+      </div>
+    </div>
+
+    <div style="text-align:center">
+      <button class="info-btn" onclick="toggleInfo()">&#x2753; 마크다운이 뭔가요?</button>
+      <div class="info-popup" id="info-popup">
+        <p><strong>마크다운(Markdown)</strong>은 글자를 꾸미는 간단한 문법이에요.</p>
+        <p>예를 들어 <code># 제목</code>이라고 쓰면 큰 제목이 되고, <code>**굵게**</code>라고 쓰면 <strong>굵은 글씨</strong>가 됩니다.</p>
+        <p>GitHub, Notion, 블로그 등 어디서나 쓰이고 있어서, 한번 배우면 두고두고 유용합니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: GAME -->
+  <div class="screen" id="screen-game">
+    <div class="game-bar">
+      <div class="stat"><div class="stat-label">단계</div><div class="stat-value" id="g-level">1</div></div>
+      <div class="stat"><div class="stat-label">문항</div><div class="stat-value" id="g-qnum">1/10</div></div>
+      <div class="stat"><div class="stat-label">시간</div><div class="stat-value time" id="g-time">30</div></div>
+      <div class="stat"><div class="stat-label">점수</div><div class="stat-value score" id="g-score">0</div></div>
+      <div class="stat"><div class="stat-label">콤보</div><div class="stat-value combo" id="g-combo">0</div></div>
+    </div>
+    <div class="progress"><div class="progress-fill" id="g-progress"></div></div>
+
+    <div class="q-area">
+      <div class="q-label" id="g-qlabel">이 마크다운을 그대로 입력하세요</div>
+      <div class="q-text" id="g-question">-</div>
+      <div class="q-hint" id="g-hint" style="display:none"></div>
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="g-input" placeholder="여기에 입력..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <button id="g-submit" onclick="submitAnswer()">Enter</button>
+    </div>
+    <div class="toast" id="g-toast">&nbsp;</div>
+    <div class="hint-row">
+      <button class="hint-btn" id="g-hint-btn" onclick="useHint()">&#x1F4A1; 힌트 보기 (3회)</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: RESULT -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <div class="result-icon" id="r-icon">&#x1F3C6;</div>
+      <div class="result-score" id="r-score">0</div>
+      <div class="result-label">최종 점수</div>
+      <div class="result-tier" id="r-tier"></div>
+      <div class="result-stats">
+        <div class="result-stat"><div class="rs-val" id="r-correct">0</div><div class="rs-label">정답</div></div>
+        <div class="result-stat"><div class="rs-val" id="r-maxcombo">0</div><div class="rs-label">최대 콤보</div></div>
+        <div class="result-stat"><div class="rs-val" id="r-accuracy">0%</div><div class="rs-label">정확도</div></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-retry" onclick="retryGame()">다시 도전</button>
+        <button class="btn-share" onclick="shareResult()">결과 공유</button>
+        <button class="btn-home" onclick="goHome()">레벨 선택</button>
+      </div>
+    </div>
+    <div class="ranking" id="ranking-section">
+      <h3>&#x1F3C5; 랭킹 TOP 10</h3>
+      <ul class="rank-list" id="rank-list"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- Nickname Modal -->
+<div class="modal-overlay" id="nick-modal">
+  <div class="modal">
+    <h3>닉네임 입력</h3>
+    <p>랭킹에 등록할 이름을 입력하세요.</p>
+    <input type="text" id="nick-input" placeholder="닉네임 (최대 8자)" maxlength="8">
+    <button onclick="saveNickname()">저장</button>
+  </div>
+</div>
+
+<script>
+/* ── 문제 데이터 ── */
+const QUESTIONS = {
+  1: [
+    { example: '# 제목', answer: '# 제목', hint: '#과 공백 한 칸 뒤에 제목 텍스트' },
+    { example: '## 소제목', answer: '## 소제목', hint: '#을 두 번 쓰면 소제목' },
+    { example: '### 부제목', answer: '### 부제목', hint: '#을 세 번 쓰면 더 작은 제목' },
+    { example: '**굵은 글씨**', answer: '**굵은 글씨**', hint: '별표 2개로 감싸면 굵게' },
+    { example: '*기울임*', answer: '*기울임*', hint: '별표 1개로 감싸면 기울임' },
+    { example: '***굵은 기울임***', answer: '***굵은 기울임***', hint: '별표 3개로 감싸기' },
+    { example: '~~취소선~~', answer: '~~취소선~~', hint: '물결 2개로 감싸기' },
+    { example: '- 목록 항목', answer: '- 목록 항목', hint: '대시와 공백으로 시작' },
+    { example: '1. 첫 번째', answer: '1. 첫 번째', hint: '숫자와 점, 공백으로 시작' },
+    { example: '> 인용문', answer: '> 인용문', hint: '>와 공백 뒤에 텍스트' },
+    { example: '---', answer: '---', hint: '대시 3개로 구분선' },
+    { example: '`인라인 코드`', answer: '`인라인 코드`', hint: '백틱 1개로 감싸기' },
+    { example: '- [ ] 할 일', answer: '- [ ] 할 일', hint: '대시, 공백, 대괄호 안에 공백' },
+    { example: '- [x] 완료', answer: '- [x] 완료', hint: '대괄호 안에 x를 넣으면 체크' },
+  ],
+  2: [
+    { example: '[링크](https://example.com)', answer: '[링크](https://example.com)', hint: '대괄호 안에 텍스트, 소괄호 안에 URL' },
+    { example: '![이미지](img.png)', answer: '![이미지](img.png)', hint: '!로 시작하면 이미지' },
+    { example: '```python```', answer: '```python```', hint: '백틱 3개와 언어 이름' },
+    { example: '| 이름 | 나이 |', answer: '| 이름 | 나이 |', hint: '파이프로 구분하는 표' },
+    { example: '| --- | --- |', answer: '| --- | --- |', hint: '표의 구분선 행' },
+    { example: '[^1]: 각주입니다', answer: '[^1]: 각주입니다', hint: '[^숫자]: 내용 형식' },
+    { example: '- [ ] TODO', answer: '- [ ] TODO', hint: '체크박스: 대시 공백 대괄호' },
+    { example: '> **중요:** 내용', answer: '> **중요:** 내용', hint: '인용문 안에 굵은 글씨' },
+    { example: '1. **첫 번째** 항목', answer: '1. **첫 번째** 항목', hint: '순서 목록에 굵게 혼합' },
+    { example: '`const x = 1;`', answer: '`const x = 1;`', hint: '인라인 코드로 JS 감싸기' },
+    { example: '[![배지](b.svg)](url)', answer: '[![배지](b.svg)](url)', hint: '이미지를 링크로 감싸기' },
+    { example: '## 2. 개요', answer: '## 2. 개요', hint: '제목에 번호 포함' },
+    { example: '*기울임*과 **굵게**', answer: '*기울임*과 **굵게**', hint: '두 가지 스타일 혼합' },
+  ],
+  3: [
+    { display: '"제목"을 h1으로', answer: '# 제목', hint: '#과 공백' },
+    { display: '"소제목"을 h2로', answer: '## 소제목', hint: '##과 공백' },
+    { display: '"중요"를 굵게', answer: '**중요**', hint: '별표 2개로 감싸기' },
+    { display: '"강조"를 기울임으로', answer: '*강조*', hint: '별표 1개로 감싸기' },
+    { display: '"삭제"에 취소선', answer: '~~삭제~~', hint: '물결 2개로 감싸기' },
+    { display: '"코드"를 인라인 코드로', answer: '`코드`', hint: '백틱으로 감싸기' },
+    { display: '"사이트"에 https://leaf-kit.github.io 링크', answer: '[사이트](https://leaf-kit.github.io)', hint: '[텍스트](URL) 형식' },
+    { display: '"사과, 바나나"를 글머리 목록으로', answer: '- 사과\n- 바나나', hint: '각 항목 앞에 - 공백' },
+    { display: '"할 일"을 미완료 체크박스로', answer: '- [ ] 할 일', hint: '- [ ] 형식' },
+    { display: '"경고: 주의하세요"를 인용문으로', answer: '> 경고: 주의하세요', hint: '>와 공백으로 시작' },
+    { display: '"이미지"에 photo.jpg 이미지 삽입', answer: '![이미지](photo.jpg)', hint: '![대체텍스트](파일) 형식' },
+    { display: '"파이썬"을 코드 블록 언어로', answer: '```python```', hint: '백틱 3개와 언어명' },
+  ],
+};
+
+const LEVEL_CONFIG = {
+  1: { time: 30, count: 10, fastBonus: 3000 },
+  2: { time: 45, count: 10, fastBonus: 3000, penalty: true },
+  3: { time: 60, count: 10, fastBonus: 3000 },
+};
+
+/* ── 게임 상태 ── */
+let state = {
+  level: 1,
+  questions: [],
+  current: 0,
+  score: 0,
+  combo: 0,
+  maxCombo: 0,
+  correct: 0,
+  total: 0,
+  timeLeft: 30,
+  timer: null,
+  qStart: 0,
+  hints: 3,
+  nickname: localStorage.getItem('md_nick') || '',
+};
+
+/* ── 화면 전환 ── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function toggleInfo() {
+  document.getElementById('info-popup').classList.toggle('show');
+}
+
+/* ── 게임 시작 ── */
+function startGame(level) {
+  const cfg = LEVEL_CONFIG[level];
+  const pool = [...QUESTIONS[level]];
+  shuffle(pool);
+  const questions = pool.slice(0, cfg.count);
+
+  state = {
+    level,
+    questions,
+    current: 0,
+    score: 0,
+    combo: 0,
+    maxCombo: 0,
+    correct: 0,
+    total: questions.length,
+    timeLeft: cfg.time,
+    timer: null,
+    qStart: 0,
+    hints: 3,
+    nickname: state.nickname,
+  };
+
+  showScreen('game');
+  document.getElementById('g-level').textContent = level;
+  document.getElementById('g-score').textContent = '0';
+  document.getElementById('g-combo').textContent = '0';
+  updateTimeDisplay();
+  showQuestion();
+  startTimer();
+
+  const inp = document.getElementById('g-input');
+  inp.value = '';
+  inp.className = '';
+  inp.focus();
+  document.getElementById('g-hint-btn').disabled = false;
+  document.getElementById('g-hint-btn').textContent = '\u{1F4A1} 힌트 보기 (3회)';
+}
+
+function startTimer() {
+  clearInterval(state.timer);
+  state.timer = setInterval(() => {
+    state.timeLeft--;
+    updateTimeDisplay();
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timer);
+      endGame();
+    }
+  }, 1000);
+}
+
+function updateTimeDisplay() {
+  const el = document.getElementById('g-time');
+  el.textContent = state.timeLeft;
+  el.classList.toggle('danger', state.timeLeft <= 5);
+}
+
+/* ── 문제 표시 ── */
+function showQuestion() {
+  const q = state.questions[state.current];
+  const isLv3 = state.level === 3;
+
+  document.getElementById('g-qlabel').textContent = isLv3
+    ? '아래 설명대로 마크다운을 작성하세요'
+    : '이 마크다운을 그대로 입력하세요';
+
+  document.getElementById('g-question').textContent = isLv3 ? q.display : q.example;
+  document.getElementById('g-qnum').textContent = (state.current + 1) + '/' + state.total;
+  document.getElementById('g-progress').style.width = ((state.current) / state.total * 100) + '%';
+  document.getElementById('g-hint').style.display = 'none';
+  document.getElementById('g-toast').innerHTML = '&nbsp;';
+
+  state.qStart = Date.now();
+
+  const inp = document.getElementById('g-input');
+  inp.value = '';
+  inp.className = '';
+  inp.focus();
+}
+
+/* ── 정답 제출 ── */
+function submitAnswer() {
+  const inp = document.getElementById('g-input');
+  const userAnswer = inp.value.trim();
+  if (!userAnswer) return;
+
+  const q = state.questions[state.current];
+  const elapsed = (Date.now() - state.qStart) / 1000;
+  const isCorrect = userAnswer === q.answer;
+
+  if (isCorrect) {
+    let pts = elapsed <= 3 ? 10 : 1;
+    state.combo++;
+    if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+
+    // 콤보 보너스
+    if (state.combo >= 3) pts += Math.floor(state.combo / 3) * 2;
+
+    // 빠른 입력 보너스
+    if (elapsed <= 3) {
+      const bonus = Math.max(0, Math.floor((LEVEL_CONFIG[state.level].fastBonus - elapsed * 1000) / 100));
+      pts += bonus;
+    }
+
+    state.score += pts;
+    state.correct++;
+
+    inp.className = 'correct';
+    showToast(elapsed <= 3 ? 'fast' : 'good', elapsed <= 3 ? `+${pts}점! 번개 입력!` : `+${pts}점! 정답!`);
+  } else {
+    state.combo = 0;
+    inp.className = 'wrong';
+
+    if (LEVEL_CONFIG[state.level].penalty) {
+      state.timeLeft = Math.max(0, state.timeLeft - 2);
+      updateTimeDisplay();
+      showToast('miss', '오답! -2초 페널티');
+    } else {
+      showToast('miss', '오답! 다시 입력하세요');
+    }
+
+    // 오답이면 재입력 기회
+    setTimeout(() => { inp.className = ''; inp.value = ''; inp.focus(); }, 400);
+    return;
+  }
+
+  document.getElementById('g-score').textContent = state.score;
+  document.getElementById('g-combo').textContent = state.combo;
+
+  state.current++;
+  if (state.current >= state.total) {
+    clearInterval(state.timer);
+    setTimeout(endGame, 500);
+  } else {
+    setTimeout(showQuestion, 400);
+  }
+}
+
+function showToast(type, msg) {
+  const el = document.getElementById('g-toast');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+}
+
+/* ── 힌트 ── */
+function useHint() {
+  if (state.hints <= 0) return;
+  state.hints--;
+  const q = state.questions[state.current];
+  const hintEl = document.getElementById('g-hint');
+  hintEl.innerHTML = q.hint;
+  hintEl.style.display = 'block';
+
+  const btn = document.getElementById('g-hint-btn');
+  if (state.hints <= 0) {
+    btn.disabled = true;
+    btn.textContent = '\u{1F4A1} 힌트 소진';
+  } else {
+    btn.textContent = `\u{1F4A1} 힌트 보기 (${state.hints}회)`;
+  }
+}
+
+/* ── 게임 종료 ── */
+function endGame() {
+  showScreen('result');
+  document.getElementById('g-progress').style.width = '100%';
+
+  const accuracy = state.total > 0 ? Math.round(state.correct / state.total * 100) : 0;
+  document.getElementById('r-score').textContent = state.score;
+  document.getElementById('r-correct').textContent = state.correct + '/' + state.total;
+  document.getElementById('r-maxcombo').textContent = state.maxCombo;
+  document.getElementById('r-accuracy').textContent = accuracy + '%';
+
+  // 티어 계산
+  const tier = getTier(state.score, state.level);
+  const tierEl = document.getElementById('r-tier');
+  tierEl.textContent = tier.name;
+  tierEl.className = 'result-tier ' + tier.cls;
+
+  const icons = { 'tier-master': '\u{1F451}', 'tier-expert': '\u{1F3C6}', 'tier-intermediate': '\u{2B50}', 'tier-beginner': '\u{1F331}' };
+  document.getElementById('r-icon').textContent = icons[tier.cls] || '\u{1F3C6}';
+
+  // 랭킹 저장
+  if (!state.nickname) {
+    document.getElementById('nick-modal').classList.add('show');
+    document.getElementById('nick-input').focus();
+  } else {
+    saveScore();
+  }
+
+  renderRanking();
+}
+
+function getTier(score, level) {
+  const thresholds = {
+    1: [{s:80,n:'마크다운 마스터',c:'tier-master'},{s:50,n:'마크다운 고수',c:'tier-expert'},{s:20,n:'마크다운 중수',c:'tier-intermediate'},{s:0,n:'마크다운 새싹',c:'tier-beginner'}],
+    2: [{s:70,n:'문법 달인',c:'tier-master'},{s:40,n:'문법 전문가',c:'tier-expert'},{s:15,n:'문법 수련생',c:'tier-intermediate'},{s:0,n:'문법 입문자',c:'tier-beginner'}],
+    3: [{s:60,n:'변환의 신',c:'tier-master'},{s:35,n:'변환 전문가',c:'tier-expert'},{s:15,n:'변환 도전자',c:'tier-intermediate'},{s:0,n:'변환 초심자',c:'tier-beginner'}],
+  };
+  const t = thresholds[level] || thresholds[1];
+  for (const th of t) { if (score >= th.s) return { name: th.n, cls: th.c }; }
+  return { name: '새싹', cls: 'tier-beginner' };
+}
+
+/* ── 닉네임 ── */
+function saveNickname() {
+  const name = document.getElementById('nick-input').value.trim().slice(0, 8);
+  if (!name) return;
+  state.nickname = name;
+  localStorage.setItem('md_nick', name);
+  document.getElementById('nick-modal').classList.remove('show');
+  saveScore();
+  renderRanking();
+}
+
+/* ── 점수 저장 (localStorage) ── */
+function saveScore() {
+  const key = 'md_rank_lv' + state.level;
+  let ranks = JSON.parse(localStorage.getItem(key) || '[]');
+  ranks.push({
+    name: state.nickname,
+    score: state.score,
+    accuracy: state.total > 0 ? Math.round(state.correct / state.total * 100) : 0,
+    date: new Date().toISOString().slice(0, 10),
+  });
+  ranks.sort((a, b) => b.score - a.score);
+  ranks = ranks.slice(0, 50);
+  localStorage.setItem(key, JSON.stringify(ranks));
+}
+
+function renderRanking() {
+  const key = 'md_rank_lv' + state.level;
+  const ranks = JSON.parse(localStorage.getItem(key) || '[]').slice(0, 10);
+  const list = document.getElementById('rank-list');
+
+  if (ranks.length === 0) {
+    list.innerHTML = '<li class="rank-empty">아직 기록이 없습니다. 첫 번째 도전자가 되어보세요!</li>';
+    return;
+  }
+
+  list.innerHTML = ranks.map((r, i) => {
+    const posClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    const isMe = r.name === state.nickname && r.score === state.score;
+    return `<li class="rank-item${isMe ? ' me' : ''}">
+      <span class="rank-pos ${posClass}">${i + 1}</span>
+      <span class="rank-name">${escHtml(r.name)}</span>
+      <span class="rank-score">${r.score}점</span>
+    </li>`;
+  }).join('');
+}
+
+/* ── 결과 공유 ── */
+function shareResult() {
+  const tier = getTier(state.score, state.level);
+  const lvNames = { 1: '초급', 2: '중급', 3: '상급' };
+  const text = `마크다운 타자대전 [${lvNames[state.level]}] ${state.score}점 - ${tier.name} 달성!\n정확도 ${Math.round(state.correct / state.total * 100)}% | 최대 콤보 ${state.maxCombo}\n\n나도 도전하기:`;
+  const url = 'https://leaf-kit.github.io/markdown/game/typing-battle/';
+  const hashtags = '마크다운,타자대전,마크다운게임';
+
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent(hashtags)}&via=leafeditor`;
+  window.open(twitterUrl, '_blank', 'width=550,height=420');
+}
+
+/* ── 네비게이션 ── */
+function retryGame() { startGame(state.level); }
+function goHome() { showScreen('start'); }
+
+/* ── 유틸 ── */
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+/* ── 이벤트 ── */
+document.getElementById('g-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    submitAnswer();
+  }
+});
+
+document.getElementById('nick-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') saveNickname();
+});
+</script>
+</body>
+</html>

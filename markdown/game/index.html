@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마크다운 게임 — Markdown Games</title>
+  <meta name="description" content="게임으로 배우는 마크다운. 타자 대전, 퀴즈 등 다양한 미니게임으로 마크다운 문법을 자연스럽게 익혀보세요.">
+  <meta property="og:title" content="마크다운 게임">
+  <meta property="og:description" content="게임으로 배우는 마크다운 문법. 누구나 쉽게 도전!">
+  <meta property="og:url" content="https://leaf-kit.github.io/markdown/game/">
+  <link rel="canonical" href="https://leaf-kit.github.io/markdown/game/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#FAFAFA;--surface:#fff;--text:#1a1a2e;--text2:#64748B;--primary:#2563EB;--accent:#7C3AED;--border:#E2E8F0;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,.06)}
+    html{font-size:17px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+    a{color:var(--primary);text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:rgba(37,99,235,.15)}
+
+    .page{max-width:860px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+
+    /* Back link */
+    .back{display:inline-flex;align-items:center;gap:.3rem;font-size:.82rem;color:var(--text2);margin-bottom:2rem;font-weight:500}
+    .back:hover{color:var(--primary);text-decoration:none}
+
+    /* Hero */
+    .hero{text-align:center;margin-bottom:3rem;padding-bottom:2.5rem;border-bottom:1px solid var(--border)}
+    .hero-icon{font-size:3rem;margin-bottom:1rem}
+    .hero h1{font-size:2.2rem;font-weight:900;letter-spacing:-.02em;line-height:1.3}
+    .hero h1 span{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero .lead{font-size:1rem;color:var(--text2);margin-top:.75rem;max-width:560px;margin-left:auto;margin-right:auto}
+
+    /* Why section */
+    .why{margin-bottom:3rem}
+    .why h2{font-size:1.3rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.4rem}
+    .why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+    .why-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;transition:box-shadow .15s}
+    .why-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.06)}
+    .why-card .icon{font-size:1.4rem;margin-bottom:.5rem}
+    .why-card h3{font-size:.92rem;font-weight:700;margin-bottom:.3rem}
+    .why-card p{font-size:.82rem;color:var(--text2);line-height:1.6}
+
+    /* Game list */
+    .games{margin-bottom:3rem}
+    .games h2{font-size:1.3rem;font-weight:800;margin-bottom:1.25rem;display:flex;align-items:center;gap:.4rem}
+    .game-card{display:flex;gap:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:all .2s;align-items:center}
+    .game-card:hover{box-shadow:0 4px 16px rgba(37,99,235,.1);border-color:var(--primary);text-decoration:none;transform:translateY(-2px)}
+    .game-icon{font-size:2.5rem;flex-shrink:0;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(124,58,237,.08));border-radius:12px}
+    .game-info{flex:1;min-width:0}
+    .game-info h3{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:.2rem}
+    .game-info p{font-size:.85rem;color:var(--text2);line-height:1.6;margin-bottom:.5rem}
+    .game-tags{display:flex;gap:.4rem;flex-wrap:wrap}
+    .game-tag{font-size:.68rem;font-weight:600;padding:.15rem .5rem;border-radius:20px;background:rgba(37,99,235,.08);color:var(--primary)}
+    .game-tag.purple{background:rgba(124,58,237,.08);color:var(--accent)}
+    .game-arrow{color:var(--text2);font-size:1.2rem;flex-shrink:0}
+
+    /* Coming soon */
+    .coming{opacity:.5;pointer-events:none}
+    .coming .game-tag{background:rgba(0,0,0,.05);color:var(--text2)}
+
+    /* Footer */
+    .footer{text-align:center;padding-top:2rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text2)}
+    .footer a{color:var(--text2)}
+    .footer a:hover{color:var(--primary)}
+
+    @media(max-width:640px){
+      .page{padding:1.5rem 1rem 3rem}
+      .hero h1{font-size:1.6rem}
+      .game-card{flex-direction:column;gap:1rem;text-align:center}
+      .game-tags{justify-content:center}
+      .game-arrow{display:none}
+      .why-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <a href="/markdown/" class="back">&larr; 마크다운 가이드로 돌아가기</a>
+
+    <div class="hero">
+      <div class="hero-icon">&#x1F3AE;</div>
+      <h1>게임으로 배우는 <span>마크다운</span></h1>
+      <p class="lead">
+        딱딱한 문법 암기는 그만. 타자 게임, 퀴즈 등 다양한 미니게임을 플레이하면서
+        마크다운 문법이 손에 익도록 해보세요. 초등학생부터 직장인까지 누구나 도전할 수 있습니다.
+      </p>
+    </div>
+
+    <div class="why">
+      <h2>왜 게임으로 배울까?</h2>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="icon">&#x1F9E0;</div>
+          <h3>반복이 기억을 만든다</h3>
+          <p>게임을 반복하면 <code>#</code>, <code>**</code>, <code>-</code> 같은 문법이 무의식적으로 손에 익습니다.</p>
+        </div>
+        <div class="why-card">
+          <div class="icon">&#x26A1;</div>
+          <h3>즉각적인 피드백</h3>
+          <p>맞으면 바로 점수가 오르고, 틀리면 즉시 교정. 문법서를 읽는 것보다 훨씬 빠르게 체득합니다.</p>
+        </div>
+        <div class="why-card">
+          <div class="icon">&#x1F3C6;</div>
+          <h3>경쟁과 동기부여</h3>
+          <p>내 최고 점수를 갱신하고, 결과를 친구에게 공유하면서 자연스럽게 동기가 생깁니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="games">
+      <h2>게임 목록</h2>
+
+      <a href="/markdown/game/typing-battle/" class="game-card">
+        <div class="game-icon">&#x2328;&#xFE0F;</div>
+        <div class="game-info">
+          <h3>마크다운 타자대전</h3>
+          <p>화면에 나타나는 마크다운 문법을 제한 시간 안에 정확히 입력하세요. 3단계 난이도로 초보자부터 고수까지 도전 가능!</p>
+          <div class="game-tags">
+            <span class="game-tag">타이핑</span>
+            <span class="game-tag purple">3단계 난이도</span>
+            <span class="game-tag">랭킹</span>
+          </div>
+        </div>
+        <span class="game-arrow">&rarr;</span>
+      </a>
+
+      <div class="game-card coming">
+        <div class="game-icon">&#x1F4A1;</div>
+        <div class="game-info">
+          <h3>마크다운 퀴즈 러너</h3>
+          <p>마크다운 렌더링 결과를 보고 원본 문법을 맞히는 역방향 퀴즈. 준비 중입니다.</p>
+          <div class="game-tags">
+            <span class="game-tag">퀴즈</span>
+            <span class="game-tag">준비 중</span>
+          </div>
+        </div>
+        <span class="game-arrow">&rarr;</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p><a href="/">leaf-kit</a> &middot; <a href="/markdown/">마크다운 가이드</a></p>
+    </div>
+  </div>
+</body>
+</html>
