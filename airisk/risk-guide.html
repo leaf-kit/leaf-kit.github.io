@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 리스크 가이드 — 무엇이, 왜, 어떻게 위험한가</title>
+  <meta name="description" content="AI 위험의 정의, 유형, 관리 프레임워크, 규제 동향, 직업 대체 리스크까지 종합 가이드.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#2563EB;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--purple:#7C3AED;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,.06)}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+    a{color:var(--primary);text-decoration:none}
+
+    .nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:var(--text)}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions::-webkit-scrollbar{display:none}
+    .nav-actions a{color:var(--text2);font-size:.8rem;font-weight:500;padding:.4rem .6rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:var(--primary);background:#EFF6FF;text-decoration:none}
+
+    @keyframes fu{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Hero */
+    .guide-hero{padding:4rem 2rem 3rem;background:linear-gradient(160deg,#0F172A 0%,#1E293B 40%,#312E81 100%);color:#fff;text-align:center;position:relative;overflow:hidden}
+    .guide-hero::before{content:'';position:absolute;top:-40%;right:-15%;width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.15) 0%,transparent 60%);pointer-events:none}
+    .guide-hero::after{content:'';position:absolute;bottom:-30%;left:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(239,68,68,.1) 0%,transparent 60%);pointer-events:none}
+    .guide-hero h1{font-size:2.2rem;font-weight:900;opacity:0;animation:fu .7s ease forwards .2s}
+    .guide-hero .sub{color:rgba(255,255,255,.6);font-size:1rem;margin-top:.6rem;opacity:0;animation:fu .7s ease forwards .4s}
+    .guide-hero .flow{display:flex;justify-content:center;gap:.5rem;margin-top:2rem;flex-wrap:wrap;opacity:0;animation:fu .7s ease forwards .6s}
+    .flow-step{padding:.5rem 1.2rem;border-radius:2rem;font-size:.82rem;font-weight:700;display:flex;align-items:center;gap:.3rem}
+    .flow-arrow{color:rgba(255,255,255,.3);font-size:1.2rem}
+
+    .container{max-width:900px;margin:0 auto;padding:0 2rem}
+
+    /* TOC */
+    .toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 2rem;margin:2rem 0}
+    .toc h3{font-size:.9rem;font-weight:700;margin-bottom:.75rem;color:var(--primary)}
+    .toc ol{padding-left:1.2rem}
+    .toc li{font-size:.85rem;margin-bottom:.35rem}
+    .toc a{color:var(--text);font-weight:500}
+    .toc a:hover{color:var(--primary)}
+
+    /* Sections */
+    .guide-section{padding:3rem 0;border-bottom:1px solid var(--border)}
+    .guide-section:last-of-type{border-bottom:none}
+    .guide-section h2{font-size:1.4rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;scroll-margin-top:60px}
+    .section-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;font-size:.85rem;font-weight:800;flex-shrink:0}
+    .guide-section p{font-size:.9rem;color:var(--text2);line-height:1.8;margin-bottom:1rem}
+    .guide-section h3{font-size:1.05rem;font-weight:700;margin:1.5rem 0 .5rem}
+
+    /* Highlight box */
+    .highlight{border-radius:var(--radius);padding:1.25rem 1.5rem;margin:1.25rem 0}
+    .highlight.blue{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+    .highlight.red{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+    .highlight.purple{background:#F5F3FF;border:1px solid #DDD6FE;color:#5B21B6}
+    .highlight.amber{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+    .highlight.green{background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46}
+    .highlight strong{font-weight:700}
+    .highlight p{color:inherit;font-size:.85rem;margin-bottom:0}
+
+    /* Risk type table */
+    .risk-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.85rem}
+    .risk-table th{background:#0F172A;color:#fff;padding:.6rem 1rem;text-align:left;font-weight:600}
+    .risk-table td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}
+    .risk-table tr:hover td{background:#F0F9FF}
+    .risk-table .cat-cell{font-weight:700;white-space:nowrap}
+    .risk-badge{font-size:.68rem;padding:.12rem .4rem;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap}
+
+    /* Framework flow */
+    .framework{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:1.5rem 0}
+    .fw-step{background:#fff;border:2px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;position:relative;transition:border-color .2s,transform .15s}
+    .fw-step:hover{border-color:var(--primary);transform:translateY(-3px)}
+    .fw-step::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:1.2rem;color:var(--border);font-weight:700}
+    .fw-step:last-child::after{display:none}
+    .fw-icon{font-size:1.8rem;margin-bottom:.5rem}
+    .fw-title{font-size:.88rem;font-weight:700}
+    .fw-desc{font-size:.75rem;color:var(--text2);margin-top:.3rem;line-height:1.5}
+
+    /* Strategy cards */
+    .strategy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:1.5rem 0}
+    .strategy-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;transition:border-color .2s}
+    .strategy-card:hover{border-color:var(--primary)}
+    .strategy-icon{font-size:1.5rem;margin-bottom:.5rem}
+    .strategy-title{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+    .strategy-desc{font-size:.82rem;color:var(--text2);line-height:1.6}
+    .strategy-items{margin-top:.5rem;padding-left:1rem}
+    .strategy-items li{font-size:.8rem;color:var(--text2);line-height:1.7}
+
+    /* Regulation cards */
+    .reg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:1.5rem 0}
+    .reg-card{background:linear-gradient(135deg,#1E293B,#0F172A);color:#fff;border-radius:12px;padding:1.5rem;position:relative;overflow:hidden}
+    .reg-card::before{content:'';position:absolute;top:-30%;right:-10%;width:150px;height:150px;background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 60%);pointer-events:none}
+    .reg-card h4{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+    .reg-card p{font-size:.82rem;color:rgba(255,255,255,.7);line-height:1.6;margin:0}
+    .reg-tag{display:inline-block;font-size:.68rem;padding:.15rem .4rem;border-radius:3px;font-weight:600;margin-top:.5rem}
+
+    /* Case cards */
+    .case-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.5rem 0}
+    .case-card{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow .2s,transform .15s}
+    .case-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-3px)}
+    .case-header{padding:1rem;font-size:.75rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.05em}
+    .case-body{padding:1rem}
+    .case-title{font-size:.9rem;font-weight:700;margin-bottom:.3rem}
+    .case-desc{font-size:.8rem;color:var(--text2);line-height:1.6}
+    .case-impact{margin-top:.5rem;font-size:.75rem;font-weight:600;padding:.2rem .5rem;border-radius:3px;display:inline-block}
+
+    /* Job displacement section */
+    .displacement{background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border:1px solid #FECACA;border-radius:12px;padding:2rem;margin:1.5rem 0}
+    .displacement h3{font-size:1.1rem;font-weight:800;color:#991B1B;margin-bottom:.75rem}
+    .displacement p{font-size:.85rem;color:#7F1D1D;line-height:1.8;margin-bottom:.75rem}
+    .displacement-link{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .8rem;background:#991B1B;color:#fff;border-radius:6px;font-size:.82rem;font-weight:600;margin-top:.5rem}
+    .displacement-link:hover{opacity:.9;color:#fff}
+
+    /* EU AI Act pyramid */
+    .pyramid{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin:1.5rem 0}
+    .pyramid-level{border-radius:6px;padding:.6rem 1.2rem;text-align:center;font-size:.82rem;font-weight:600;color:#fff;transition:transform .2s}
+    .pyramid-level:hover{transform:scale(1.05)}
+    .pyramid-label{font-size:.7rem;color:var(--text2);margin-top:.15rem}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .container{padding:0 1rem}
+      .guide-hero h1{font-size:1.6rem}
+      .framework{grid-template-columns:repeat(2,1fr)}
+      .fw-step::after{display:none}
+      .strategy-grid,.reg-grid{grid-template-columns:1fr}
+      .case-grid{grid-template-columns:1fr}
+      .guide-hero .flow{flex-direction:column;align-items:center}
+      .strategy-grid[style*="repeat(3"]{grid-template-columns:1fr !important}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>
+    AI 리스크
+  </a>
+  <div class="nav-actions">
+    <a href="./">직업 분석</a>
+    <a href="./news.html">근거 뉴스</a>
+    <a href="./agents.html">AI 도구</a>
+    <a href="./risk-guide.html" class="active">리스크 가이드</a>
+    <a href="./game.html">게임</a>
+    <a href="./about.html">About</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="guide-hero">
+  <h1>AI 리스크 종합 가이드</h1>
+  <p class="sub">AI가 가져오는 위험을 이해하고, 관리하고, 대비하기 위한 실무 가이드</p>
+  <div class="flow">
+    <span class="flow-step" style="background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4)">무엇이 위험한가</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step" style="background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4)">왜 위험한가</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step" style="background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4)">어떻게 관리할 것인가</span>
+  </div>
+</section>
+
+<main class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h3>목차</h3>
+    <ol>
+      <li><a href="#s1">개요 및 목적</a></li>
+      <li><a href="#s2">AI 리스크의 정의와 특징</a></li>
+      <li><a href="#s3">대표적인 AI 위험 유형</a></li>
+      <li><a href="#s4">위험 관리 프레임워크</a></li>
+      <li><a href="#s5">조직 차원의 대응 전략</a></li>
+      <li><a href="#s6">규제 및 표준 동향</a></li>
+      <li><a href="#s7">실제 사례 및 시나리오</a></li>
+      <li><a href="#s8">직업 대체 — AI 리스크의 사회경제적 축</a></li>
+      <li><a href="#s9">Responsible AI (RAI) — 책임 있는 AI</a></li>
+      <li><a href="#s10">저명한 AI 리스크 리소스 및 리포트</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. Overview -->
+  <section class="guide-section" id="s1">
+    <h2><span class="section-num">1</span> 개요 및 목적</h2>
+    <p>AI 기술은 전례 없는 속도로 발전하고 있습니다. ChatGPT의 등장 이후 불과 2년 만에, AI는 코드를 작성하고, 이미지를 생성하고, 의료 진단을 보조하고, 법률 리서치를 수행하는 수준에 이르렀습니다. 이러한 발전과 함께 새로운 차원의 위험(Risk)이 부상하고 있습니다.</p>
+
+    <div class="highlight blue">
+      <p><strong>이 문서의 목적:</strong> 조직과 개인이 AI 리스크를 정확히 이해하고, 체계적으로 관리하며, 정책/가이드라인/내부 프로세스 설계의 기초 자료로 활용할 수 있도록 합니다.</p>
+    </div>
+
+    <p>AI 리스크는 기술적 오류에 국한되지 않습니다. 데이터 편향, 개인정보 유출, 사이버 보안 위협, 저작권 침해, 그리고 <strong>대규모 직업 대체</strong>까지 — 사회 전반에 걸친 복합적 위험입니다.</p>
+  </section>
+
+  <!-- 2. Definition -->
+  <section class="guide-section" id="s2">
+    <h2><span class="section-num">2</span> AI 리스크의 정의와 특징</h2>
+
+    <div class="highlight purple">
+      <p><strong>AI 리스크(AI Risk)란:</strong> AI 시스템의 개발, 배포, 운영 과정에서 데이터·모델·시스템·프로세스·조직·사회 전체에 발생할 수 있는 부작용, 손실, 피해의 가능성을 의미합니다.</p>
+    </div>
+
+    <h3>일반 소프트웨어 리스크와 다른 점</h3>
+
+    <table class="risk-table">
+      <thead><tr><th>특징</th><th>일반 SW</th><th>AI 시스템</th></tr></thead>
+      <tbody>
+        <tr><td class="cat-cell">예측 가능성</td><td>입력→출력이 결정적</td><td>동일 입력에도 다른 출력 가능 (확률적)</td></tr>
+        <tr><td class="cat-cell">학습 의존성</td><td>코드가 로직 결정</td><td>학습 데이터가 행동 결정 — 데이터 오염 시 전체 오작동</td></tr>
+        <tr><td class="cat-cell">설명 가능성</td><td>디버깅으로 원인 추적 가능</td><td>블랙박스 — 왜 그런 결정을 했는지 설명 곤란</td></tr>
+        <tr><td class="cat-cell">자율 행동</td><td>프로그래밍된 범위 내 작동</td><td>예상치 못한 창발적 행동 가능</td></tr>
+        <tr><td class="cat-cell">편향 위험</td><td>로직 버그 수준</td><td>사회적 편향이 학습되어 차별적 결과 출력</td></tr>
+        <tr><td class="cat-cell">규모의 영향</td><td>개별 시스템 장애</td><td>수백만 사용자에 동시 영향 — 사회적 파급력</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 3. Risk Types -->
+  <section class="guide-section" id="s3">
+    <h2><span class="section-num">3</span> 대표적인 AI 위험 유형</h2>
+    <p>AI 위험은 5개의 축으로 분류할 수 있습니다. 각 유형은 독립적이 아니라 서로 연결되어 복합적으로 작용합니다.</p>
+
+    <table class="risk-table">
+      <thead><tr><th>분류</th><th>주요 위험</th><th>사례</th><th>심각도</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="cat-cell" style="color:var(--purple)">윤리·사회</td>
+          <td>편향·차별, 독성 콘텐츠 생성, 딥페이크, 가짜 뉴스</td>
+          <td>AI 채용 도구가 여성 지원자를 체계적으로 낮게 평가</td>
+          <td><span class="risk-badge" style="background:#991B1B">매우 높음</span></td>
+        </tr>
+        <tr>
+          <td class="cat-cell" style="color:var(--red)">데이터·개인정보</td>
+          <td>개인정보 유출, 내부 정보 유출, 데이터 포이즌(Data Poisoning)</td>
+          <td>직원이 사내 코드를 ChatGPT에 입력하여 기밀 유출</td>
+          <td><span class="risk-badge" style="background:var(--red)">높음</span></td>
+        </tr>
+        <tr>
+          <td class="cat-cell" style="color:#0F172A">보안·사이버 위협</td>
+          <td>프롬프트 인젝션, 역할 스푸핑, 모델 공격/우회, API 취약점</td>
+          <td>프롬프트 인젝션으로 AI 챗봇이 시스템 규칙을 무시</td>
+          <td><span class="risk-badge" style="background:var(--red)">높음</span></td>
+        </tr>
+        <tr>
+          <td class="cat-cell" style="color:var(--amber)">기술·운영</td>
+          <td>허구적 정보(Hallucination), 오작동·오인식, 의도하지 않은 자율 행동</td>
+          <td>AI 변호사가 존재하지 않는 판례를 인용하여 법정 제출</td>
+          <td><span class="risk-badge" style="background:var(--amber)">중간~높음</span></td>
+        </tr>
+        <tr>
+          <td class="cat-cell" style="color:var(--primary)">법·규제·IP</td>
+          <td>저작권·지식재산권 침해, 규제 위반 (EU AI Act 고위험 AI)</td>
+          <td>AI 생성 이미지가 특정 작가의 스타일을 무단 복제</td>
+          <td><span class="risk-badge" style="background:var(--amber)">중간</span></td>
+        </tr>
+        <tr>
+          <td class="cat-cell" style="color:var(--red)">사회·경제</td>
+          <td><strong>직업 대체, 소득 불균형, 기술 격차, 계층 갈등</strong></td>
+          <td>AI 코딩 도구 도입 후 주니어 개발자 채용 30% 감소</td>
+          <td><span class="risk-badge" style="background:#991B1B">매우 높음</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 4. Framework -->
+  <section class="guide-section" id="s4">
+    <h2><span class="section-num">4</span> 위험 관리 프레임워크</h2>
+    <p>AI 위험 관리는 4단계 순환 프로세스로 구성됩니다. 이 프레임워크는 AI 라이프사이클(기획→개발→배포→운영) 전 단계에 적용됩니다.</p>
+
+    <div class="framework">
+      <div class="fw-step">
+        <div class="fw-icon">&#x1F50D;</div>
+        <div class="fw-title">식별 (Identify)</div>
+        <div class="fw-desc">어떤 시나리오에서 어떤 위험이 발생할 수 있는지 목록화</div>
+      </div>
+      <div class="fw-step">
+        <div class="fw-icon">&#x1F4CA;</div>
+        <div class="fw-title">분석 (Analyze)</div>
+        <div class="fw-desc">발생 가능성 x 영향도를 평가하여 위험 등급 산정</div>
+      </div>
+      <div class="fw-step">
+        <div class="fw-icon">&#x2696;</div>
+        <div class="fw-title">평가 (Evaluate)</div>
+        <div class="fw-desc">허용 가능 수준을 정하고 감수/회피/전가/완화 결정</div>
+      </div>
+      <div class="fw-step">
+        <div class="fw-icon">&#x1F6E1;</div>
+        <div class="fw-title">대응 (Treat)</div>
+        <div class="fw-desc">정책, 통제, 기술적 솔루션을 적용하여 위험 완화</div>
+      </div>
+    </div>
+
+    <div class="highlight green">
+      <p><strong>핵심 원칙:</strong> 위험 관리는 일회성이 아닌 <strong>지속적 순환 프로세스</strong>입니다. AI 기술이 진화할수록 새로운 위험이 등장하므로, 식별→분석→평가→대응 사이클을 주기적으로 반복해야 합니다.</p>
+    </div>
+  </section>
+
+  <!-- 5. Strategy -->
+  <section class="guide-section" id="s5">
+    <h2><span class="section-num">5</span> 조직 차원의 대응 전략</h2>
+    <p>실제 조직에서 AI 리스크에 대응하기 위한 4가지 핵심 영역입니다.</p>
+
+    <div class="strategy-grid">
+      <div class="strategy-card">
+        <div class="strategy-icon">&#x1F4DC;</div>
+        <div class="strategy-title">거버넌스 및 정책</div>
+        <div class="strategy-desc">조직 전체의 AI 사용 원칙과 경계를 설정합니다.</div>
+        <ul class="strategy-items">
+          <li>AI 사용 가이드라인 수립 (허용/제한/금지 용도 정의)</li>
+          <li>고위험 AI 식별 기준 마련</li>
+          <li>AI 의사결정 책임자 지정</li>
+          <li>정기 AI 리스크 평가 워크숍 운영</li>
+        </ul>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-icon">&#x1F512;</div>
+        <div class="strategy-title">데이터 및 모델 보호</div>
+        <div class="strategy-desc">AI의 핵심 자산인 데이터와 모델을 안전하게 관리합니다.</div>
+        <ul class="strategy-items">
+          <li>학습 데이터 검증 및 편향 모니터링</li>
+          <li>데이터 클리닝 파이프라인 구축</li>
+          <li>모델 성능 검증 및 정기 테스트</li>
+          <li>개인정보 익명화/가명화 처리</li>
+        </ul>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-icon">&#x1F6E1;</div>
+        <div class="strategy-title">보안 대책</div>
+        <div class="strategy-desc">AI 시스템을 외부 공격과 내부 오용으로부터 보호합니다.</div>
+        <ul class="strategy-items">
+          <li>프롬프트/입력 검증 및 출력 필터링</li>
+          <li>접근 제어 및 권한 관리</li>
+          <li>AI 사용 감사 로그 기록</li>
+          <li>정기 AI 보안 감사 수행</li>
+        </ul>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-icon">&#x1F393;</div>
+        <div class="strategy-title">윤리 및 교육</div>
+        <div class="strategy-desc">사람 중심의 AI 활용 문화를 조성합니다.</div>
+        <ul class="strategy-items">
+          <li>AI 윤리 원칙 도입 (공정, 투명, 책임)</li>
+          <li>전 직원 대상 AI 리터러시 교육</li>
+          <li>AI 윤리 위원회 또는 전담 조직 운영</li>
+          <li>AI 사고 발생 시 대응 매뉴얼 마련</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Regulations -->
+  <section class="guide-section" id="s6">
+    <h2><span class="section-num">6</span> 규제 및 표준 동향</h2>
+
+    <div class="reg-grid">
+      <div class="reg-card">
+        <h4>&#x1F1F0;&#x1F1F7; 한국</h4>
+        <p>AI 안전연구소 설립, AI 기본법 제정 논의 진행 중. 고위험 AI 사전 평가제도 도입 검토. 공공분야 AI 활용 가이드라인 발표.</p>
+        <span class="reg-tag" style="background:var(--primary)">진행 중</span>
+      </div>
+      <div class="reg-card">
+        <h4>&#x1F1EA;&#x1F1FA; EU AI Act</h4>
+        <p>세계 최초 AI 포괄 규제법. 위험 수준별 4단계 분류. 고위험 AI에 적합성 평가, 투명성 의무 부과. 2025년부터 단계적 시행.</p>
+        <span class="reg-tag" style="background:var(--red)">시행 중</span>
+      </div>
+      <div class="reg-card">
+        <h4>&#x1F4CB; ISO/IEC 23894</h4>
+        <p>AI 시스템 위험 관리 국제 표준. 위험 식별, 분석, 평가, 대응의 체계적 프로세스 정의. 조직 규모와 관계없이 적용 가능.</p>
+        <span class="reg-tag" style="background:var(--green)">국제 표준</span>
+      </div>
+      <div class="reg-card">
+        <h4>&#x1F4CB; ISO/IEC 24028</h4>
+        <p>AI 신뢰성 및 보안 표준. 투명성, 설명 가능성, 편향 방지, 견고성 등 AI 시스템의 신뢰할 수 있는 운영을 위한 가이드.</p>
+        <span class="reg-tag" style="background:var(--green)">국제 표준</span>
+      </div>
+    </div>
+
+    <h3>EU AI Act 위험 분류 피라미드</h3>
+    <div class="pyramid">
+      <div class="pyramid-level" style="background:#991B1B;width:200px">허용 불가</div>
+      <div class="pyramid-label">사회 신용 점수, 실시간 원격 생체 인식 등</div>
+      <div class="pyramid-level" style="background:var(--red);width:280px">고위험</div>
+      <div class="pyramid-label">채용 AI, 의료 진단, 법 집행, 교육 평가 등</div>
+      <div class="pyramid-level" style="background:var(--amber);width:360px">제한적 위험</div>
+      <div class="pyramid-label">챗봇 (AI임을 고지 의무), 딥페이크 라벨링</div>
+      <div class="pyramid-level" style="background:var(--green);width:440px">최소 위험</div>
+      <div class="pyramid-label">AI 게임, 스팸 필터, 추천 시스템 등 — 별도 규제 없음</div>
+    </div>
+  </section>
+
+  <!-- 7. Cases -->
+  <section class="guide-section" id="s7">
+    <h2><span class="section-num">7</span> 실제 사례 및 시나리오</h2>
+    <p>AI 리스크가 현실에서 어떻게 나타나는지 보여주는 대표적 사례들입니다.</p>
+
+    <div class="case-grid">
+      <div class="case-card">
+        <div class="case-header" style="background:linear-gradient(135deg,#7C3AED,#5B21B6)">윤리·편향</div>
+        <div class="case-body">
+          <div class="case-title">Amazon AI 채용 도구 성별 차별</div>
+          <div class="case-desc">Amazon의 AI 채용 시스템이 과거 10년간의 이력서 데이터를 학습한 결과, 여성 지원자를 체계적으로 낮게 평가. "여성" 관련 키워드가 포함된 이력서에 감점 부여.</div>
+          <div class="case-impact" style="background:#F5F3FF;color:#5B21B6">결과: 프로젝트 폐기</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <div class="case-header" style="background:linear-gradient(135deg,#EF4444,#991B1B)">데이터 유출</div>
+        <div class="case-body">
+          <div class="case-title">삼성전자 ChatGPT 기밀 유출</div>
+          <div class="case-desc">삼성전자 반도체 사업부 직원들이 소스코드, 회의 내용 등 사내 기밀 정보를 ChatGPT에 입력. 해당 데이터가 AI 학습 데이터로 활용될 위험 발생.</div>
+          <div class="case-impact" style="background:#FEF2F2;color:#991B1B">결과: 사내 생성형 AI 사용 금지</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <div class="case-header" style="background:linear-gradient(135deg,#F59E0B,#D97706)">할루시네이션</div>
+        <div class="case-body">
+          <div class="case-title">미국 변호사 AI 가짜 판례 인용</div>
+          <div class="case-desc">뉴욕 변호사가 ChatGPT를 사용하여 법적 근거를 조사한 후, AI가 만들어낸 존재하지 않는 판례 6건을 법원에 제출. 법정 모독 위기.</div>
+          <div class="case-impact" style="background:#FFFBEB;color:#92400E">결과: 벌금 $5,000 부과</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <div class="case-header" style="background:linear-gradient(135deg,#0F172A,#334155)">보안 위협</div>
+        <div class="case-body">
+          <div class="case-title">Deepfake 음성 CEO 사기</div>
+          <div class="case-desc">영국 에너지 회사 CEO의 음성을 AI로 복제하여, 독일 자회사 대표에게 전화로 24만 달러 송금을 지시. 실제로 송금이 실행됨.</div>
+          <div class="case-impact" style="background:var(--surface);color:var(--text)">피해: $243,000</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <div class="case-header" style="background:linear-gradient(135deg,#2563EB,#1D4ED8)">저작권 침해</div>
+        <div class="case-body">
+          <div class="case-title">NYT vs OpenAI 저작권 소송</div>
+          <div class="case-desc">뉴욕타임스가 OpenAI를 상대로 수십억 달러 규모의 저작권 침해 소송 제기. GPT 모델이 NYT 기사를 거의 그대로 재현할 수 있음을 입증.</div>
+          <div class="case-impact" style="background:#EFF6FF;color:#1D4ED8">진행 중: 수십억 달러 규모</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <div class="case-header" style="background:linear-gradient(135deg,#EF4444,#B91C1C)">직업 대체</div>
+        <div class="case-body">
+          <div class="case-title">AI 코딩 도구 도입 후 채용 감소</div>
+          <div class="case-desc">GitHub Copilot, Devin 등 AI 코딩 도구 도입 후 기업들이 주니어 개발자 채용을 30% 이상 줄이는 추세. "AI가 주니어 역할을 대체"라는 인식 확산.</div>
+          <div class="case-impact" style="background:#FEF2F2;color:#991B1B">영향: 글로벌 채용 시장 변화</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Job Displacement -->
+  <section class="guide-section" id="s8">
+    <h2><span class="section-num">8</span> 직업 대체 — AI 리스크의 사회경제적 축</h2>
+
+    <div class="highlight red">
+      <p><strong>"직업 대체(Jobs Displacement)"는 AI 리스크의 핵심 축입니다.</strong> 기술·보안 위험과 달리, 사회·경제 전반에 걸쳐 장기적이고 광범위한 영향을 미칩니다.</p>
+    </div>
+
+    <h3>왜 AI 리스크로 분류하는가?</h3>
+    <p>AI가 반복·규칙 기반 업무를 대체하면서 <strong>실직, 임금 하락, 노동시장 불균형</strong> 같은 사회·경제적 손실을 줄 수 있습니다. 특히 단순 사무직, 고객 응대, 일부 지식·화이트칼라 직군이 대체 위험이 높다는 분석이 여러 보고서에 나옵니다.</p>
+
+    <h3>AI 리스크 분류에서의 위치</h3>
+    <table class="risk-table">
+      <thead><tr><th>리스크 축</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td class="cat-cell">기술·보안 리스크</td><td>모델 오작동, 편향, 데이터 유출, 프롬프트 인젝션 등</td></tr>
+        <tr><td class="cat-cell" style="color:var(--red)">사회·경제 리스크</td><td>개인·집단 차별, 개인정보 침해, <strong>직업 대체·소득 불균형·계층 갈등</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="displacement">
+      <h3>현재 상황: 숫자로 보는 직업 대체</h3>
+      <p>우리는 182개 직업을 분석하고, 30건의 실제 뉴스 기사를 근거로 AI 대체 위험도를 산정했습니다. 그 결과:</p>
+      <p id="displacement-stats" style="font-size:.9rem"></p>
+      <a class="displacement-link" href="./">182개 직업의 AI 리스크 확인하기 &rarr;</a>
+      <a class="displacement-link" href="./news.html" style="background:#7C3AED;margin-left:.5rem">근거 뉴스 30건 보기 &rarr;</a>
+    </div>
+
+    <h3>조직과 개인이 가져야 할 태도</h3>
+    <div class="highlight amber">
+      <p><strong>"AI 활용의 기회 + 책임 있는 관리"를 병행해야 합니다.</strong> AI를 단순히 두려워하거나 무조건 환영하는 것이 아니라, 위험을 정확히 인식하고 체계적으로 대비하는 것이 핵심입니다.</p>
+    </div>
+
+    <h3>향후 과제</h3>
+    <div class="strategy-grid">
+      <div class="strategy-card">
+        <div class="strategy-icon">&#x1F3AF;</div>
+        <div class="strategy-title">즉시 실행 가능</div>
+        <ul class="strategy-items">
+          <li>내부 AI 리스크 평가 워크숍 실시</li>
+          <li>AI 사용 가이드라인 초안 작성</li>
+          <li>직원 AI 리터러시 교육 시작</li>
+        </ul>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-icon">&#x1F4C5;</div>
+        <div class="strategy-title">중장기 과제</div>
+        <ul class="strategy-items">
+          <li>AI 거버넌스 체계 구축</li>
+          <li>AI 위험 평가 도구 도입</li>
+          <li>직업 전환 교육 프로그램 설계</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. RAI -->
+  <section class="guide-section" id="s9">
+    <h2><span class="section-num">9</span> Responsible AI (RAI) — 책임 있는 AI</h2>
+
+    <div class="highlight purple">
+      <p><strong>Responsible AI(RAI)란:</strong> AI 시스템을 공정하고, 투명하고, 안전하고, 프라이버시를 보호하며, 인간의 통제 하에 개발·배포·운영하는 접근 방식입니다. AI 리스크 관리의 상위 철학이자 실천 프레임워크입니다.</p>
+    </div>
+
+    <h3>RAI의 6대 핵심 원칙</h3>
+    <div class="strategy-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="strategy-card" style="border-left:3px solid var(--primary)">
+        <div class="strategy-title" style="color:var(--primary)">1. 공정성 (Fairness)</div>
+        <div class="strategy-desc">AI 시스템이 특정 그룹을 차별하지 않도록 보장. 학습 데이터의 편향 탐지 및 완화, 결과의 공평성 검증.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid var(--purple)">
+        <div class="strategy-title" style="color:var(--purple)">2. 투명성 (Transparency)</div>
+        <div class="strategy-desc">AI의 의사결정 과정을 이해 가능하게 공개. 모델 카드, 데이터시트, 설명 가능한 AI(XAI) 기법 활용.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid var(--red)">
+        <div class="strategy-title" style="color:var(--red)">3. 안전성 (Safety)</div>
+        <div class="strategy-desc">AI가 의도치 않은 해를 끼치지 않도록 보장. Red teaming, 적대적 테스트, 가드레일 설정.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid var(--green)">
+        <div class="strategy-title" style="color:var(--green)">4. 프라이버시 (Privacy)</div>
+        <div class="strategy-desc">개인정보를 보호하며 AI를 운영. 차등 프라이버시, 연합 학습, 데이터 최소화 원칙.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid var(--amber)">
+        <div class="strategy-title" style="color:var(--amber)">5. 책임성 (Accountability)</div>
+        <div class="strategy-desc">AI 결과에 대한 책임 소재를 명확히. 거버넌스 체계, 감사 추적, 인간 최종 결정권 보장.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid #0F172A">
+        <div class="strategy-title">6. 견고성 (Robustness)</div>
+        <div class="strategy-desc">적대적 공격, 데이터 오염, 분포 변화에도 안정적으로 작동. 스트레스 테스트와 모니터링.</div>
+      </div>
+    </div>
+
+    <h3>주요 기업의 RAI 프레임워크</h3>
+    <table class="risk-table">
+      <thead><tr><th>기업/기관</th><th>RAI 프레임워크</th><th>핵심 특징</th></tr></thead>
+      <tbody>
+        <tr><td class="cat-cell">Google</td><td>AI Principles (2018~)</td><td>7대 원칙 + 4가지 금지 영역 정의. 내부 AI 윤리 위원회 운영.</td></tr>
+        <tr><td class="cat-cell">Microsoft</td><td>Responsible AI Standard v2</td><td>6대 원칙 + 영향 평가(Impact Assessment) 의무화. Azure AI에 RAI 대시보드 내장.</td></tr>
+        <tr><td class="cat-cell">Anthropic</td><td>Constitutional AI</td><td>AI가 스스로 원칙을 따르도록 학습. "Helpful, Harmless, Honest" 3H 원칙.</td></tr>
+        <tr><td class="cat-cell">OpenAI</td><td>Usage Policies + Safety</td><td>모델별 시스템 카드 공개. Red team 기반 안전성 평가. GPT-4 이후 단계적 배포.</td></tr>
+        <tr><td class="cat-cell">NIST</td><td>AI Risk Management Framework</td><td>미국 국립표준기술연구소의 공식 AI RMF. Govern, Map, Measure, Manage 4단계.</td></tr>
+        <tr><td class="cat-cell">OECD</td><td>AI Principles (2019)</td><td>42개국 합의. 포용적 성장, 인간 중심 가치, 투명성, 견고성, 책임성 5대 원칙.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>RAI vs AI 리스크 관리 — 무엇이 다른가?</h3>
+    <div class="highlight blue">
+      <p><strong>AI 리스크 관리</strong>는 "위험을 식별하고 완화"하는 <strong>방어적 접근</strong>입니다.<br>
+      <strong>Responsible AI</strong>는 "처음부터 책임감 있게 설계하고 운영"하는 <strong>선제적 접근</strong>입니다.<br><br>
+      둘은 상호보완적입니다. RAI 원칙을 먼저 세우고, AI 리스크 관리 프레임워크로 실행합니다.</p>
+    </div>
+  </section>
+
+  <!-- 10. Resources -->
+  <section class="guide-section" id="s10">
+    <h2><span class="section-num">10</span> 저명한 AI 리스크 리소스 및 리포트</h2>
+    <p>AI 리스크와 Responsible AI에 대해 더 깊이 알고 싶다면, 아래의 세계적 권위 있는 리소스를 참고하세요.</p>
+
+    <h3>공식 프레임워크 및 가이드라인</h3>
+    <div class="strategy-grid">
+      <div class="strategy-card" style="border-left:3px solid var(--primary)">
+        <div class="strategy-title"><a href="https://airc.nist.gov/AI_RMF_Playbook" target="_blank">NIST AI Risk Management Framework &nearr;</a></div>
+        <div class="strategy-desc">미국 국립표준기술연구소의 공식 AI 위험 관리 프레임워크. 가장 체계적인 AI RMF 문서. Playbook과 함께 실무 적용 가능.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid var(--red)">
+        <div class="strategy-title"><a href="https://artificialintelligenceact.eu/" target="_blank">EU AI Act 공식 사이트 &nearr;</a></div>
+        <div class="strategy-desc">세계 최초 AI 포괄 규제법 전문. 위험 분류, 의무 사항, 시행 일정 등 공식 문서 열람 가능.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid var(--green)">
+        <div class="strategy-title"><a href="https://oecd.ai/en/ai-principles" target="_blank">OECD AI Principles &nearr;</a></div>
+        <div class="strategy-desc">42개국이 합의한 AI 원칙. 포용적 성장, 인간 중심 가치, 투명성 등 국제 기준의 토대.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid var(--purple)">
+        <div class="strategy-title"><a href="https://www.iso.org/standard/77304.html" target="_blank">ISO/IEC 23894 — AI 위험 관리 &nearr;</a></div>
+        <div class="strategy-desc">국제표준화기구의 AI 위험 관리 표준. 조직 규모와 관계없이 적용 가능한 체계적 프로세스.</div>
+      </div>
+    </div>
+
+    <h3>주요 리포트 및 연구</h3>
+    <div class="strategy-grid">
+      <div class="strategy-card">
+        <div class="strategy-title"><a href="https://aiindex.stanford.edu/report/" target="_blank">Stanford AI Index Report &nearr;</a></div>
+        <div class="strategy-desc">스탠포드 대학 HAI 연간 보고서. AI 기술 동향, 경제적 영향, 정책, 윤리를 종합 분석. 매년 발행.</div>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-title"><a href="https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai" target="_blank">McKinsey — The State of AI &nearr;</a></div>
+        <div class="strategy-desc">맥킨지 글로벌 AI 현황 리포트. 기업 AI 도입률, ROI, 리스크 관리 현황 등 실무 데이터 풍부.</div>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-title"><a href="https://www.weforum.org/publications/global-risks-report-2025/" target="_blank">WEF Global Risks Report &nearr;</a></div>
+        <div class="strategy-desc">세계경제포럼 글로벌 리스크 보고서. AI로 인한 일자리 변화, 사이버 위협 등 거시적 리스크 분석.</div>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-title"><a href="https://www.goldmansachs.com/insights/pages/generative-ai-could-raise-global-gdp-by-7-percent.html" target="_blank">Goldman Sachs — AI & 일자리 보고서 &nearr;</a></div>
+        <div class="strategy-desc">생성형 AI가 전 세계 GDP 7% 성장 가능, 동시에 3억 개 일자리에 영향. 직업 대체 관련 핵심 리포트.</div>
+      </div>
+    </div>
+
+    <h3>RAI 전문 리소스</h3>
+    <div class="strategy-grid">
+      <div class="strategy-card" style="border-left:3px solid var(--purple)">
+        <div class="strategy-title"><a href="https://ai.google/responsibility/responsible-ai-practices/" target="_blank">Google Responsible AI Practices &nearr;</a></div>
+        <div class="strategy-desc">Google의 RAI 실무 가이드. 공정성 테스트, 모델 카드 작성법, 영향 평가 방법론 등 실무 적용 가능.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid var(--primary)">
+        <div class="strategy-title"><a href="https://www.microsoft.com/en-us/ai/responsible-ai" target="_blank">Microsoft Responsible AI &nearr;</a></div>
+        <div class="strategy-desc">Microsoft RAI Standard v2 전문. Azure AI RAI 대시보드, 영향 평가 템플릿, 사례 연구 제공.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid #0F172A">
+        <div class="strategy-title"><a href="https://www.anthropic.com/research" target="_blank">Anthropic Safety Research &nearr;</a></div>
+        <div class="strategy-desc">Constitutional AI, RLHF, 모델 안전성 연구 논문. AI Safety 분야의 최전선 연구 자료.</div>
+      </div>
+      <div class="strategy-card" style="border-left:3px solid var(--amber)">
+        <div class="strategy-title"><a href="https://partnershiponai.org/" target="_blank">Partnership on AI &nearr;</a></div>
+        <div class="strategy-desc">Google, Apple, Microsoft, Amazon 등이 공동 설립한 AI 윤리 연구 기관. 다양한 RAI 리서치와 가이드 제공.</div>
+      </div>
+    </div>
+
+    <h3>한국 AI 리스크 리소스</h3>
+    <div class="strategy-grid">
+      <div class="strategy-card">
+        <div class="strategy-title"><a href="https://www.aiss.kr/" target="_blank">AI 안전연구소 (AISS) &nearr;</a></div>
+        <div class="strategy-desc">과학기술정보통신부 산하 AI 안전 전담 기관. 한국형 AI 위험 평가 체계 개발 및 정책 연구.</div>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-title"><a href="https://www.nia.or.kr/" target="_blank">한국지능정보사회진흥원 (NIA) &nearr;</a></div>
+        <div class="strategy-desc">AI 윤리 가이드라인, 신뢰할 수 있는 AI 개발 안내서, 공공 AI 활용 지침 등 국내 표준 자료.</div>
+      </div>
+    </div>
+
+    <div class="highlight amber">
+      <p><strong>리포트 활용 팁:</strong> Stanford AI Index Report와 McKinsey State of AI는 매년 업데이트됩니다. NIST AI RMF는 실무 적용에, EU AI Act는 규제 대응에 필수입니다. Goldman Sachs 보고서는 직업 대체 관련 가장 영향력 있는 자료입니다.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>AI 리스크 가이드 &mdash; leaf-kit.github.io/airisk</p>
+</footer>
+
+<script>
+async function init(){
+  try{
+    const data=await fetch('data/20260402/processed/jobs_risk.json').then(r=>r.json());
+    const allJobs=data.categories.flatMap(c=>c.jobs);
+    const critical=allJobs.filter(j=>j.risk>=86).length;
+    const high=allJobs.filter(j=>j.risk>=61).length;
+    const avg=Math.round(allJobs.reduce((s,j)=>s+j.risk,0)/allJobs.length);
+
+    document.getElementById('displacement-stats').innerHTML=`
+      &#x26A0; 전체 ${allJobs.length}개 직업 평균 위험도 <strong>${avg}%</strong><br>
+      &#x1F534; <strong>${critical}개</strong> 직업이 이미 "대체 진행 중" (86% 이상)<br>
+      &#x1F7E0; <strong>${high}개</strong> 직업이 "상당부분 자동화" 이상 (61% 이상)<br>
+      &#x1F4F0; <strong>30건</strong>의 실제 뉴스 기사가 이를 뒷받침
+    `;
+  }catch(e){}
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
