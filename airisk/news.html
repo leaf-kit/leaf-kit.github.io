@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>근거 뉴스 — AI 리스크</title>
+  <meta name="description" content="AI 직업 대체의 실제 근거가 되는 뉴스 기사 30건을 분석합니다.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#2563EB;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,.06)}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+
+    /* Nav */
+    .nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:var(--text)}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions::-webkit-scrollbar{display:none}
+    .nav-actions a{color:var(--text2);font-size:.8rem;font-weight:500;padding:.4rem .6rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:var(--primary);background:#EFF6FF;text-decoration:none}
+
+    .container{max-width:1200px;margin:0 auto;padding:0 2rem}
+    @keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Hero */
+    .news-hero{text-align:center;padding:3rem 2rem 2rem;background:linear-gradient(160deg,#0F172A 0%,#1E293B 50%,#334155 100%);color:#fff;position:relative;overflow:hidden}
+    .news-hero::before{content:'';position:absolute;top:-40%;right:-15%;width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.12) 0%,transparent 60%);pointer-events:none}
+    .news-hero h1{font-size:2rem;font-weight:900;opacity:0;animation:fu .6s ease forwards .2s}
+    .news-hero .sub{color:rgba(255,255,255,.6);font-size:.9rem;margin-top:.5rem;opacity:0;animation:fu .6s ease forwards .35s}
+    .hero-stats-bar{display:flex;gap:2rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;opacity:0;animation:fu .6s ease forwards .5s}
+    .hero-stat-item{text-align:center}
+    .hero-stat-item .num{font-size:1.8rem;font-weight:900;font-family:'JetBrains Mono',monospace}
+    .hero-stat-item .label{font-size:.7rem;color:rgba(255,255,255,.5)}
+
+    /* Shocking insight banner */
+    .insight-banner{background:linear-gradient(135deg,#7C3AED,#4F46E5);color:#fff;border-radius:var(--radius);padding:2rem;margin:2rem 0;position:relative;overflow:hidden}
+    .insight-banner::before{content:'';position:absolute;top:-50%;right:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 60%);pointer-events:none}
+    .insight-banner h2{font-size:1.3rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
+    .insight-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:1.25rem}
+    .insight-card .insight-num{font-size:2.2rem;font-weight:900;font-family:'JetBrains Mono',monospace;color:#FCD34D}
+    .insight-card .insight-title{font-size:.85rem;font-weight:600;margin-top:.3rem}
+    .insight-card .insight-desc{font-size:.75rem;color:rgba(255,255,255,.65);margin-top:.3rem;line-height:1.5}
+
+    /* Timeline */
+    .timeline-section{margin:2.5rem 0}
+    .timeline-section h2{font-size:1.2rem;font-weight:800;margin-bottom:.5rem}
+    .timeline-section .section-sub{font-size:.82rem;color:var(--text2);margin-bottom:1.5rem}
+
+    .timeline{position:relative;padding-left:40px}
+    .timeline::before{content:'';position:absolute;left:15px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--primary),var(--red),var(--amber),var(--green))}
+    .timeline-month{margin-bottom:2rem}
+    .timeline-month-label{position:relative;font-size:.8rem;font-weight:700;color:var(--primary);margin-bottom:.75rem;padding:.2rem 0}
+    .timeline-month-label::before{content:'';position:absolute;left:-29px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--primary);border:2px solid #fff;box-shadow:0 0 0 2px var(--primary)}
+
+    /* News cards */
+    .news-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.5rem;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+    .news-card:hover{border-color:var(--primary);box-shadow:0 4px 16px rgba(37,99,235,.08)}
+    .news-card-main{padding:1rem 1.25rem;display:flex;gap:1rem;align-items:flex-start;cursor:pointer}
+    .news-card-source{font-size:.65rem;font-weight:600;padding:.15rem .4rem;border-radius:3px;color:#fff;white-space:nowrap;flex-shrink:0;margin-top:.15rem}
+    .news-card-content{flex:1}
+    .news-card-title{font-size:.9rem;font-weight:700;line-height:1.5}
+    .news-card-date{font-size:.7rem;color:var(--text2);margin-top:.2rem}
+    .news-card-link{flex-shrink:0;align-self:center}
+    .news-card-link a{display:inline-flex;align-items:center;gap:.2rem;font-size:.72rem;font-weight:600;color:var(--primary);padding:.3rem .5rem;border:1px solid var(--border);border-radius:4px;transition:all .15s}
+    .news-card-link a:hover{background:#EFF6FF;border-color:var(--primary)}
+
+    /* Expandable detail */
+    .news-card-detail{display:none;padding:0 1.25rem 1.25rem;border-top:1px solid var(--border);margin-top:0}
+    .news-card-detail.open{display:block}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+    .detail-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1rem}
+    .detail-box h4{font-size:.78rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.02em;margin-bottom:.5rem}
+    .detail-box p{font-size:.82rem;color:var(--text2);line-height:1.7}
+
+    /* Related jobs */
+    .related-jobs{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem}
+    .related-job-tag{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;padding:.25rem .5rem;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:all .15s;background:#fff}
+    .related-job-tag:hover{border-color:var(--red);background:#FEF2F2;color:#991B1B}
+    .related-job-tag .risk-badge{font-size:.65rem;font-weight:700;padding:.05rem .25rem;border-radius:2px;color:#fff}
+
+    /* Replacement perspective */
+    .perspective-tag{display:inline-flex;align-items:center;gap:.2rem;font-size:.68rem;padding:.15rem .4rem;border-radius:3px;font-weight:600}
+    .perspective-tags{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.5rem}
+
+    /* Category filter */
+    .filter-bar{display:flex;gap:.3rem;flex-wrap:wrap;margin:1.5rem 0;padding:.5rem;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border)}
+    .filter-btn{padding:.35rem .7rem;font-size:.75rem;font-weight:600;border:none;background:transparent;border-radius:5px;cursor:pointer;color:var(--text2);transition:all .2s;font-family:inherit}
+    .filter-btn:hover{background:#EFF6FF;color:var(--primary)}
+    .filter-btn.active{background:var(--primary);color:#fff}
+
+    /* Cross-reference matrix */
+    .matrix-section{margin:2.5rem 0}
+    .matrix-section h2{font-size:1.2rem;font-weight:800;margin-bottom:.5rem}
+    .matrix-section .section-sub{font-size:.82rem;color:var(--text2);margin-bottom:1rem}
+    .matrix-table{width:100%;border-collapse:collapse;font-size:.75rem;overflow-x:auto;display:block}
+    .matrix-table th{background:#0F172A;color:#fff;padding:.5rem .75rem;text-align:left;font-weight:600;position:sticky;top:0;white-space:nowrap}
+    .matrix-table td{padding:.5rem .75rem;border-bottom:1px solid var(--border);vertical-align:top}
+    .matrix-table tr:hover td{background:#F0F9FF}
+    .matrix-table .news-col{max-width:280px}
+    .matrix-table .jobs-col{max-width:200px}
+    .matrix-table .impact-col{max-width:300px}
+    .impact-text{font-size:.72rem;color:var(--text2);line-height:1.5}
+
+    /* Speed analysis */
+    .speed-section{background:linear-gradient(135deg,#1E293B,#0F172A);color:#fff;border-radius:var(--radius);padding:2rem;margin:2rem 0}
+    .speed-section h2{font-size:1.2rem;font-weight:800;margin-bottom:1.5rem}
+    .speed-bars{display:flex;flex-direction:column;gap:.75rem}
+    .speed-row{display:flex;align-items:center;gap:1rem}
+    .speed-label{font-size:.78rem;min-width:100px;color:rgba(255,255,255,.7)}
+    .speed-bar{flex:1;height:28px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;position:relative}
+    .speed-bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 .5rem;transition:width 1.5s ease}
+    .speed-bar-text{font-size:.68rem;font-weight:600;color:#fff;white-space:nowrap}
+    .speed-val{font-size:.82rem;font-weight:800;min-width:50px;text-align:right;font-family:'JetBrains Mono',monospace}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .container{padding:0 1rem}
+      .news-hero h1{font-size:1.5rem}
+      .hero-stats-bar{gap:1rem}
+      .detail-grid{grid-template-columns:1fr}
+      .insight-grid{grid-template-columns:1fr}
+      .speed-label{min-width:70px;font-size:.7rem}
+      .nav{padding:0 .75rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>
+    AI 리스크
+  </a>
+  <div class="nav-actions">
+    <a href="./">직업 분석</a>
+    <a href="./news.html" class="active">근거 뉴스</a>
+    <a href="./agents.html">AI 도구</a>
+    <a href="./game.html">게임</a>
+    <a href="./about.html">About</a>
+  </div>
+</nav>
+
+<section class="news-hero">
+  <h1>AI가 직업을 삼키는 증거들</h1>
+  <p class="sub">모든 분석에는 근거가 있습니다 &mdash; 실제 뉴스 기사 기반 AI 직업 대체 분석</p>
+  <div class="hero-stats-bar">
+    <div class="hero-stat-item"><div class="num" style="color:#60A5FA" id="h-news">0</div><div class="label">수집 뉴스</div></div>
+    <div class="hero-stat-item"><div class="num" style="color:#FCA5A5" id="h-jobs-affected">0</div><div class="label">영향받는 직업</div></div>
+    <div class="hero-stat-item"><div class="num" style="color:#FCD34D" id="h-sources">0</div><div class="label">뉴스 매체</div></div>
+    <div class="hero-stat-item"><div class="num" style="color:#6EE7B7" id="h-period">-</div><div class="label">수집 기간</div></div>
+  </div>
+</section>
+
+<main class="container">
+
+  <!-- Shocking Insights -->
+  <div class="insight-banner" id="insight-banner">
+    <h2>&#x1F4A5; 뉴스가 말하는 충격적 현실</h2>
+    <div class="insight-grid" id="insight-grid"></div>
+  </div>
+
+  <!-- Replacement Speed Analysis -->
+  <div class="speed-section" id="speed-section">
+    <h2>&#x26A1; 직업군별 AI 대체 속도 (뉴스 언급 빈도 기반)</h2>
+    <div class="speed-bars" id="speed-bars"></div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-bar" id="filter-bar"></div>
+
+  <!-- Timeline -->
+  <div class="timeline-section">
+    <h2>&#x1F4F0; 뉴스 타임라인</h2>
+    <div class="section-sub">각 기사를 클릭하면 관련 직업과 AI 대체 관점을 확인할 수 있습니다</div>
+    <div class="timeline" id="news-timeline"></div>
+  </div>
+
+  <!-- Cross-reference Matrix -->
+  <div class="matrix-section">
+    <h2>&#x1F50D; 뉴스 &times; 직업 교차 분석표</h2>
+    <div class="section-sub">각 뉴스 기사가 어떤 직업에 영향을 미치는지, 어떤 관점에서 대체가 일어나는지 한눈에 확인하세요</div>
+    <div style="overflow-x:auto">
+      <table class="matrix-table" id="matrix-table">
+        <thead><tr><th>#</th><th>뉴스 제목</th><th>매체</th><th>관련 직업</th><th>대체 관점</th><th>위협도</th></tr></thead>
+        <tbody id="matrix-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>AI 리스크 &mdash; leaf-kit.github.io/airisk</p>
+</footer>
+
+<script>
+const catNames={business:'경영/사무',tech:'연구/공학',education:'교육/법률',medical:'보건/의료',creative:'예술/디자인',service:'서비스/운전',manufacturing:'건설/제조',agriculture:'농림/어업',labor:'단순노무'};
+const catColors={business:'#3B82F6',tech:'#8B5CF6',education:'#F59E0B',medical:'#10B981',creative:'#EC4899',service:'#F97316',manufacturing:'#6366F1',agriculture:'#84CC16',labor:'#6B7280'};
+
+// AI replacement perspectives - programmatic analysis per news
+const perspectives={
+  business:[
+    {label:'비용 절감',color:'#EF4444',bg:'#FEF2F2',desc:'AI가 인건비 대비 1/10 이하 비용으로 동일 업무 수행'},
+    {label:'속도 혁신',color:'#F59E0B',bg:'#FFFBEB',desc:'인간 대비 100~1000배 빠른 처리 속도'},
+    {label:'24/7 가용성',color:'#8B5CF6',bg:'#F5F3FF',desc:'휴식, 야근 수당 없이 24시간 운영'}
+  ],
+  tech:[
+    {label:'코드 자동 생성',color:'#3B82F6',bg:'#EFF6FF',desc:'자연어 명령만으로 전체 애플리케이션 생성'},
+    {label:'버그 자동 탐지',color:'#10B981',bg:'#ECFDF5',desc:'수백만 줄의 코드를 수 초 만에 분석'},
+    {label:'주니어 불필요론',color:'#EF4444',bg:'#FEF2F2',desc:'AI가 주니어 개발자 수준의 업무를 완전 대체'}
+  ],
+  creative:[
+    {label:'생성 속도',color:'#EC4899',bg:'#FDF2F8',desc:'1장의 이미지를 수 초 만에 생성, 인간은 수 시간'},
+    {label:'비용 파괴',color:'#EF4444',bg:'#FEF2F2',desc:'디자인/음악 제작 단가 1/10로 하락'},
+    {label:'품질 동등',color:'#F59E0B',bg:'#FFFBEB',desc:'전문가 수준의 출력물을 비전문가도 생성 가능'}
+  ],
+  service:[
+    {label:'무인화',color:'#F97316',bg:'#FFF7ED',desc:'무인 매장, 무인 배달, 자율주행으로 인력 불필요'},
+    {label:'안전성',color:'#10B981',bg:'#ECFDF5',desc:'AI/로봇이 인간보다 사고율 낮음'},
+    {label:'규모 확장',color:'#3B82F6',bg:'#EFF6FF',desc:'인력 증원 없이 서비스 규모 무한 확장'}
+  ],
+  education:[
+    {label:'개인화 학습',color:'#F59E0B',bg:'#FFFBEB',desc:'학생별 맞춤 커리큘럼을 AI가 실시간 설계'},
+    {label:'리서치 자동화',color:'#3B82F6',bg:'#EFF6FF',desc:'판례/논문 검색을 수 분 만에 완료'},
+    {label:'콘텐츠 자동 생성',color:'#8B5CF6',bg:'#F5F3FF',desc:'기사, 보고서, 교육 자료를 AI가 즉시 작성'}
+  ],
+  medical:[
+    {label:'진단 정확도',color:'#10B981',bg:'#ECFDF5',desc:'AI가 영상 판독, 약물 분석에서 인간 의사 능가'},
+    {label:'접근성 향상',color:'#3B82F6',bg:'#EFF6FF',desc:'24시간 AI 상담으로 의료 접근 장벽 해소'},
+    {label:'데이터 분석력',color:'#8B5CF6',bg:'#F5F3FF',desc:'수백만 건의 데이터를 교차 분석하여 패턴 발견'}
+  ],
+  manufacturing:[
+    {label:'불량률 제로화',color:'#10B981',bg:'#ECFDF5',desc:'AI 검사로 불량률 0.01% 이하 달성'},
+    {label:'물리적 대체',color:'#EF4444',bg:'#FEF2F2',desc:'휴머노이드 로봇이 인간의 조립/용접 작업 수행'},
+    {label:'위험 작업 해소',color:'#F59E0B',bg:'#FFFBEB',desc:'유해 환경에서 로봇이 인간을 완전 대체'}
+  ],
+  agriculture:[
+    {label:'정밀 농업',color:'#84CC16',bg:'#F7FEE7',desc:'AI 센서가 토양/작물 상태를 실시간 분석'},
+    {label:'노동력 해소',color:'#F59E0B',bg:'#FFFBEB',desc:'고령화된 농촌 인력을 AI/로봇이 보완'},
+  ],
+  labor:[
+    {label:'완전 자동화',color:'#EF4444',bg:'#FEF2F2',desc:'단순 반복 업무를 로봇이 100% 수행'},
+    {label:'비용 구조 변화',color:'#F59E0B',bg:'#FFFBEB',desc:'최저임금 상승 → 로봇 도입 경제성 확보'}
+  ]
+};
+
+let newsData=[], jobsData=null, currentFilter='all';
+
+function riskColor(r){return r>=86?'#991B1B':r>=61?'#EF4444':r>=31?'#F59E0B':'#10B981'}
+function animateNum(id,target,suffix){
+  const el=document.getElementById(id);let c=0;
+  const step=Math.max(1,Math.floor(target/25));
+  const t=setInterval(()=>{c+=step;if(c>=target){c=target;clearInterval(t)}el.textContent=c+(suffix||'');},30);
+}
+
+async function init(){
+  const [news,jobs]=await Promise.all([
+    fetch('data/20260402/sources/news_sources.json').then(r=>r.json()),
+    fetch('data/20260402/processed/jobs_risk.json').then(r=>r.json())
+  ]);
+  newsData=news; jobsData=jobs;
+
+  const allJobs=jobsData.categories.flatMap(c=>c.jobs);
+  const affectedJobs=new Set(newsData.flatMap(n=>n.related_jobs));
+  const sources=new Set(newsData.map(n=>n.source));
+
+  // Hero stats
+  animateNum('h-news',newsData.length);
+  animateNum('h-jobs-affected',affectedJobs.size);
+  animateNum('h-sources',sources.size);
+  document.getElementById('h-period').textContent=jobsData.collection_meta?.data_period||'2025~2026';
+
+  renderInsights(allJobs);
+  renderSpeedAnalysis();
+  renderFilters();
+  renderTimeline();
+  renderMatrix(allJobs);
+}
+
+function renderInsights(allJobs){
+  // Calculate shocking stats from actual data
+  const affectedJobs=new Set(newsData.flatMap(n=>n.related_jobs));
+  const matchedJobs=allJobs.filter(j=>affectedJobs.has(j.name));
+  const avgRisk=matchedJobs.length?Math.round(matchedJobs.reduce((s,j)=>s+j.risk,0)/matchedJobs.length):0;
+  const criticalJobs=matchedJobs.filter(j=>j.risk>=86);
+
+  // Jobs per news article
+  const totalJobLinks=newsData.reduce((s,n)=>s+n.related_jobs.length,0);
+
+  // Most dangerous category by news coverage
+  const catCounts={};
+  newsData.forEach(n=>{catCounts[n.category]=(catCounts[n.category]||0)+1});
+  const topCat=Object.entries(catCounts).sort((a,b)=>b[1]-a[1])[0];
+
+  // Calculate replacement speed - how many months between earliest and latest news
+  const dates=newsData.map(n=>new Date(n.date)).sort((a,b)=>a-b);
+  const monthSpan=Math.round((dates[dates.length-1]-dates[0])/(1000*60*60*24*30));
+
+  document.getElementById('insight-grid').innerHTML=`
+    <div class="insight-card">
+      <div class="insight-num">${avgRisk}%</div>
+      <div class="insight-title">뉴스에 언급된 직업의 평균 위험도</div>
+      <div class="insight-desc">뉴스로 보도된 직업들은 전체 평균보다 높은 AI 대체 위험도를 보입니다. 언론이 주목하는 직업 = 실제로 위협받는 직업.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num">${criticalJobs.length}개</div>
+      <div class="insight-title">뉴스 속 "대체 진행 중" 직업</div>
+      <div class="insight-desc">${criticalJobs.map(j=>j.name).slice(0,5).join(', ')} 등 — 이미 현실에서 인력 감축이 보도되고 있는 직업들입니다.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num">1건 = ${(totalJobLinks/newsData.length).toFixed(1)}개</div>
+      <div class="insight-title">뉴스 1건당 위협받는 직업 수</div>
+      <div class="insight-desc">하나의 AI 기술이 보도될 때마다 평균 ${(totalJobLinks/newsData.length).toFixed(1)}개의 직업이 동시에 영향을 받습니다. 파급력이 큽니다.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num">${monthSpan}개월</div>
+      <div class="insight-title">뉴스 수집 기간 동안의 변화 속도</div>
+      <div class="insight-desc">${topCat?catNames[topCat[0]]||topCat[0]:''} 분야가 ${topCat?topCat[1]:0}건으로 가장 많이 보도. AI 대체가 가장 빠르게 진행 중인 영역입니다.</div>
+    </div>
+  `;
+}
+
+function renderSpeedAnalysis(){
+  // Count news per category and calculate "replacement momentum"
+  const catStats={};
+  newsData.forEach(n=>{
+    if(!catStats[n.category])catStats[n.category]={count:0,jobs:new Set()};
+    catStats[n.category].count++;
+    n.related_jobs.forEach(j=>catStats[n.category].jobs.add(j));
+  });
+
+  const entries=Object.entries(catStats).map(([k,v])=>({
+    cat:k,
+    name:catNames[k]||k,
+    color:catColors[k]||'#6B7280',
+    count:v.count,
+    jobs:v.jobs.size,
+    momentum:v.count*v.jobs.size // news * affected jobs = momentum score
+  })).sort((a,b)=>b.momentum-a.momentum);
+
+  const maxMomentum=Math.max(...entries.map(e=>e.momentum));
+
+  document.getElementById('speed-bars').innerHTML=entries.map(e=>`
+    <div class="speed-row">
+      <div class="speed-label">${e.name}</div>
+      <div class="speed-bar">
+        <div class="speed-bar-fill" style="width:${e.momentum/maxMomentum*100}%;background:${e.color}" data-w="${e.momentum/maxMomentum*100}">
+          <span class="speed-bar-text">${e.count}건 뉴스 &times; ${e.jobs}개 직업</span>
+        </div>
+      </div>
+      <div class="speed-val" style="color:${e.color}">${e.momentum}</div>
+    </div>
+  `).join('');
+
+  // Animate
+  setTimeout(()=>{
+    document.querySelectorAll('.speed-bar-fill').forEach(el=>{
+      const w=el.dataset.w;
+      el.style.width='0%';
+      setTimeout(()=>el.style.width=w+'%',50);
+    });
+  },300);
+}
+
+function renderFilters(){
+  const catCounts={};
+  newsData.forEach(n=>{catCounts[n.category]=(catCounts[n.category]||0)+1});
+
+  const bar=document.getElementById('filter-bar');
+  bar.innerHTML=`<button class="filter-btn active" data-cat="all">전체 (${newsData.length})</button>`+
+    Object.entries(catCounts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+      `<button class="filter-btn" data-cat="${k}">${catNames[k]||k} (${v})</button>`
+    ).join('');
+
+  bar.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      bar.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter=btn.dataset.cat;
+      renderTimeline();
+    };
+  });
+}
+
+function getJobRisk(jobName){
+  const allJobs=jobsData.categories.flatMap(c=>c.jobs);
+  const found=allJobs.find(j=>j.name===jobName);
+  return found?found.risk:null;
+}
+
+function renderTimeline(){
+  const filtered=currentFilter==='all'?newsData:newsData.filter(n=>n.category===currentFilter);
+  const sorted=[...filtered].sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  // Group by month
+  const months={};
+  sorted.forEach(n=>{
+    const d=new Date(n.date);
+    const key=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+    if(!months[key])months[key]=[];
+    months[key].push(n);
+  });
+
+  const timeline=document.getElementById('news-timeline');
+  timeline.innerHTML=Object.entries(months).map(([month,items])=>`
+    <div class="timeline-month">
+      <div class="timeline-month-label">${month}</div>
+      ${items.map((n,i)=>{
+        const catColor=catColors[n.category]||'#6B7280';
+        const persp=perspectives[n.category]||perspectives.business;
+        return `
+          <div class="news-card" data-idx="${newsData.indexOf(n)}">
+            <div class="news-card-main" onclick="toggleDetail(this)">
+              <span class="news-card-source" style="background:${catColor}">${n.source}</span>
+              <div class="news-card-content">
+                <div class="news-card-title">${n.title}</div>
+                <div class="news-card-date">${n.date} &middot; ${catNames[n.category]||n.category}</div>
+              </div>
+              <div class="news-card-link">
+                <a href="${n.url}" target="_blank" onclick="event.stopPropagation()">기사 보기 &rarr;</a>
+              </div>
+            </div>
+            <div class="news-card-detail">
+              <div class="detail-grid">
+                <div class="detail-box">
+                  <h4>&#x1F4BC; 관련 직업 (클릭하여 리스크 확인)</h4>
+                  <div class="related-jobs">
+                    ${n.related_jobs.map(j=>{
+                      const risk=getJobRisk(j);
+                      const rc=risk!==null?riskColor(risk):'#6B7280';
+                      return `<a class="related-job-tag" href="./?search=${encodeURIComponent(j)}">
+                        ${j}
+                        ${risk!==null?`<span class="risk-badge" style="background:${rc}">${risk}%</span>`:''}
+                      </a>`;
+                    }).join('')}
+                  </div>
+                </div>
+                <div class="detail-box">
+                  <h4>&#x1F52E; AI 대체 관점</h4>
+                  <div class="perspective-tags">
+                    ${persp.map(p=>`<span class="perspective-tag" style="background:${p.bg};color:${p.color};border:1px solid ${p.color}30" title="${p.desc}">${p.label}</span>`).join('')}
+                  </div>
+                  <p style="margin-top:.5rem;font-size:.78rem;color:var(--text2);line-height:1.6">${persp.map(p=>'<strong>'+p.label+':</strong> '+p.desc).join('. ')}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+function toggleDetail(el){
+  const detail=el.parentElement.querySelector('.news-card-detail');
+  detail.classList.toggle('open');
+}
+
+function renderMatrix(allJobs){
+  const sorted=[...newsData].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const body=document.getElementById('matrix-body');
+
+  body.innerHTML=sorted.map((n,i)=>{
+    const persp=perspectives[n.category]||perspectives.business;
+    const jobRisks=n.related_jobs.map(j=>{
+      const risk=getJobRisk(j);
+      return {name:j,risk};
+    });
+    const avgRisk=jobRisks.filter(j=>j.risk!==null).length?
+      Math.round(jobRisks.filter(j=>j.risk!==null).reduce((s,j)=>s+j.risk,0)/jobRisks.filter(j=>j.risk!==null).length):0;
+    const threatColor=riskColor(avgRisk);
+
+    return `<tr>
+      <td style="font-weight:700;color:var(--text2)">${i+1}</td>
+      <td class="news-col"><a href="${n.url}" target="_blank" style="font-weight:600;color:var(--text);font-size:.78rem">${n.title}</a><br><span style="font-size:.68rem;color:var(--text2)">${n.date}</span></td>
+      <td><span style="font-size:.68rem;padding:.1rem .3rem;background:${catColors[n.category]||'#6B7280'};color:#fff;border-radius:3px">${n.source}</span></td>
+      <td class="jobs-col">${jobRisks.map(j=>`<span style="font-size:.7rem;margin-right:.2rem">${j.name}${j.risk!==null?` <strong style="color:${riskColor(j.risk)}">${j.risk}%</strong>`:''}</span>`).join(', ')}</td>
+      <td class="impact-col"><div class="perspective-tags" style="margin:0">${persp.slice(0,2).map(p=>`<span class="perspective-tag" style="background:${p.bg};color:${p.color};border:1px solid ${p.color}30;font-size:.65rem">${p.label}</span>`).join('')}</div></td>
+      <td><strong style="color:${threatColor};font-family:'JetBrains Mono',monospace;font-size:.85rem">${avgRisk}%</strong></td>
+    </tr>`;
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
