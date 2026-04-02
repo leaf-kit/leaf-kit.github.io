@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>대학 학과별 AI 대체 위험도 — AI 리스크</title>
+  <meta name="description" content="대학교 학과별 AI 대체 위험도를 분석합니다. 내 학과는 안전할까?">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#2563EB;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,.06)}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+
+    .nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:#fff}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions::-webkit-scrollbar{display:none}
+    .nav-actions a{color:rgba(255,255,255,.5);font-size:.8rem;font-weight:500;padding:.4rem .6rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:#fff;background:rgba(255,255,255,.1);text-decoration:none}
+
+    @keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Hero */
+    .dept-hero{text-align:center;padding:3.5rem 2rem 2.5rem;background:linear-gradient(160deg,#0F172A 0%,#1E293B 40%,#312E81 100%);color:#fff;position:relative;overflow:hidden}
+    .dept-hero::before{content:'';position:absolute;top:-40%;right:-15%;width:500px;height:500px;background:radial-gradient(circle,rgba(124,58,237,.12) 0%,transparent 60%);pointer-events:none}
+    .dept-hero h1{font-size:2rem;font-weight:900;opacity:0;animation:fu .6s ease forwards .2s}
+    .dept-hero .sub{color:rgba(255,255,255,.5);font-size:.9rem;margin-top:.5rem;opacity:0;animation:fu .6s ease forwards .4s}
+    .hero-stats-row{display:flex;gap:2rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;opacity:0;animation:fu .6s ease forwards .6s}
+    .hero-stat{text-align:center}
+    .hero-stat .num{font-size:1.8rem;font-weight:900;font-family:'JetBrains Mono',monospace}
+    .hero-stat .label{font-size:.68rem;color:rgba(255,255,255,.4)}
+
+    .container{max-width:1200px;margin:0 auto;padding:0 2rem}
+
+    /* Search */
+    .search-area{max-width:500px;margin:1.5rem auto;position:relative}
+    .search-input{width:100%;padding:.65rem 1rem .65rem 2.4rem;border:2px solid var(--border);border-radius:10px;font-size:.88rem;background:#fff;transition:border-color .2s;font-family:inherit}
+    .search-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+    .search-icon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--text2)}
+
+    /* Filter */
+    .filter-bar{display:flex;gap:.3rem;flex-wrap:wrap;margin:1rem 0;padding:.4rem;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border)}
+    .filter-btn{padding:.35rem .7rem;font-size:.75rem;font-weight:600;border:none;background:transparent;border-radius:5px;cursor:pointer;color:var(--text2);transition:all .15s;font-family:inherit}
+    .filter-btn:hover{background:#EFF6FF;color:var(--primary)}
+    .filter-btn.active{background:var(--primary);color:#fff}
+
+    /* Ranking */
+    .ranking-section{margin:2rem 0}
+    .ranking-section h2{font-size:1.15rem;font-weight:800;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+    .ranking-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:.6rem}
+
+    /* Dept card */
+    .dept-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;transition:border-color .2s,transform .15s,box-shadow .2s;cursor:default}
+    .dept-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.06)}
+    .dept-rank{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:#fff;flex-shrink:0}
+    .dept-info{flex:1;min-width:0}
+    .dept-name{font-size:.92rem;font-weight:700}
+    .dept-college{font-size:.7rem;color:var(--text2)}
+    .dept-jobs{display:flex;flex-wrap:wrap;gap:.2rem;margin-top:.35rem}
+    .dept-job{font-size:.65rem;padding:.1rem .3rem;border-radius:3px;cursor:pointer;transition:opacity .15s;border:1px solid}
+    .dept-job:hover{opacity:.7}
+    .dept-risk{text-align:right;flex-shrink:0}
+    .dept-risk-num{font-size:1.3rem;font-weight:900;font-family:'JetBrains Mono',monospace}
+    .dept-risk-label{font-size:.6rem;color:var(--text2)}
+    .risk-meter{width:80px;height:5px;background:#E5E7EB;border-radius:3px;overflow:hidden;margin-top:.2rem}
+    .risk-meter-fill{height:100%;border-radius:3px}
+
+    /* Insight banner */
+    .insight{background:linear-gradient(135deg,#1E293B,#0F172A);color:#fff;border-radius:var(--radius);padding:2rem;margin:2rem 0}
+    .insight h2{font-size:1.1rem;font-weight:800;margin-bottom:1rem}
+    .insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+    .insight-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:1rem}
+    .insight-card .ic-num{font-size:1.8rem;font-weight:900;font-family:'JetBrains Mono',monospace}
+    .insight-card .ic-title{font-size:.82rem;font-weight:600;margin-top:.2rem}
+    .insight-card .ic-desc{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:.2rem;line-height:1.5}
+
+    /* Comparison */
+    .compare-section{margin:2.5rem 0}
+    .compare-section h2{font-size:1.15rem;font-weight:800;margin-bottom:1rem}
+    .compare-table{width:100%;border-collapse:collapse;font-size:.82rem}
+    .compare-table th{background:#0F172A;color:#fff;padding:.5rem .75rem;text-align:left;font-weight:600}
+    .compare-table td{padding:.5rem .75rem;border-bottom:1px solid var(--border)}
+    .compare-table tr:hover td{background:#F0F9FF}
+    .compare-table .risk-badge{font-size:.68rem;padding:.1rem .35rem;border-radius:3px;color:#fff;font-weight:700}
+
+    /* News evidence */
+    .evidence{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:2rem 0}
+    .evidence h2{font-size:1.1rem;font-weight:800;margin-bottom:.75rem}
+    .evidence-list{display:flex;flex-direction:column;gap:.4rem}
+    .evidence-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;padding:.4rem 0;border-bottom:1px solid var(--border)}
+    .evidence-item:last-child{border-bottom:none}
+    .evidence-item .ev-src{font-size:.65rem;font-weight:600;padding:.1rem .3rem;border-radius:3px;color:#fff;white-space:nowrap;flex-shrink:0}
+    .evidence-item a{flex:1;color:var(--text);font-weight:500}
+    .evidence-item a:hover{color:var(--primary)}
+    .evidence-item .ev-jobs{font-size:.65rem;color:var(--text2);flex-shrink:0}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .nav{padding:0 .75rem;height:auto;min-height:44px;flex-wrap:wrap}
+      .nav-brand{padding:.4rem 0;font-size:.85rem}
+      .nav-actions{width:100%;padding-bottom:.35rem}
+      .container{padding:0 1rem}
+      .dept-hero h1{font-size:1.5rem}
+      .ranking-grid{grid-template-columns:1fr}
+      .hero-stats-row{gap:1rem}
+      .insight-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>
+    AI 리스크
+  </a>
+  <div class="nav-actions">
+    <a href="./">직업 분석</a>
+    <a href="./news.html">근거 뉴스</a>
+    <a href="./departments.html" class="active">학과 분석</a>
+    <a href="./agents.html">AI 도구</a>
+    <a href="./survival.html">생존 가이드</a>
+    <a href="./risk-guide.html">리스크 가이드</a>
+    <a href="./game.html">게임</a>
+    <a href="./about.html">About</a>
+
+  </div>
+</nav>
+
+<section class="dept-hero">
+  <h1>내 학과, AI 시대에 안전할까?</h1>
+  <p class="sub">대학교 학과별 졸업 후 진출 직업의 AI 대체 위험도를 수집된 뉴스 기사를 근거로 분석합니다</p>
+  <div class="hero-stats-row">
+    <div class="hero-stat"><div class="num" style="color:#FCA5A5" id="h-depts">0</div><div class="label">분석 학과</div></div>
+    <div class="hero-stat"><div class="num" style="color:#EF4444" id="h-high-depts">0</div><div class="label">고위험 학과</div></div>
+    <div class="hero-stat"><div class="num" style="color:#6EE7B7" id="h-safe-depts">0</div><div class="label">안전 학과</div></div>
+    <div class="hero-stat"><div class="num" style="color:#FCD34D" id="h-avg-risk">0</div><div class="label">평균 위험도</div></div>
+  </div>
+</section>
+
+<main class="container">
+  <div class="search-area">
+    <svg class="search-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+    <input class="search-input" type="text" id="dept-search" placeholder="학과명을 검색하세요 (예: 경영학과, 컴퓨터공학과, 간호학과...)">
+  </div>
+
+  <div class="filter-bar" id="filter-bar"></div>
+
+  <div class="insight" id="insight"></div>
+
+  <div class="ranking-section" id="danger-section">
+    <h2 style="color:var(--red)">&#x1F6A8; 고위험 학과 (위험도 61% 이상)</h2>
+    <div class="ranking-grid" id="danger-grid"></div>
+  </div>
+
+  <div class="ranking-section" id="caution-section">
+    <h2 style="color:var(--amber)">&#x26A0; 주의 학과 (위험도 31~60%)</h2>
+    <div class="ranking-grid" id="caution-grid"></div>
+  </div>
+
+  <div class="ranking-section" id="safe-section">
+    <h2 style="color:var(--green)">&#x2705; 안전 학과 (위험도 30% 이하)</h2>
+    <div class="ranking-grid" id="safe-grid"></div>
+  </div>
+
+  <div class="compare-section">
+    <h2>&#x1F4CA; 전체 학과 위험도 순위표</h2>
+    <div style="overflow-x:auto">
+      <table class="compare-table" id="compare-table">
+        <thead><tr><th>#</th><th>학과</th><th>계열</th><th>평균 위험도</th><th>주요 진출 직업</th><th>등급</th></tr></thead>
+        <tbody id="compare-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="evidence" id="evidence">
+    <h2>&#x1F4F0; 학과 분석의 뉴스 근거</h2>
+    <div class="evidence-list" id="evidence-list"></div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>AI 리스크 &mdash; leaf-kit.github.io/airisk</p>
+  <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
+    <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
+    <a href="https://x.com/intent/post?text=%EB%82%B4%20%ED%95%99%EA%B3%BC%2C%20AI%20%EC%8B%9C%EB%8C%80%EC%97%90%20%EC%95%88%EC%A0%84%ED%95%A0%EA%B9%8C%3F%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fairisk%2Fdepartments.html%0A%0A%40leafeditor%20%23AI%20%23AIrisk%20%23%EB%8C%80%ED%95%99%ED%95%99%EA%B3%BC" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+  </div>
+</footer>
+
+<script>
+// Department → Jobs mapping
+const departments=[
+  // 경영/상경계열
+  {name:'경영학과',college:'경영대학',field:'경상',jobs:['회계사','세무사','재무분석가','마케팅기획자','인사담당자','경영컨설턴트']},
+  {name:'회계학과',college:'경영대학',field:'경상',jobs:['회계사','세무사','감사원','재무분석가']},
+  {name:'경제학과',college:'사회과학대학',field:'경상',jobs:['재무분석가','경제연구원','데이터분석가','은행원']},
+  {name:'무역학과',college:'경영대학',field:'경상',jobs:['통번역가','무역사무원','관세사','물류관리자']},
+  {name:'금융보험학과',college:'경영대학',field:'경상',jobs:['보험설계사','자산관리사','펀드매니저','은행원','손해사정사']},
+  {name:'세무학과',college:'경영대학',field:'경상',jobs:['세무사','회계사','세무공무원']},
+  {name:'경영정보학과',college:'경영대학',field:'경상',jobs:['데이터분석가','IT컨설턴트','시스템관리자']},
+  // 법학/사회계열
+  {name:'법학과',college:'법과대학',field:'법학',jobs:['변호사','법무사','법률사무원','검사']},
+  {name:'행정학과',college:'사회과학대학',field:'사회',jobs:['행정사무원','공무원','정책연구원']},
+  {name:'사회복지학과',college:'사회과학대학',field:'사회',jobs:['사회복지사','상담심리사','요양보호사']},
+  {name:'심리학과',college:'사회과학대학',field:'사회',jobs:['상담심리사','심리상담사','HR매니저','UX리서처']},
+  {name:'정치외교학과',college:'사회과학대학',field:'사회',jobs:['외교관','정책연구원','기자','공무원']},
+  // 공학계열
+  {name:'컴퓨터공학과',college:'공과대학',field:'공학',jobs:['소프트웨어개발자','웹개발자','QA엔지니어','데이터엔지니어']},
+  {name:'소프트웨어학과',college:'공과대학',field:'공학',jobs:['소프트웨어개발자','웹개발자','앱개발자']},
+  {name:'전자공학과',college:'공과대학',field:'공학',jobs:['전자엔지니어','반도체엔지니어','IoT개발자']},
+  {name:'기계공학과',college:'공과대학',field:'공학',jobs:['기계엔지니어','로봇공학자','설비기술자','자동차엔지니어']},
+  {name:'건축학과',college:'공과대학',field:'공학',jobs:['건축설계사','인테리어디자이너','건축시공기술자']},
+  {name:'화학공학과',college:'공과대학',field:'공학',jobs:['화학엔지니어','공정엔지니어','제약연구원']},
+  {name:'산업공학과',college:'공과대학',field:'공학',jobs:['데이터분석가','경영컨설턴트','물류관리자','품질검사원']},
+  {name:'토목공학과',college:'공과대학',field:'공학',jobs:['토목엔지니어','건설기술자','측량기사']},
+  {name:'AI학과',college:'공과대학',field:'공학',jobs:['AI연구원','머신러닝엔지니어','데이터사이언티스트']},
+  // 자연과학계열
+  {name:'수학과',college:'자연과학대학',field:'자연',jobs:['데이터사이언티스트','보험계리사','수학교사','연구원']},
+  {name:'물리학과',college:'자연과학대학',field:'자연',jobs:['물리연구원','반도체엔지니어','의료물리사']},
+  {name:'화학과',college:'자연과학대학',field:'자연',jobs:['화학연구원','제약연구원','품질검사원']},
+  {name:'생명과학과',college:'자연과학대학',field:'자연',jobs:['생명공학연구원','제약연구원','임상시험연구원']},
+  {name:'통계학과',college:'자연과학대학',field:'자연',jobs:['데이터분석가','데이터사이언티스트','보험계리사','통계연구원']},
+  // 의학/보건계열
+  {name:'의학과',college:'의과대학',field:'의학',jobs:['의사','외과의사','영상의학과의사']},
+  {name:'간호학과',college:'간호대학',field:'의학',jobs:['간호사','수술간호사','보건교사']},
+  {name:'약학과',college:'약학대학',field:'의학',jobs:['약사','제약연구원','임상약사']},
+  {name:'치의학과',college:'치과대학',field:'의학',jobs:['치과의사']},
+  {name:'한의학과',college:'한의과대학',field:'의학',jobs:['한의사']},
+  {name:'물리치료학과',college:'보건대학',field:'의학',jobs:['물리치료사','재활치료사']},
+  {name:'방사선학과',college:'보건대학',field:'의학',jobs:['방사선사','의료영상기사']},
+  {name:'임상병리학과',college:'보건대학',field:'의학',jobs:['임상병리사','진단검사의학과']},
+  // 인문계열
+  {name:'국어국문학과',college:'인문대학',field:'인문',jobs:['기자','편집자','카피라이터','국어교사']},
+  {name:'영어영문학과',college:'인문대학',field:'인문',jobs:['통번역가','번역가','영어교사','카피라이터']},
+  {name:'일어일문학과',college:'인문대학',field:'인문',jobs:['통번역가','번역가','일본어교사']},
+  {name:'중어중문학과',college:'인문대학',field:'인문',jobs:['통번역가','번역가','중국어교사']},
+  {name:'사학과',college:'인문대학',field:'인문',jobs:['역사교사','학예사','연구원']},
+  {name:'철학과',college:'인문대학',field:'인문',jobs:['연구원','교수','윤리교사','AI윤리전문가']},
+  // 교육계열
+  {name:'교육학과',college:'사범대학',field:'교육',jobs:['초등교사','학원강사','교육행정가']},
+  {name:'수학교육과',college:'사범대학',field:'교육',jobs:['수학교사','학원강사']},
+  {name:'영어교육과',college:'사범대학',field:'교육',jobs:['영어교사','학원강사','통번역가']},
+  {name:'체육교육과',college:'사범대학',field:'교육',jobs:['체육교사','스포츠트레이너','재활치료사']},
+  // 예술/디자인계열
+  {name:'시각디자인학과',college:'예술대학',field:'예술',jobs:['그래픽디자이너','광고디자이너','일러스트레이터','웹디자이너']},
+  {name:'산업디자인학과',college:'예술대학',field:'예술',jobs:['산업디자이너','UX/UI디자이너','제품디자이너']},
+  {name:'패션디자인학과',college:'예술대학',field:'예술',jobs:['패션디자이너','스타일리스트','패션마케터']},
+  {name:'영상학과',college:'예술대학',field:'예술',jobs:['영상편집자','PD','VFX아티스트']},
+  {name:'음악학과',college:'예술대학',field:'예술',jobs:['음악가/작곡가','음악교사','사운드엔지니어']},
+  {name:'연극영화학과',college:'예술대학',field:'예술',jobs:['배우','연출가','영상편집자','PD']},
+  {name:'미술학과',college:'예술대학',field:'예술',jobs:['일러스트레이터','미술교사','학예사']},
+  // 농업/생명계열
+  {name:'농학과',college:'농업생명과학대학',field:'농업',jobs:['농부','농업기술자','농업연구원']},
+  {name:'식품영양학과',college:'생활과학대학',field:'농업',jobs:['영양사','식품연구원','식품위생관리자']},
+  {name:'수의학과',college:'수의과대학',field:'농업',jobs:['수의사']},
+  // 미디어/언론계열
+  {name:'신문방송학과',college:'사회과학대학',field:'미디어',jobs:['기자','아나운서','PD','방송작가']},
+  {name:'광고홍보학과',college:'사회과학대학',field:'미디어',jobs:['카피라이터','마케팅기획자','광고디자이너','PR전문가']},
+  {name:'미디어커뮤니케이션학과',college:'사회과학대학',field:'미디어',jobs:['기자','콘텐츠크리에이터','영상편집자']},
+];
+
+const fieldColors={경상:'#3B82F6',법학:'#6366F1',사회:'#8B5CF6',공학:'#10B981',자연:'#06B6D4',의학:'#EF4444',인문:'#F59E0B',교육:'#F97316',예술:'#EC4899',농업:'#84CC16',미디어:'#A855F7'};
+const fieldNames={경상:'경상계열',법학:'법학계열',사회:'사회계열',공학:'공학계열',자연:'자연과학계열',의학:'의학/보건계열',인문:'인문계열',교육:'교육계열',예술:'예술/디자인계열',농업:'농업/생명계열',미디어:'미디어/언론계열'};
+
+let jobsData=null,newsData=[];
+function riskColor(r){return r>=86?'#991B1B':r>=61?'#EF4444':r>=31?'#F59E0B':'#10B981'}
+function riskLabel(r){return r>=86?'대체 진행 중':r>=61?'고위험':r>=31?'주의':'안전'}
+
+function animateNum(id,target){
+  const el=document.getElementById(id);let c=0;
+  const step=Math.max(1,Math.floor(target/25));
+  const t=setInterval(()=>{c+=step;if(c>=target){c=target;clearInterval(t)}el.textContent=c;},30);
+}
+
+async function init(){
+  const [jobs,news]=await Promise.all([
+    fetch('data/20260402/processed/jobs_risk.json').then(r=>r.json()),
+    fetch('data/20260402/sources/news_sources.json').then(r=>r.json()).catch(()=>[])
+  ]);
+  jobsData=jobs;newsData=news;
+  const allJobs=jobsData.categories.flatMap(c=>c.jobs);
+
+  // Calculate risk for each department
+  departments.forEach(dept=>{
+    const matched=dept.jobs.map(jn=>{
+      const found=allJobs.find(j=>j.name===jn);
+      return found?found.risk:null;
+    }).filter(r=>r!==null);
+    dept.avgRisk=matched.length?Math.round(matched.reduce((s,r)=>s+r,0)/matched.length):50;
+    dept.matchedCount=matched.length;
+    dept.jobRisks=dept.jobs.map(jn=>{
+      const found=allJobs.find(j=>j.name===jn);
+      return {name:jn,risk:found?found.risk:null};
+    });
+  });
+
+  departments.sort((a,b)=>b.avgRisk-a.avgRisk);
+
+  // Stats
+  const highDepts=departments.filter(d=>d.avgRisk>=61).length;
+  const safeDepts=departments.filter(d=>d.avgRisk<=30).length;
+  const avgAll=Math.round(departments.reduce((s,d)=>s+d.avgRisk,0)/departments.length);
+  animateNum('h-depts',departments.length);
+  animateNum('h-high-depts',highDepts);
+  animateNum('h-safe-depts',safeDepts);
+  animateNum('h-avg-risk',avgAll);
+
+  renderFilters();
+  renderInsight(highDepts,safeDepts,avgAll);
+  renderRankings('all');
+  renderCompareTable();
+  renderEvidence();
+  initSearch();
+}
+
+function renderFilters(){
+  const fields=[...new Set(departments.map(d=>d.field))];
+  const bar=document.getElementById('filter-bar');
+  bar.innerHTML=`<button class="filter-btn active" data-f="all">전체 (${departments.length})</button>`+
+    fields.map(f=>{
+      const count=departments.filter(d=>d.field===f).length;
+      return `<button class="filter-btn" data-f="${f}">${fieldNames[f]||f} (${count})</button>`;
+    }).join('');
+  bar.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      bar.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderRankings(btn.dataset.f);
+    };
+  });
+}
+
+function renderInsight(high,safe,avg){
+  const topDanger=departments[0];
+  const topSafe=departments[departments.length-1];
+  const fields={};
+  departments.forEach(d=>{if(!fields[d.field])fields[d.field]={sum:0,count:0};fields[d.field].sum+=d.avgRisk;fields[d.field].count++});
+  const fieldAvgs=Object.entries(fields).map(([k,v])=>({field:k,avg:Math.round(v.sum/v.count)})).sort((a,b)=>b.avg-a.avg);
+
+  document.getElementById('insight').innerHTML=`
+    <h2>&#x1F4A1; 학과 분석 인사이트</h2>
+    <div class="insight-grid">
+      <div class="insight-card">
+        <div class="ic-num" style="color:#FCA5A5">${topDanger.name}</div>
+        <div class="ic-title">가장 위험한 학과 (${topDanger.avgRisk}%)</div>
+        <div class="ic-desc">졸업 후 진출하는 직업군 대부분이 AI 자동화 영향권에 있습니다.</div>
+      </div>
+      <div class="insight-card">
+        <div class="ic-num" style="color:#6EE7B7">${topSafe.name}</div>
+        <div class="ic-title">가장 안전한 학과 (${topSafe.avgRisk}%)</div>
+        <div class="ic-desc">인간 고유의 판단력, 감정 교류가 필수인 직업군으로 진출합니다.</div>
+      </div>
+      <div class="insight-card">
+        <div class="ic-num" style="color:#FCD34D">${fieldAvgs[0].avg}%</div>
+        <div class="ic-title">가장 위험한 계열: ${fieldNames[fieldAvgs[0].field]}</div>
+        <div class="ic-desc">해당 계열 학과들의 평균 AI 대체 위험도가 가장 높습니다.</div>
+      </div>
+      <div class="insight-card">
+        <div class="ic-num" style="color:#60A5FA">${high}개 / ${departments.length}개</div>
+        <div class="ic-title">학과의 ${Math.round(high/departments.length*100)}%가 고위험</div>
+        <div class="ic-desc">전체 분석 대상 학과 중 절반 이상이 AI 대체 위험도 61% 이상입니다.</div>
+      </div>
+    </div>
+  `;
+}
+
+function createDeptCard(dept,rank){
+  const rc=riskColor(dept.avgRisk);
+  const card=document.createElement('div');
+  card.className='dept-card';
+  card.innerHTML=`
+    <div class="dept-rank" style="background:${rc}">${rank}</div>
+    <div class="dept-info">
+      <div class="dept-name">${dept.name}</div>
+      <div class="dept-college">${dept.college} · <span style="color:${fieldColors[dept.field]||'#6B7280'}">${fieldNames[dept.field]||dept.field}</span></div>
+      <div class="dept-jobs">${dept.jobRisks.map(j=>{
+        const color=j.risk!==null?riskColor(j.risk):'#9CA3AF';
+        return `<a class="dept-job" href="./#job/${encodeURIComponent(j.name)}" style="color:${color};border-color:${color}30;background:${color}08">${j.name}${j.risk!==null?' '+j.risk+'%':''}</a>`;
+      }).join('')}</div>
+    </div>
+    <div class="dept-risk">
+      <div class="dept-risk-num" style="color:${rc}">${dept.avgRisk}%</div>
+      <div class="dept-risk-label">${riskLabel(dept.avgRisk)}</div>
+      <div class="risk-meter"><div class="risk-meter-fill" style="width:${dept.avgRisk}%;background:${rc}"></div></div>
+    </div>
+  `;
+  return card;
+}
+
+function renderRankings(field){
+  const filtered=field==='all'?departments:departments.filter(d=>d.field===field);
+  const sorted=[...filtered].sort((a,b)=>b.avgRisk-a.avgRisk);
+
+  const danger=sorted.filter(d=>d.avgRisk>=61);
+  const caution=sorted.filter(d=>d.avgRisk>=31&&d.avgRisk<61);
+  const safe=sorted.filter(d=>d.avgRisk<31);
+
+  const dg=document.getElementById('danger-grid');dg.innerHTML='';
+  danger.forEach((d,i)=>dg.appendChild(createDeptCard(d,i+1)));
+  document.getElementById('danger-section').style.display=danger.length?'':'none';
+
+  const cg=document.getElementById('caution-grid');cg.innerHTML='';
+  caution.forEach((d,i)=>cg.appendChild(createDeptCard(d,danger.length+i+1)));
+  document.getElementById('caution-section').style.display=caution.length?'':'none';
+
+  const sg=document.getElementById('safe-grid');sg.innerHTML='';
+  safe.forEach((d,i)=>sg.appendChild(createDeptCard(d,danger.length+caution.length+i+1)));
+  document.getElementById('safe-section').style.display=safe.length?'':'none';
+}
+
+function renderCompareTable(){
+  const body=document.getElementById('compare-body');
+  body.innerHTML=departments.map((d,i)=>{
+    const rc=riskColor(d.avgRisk);
+    return `<tr>
+      <td style="font-weight:700;color:var(--text2)">${i+1}</td>
+      <td style="font-weight:700">${d.name}</td>
+      <td><span style="color:${fieldColors[d.field]||'#6B7280'};font-weight:600;font-size:.78rem">${fieldNames[d.field]||d.field}</span></td>
+      <td><strong style="color:${rc};font-family:'JetBrains Mono',monospace">${d.avgRisk}%</strong></td>
+      <td style="font-size:.75rem;color:var(--text2)">${d.jobs.slice(0,3).join(', ')}${d.jobs.length>3?' 외 '+(d.jobs.length-3)+'개':''}</td>
+      <td><span class="risk-badge" style="background:${rc}">${riskLabel(d.avgRisk)}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderEvidence(){
+  // Find news related to department jobs
+  const allDeptJobs=new Set(departments.flatMap(d=>d.jobs));
+  const relevant=newsData.filter(n=>n.related_jobs?.some(j=>allDeptJobs.has(j))).slice(0,15);
+  const catColors2={business:'#3B82F6',tech:'#8B5CF6',education:'#F59E0B',medical:'#10B981',creative:'#EC4899',service:'#F97316',manufacturing:'#6366F1',agriculture:'#84CC16',labor:'#6B7280'};
+
+  document.getElementById('evidence-list').innerHTML=relevant.map(n=>`
+    <div class="evidence-item">
+      <span class="ev-src" style="background:${catColors2[n.category]||'#6B7280'}">${n.source}</span>
+      <a href="${n.url}" target="_blank">${n.title}</a>
+      <span class="ev-jobs">${n.related_jobs?.slice(0,2).join(', ')}</span>
+    </div>
+  `).join('');
+}
+
+function initSearch(){
+  document.getElementById('dept-search').addEventListener('input',function(){
+    const q=this.value.trim().toLowerCase();
+    if(!q){renderRankings(document.querySelector('.filter-btn.active')?.dataset.f||'all');return}
+    const results=departments.filter(d=>
+      d.name.toLowerCase().includes(q)||
+      d.college.toLowerCase().includes(q)||
+      (fieldNames[d.field]||'').includes(q)||
+      d.jobs.some(j=>j.includes(q))
+    ).sort((a,b)=>b.avgRisk-a.avgRisk);
+
+    ['danger','caution','safe'].forEach(id=>document.getElementById(id+'-section').style.display='none');
+
+    const dg=document.getElementById('danger-grid');dg.innerHTML='';
+    const ds=document.getElementById('danger-section');
+    if(results.length){
+      ds.style.display='';
+      ds.querySelector('h2').innerHTML=`&#x1F50D; 검색 결과 (${results.length}개)`;
+      results.forEach((d,i)=>dg.appendChild(createDeptCard(d,i+1)));
+    }else{
+      ds.style.display='';
+      ds.querySelector('h2').innerHTML='검색 결과가 없습니다';
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
