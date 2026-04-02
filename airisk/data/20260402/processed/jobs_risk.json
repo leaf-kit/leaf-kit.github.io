@@ -4,7 +4,7 @@
   "collection_meta": {
     "collected_at": "2026-04-02T14:30:00+09:00",
     "collection_count": 1,
-    "sources_count": 30,
+    "sources_count": 100,
     "analysis_method": "LLM 기반 분석 + 공개 뉴스/보고서 참조",
     "data_period": "2025-01 ~ 2026-04"
   },
