@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>변형 마크다운 문법 — 플랫폼별 확장 가이드</title>
+  <meta name="description" content="표준 마크다운 외 GFM, Obsidian, Notion 등 플랫폼별 확장·변형 문법을 정리합니다.">
+  <meta property="og:title" content="변형 마크다운 문법 가이드">
+  <meta property="og:description" content="표준 마크다운 외 플랫폼별 확장·변형 문법을 정리합니다.">
+  <meta property="og:url" content="https://leaf-kit.github.io/markdown/extended.html">
+  <link rel="canonical" href="https://leaf-kit.github.io/markdown/extended.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#FAFAFA;--surface:#fff;--text:#1a1a2e;--text2:#64748B;--primary:#7C3AED;--accent:#2563EB;--border:#E2E8F0;--code-bg:#1E293B;--code-text:#E2E8F0;--radius:8px}
+    html{font-size:17px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:rgba(124,58,237,.12)}
+
+    .page{display:flex;max-width:1400px;margin:0 auto}
+    .sidebar{width:260px;position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.5rem 1rem;border-right:1px solid var(--border);background:var(--surface);flex-shrink:0;scrollbar-width:thin}
+    .sidebar::-webkit-scrollbar{width:4px}
+    .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+    .main{flex:1;min-width:0;padding:2.5rem 3rem 4rem}
+    .sidebar-brand{font-size:1rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.4rem;margin-bottom:.75rem;text-decoration:none}
+    .sidebar-brand:hover{text-decoration:none}
+    .sidebar-nav{display:flex;gap:.3rem;margin-bottom:1rem}
+    .sidebar-nav a{font-size:.72rem;font-weight:600;padding:.25rem .5rem;border-radius:4px;border:1px solid var(--border);color:var(--text2)}
+    .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--primary);border-color:var(--primary);background:rgba(124,58,237,.04);text-decoration:none}
+    .sidebar-section{font-size:.68rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin:1.2rem 0 .4rem;padding-left:.5rem}
+    .sidebar-link{display:block;font-size:.8rem;color:var(--text2);padding:.25rem .5rem;border-radius:4px;margin-bottom:.1rem;transition:all .15s;text-decoration:none;border-left:2px solid transparent}
+    .sidebar-link:hover{color:var(--primary);background:rgba(124,58,237,.04);text-decoration:none}
+    .sidebar-link.active{color:var(--primary);font-weight:600;border-left-color:var(--primary);background:rgba(124,58,237,.06)}
+
+    .hero{margin-bottom:3rem;padding-bottom:2rem;border-bottom:1px solid var(--border)}
+    .hero h1{font-size:2.2rem;font-weight:900;line-height:1.3}
+    .hero h1 span{background:linear-gradient(135deg,var(--primary),#EC4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero .lead{font-size:1rem;color:var(--text2);margin-top:.75rem;max-width:640px}
+
+    .section{margin-bottom:3rem;scroll-margin-top:1.5rem}
+    .section h2{font-size:1.5rem;font-weight:800;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:2px solid var(--border)}
+    .section h3{font-size:1.1rem;font-weight:700;margin:1.5rem 0 .5rem}
+    .section p{margin-bottom:.75rem;font-size:.9rem}
+    .section ul,.section ol{margin-bottom:1rem;padding-left:1.5rem}
+    .section li{margin-bottom:.3rem;font-size:.88rem}
+
+    code{font-family:'JetBrains Mono',monospace;font-size:.82rem;background:rgba(124,58,237,.06);color:#6D28D9;padding:.1rem .35rem;border-radius:3px}
+    pre{background:var(--code-bg);color:var(--code-text);padding:1.25rem 1.5rem;border-radius:var(--radius);overflow-x:auto;margin:1rem 0;line-height:1.6}
+    pre code{background:none;color:inherit;padding:0;font-size:.82rem}
+
+    .compat{display:inline-flex;align-items:center;gap:.2rem;font-size:.65rem;font-weight:600;padding:.12rem .4rem;border-radius:3px;margin-left:.3rem}
+    .compat.yes{background:#ECFDF5;color:#065F46}
+    .compat.partial{background:#FFFBEB;color:#92400E}
+    .compat.no{background:#FEF2F2;color:#991B1B}
+
+    .platform-badge{display:inline-flex;align-items:center;gap:.2rem;font-size:.68rem;font-weight:600;padding:.15rem .4rem;border-radius:3px;color:#fff;margin-right:.2rem}
+
+    .warn{background:#FEF2F2;border:1px solid #FECACA;border-left:3px solid #EF4444;border-radius:0 var(--radius) var(--radius) 0;padding:.75rem 1rem;margin:1rem 0;font-size:.85rem;color:#991B1B}
+    .tip{background:#F5F3FF;border:1px solid #DDD6FE;border-left:3px solid var(--primary);border-radius:0 var(--radius) var(--radius) 0;padding:.75rem 1rem;margin:1rem 0;font-size:.85rem;color:#5B21B6}
+    .note{background:#EFF6FF;border:1px solid #BFDBFE;border-left:3px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;padding:.75rem 1rem;margin:1rem 0;font-size:.85rem;color:#1E40AF}
+
+    .compat-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.8rem}
+    .compat-table th{background:var(--code-bg);color:#fff;padding:.5rem .6rem;text-align:left;font-weight:600}
+    .compat-table td{padding:.4rem .6rem;border-bottom:1px solid var(--border);vertical-align:middle}
+    .compat-table tr:hover td{background:rgba(124,58,237,.02)}
+    .compat-table .c-yes{color:#10B981;font-weight:700}
+    .compat-table .c-no{color:#EF4444;font-weight:700}
+    .compat-table .c-part{color:#F59E0B;font-weight:700}
+
+    .vs-box{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+    .vs-item{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+    .vs-item-header{padding:.4rem .75rem;font-size:.75rem;font-weight:700;color:#fff}
+    .vs-item-body{padding:.75rem;font-size:.85rem}
+    .vs-item-body pre{margin:.5rem 0;font-size:.78rem}
+
+    .footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem;margin-top:2rem}
+
+    @media(max-width:900px){
+      .sidebar{display:none}
+      .main{padding:1.5rem 1rem 3rem}
+      .hero h1{font-size:1.7rem}
+      .vs-box{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+<aside class="sidebar">
+  <a class="sidebar-brand" href="./">Markdown Guide</a>
+  <div class="sidebar-nav">
+    <a href="./">표준 문법</a>
+    <a href="./extended.html" class="active">변형 문법</a>
+    <a href="./cheatsheet.html">퀵시트</a>
+  </div>
+
+  <div class="sidebar-section">GFM 확장</div>
+  <a class="sidebar-link" href="#gfm">GFM 개요</a>
+  <a class="sidebar-link" href="#gfm-autolink">자동 링크</a>
+  <a class="sidebar-link" href="#gfm-mention">멘션·이슈 참조</a>
+
+  <div class="sidebar-section">수식·다이어그램</div>
+  <a class="sidebar-link" href="#math">수식 (LaTeX)</a>
+  <a class="sidebar-link" href="#mermaid">다이어그램 (Mermaid)</a>
+
+  <div class="sidebar-section">문서 구조</div>
+  <a class="sidebar-link" href="#footnotes">각주</a>
+  <a class="sidebar-link" href="#toc">TOC 자동 생성</a>
+  <a class="sidebar-link" href="#frontmatter">프론트매터</a>
+  <a class="sidebar-link" href="#collapse">접기/콜랩스</a>
+  <a class="sidebar-link" href="#admonition">Admonition 블록</a>
+
+  <div class="sidebar-section">스타일링</div>
+  <a class="sidebar-link" href="#highlight">형광펜/하이라이트</a>
+  <a class="sidebar-link" href="#attributes">속성/클래스 지정</a>
+  <a class="sidebar-link" href="#html-embed">HTML/CSS 삽입</a>
+
+  <div class="sidebar-section">플랫폼별</div>
+  <a class="sidebar-link" href="#obsidian">Obsidian</a>
+  <a class="sidebar-link" href="#notion">Notion</a>
+  <a class="sidebar-link" href="#jupyter">Jupyter</a>
+  <a class="sidebar-link" href="#compat">호환성 표</a>
+</aside>
+
+<main class="main">
+
+<div class="hero">
+  <h1><span>변형</span> 마크다운 문법</h1>
+  <p class="lead">존 그루버의 원본 마크다운에는 없지만, 각 플랫폼과 도구가 추가한 확장 문법들. 표준과 헷갈리지 않도록 별도로 정리했다.</p>
+</div>
+
+<div class="warn"><strong>이 페이지의 모든 문법은 "비표준"입니다.</strong> 원본 마크다운(Gruber 스펙)에는 존재하지 않으며, 특정 플랫폼에서만 작동합니다. 표준 문법은 <a href="./" style="color:#991B1B;font-weight:700">표준 마크다운 가이드</a>를 참고하세요.</div>
+
+<!-- GFM -->
+<section class="section" id="gfm">
+  <h2>GFM (GitHub Flavored Markdown)</h2>
+  <p>GitHub가 CommonMark 위에 올린 확장. 2017년 공식 명세 발표. 사실상 개발자 세계의 표준이 되었지만, 엄밀히는 <strong>비표준 확장</strong>이다.</p>
+
+  <p>GFM이 추가한 문법 (표준 마크다운에 없는 것):</p>
+  <ul>
+    <li>표 (Tables) — <code>| a | b |</code> 형식</li>
+    <li>취소선 — <code>~~텍스트~~</code></li>
+    <li>작업 목록 — <code>- [x]</code> / <code>- [ ]</code></li>
+    <li>자동 링크 — URL을 그냥 쓰면 자동으로 링크</li>
+    <li>멘션 / 이슈 참조 — <code>@user</code>, <code>#123</code></li>
+  </ul>
+  <div class="note">표, 취소선, 작업 목록은 이미 <a href="./" style="color:#1E40AF">표준 가이드</a>의 확장 섹션에서 다뤘다. 여기서는 GFM 고유의 추가 기능을 다룬다.</div>
+</section>
+
+<section class="section" id="gfm-autolink">
+  <h3>자동 링크 (Autolink)</h3>
+  <p>GFM에서는 URL을 <code>&lt; &gt;</code>로 감싸지 않아도 자동으로 링크가 된다.</p>
+  <pre><code>표준: &lt;https://github.com&gt;
+GFM:  https://github.com  (그냥 써도 링크 됨)</code></pre>
+  <div class="tip"><strong>GFM 전용:</strong> 일반 마크다운 파서에서는 URL을 그냥 쓰면 텍스트로 남는다.</div>
+</section>
+
+<section class="section" id="gfm-mention">
+  <h3>멘션 및 이슈 참조</h3>
+  <p>GitHub 내에서만 작동하는 단축 참조 문법.</p>
+  <pre><code>@username          → 사용자 프로필 링크
+#123               → 이슈/PR #123 링크
+owner/repo#456     → 다른 저장소의 이슈 참조
+SHA (7자 이상)      → 커밋 링크</code></pre>
+  <span class="compat no">GitHub 전용</span>
+</section>
+
+<!-- Math -->
+<section class="section" id="math">
+  <h2>수식 (LaTeX Math)</h2>
+  <p>원본 마크다운에는 전혀 없는 기능. MathJax 또는 KaTeX 라이브러리가 렌더링한다.</p>
+  <pre><code>인라인: $E = mc^2$
+
+블록:
+$$
+\sum_{i=1}^{n} x_i = x_1 + x_2 + \cdots + x_n
+$$
+
+행렬:
+$$
+A = \begin{pmatrix}
+a_{11} & a_{12} \\
+a_{21} & a_{22}
+\end{pmatrix}
+$$</code></pre>
+
+  <table class="compat-table">
+    <thead><tr><th>플랫폼</th><th>인라인 <code>$...$</code></th><th>블록 <code>$$...$$</code></th><th>렌더러</th></tr></thead>
+    <tbody>
+      <tr><td>GitHub</td><td class="c-yes">O</td><td class="c-yes">O</td><td>MathJax</td></tr>
+      <tr><td>Obsidian</td><td class="c-yes">O</td><td class="c-yes">O</td><td>MathJax</td></tr>
+      <tr><td>Notion</td><td class="c-yes">O</td><td class="c-yes">O</td><td>KaTeX</td></tr>
+      <tr><td>Jupyter</td><td class="c-yes">O</td><td class="c-yes">O</td><td>MathJax</td></tr>
+      <tr><td>VS Code</td><td class="c-yes">O (확장)</td><td class="c-yes">O (확장)</td><td>KaTeX</td></tr>
+      <tr><td>일반 파서</td><td class="c-no">X</td><td class="c-no">X</td><td>-</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Mermaid -->
+<section class="section" id="mermaid">
+  <h2>다이어그램 (Mermaid)</h2>
+  <p>코드 블록에 <code>mermaid</code> 언어를 지정하면 다이어그램으로 렌더링. 2021년부터 GitHub에서 네이티브 지원.</p>
+  <pre><code>```mermaid
+graph LR
+    A[마크다운] --> B[HTML 변환]
+    B --> C[브라우저 렌더링]
+```</code></pre>
+  <p>지원 차트: flowchart, sequence, class, state, ER, gantt, pie, gitGraph, mindmap, timeline 등.</p>
+  <span class="compat yes">GitHub</span> <span class="compat yes">GitLab</span> <span class="compat yes">Obsidian</span> <span class="compat partial">Notion (임베드)</span>
+</section>
+
+<!-- Footnotes -->
+<section class="section" id="footnotes">
+  <h2>각주 (Footnotes)</h2>
+  <pre><code>본문에서 각주를 달 수 있다[^1]. 여러 개도 가능[^note].
+
+[^1]: 첫 번째 각주 내용.
+[^note]: 숫자 대신 이름도 된다.</code></pre>
+  <span class="compat yes">GitHub</span> <span class="compat yes">Obsidian</span> <span class="compat yes">Jekyll</span> <span class="compat no">CommonMark 표준 X</span>
+</section>
+
+<!-- TOC -->
+<section class="section" id="toc">
+  <h2>TOC 자동 생성</h2>
+  <p>마크다운 자체에는 목차 문법이 없다. 플랫폼마다 다른 방식을 쓴다.</p>
+
+  <table class="compat-table">
+    <thead><tr><th>플랫폼</th><th>문법</th><th>비고</th></tr></thead>
+    <tbody>
+      <tr><td>GitLab</td><td><code>[[_TOC_]]</code></td><td>문서 최상단에 삽입</td></tr>
+      <tr><td>Obsidian</td><td><code>[[toc]]</code> 또는 플러그인</td><td>커뮤니티 플러그인 다수</td></tr>
+      <tr><td>Typora</td><td><code>[TOC]</code></td><td>자동 목차 생성</td></tr>
+      <tr><td>VS Code</td><td>확장 프로그램</td><td>Markdown All in One 등</td></tr>
+      <tr><td>GitHub</td><td class="c-no">미지원</td><td>수동으로 링크 작성 필요</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Front Matter -->
+<section class="section" id="frontmatter">
+  <h2>프론트매터 (Front Matter)</h2>
+  <p>마크다운 파일 맨 위에 YAML/TOML/JSON으로 메타데이터를 넣는 방식. 마크다운 "문법"은 아니지만, 사실상 필수 패턴이 되었다.</p>
+
+  <div class="vs-box">
+    <div class="vs-item">
+      <div class="vs-item-header" style="background:var(--primary)">YAML (가장 흔함)</div>
+      <div class="vs-item-body"><pre><code>---
+title: "글 제목"
+date: 2026-04-02
+tags: [markdown, tutorial]
+draft: false
+---</code></pre></div>
+    </div>
+    <div class="vs-item">
+      <div class="vs-item-header" style="background:#F97316">TOML (Hugo 등)</div>
+      <div class="vs-item-body"><pre><code>+++
+title = "글 제목"
+date = 2026-04-02
+tags = ["markdown", "tutorial"]
+draft = false
++++</code></pre></div>
+    </div>
+  </div>
+  <span class="compat yes">Jekyll</span> <span class="compat yes">Hugo</span> <span class="compat yes">Next.js</span> <span class="compat yes">Obsidian</span> <span class="compat no">GitHub 렌더링 X</span>
+</section>
+
+<!-- Collapse -->
+<section class="section" id="collapse">
+  <h2>접기/콜랩스 (Collapsible)</h2>
+  <p>HTML <code>&lt;details&gt;</code> 태그를 활용. 마크다운 문법은 아니지만 대부분의 렌더러가 허용한다.</p>
+  <pre><code>&lt;details&gt;
+&lt;summary&gt;클릭하면 펼쳐집니다&lt;/summary&gt;
+
+숨겨진 내용. **마크다운도 됩니다.**
+
+- 목록도 되고
+- `코드`도 된다
+
+&lt;/details&gt;</code></pre>
+
+  <div class="tip"><strong>주의:</strong> <code>&lt;summary&gt;</code> 뒤에, 그리고 숨긴 내용 앞뒤에 <strong>빈 줄</strong>을 넣어야 마크다운이 정상 렌더링된다.</div>
+</section>
+
+<!-- Admonition -->
+<section class="section" id="admonition">
+  <h2>Admonition / Callout 블록</h2>
+  <p>경고, 팁, 정보 등을 시각적으로 구분하는 블록. 플랫폼마다 문법이 다르다.</p>
+
+  <div class="vs-box">
+    <div class="vs-item">
+      <div class="vs-item-header" style="background:#0F172A">GitHub (2022~)</div>
+      <div class="vs-item-body"><pre><code>> [!NOTE]
+> 참고 사항입니다.
+
+> [!WARNING]
+> 주의가 필요합니다.
+
+> [!TIP]
+> 유용한 팁입니다.</code></pre></div>
+    </div>
+    <div class="vs-item">
+      <div class="vs-item-header" style="background:var(--primary)">Obsidian Callout</div>
+      <div class="vs-item-body"><pre><code>> [!info] 제목
+> 정보 내용
+
+> [!warning] 경고
+> 경고 내용
+
+> [!tip]- 접을 수 있는 팁
+> 접힌 내용</code></pre></div>
+    </div>
+  </div>
+
+  <table class="compat-table">
+    <thead><tr><th>문법</th><th>GitHub</th><th>Obsidian</th><th>MkDocs</th><th>Docusaurus</th></tr></thead>
+    <tbody>
+      <tr><td><code>> [!NOTE]</code></td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-no">X</td><td class="c-no">X</td></tr>
+      <tr><td><code>::: note</code></td><td class="c-no">X</td><td class="c-no">X</td><td class="c-yes">O</td><td class="c-yes">O</td></tr>
+      <tr><td><code>> [!info] 제목</code></td><td class="c-part">일부</td><td class="c-yes">O</td><td class="c-no">X</td><td class="c-no">X</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Highlight -->
+<section class="section" id="highlight">
+  <h2>형광펜 / 하이라이트</h2>
+  <p>등호 두 개로 감싸는 문법. 원본 마크다운에 전혀 없다.</p>
+  <pre><code>==이 텍스트가 형광펜 처리됩니다==</code></pre>
+  <span class="compat yes">Obsidian</span> <span class="compat yes">Typora</span> <span class="compat no">GitHub X</span> <span class="compat no">Notion X</span>
+  <p style="margin-top:.5rem">GitHub에서는 HTML로 대체해야 한다: <code>&lt;mark&gt;형광펜&lt;/mark&gt;</code></p>
+</section>
+
+<!-- Attributes -->
+<section class="section" id="attributes">
+  <h2>속성 / 클래스 지정</h2>
+  <p>요소에 CSS 클래스나 ID를 붙이는 문법. Pandoc, Kramdown 등에서 지원.</p>
+  <pre><code># 제목 {#custom-id .my-class}
+
+이 단락에 스타일을 적용
+{: .highlight .important}
+
+![이미지](img.png){width=300}</code></pre>
+  <span class="compat yes">Pandoc</span> <span class="compat yes">Kramdown (Jekyll)</span> <span class="compat no">GitHub X</span> <span class="compat no">Obsidian X</span>
+</section>
+
+<!-- HTML/CSS -->
+<section class="section" id="html-embed">
+  <h2>HTML / CSS 직접 삽입</h2>
+  <p>마크다운은 HTML 블록을 "허용"한다. 정확히 말하면 변형 문법이 아니라 <strong>원본 스펙의 기능</strong>이지만, 실무에서 확장 용도로 많이 쓰인다.</p>
+
+  <pre><code>&lt;!-- 가운데 정렬 --&gt;
+&lt;div align="center"&gt;
+
+![로고](logo.png)
+
+**프로젝트 이름**
+
+&lt;/div&gt;
+
+&lt;!-- 색상 텍스트 (GitHub 지원) --&gt;
+&lt;span style="color:red"&gt;빨간 글씨&lt;/span&gt;  ← GitHub에서 무시됨!
+
+&lt;!-- GitHub에서 색상 쓰는 꼼수 --&gt;
+```diff
++ 추가된 줄 (초록)
+- 삭제된 줄 (빨강)
+! 경고 (주황)
+```</code></pre>
+
+  <div class="warn"><strong>GitHub는 <code>style</code> 속성을 제거한다.</strong> 인라인 CSS, <code>&lt;style&gt;</code> 태그, <code>&lt;script&gt;</code> 태그 모두 무시된다. <code>align</code>, <code>width</code> 같은 HTML 속성은 허용.</div>
+</section>
+
+<!-- Obsidian -->
+<section class="section" id="obsidian">
+  <h2>Obsidian 전용 문법</h2>
+  <table class="compat-table">
+    <thead><tr><th>문법</th><th>설명</th><th>예시</th></tr></thead>
+    <tbody>
+      <tr><td><code>[[페이지명]]</code></td><td>내부 링크 (위키 스타일)</td><td><code>[[마크다운 가이드]]</code></td></tr>
+      <tr><td><code>![[파일명]]</code></td><td>파일 임베드 (이미지, PDF, 노트)</td><td><code>![[diagram.png]]</code></td></tr>
+      <tr><td><code>[[페이지#헤딩]]</code></td><td>특정 헤딩으로 링크</td><td><code>[[가이드#설치]]</code></td></tr>
+      <tr><td><code>[[페이지|표시텍스트]]</code></td><td>별칭 링크</td><td><code>[[README|소개]]</code></td></tr>
+      <tr><td><code>#태그</code></td><td>인라인 태그</td><td><code>#todo #urgent</code></td></tr>
+      <tr><td><code>%%주석%%</code></td><td>렌더링에서 숨겨지는 주석</td><td><code>%%이건 안 보임%%</code></td></tr>
+      <tr><td><code>==형광펜==</code></td><td>하이라이트</td><td><code>==중요==</code></td></tr>
+      <tr><td><code>> [!tip]</code></td><td>Callout 블록</td><td>접기 가능 (<code>-</code> 추가)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Notion -->
+<section class="section" id="notion">
+  <h2>Notion 고유 패턴</h2>
+  <p>Notion은 마크다운을 "입력 단축키"로 쓰지만, 내부적으로는 자체 블록 구조를 사용한다.</p>
+  <table class="compat-table">
+    <thead><tr><th>입력</th><th>결과</th><th>비고</th></tr></thead>
+    <tbody>
+      <tr><td><code>/todo</code></td><td>체크박스 블록</td><td>슬래시 커맨드</td></tr>
+      <tr><td><code>/toggle</code></td><td>접이식 블록</td><td>마크다운 아님</td></tr>
+      <tr><td><code>/callout</code></td><td>콜아웃 박스</td><td>아이콘 선택 가능</td></tr>
+      <tr><td><code>@사용자</code></td><td>멘션</td><td>Notion 내부 사용자</td></tr>
+      <tr><td><code>[[페이지명</code></td><td>페이지 링크</td><td>인라인 데이터베이스 연결</td></tr>
+      <tr><td><code>/math</code></td><td>수식 블록</td><td>KaTeX 렌더링</td></tr>
+      <tr><td><code>/mermaid</code></td><td>다이어그램</td><td>코드 블록 임베드</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Notion에서 마크다운을 <strong>붙여넣기</strong>하면 자동 변환되지만, <strong>내보내기</strong>한 마크다운은 Notion 고유 포맷이 섞여 있어 다른 도구에서 깨질 수 있다.</div>
+</section>
+
+<!-- Jupyter -->
+<section class="section" id="jupyter">
+  <h2>Jupyter Notebook</h2>
+  <p>Jupyter의 마크다운 셀은 표준 마크다운 + MathJax + HTML을 모두 지원한다.</p>
+  <pre><code># Jupyter 마크다운 셀에서 가능한 것들
+
+일반 마크다운 + **HTML 태그** + $LaTeX$ 수식
+
+&lt;div style="background:#f0f0f0;padding:1rem"&gt;
+  스타일도 된다 (Jupyter는 style 속성 허용)
+&lt;/div&gt;
+
+$$\frac{\partial f}{\partial x} = 2x$$</code></pre>
+  <div class="tip">Jupyter는 GitHub와 달리 <code>&lt;style&gt;</code> 태그와 인라인 CSS를 <strong>모두 허용</strong>한다. 셀 내에서 자유롭게 꾸밀 수 있다.</div>
+</section>
+
+<!-- Compatibility Table -->
+<section class="section" id="compat">
+  <h2>플랫폼별 호환성 종합표</h2>
+
+  <table class="compat-table">
+    <thead><tr><th>기능</th><th>GitHub</th><th>GitLab</th><th>Obsidian</th><th>Notion</th><th>Jupyter</th><th>VS Code</th></tr></thead>
+    <tbody>
+      <tr><td>표 (Tables)</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td></tr>
+      <tr><td>취소선</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td></tr>
+      <tr><td>작업 목록</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-no">X</td><td class="c-yes">O</td></tr>
+      <tr><td>수식 (LaTeX)</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-part">확장</td></tr>
+      <tr><td>Mermaid</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-part">임베드</td><td class="c-no">X</td><td class="c-part">확장</td></tr>
+      <tr><td>각주</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-no">X</td><td class="c-no">X</td><td class="c-part">확장</td></tr>
+      <tr><td>Callout/Admonition</td><td class="c-yes">O</td><td class="c-no">X</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-no">X</td><td class="c-no">X</td></tr>
+      <tr><td>형광펜 <code>==</code></td><td class="c-no">X</td><td class="c-no">X</td><td class="c-yes">O</td><td class="c-no">X</td><td class="c-no">X</td><td class="c-no">X</td></tr>
+      <tr><td>위키링크 <code>[[]]</code></td><td class="c-no">X</td><td class="c-no">X</td><td class="c-yes">O</td><td class="c-yes">O</td><td class="c-no">X</td><td class="c-no">X</td></tr>
+      <tr><td>프론트매터</td><td class="c-part">표시만</td><td class="c-part">표시만</td><td class="c-yes">O</td><td class="c-no">X</td><td class="c-no">X</td><td class="c-yes">O</td></tr>
+      <tr><td>HTML 인라인 CSS</td><td class="c-no">제거됨</td><td class="c-part">일부</td><td class="c-yes">O</td><td class="c-no">X</td><td class="c-yes">O</td><td class="c-yes">O</td></tr>
+      <tr><td>속성 <code>{.class}</code></td><td class="c-no">X</td><td class="c-no">X</td><td class="c-no">X</td><td class="c-no">X</td><td class="c-no">X</td><td class="c-no">X</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.78rem;color:var(--text2);margin-top:.5rem">O = 지원, X = 미지원, 확장 = 플러그인/확장 설치 필요, 일부 = 부분 지원</p>
+</section>
+
+<footer class="footer">
+  <p>Markdown Guide &mdash; leaf-kit.github.io/markdown</p>
+  <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
+    <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
+    <a href="https://x.com/intent/post?text=%EB%B3%80%ED%98%95%20%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%EB%AC%B8%EB%B2%95%20%EA%B0%80%EC%9D%B4%EB%93%9C%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fmarkdown%2Fextended.html%0A%0A%40leafeditor%20%23Markdown" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+  </div>
+</footer>
+
+</main>
+</div>
+
+<script>
+const sections=document.querySelectorAll('.section');
+const links=document.querySelectorAll('.sidebar-link');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const link=document.querySelector(`.sidebar-link[href="#${e.target.id}"]`);
+      if(link)link.classList.add('active');
+    }
+  });
+},{rootMargin:'-10% 0px -80% 0px'});
+sections.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>

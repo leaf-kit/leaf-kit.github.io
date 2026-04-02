@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마크다운 퀵시트 — 한눈에 보는 문법 요약</title>
+  <meta name="description" content="마크다운 문법을 한 장에 압축. 복사해서 바로 쓸 수 있는 치트시트.">
+  <meta property="og:title" content="마크다운 퀵시트">
+  <meta property="og:description" content="마크다운 문법을 한 장에 압축한 치트시트.">
+  <link rel="canonical" href="https://leaf-kit.github.io/markdown/cheatsheet.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#FAFAFA;--surface:#fff;--text:#1a1a2e;--text2:#64748B;--primary:#2563EB;--accent:#7C3AED;--border:#E2E8F0;--code-bg:#1E293B;--code-text:#E2E8F0;--radius:8px}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+    code{font-family:'JetBrains Mono',monospace;font-size:.82rem;background:rgba(37,99,235,.06);color:#1E40AF;padding:.1rem .35rem;border-radius:3px}
+
+    .container{max-width:1100px;margin:0 auto;padding:2rem}
+
+    .header{text-align:center;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:2px solid var(--border)}
+    .header h1{font-size:2rem;font-weight:900}
+    .header h1 span{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .header p{color:var(--text2);font-size:.9rem;margin-top:.3rem}
+    .header-nav{display:flex;gap:.4rem;justify-content:center;margin-top:1rem}
+    .header-nav a{font-size:.78rem;font-weight:600;padding:.3rem .7rem;border-radius:5px;border:1px solid var(--border);color:var(--text2)}
+    .header-nav a:hover,.header-nav a.active{color:var(--primary);border-color:var(--primary);background:rgba(37,99,235,.04);text-decoration:none}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+    .card-header{padding:.6rem 1rem;font-size:.82rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:space-between}
+    .card-header .badge{font-size:.6rem;font-weight:600;padding:.1rem .3rem;border-radius:3px;background:rgba(255,255,255,.2)}
+    .card-body{padding:.75rem 1rem;font-size:.82rem}
+    .card-body table{width:100%;border-collapse:collapse}
+    .card-body th{text-align:left;font-weight:600;padding:.3rem .4rem;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text2)}
+    .card-body td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top;font-size:.8rem}
+    .card-body td:first-child{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#1E40AF;white-space:nowrap}
+    .card-body td:last-child{color:var(--text2)}
+
+    .print-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .8rem;background:var(--primary);color:#fff;border:none;border-radius:5px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;margin-top:1rem}
+    .print-btn:hover{opacity:.9}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media print{
+      body{background:#fff;font-size:14px}
+      .header-nav,.print-btn,.footer{display:none}
+      .card{break-inside:avoid;border:1px solid #ccc}
+      .grid{grid-template-columns:repeat(2,1fr);gap:.5rem}
+    }
+    @media(max-width:700px){
+      .container{padding:1rem}
+      .grid{grid-template-columns:1fr}
+      .header h1{font-size:1.5rem}
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="header">
+  <h1><span>Markdown</span> Cheatsheet</h1>
+  <p>마크다운 문법을 한 장에 압축 — 복사해서 바로 쓰세요</p>
+  <div class="header-nav">
+    <a href="./">표준 문법</a>
+    <a href="./extended.html">변형 문법</a>
+    <a href="./cheatsheet.html" class="active">퀵시트</a>
+  </div>
+  <button class="print-btn" onclick="window.print()">
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/></svg>
+    인쇄 / PDF 저장
+  </button>
+</div>
+
+<div class="grid">
+
+  <!-- 제목 -->
+  <div class="card">
+    <div class="card-header" style="background:#0F172A">제목 (Headers)<span class="badge">표준</span></div>
+    <div class="card-body"><table>
+      <tr><td># 텍스트</td><td>h1 (가장 큰 제목)</td></tr>
+      <tr><td>## 텍스트</td><td>h2</td></tr>
+      <tr><td>### 텍스트</td><td>h3</td></tr>
+      <tr><td>#### 텍스트</td><td>h4</td></tr>
+      <tr><td>##### 텍스트</td><td>h5</td></tr>
+      <tr><td>###### 텍스트</td><td>h6 (가장 작은 제목)</td></tr>
+    </table></div>
+  </div>
+
+  <!-- 강조 -->
+  <div class="card">
+    <div class="card-header" style="background:#1E40AF">강조 (Emphasis)<span class="badge">표준</span></div>
+    <div class="card-body"><table>
+      <tr><td>*기울임*</td><td><em>기울임</em></td></tr>
+      <tr><td>**굵게**</td><td><strong>굵게</strong></td></tr>
+      <tr><td>***굵은 기울임***</td><td><strong><em>굵은 기울임</em></strong></td></tr>
+      <tr><td>~~취소선~~</td><td><del>취소선</del> <small style="color:var(--accent)">(GFM)</small></td></tr>
+      <tr><td>==형광펜==</td><td><mark>형광펜</mark> <small style="color:var(--accent)">(Obsidian)</small></td></tr>
+    </table></div>
+  </div>
+
+  <!-- 목록 -->
+  <div class="card">
+    <div class="card-header" style="background:#047857">목록 (Lists)<span class="badge">표준</span></div>
+    <div class="card-body"><table>
+      <tr><td>- 항목</td><td>비순서 목록</td></tr>
+      <tr><td>* 항목</td><td>비순서 목록 (동일)</td></tr>
+      <tr><td>1. 항목</td><td>순서 목록</td></tr>
+      <tr><td>&nbsp;&nbsp;- 중첩</td><td>들여쓰기 2칸으로 중첩</td></tr>
+      <tr><td>- [x] 완료</td><td>체크박스 (완료) <small style="color:var(--accent)">(GFM)</small></td></tr>
+      <tr><td>- [ ] 미완료</td><td>체크박스 (미완료)</td></tr>
+    </table></div>
+  </div>
+
+  <!-- 링크/이미지 -->
+  <div class="card">
+    <div class="card-header" style="background:#7C3AED">링크 & 이미지<span class="badge">표준</span></div>
+    <div class="card-body"><table>
+      <tr><td>[텍스트](URL)</td><td>인라인 링크</td></tr>
+      <tr><td>[텍스트](URL "제목")</td><td>제목 포함 링크</td></tr>
+      <tr><td>[텍스트][id]</td><td>참조 링크</td></tr>
+      <tr><td>&lt;URL&gt;</td><td>자동 링크</td></tr>
+      <tr><td>![alt](URL)</td><td>이미지</td></tr>
+      <tr><td>[![alt](img)](link)</td><td>클릭 가능 이미지</td></tr>
+    </table></div>
+  </div>
+
+  <!-- 코드 -->
+  <div class="card">
+    <div class="card-header" style="background:#0F172A">코드 (Code)<span class="badge">표준</span></div>
+    <div class="card-body"><table>
+      <tr><td>`인라인 코드`</td><td>인라인 코드</td></tr>
+      <tr><td>```언어<br>코드<br>```</td><td>코드 블록 (구문 강조)</td></tr>
+      <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;코드</td><td>들여쓰기 4칸 = 코드 블록</td></tr>
+      <tr><td>``코드 안 `백틱` ``</td><td>이중 백틱으로 감싸기</td></tr>
+    </table></div>
+  </div>
+
+  <!-- 인용/가로선 -->
+  <div class="card">
+    <div class="card-header" style="background:#6366F1">인용 & 가로선<span class="badge">표준</span></div>
+    <div class="card-body"><table>
+      <tr><td>&gt; 인용문</td><td>인용 블록</td></tr>
+      <tr><td>&gt; &gt; 중첩</td><td>중첩 인용</td></tr>
+      <tr><td>---</td><td>가로선</td></tr>
+      <tr><td>***</td><td>가로선 (동일)</td></tr>
+      <tr><td>\*이스케이프\*</td><td>특수문자 그대로 출력</td></tr>
+    </table></div>
+  </div>
+
+  <!-- 표 -->
+  <div class="card">
+    <div class="card-header" style="background:#DC2626">표 (Tables)<span class="badge">GFM</span></div>
+    <div class="card-body"><table>
+      <tr><td>| A | B |</td><td>열 구분</td></tr>
+      <tr><td>|---|---|</td><td>헤더 구분선</td></tr>
+      <tr><td>|:---|</td><td>왼쪽 정렬</td></tr>
+      <tr><td>|:---:|</td><td>가운데 정렬</td></tr>
+      <tr><td>|---:|</td><td>오른쪽 정렬</td></tr>
+    </table></div>
+  </div>
+
+  <!-- 수식 -->
+  <div class="card">
+    <div class="card-header" style="background:#B91C1C">수식 (LaTeX)<span class="badge">확장</span></div>
+    <div class="card-body"><table>
+      <tr><td>$E = mc^2$</td><td>인라인 수식</td></tr>
+      <tr><td>$$<br>수식<br>$$</td><td>블록 수식</td></tr>
+      <tr><td>\frac{a}{b}</td><td>분수</td></tr>
+      <tr><td>\sum_{i=1}^{n}</td><td>시그마</td></tr>
+      <tr><td>\sqrt{x}</td><td>제곱근</td></tr>
+    </table></div>
+  </div>
+
+  <!-- 각주/프론트매터 -->
+  <div class="card">
+    <div class="card-header" style="background:#9333EA">각주 & 프론트매터<span class="badge">확장</span></div>
+    <div class="card-body"><table>
+      <tr><td>[^1]</td><td>각주 참조</td></tr>
+      <tr><td>[^1]: 설명</td><td>각주 정의</td></tr>
+      <tr><td>---<br>key: value<br>---</td><td>YAML 프론트매터</td></tr>
+      <tr><td>[TOC]</td><td>목차 자동 생성 (일부)</td></tr>
+    </table></div>
+  </div>
+
+  <!-- Mermaid -->
+  <div class="card">
+    <div class="card-header" style="background:#0891B2">다이어그램 (Mermaid)<span class="badge">확장</span></div>
+    <div class="card-body"><table>
+      <tr><td>```mermaid<br>graph TD<br>```</td><td>플로우차트</td></tr>
+      <tr><td>sequenceDiagram</td><td>시퀀스 다이어그램</td></tr>
+      <tr><td>pie title ...</td><td>파이 차트</td></tr>
+      <tr><td>gitGraph</td><td>Git 그래프</td></tr>
+      <tr><td>gantt</td><td>간트 차트</td></tr>
+      <tr><td>erDiagram</td><td>ER 다이어그램</td></tr>
+    </table></div>
+  </div>
+
+  <!-- Callout/Admonition -->
+  <div class="card">
+    <div class="card-header" style="background:#EA580C">콜아웃 & 접기<span class="badge">확장</span></div>
+    <div class="card-body"><table>
+      <tr><td>&gt; [!NOTE]</td><td>참고 (GitHub)</td></tr>
+      <tr><td>&gt; [!WARNING]</td><td>경고 (GitHub)</td></tr>
+      <tr><td>&gt; [!TIP]</td><td>팁 (GitHub)</td></tr>
+      <tr><td>&lt;details&gt;</td><td>접이식 블록</td></tr>
+      <tr><td>&lt;summary&gt;</td><td>접기 제목</td></tr>
+    </table></div>
+  </div>
+
+  <!-- 플랫폼 고유 -->
+  <div class="card">
+    <div class="card-header" style="background:#4338CA">플랫폼 전용<span class="badge">비표준</span></div>
+    <div class="card-body"><table>
+      <tr><td>[[페이지]]</td><td>위키 링크 (Obsidian)</td></tr>
+      <tr><td>![[파일]]</td><td>파일 임베드 (Obsidian)</td></tr>
+      <tr><td>%%주석%%</td><td>숨은 주석 (Obsidian)</td></tr>
+      <tr><td>#태그</td><td>인라인 태그 (Obsidian)</td></tr>
+      <tr><td>@user</td><td>멘션 (GitHub/Notion)</td></tr>
+      <tr><td>/command</td><td>슬래시 커맨드 (Notion)</td></tr>
+    </table></div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <p>Markdown Cheatsheet &mdash; leaf-kit.github.io/markdown</p>
+  <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
+    <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
+    <a href="https://x.com/intent/post?text=%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%ED%80%B5%EC%8B%9C%ED%8A%B8%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fmarkdown%2Fcheatsheet.html%0A%0A%40leafeditor%20%23Markdown" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
