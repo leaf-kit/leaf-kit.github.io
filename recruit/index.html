@@ -11,24 +11,89 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/main.css">
   <style>
-    /* Recruit-specific overrides */
+    /* Hero — branded, animated */
     .recruit-hero{
-      background:#fff;
+      background:linear-gradient(160deg,#fff 0%,#F0FDF4 40%,#ECFDF5 70%,#fff 100%);
       border-bottom:1px solid var(--c-border);
-      padding:2.5rem 2rem 2rem;
+      padding:3.5rem 2rem 2.5rem;
       text-align:center;
+      position:relative;overflow:hidden;
     }
-    .recruit-hero h1{font-size:1.5rem;font-weight:800;color:var(--c-text)}
-    .recruit-hero .desc{color:var(--c-text2);font-size:.88rem;margin-top:.35rem;font-weight:400}
+    .recruit-hero::before{
+      content:'';position:absolute;top:-60%;right:-20%;width:500px;height:500px;
+      background:radial-gradient(circle,rgba(34,197,94,.06) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .recruit-hero::after{
+      content:'';position:absolute;bottom:-40%;left:-15%;width:400px;height:400px;
+      background:radial-gradient(circle,rgba(37,99,235,.04) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .hero-logo{
+      width:44px;height:44px;margin:0 auto .75rem;
+      animation:heroFloat 3.5s ease-in-out infinite;
+      opacity:0;animation:heroFloat 3.5s ease-in-out infinite, fadeSlideUp .6s ease forwards .1s;
+    }
+    .hero-logo svg{width:100%;height:100%}
+    @keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
+    .recruit-hero h1{
+      font-size:1.7rem;font-weight:800;color:var(--c-text);position:relative;
+      opacity:0;animation:fadeSlideUp .6s ease forwards .2s;
+    }
+    .recruit-hero .tagline{
+      color:var(--c-primary);font-size:.82rem;font-weight:600;
+      margin-top:.25rem;letter-spacing:.02em;position:relative;
+      opacity:0;animation:fadeSlideUp .6s ease forwards .3s;
+    }
+    .recruit-hero .desc{
+      color:var(--c-text2);font-size:.88rem;margin-top:.4rem;font-weight:400;
+      position:relative;
+      opacity:0;animation:fadeSlideUp .6s ease forwards .4s;
+    }
+    .hero-cta{
+      display:flex;gap:.5rem;justify-content:center;margin-top:1.25rem;position:relative;
+      opacity:0;animation:fadeSlideUp .6s ease forwards .55s;
+    }
+    .hero-cta a{
+      padding:.5rem 1rem;border-radius:6px;font-size:.82rem;font-weight:600;
+      text-decoration:none;transition:all .15s;
+    }
+    .hero-cta .btn-p{background:var(--c-primary);color:#fff;border:1px solid var(--c-primary)}
+    .hero-cta .btn-p:hover{opacity:.9}
+    .hero-cta .btn-o{background:#fff;color:var(--c-text2);border:1px solid var(--c-border)}
+    .hero-cta .btn-o:hover{border-color:var(--c-primary);color:var(--c-primary)}
+    .live-badge-wrap{
+      position:relative;
+      opacity:0;animation:fadeSlideUp .6s ease forwards .5s;
+    }
+
+    @keyframes fadeSlideUp{
+      from{opacity:0;transform:translateY(14px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    /* Stat cards — animated counters */
     .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin:1.5rem 0}
     .stat-card{
       background:#fff;border:1px solid var(--c-border);border-radius:var(--radius);
-      padding:1rem;text-align:center;box-shadow:var(--shadow);
+      padding:1.1rem;text-align:center;box-shadow:var(--shadow);
+      opacity:0;transform:translateY(10px);
+      transition:opacity .5s ease,transform .5s ease,box-shadow .2s;
     }
-    .stat-card .num{font-size:1.8rem;font-weight:800;color:var(--c-primary)}
-    .stat-card .label{font-size:.72rem;color:var(--c-text2);margin-top:.15rem;font-weight:500}
-    .stat-card .icon{font-size:1.2rem;margin-bottom:.25rem;display:block}
+    .stat-card.visible{opacity:1;transform:translateY(0)}
+    .stat-card:hover{box-shadow:var(--shadow-md)}
+    .stat-card .icon-wrap{
+      width:36px;height:36px;border-radius:8px;margin:0 auto .4rem;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .stat-card .icon-wrap svg{width:20px;height:20px}
+    .stat-card .num{font-size:1.8rem;font-weight:800;color:var(--c-primary);font-variant-numeric:tabular-nums}
+    .stat-card .label{font-size:.72rem;color:var(--c-text2);margin-top:.1rem;font-weight:500}
+
+    /* Scroll fade-in for sections */
+    .fade-section{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+    .fade-section.visible{opacity:1;transform:translateY(0)}
 
     .role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:.75rem;margin:1rem 0}
     .role-card{
@@ -138,11 +203,27 @@
 
 <!-- Hero -->
 <section class="recruit-hero">
+  <div class="hero-logo">
+    <svg viewBox="0 0 48 48" fill="none">
+      <path d="M24 4C14 14 8 24 10 34C12 38 16 42 24 44C32 42 36 38 38 34C40 24 34 14 24 4Z" fill="#22C55E" opacity=".12"/>
+      <path d="M24 4C14 14 8 24 10 34C12 38 16 42 24 44C32 42 36 38 38 34C40 24 34 14 24 4Z" stroke="#22C55E" stroke-width="1.5" fill="none"/>
+      <path d="M24 12V38" stroke="#22C55E" stroke-width="1" opacity=".5"/>
+      <path d="M24 20C20 18 16 20 14 24" stroke="#22C55E" stroke-width="1" opacity=".35" fill="none"/>
+      <path d="M24 26C28 24 32 26 34 30" stroke="#22C55E" stroke-width="1" opacity=".35" fill="none"/>
+    </svg>
+  </div>
   <h1>리프취준랩</h1>
-  <p class="desc">IT 직군별 채용 수요, 기업별 채용 페이지, 핵심 스킬을 한 페이지에서 확인하세요</p>
-  <div class="live-badge" style="margin-top:.75rem">
-    <span class="live-dot"></span>
-    <span id="live-info">데이터 로딩중...</span>
+  <p class="tagline">채용 정보, 이제 흐름으로 읽는다</p>
+  <p class="desc">IT 직군별 채용 수요 · 기업별 채용 페이지 · 핵심 스킬을 한눈에</p>
+  <div class="hero-cta">
+    <a href="graph/" class="btn-p">그래프 분석 보기</a>
+    <a href="roles/" class="btn-o">직군 둘러보기</a>
+  </div>
+  <div class="live-badge-wrap" style="margin-top:1rem">
+    <div class="live-badge">
+      <span class="live-dot"></span>
+      <span id="live-info">데이터 로딩중...</span>
+    </div>
   </div>
 </section>
 
@@ -164,7 +245,7 @@
   <hr class="section-divider">
 
   <!-- 직군별 채용 트렌드 -->
-  <div class="section-title" id="roles">직군별 채용 트렌드</div>
+  <div class="section-title fade-section" id="roles">직군별 채용 트렌드</div>
   <p style="color:var(--c-text2);font-size:.82rem;margin-bottom:.75rem">최신 수집 데이터 기준 채용 공고 수와 전 회차 대비 변동량</p>
 
   <div class="search-bar" style="margin-bottom:.75rem">
@@ -176,19 +257,19 @@
   <hr class="section-divider">
 
   <!-- 핵심 스킬 랭킹 -->
-  <div class="section-title" id="skills">가장 많이 요구되는 스킬 TOP 15</div>
+  <div class="section-title fade-section" id="skills">가장 많이 요구되는 스킬 TOP 15</div>
   <div class="skill-ranking" id="skill-ranking"></div>
 
   <hr class="section-divider">
 
   <!-- 글로벌 기업 채용 -->
-  <div class="section-title" id="companies-global">글로벌 기업 채용</div>
+  <div class="section-title fade-section" id="companies-global">글로벌 기업 채용</div>
   <div class="company-recruit-grid" id="global-recruit"></div>
 
   <hr class="section-divider">
 
   <!-- 국내 기업 채용 -->
-  <div class="section-title" id="companies-korea">국내 기업 채용</div>
+  <div class="section-title fade-section" id="companies-korea">국내 기업 채용</div>
   <div class="company-recruit-grid" id="korea-recruit"></div>
 
   <!-- Disclaimer -->
@@ -242,12 +323,48 @@ function renderStats(jobs, links){
   const totalPostings = jobs.categories.reduce((s,c)=>s+c.roles.reduce((ss,r)=>ss+r.count,0), 0);
   const hotRoles = jobs.categories.reduce((s,c)=>s+c.roles.filter(r=>r.demand.includes('급상승')).length, 0);
 
-  document.getElementById('stat-row').innerHTML = `
-    <div class="stat-card"><div class="num">${totalRoles}</div><div class="label">추적 직군</div></div>
-    <div class="stat-card"><div class="num">${totalPostings.toLocaleString()}</div><div class="label">채용 공고</div></div>
-    <div class="stat-card"><div class="num">${hotRoles}</div><div class="label">급상승 직군</div></div>
-    <div class="stat-card"><div class="num">${links.length}</div><div class="label">기업 채용 링크</div></div>
-  `;
+  const stats = [
+    {icon:'<svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg>', bg:'#DBEAFE', val:totalRoles, label:'추적 직군'},
+    {icon:'<svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h8m-8 4h5"/></svg>', bg:'#D1FAE5', val:totalPostings, label:'채용 공고', fmt:true},
+    {icon:'<svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>', bg:'#FEF3C7', val:hotRoles, label:'급상승 직군'},
+    {icon:'<svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>', bg:'#EDE9FE', val:links.length, label:'기업 채용 링크'}
+  ];
+
+  document.getElementById('stat-row').innerHTML = stats.map((s,i)=>`
+    <div class="stat-card" style="transition-delay:${i*.1}s">
+      <div class="icon-wrap" style="background:${s.bg}">${s.icon}</div>
+      <div class="num" data-target="${s.val}" data-fmt="${s.fmt||false}">0</div>
+      <div class="label">${s.label}</div>
+    </div>
+  `).join('');
+
+  // Animate numbers with intersection observer
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        const numEl = entry.target.querySelector('.num[data-target]');
+        if(numEl) animateCounter(numEl);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold:.3});
+  document.querySelectorAll('.stat-card').forEach(c=>observer.observe(c));
+}
+
+function animateCounter(el){
+  const target = parseInt(el.dataset.target);
+  const useFmt = el.dataset.fmt==='true';
+  const duration = 1200;
+  const start = performance.now();
+  function step(now){
+    const progress = Math.min((now-start)/duration, 1);
+    const eased = 1-Math.pow(1-progress, 3); // ease-out cubic
+    const current = Math.round(eased*target);
+    el.textContent = useFmt ? current.toLocaleString() : current;
+    if(progress<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
 }
 
 function renderRoles(jobs){
@@ -437,6 +554,14 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   await loadGraphData();
   await loadRecruit();
   setTimeout(makeTagsClickable, 300);
+
+  // Scroll fade-in for sections
+  const secObs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){e.target.classList.add('visible');secObs.unobserve(e.target);}
+    });
+  }, {threshold:.15});
+  document.querySelectorAll('.fade-section').forEach(el=>secObs.observe(el));
 });
 </script>
 </body>
