@@ -1,0 +1,16 @@
+{
+  "version": "1.0",
+  "collected_at": "2025-04-02T14:30:00+09:00",
+  "folder_id": "2504021430",
+  "collector": "manual",
+  "scope": {
+    "global_top100": true,
+    "korea_top100": true,
+    "jobs_trend": true,
+    "tech_keywords": true
+  },
+  "summary": "2025년 4월 2주차 IT 트렌드 수집. AI 에이전트·Physical AI 키워드 급부상.",
+  "sources_count": 87,
+  "prev_folder": "2503261000",
+  "next_folder": null
+}

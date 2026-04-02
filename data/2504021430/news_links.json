@@ -1,0 +1,17 @@
+[
+  {"title":"NVIDIA Blackwell Ultra GPU 발표, 추론 성능 4배 향상","url":"#","source":"Reuters","date":"2025-04-01","category":"AI/반도체","related_companies":["NVIDIA","TSMC"]},
+  {"title":"Llama 4 오픈소스 공개, GPT-4급 성능 달성","url":"#","source":"TechCrunch","date":"2025-04-01","category":"AI/LLM","related_companies":["Meta","OpenAI"]},
+  {"title":"삼성전자 HBM3E 12단 양산 개시","url":"#","source":"조선비즈","date":"2025-03-31","category":"반도체","related_companies":["삼성전자","SK하이닉스","NVIDIA"]},
+  {"title":"Apple Intelligence 한국어 지원 공식 발표","url":"#","source":"Apple Newsroom","date":"2025-03-30","category":"AI/모바일","related_companies":["Apple"]},
+  {"title":"Oracle, AI 데이터센터 투자 800억 달러 계획 발표","url":"#","source":"Bloomberg","date":"2025-03-30","category":"클라우드/AI","related_companies":["Oracle","NVIDIA"]},
+  {"title":"LG에너지솔루션 전고체 배터리 시제품 세계 최초 공개","url":"#","source":"한국경제","date":"2025-03-30","category":"배터리/EV","related_companies":["LG에너지솔루션","삼성SDI"]},
+  {"title":"SK하이닉스 HBM4 샘플 출하, 업계 최초","url":"#","source":"매일경제","date":"2025-03-29","category":"반도체","related_companies":["SK하이닉스","NVIDIA","삼성전자"]},
+  {"title":"현대차 IONIQ 7 글로벌 공개, 2025년 하반기 출시","url":"#","source":"동아일보","date":"2025-03-29","category":"EV/모빌리티","related_companies":["현대자동차","기아"]},
+  {"title":"Gemini 2.0 Pro 벤치마크 결과, GPT-5 수준 근접","url":"#","source":"The Verge","date":"2025-03-29","category":"AI/LLM","related_companies":["Google","OpenAI"]},
+  {"title":"Microsoft Copilot 월간 활성 사용자 1억명 돌파","url":"#","source":"CNBC","date":"2025-03-28","category":"AI/SaaS","related_companies":["Microsoft","OpenAI"]},
+  {"title":"네이버 HyperCLOVA X 기업용 API 정식 출시","url":"#","source":"ZDNet Korea","date":"2025-03-28","category":"AI/클라우드","related_companies":["네이버"]},
+  {"title":"Broadcom, Google 차세대 TPU v6 설계 수주 확정","url":"#","source":"Reuters","date":"2025-03-28","category":"반도체/ASIC","related_companies":["Broadcom","Google"]},
+  {"title":"카카오 자체 AI 모델 '카나나' 공개, 한국어 특화","url":"#","source":"서울경제","date":"2025-03-27","category":"AI/LLM","related_companies":["카카오","네이버"]},
+  {"title":"AWS Bedrock에서 Claude 3.5 Sonnet 사용량 급증, 전월비 200%","url":"#","source":"AWS Blog","date":"2025-03-27","category":"AI/클라우드","related_companies":["Amazon","Anthropic"]},
+  {"title":"KB금융 AI 기반 자산관리 로보어드바이저 서비스 출시","url":"#","source":"이데일리","date":"2025-03-28","category":"핀테크/AI","related_companies":["KB금융","카카오뱅크"]}
+]

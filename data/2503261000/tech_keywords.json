@@ -1,0 +1,17 @@
+[
+  {"keyword":"AI Agent","count":41,"category":"AI","trend":"📈상승","prev_count":28,"delta":13,"folder_id":"2503261000"},
+  {"keyword":"LLM","count":65,"category":"AI","trend":"📈유지","prev_count":60,"delta":5,"folder_id":"2503261000"},
+  {"keyword":"Physical AI","count":12,"category":"Robotics","trend":"📈상승","prev_count":5,"delta":7,"folder_id":"2503261000"},
+  {"keyword":"RAG","count":37,"category":"AI","trend":"📈상승","prev_count":25,"delta":12,"folder_id":"2503261000"},
+  {"keyword":"Rust","count":28,"category":"Dev","trend":"📈상승","prev_count":22,"delta":6,"folder_id":"2503261000"},
+  {"keyword":"Kubernetes","count":30,"category":"Infra","trend":"➡️유지","prev_count":29,"delta":1,"folder_id":"2503261000"},
+  {"keyword":"TypeScript","count":30,"category":"Dev","trend":"➡️유지","prev_count":28,"delta":2,"folder_id":"2503261000"},
+  {"keyword":"Edge AI","count":15,"category":"AI","trend":"📈상승","prev_count":8,"delta":7,"folder_id":"2503261000"},
+  {"keyword":"MLOps","count":22,"category":"AI","trend":"📈유지","prev_count":20,"delta":2,"folder_id":"2503261000"},
+  {"keyword":"Quantum Computing","count":14,"category":"Research","trend":"📈상승","prev_count":10,"delta":4,"folder_id":"2503261000"},
+  {"keyword":"WebAssembly","count":12,"category":"Dev","trend":"📈상승","prev_count":8,"delta":4,"folder_id":"2503261000"},
+  {"keyword":"Blockchain","count":22,"category":"Web3","trend":"📉하락","prev_count":28,"delta":-6,"folder_id":"2503261000"},
+  {"keyword":"Flutter","count":13,"category":"Dev","trend":"➡️유지","prev_count":12,"delta":1,"folder_id":"2503261000"},
+  {"keyword":"Figma","count":11,"category":"Design","trend":"➡️유지","prev_count":10,"delta":1,"folder_id":"2503261000"},
+  {"keyword":"Product Manager","count":25,"category":"기획","trend":"📈상승","prev_count":20,"delta":5,"folder_id":"2503261000"}
+]

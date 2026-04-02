@@ -1,0 +1,36 @@
+{
+  "company": "Microsoft",
+  "ceo": "Satya Nadella",
+  "divisions": [
+    {
+      "name": "Cloud & AI",
+      "head": "Scott Guthrie",
+      "teams": ["Azure", "Azure AI", "AI Platform", "Developer Tools"]
+    },
+    {
+      "name": "Experiences & Devices",
+      "head": "Rajesh Jha",
+      "teams": ["Microsoft 365", "Copilot", "Teams", "Surface"]
+    },
+    {
+      "name": "Security",
+      "head": "Charlie Bell",
+      "teams": ["Microsoft Security", "Identity", "Compliance"]
+    },
+    {
+      "name": "Gaming",
+      "head": "Phil Spencer",
+      "teams": ["Xbox", "Activision Blizzard", "Game Studios"]
+    },
+    {
+      "name": "LinkedIn",
+      "head": "Ryan Roslansky",
+      "teams": ["LinkedIn Platform", "LinkedIn Learning", "Talent Solutions"]
+    },
+    {
+      "name": "Microsoft Research",
+      "head": "Peter Lee",
+      "teams": ["MSR AI", "MSR Labs", "AI Frontiers"]
+    }
+  ]
+}

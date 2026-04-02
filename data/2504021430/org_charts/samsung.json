@@ -1,0 +1,26 @@
+{
+  "company": "Samsung Electronics",
+  "ceo": "한종희",
+  "divisions": [
+    {
+      "name": "DS부문",
+      "head": "전영현",
+      "teams": ["메모리사업부", "시스템LSI사업부", "파운드리사업부"]
+    },
+    {
+      "name": "DX부문",
+      "head": "한종희",
+      "teams": ["MX사업부", "VD사업부", "생활가전사업부"]
+    },
+    {
+      "name": "SDC",
+      "head": "최주선",
+      "teams": ["중소형디스플레이", "대형디스플레이"]
+    },
+    {
+      "name": "AI연구소",
+      "head": "승현준",
+      "teams": ["Samsung Gauss", "On-device AI", "AI Platform"]
+    }
+  ]
+}

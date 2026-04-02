@@ -1,0 +1,16 @@
+{
+  "version": "1.0",
+  "collected_at": "2025-03-26T10:00:00+09:00",
+  "folder_id": "2503261000",
+  "collector": "manual",
+  "scope": {
+    "global_top100": true,
+    "korea_top100": true,
+    "jobs_trend": true,
+    "tech_keywords": true
+  },
+  "summary": "2025년 3월 4주차 IT 트렌드 수집. LLM 경쟁 심화, GPT-5 출시 임박 루머.",
+  "sources_count": 72,
+  "prev_folder": null,
+  "next_folder": "2504021430"
+}

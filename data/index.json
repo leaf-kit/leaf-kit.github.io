@@ -1,0 +1,23 @@
+{
+  "site": "Korea IT Trend Radar",
+  "last_updated": "2025-04-02T14:30:00+09:00",
+  "total_collections": 2,
+  "collections": [
+    {
+      "folder_id": "2504021430",
+      "label": "2025년 04월 02일 14:30",
+      "summary": "AI 에이전트·Physical AI 키워드 급부상, 삼성 조직개편 주목",
+      "top_keywords": ["AI Agent", "Physical AI", "LLM", "Rust", "RAG"],
+      "page_url": "/pages/2504021430/",
+      "data_url": "/data/2504021430/meta.json"
+    },
+    {
+      "folder_id": "2503261000",
+      "label": "2025년 03월 26일 10:00",
+      "summary": "LLM 경쟁 심화, GPT-5 출시 임박 루머, Claude 3.5 호평",
+      "top_keywords": ["LLM", "GPT-5", "Gemini", "Claude", "Llama"],
+      "page_url": "/pages/2503261000/",
+      "data_url": "/data/2503261000/meta.json"
+    }
+  ]
+}

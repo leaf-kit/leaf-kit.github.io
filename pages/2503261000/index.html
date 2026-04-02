@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2025.03.26 트렌드 — Korea IT Trend Radar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <style>
+    .popup-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:200;justify-content:center;align-items:center}
+    .popup-overlay.open{display:flex}
+    .popup{background:var(--c-card);border:1px solid var(--c-border);border-radius:12px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+    .popup-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--c-border)}
+    .popup-header h3{font-size:1.1rem;font-weight:800}
+    .popup-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--c-text2);padding:.25rem}
+    .popup-links{display:flex;flex-direction:column;gap:.75rem}
+    .popup-link-group h4{font-size:.85rem;font-weight:700;color:var(--c-primary);margin-bottom:.4rem}
+    .popup-link-group a{display:block;padding:.4rem .6rem;border:1px solid var(--c-border);border-radius:6px;font-size:.85rem;margin-bottom:.3rem;transition:all .2s}
+    .popup-link-group a:hover{border-color:var(--c-primary);background:var(--c-surface);text-decoration:none}
+    .popup-link-group a small{color:var(--c-text2);display:block;font-size:.75rem}
+    .service-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+    .service-grid a{text-align:center}
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-brand" href="../../">🧭 Korea IT Trend Radar</a>
+  <div class="nav-actions">
+    <a href="../../">🏠 홈</a>
+    <a href="../../trend/">📡 트렌드</a>
+    <a href="../../recruit/">💼 구직</a>
+    <button id="theme-toggle">🌙</button>
+  </div>
+</nav>
+<main class="container">
+  <div class="page-header">
+    <a class="back-link" href="../../">← 목록으로</a>
+    <h1 id="page-title" style="font-size:1.5rem;font-weight:900;margin-top:.5rem">로딩중...</h1>
+    <p id="page-summary" style="color:var(--c-text2);margin-top:.25rem"></p>
+    <div class="page-nav">
+      <a id="prev-link" href="#" style="visibility:hidden">← 이전 회차</a>
+      <a id="next-link" href="#" style="visibility:hidden">다음 회차 →</a>
+    </div>
+  </div>
+  <div class="summary-banner" id="summary-banner"></div>
+  <div class="section-title">🔥 급상승 키워드 TOP 5</div>
+  <div class="hot-keywords" id="hot-keywords"></div>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-global">🌐 글로벌 100대</button>
+    <button class="tab-btn" data-tab="tab-korea">🇰🇷 국내 100대</button>
+    <button class="tab-btn" data-tab="tab-jobs">💼 직군 트렌드</button>
+    <button class="tab-btn" data-tab="tab-keywords">🔑 기술 키워드</button>
+    <button class="tab-btn" data-tab="tab-news">📰 뉴스·링크</button>
+    <button class="tab-btn" data-tab="tab-org">🏢 조직도</button>
+  </div>
+  <div id="tab-global" class="tab-content active"><div class="company-grid" id="global-companies"></div></div>
+  <div id="tab-korea" class="tab-content"><div class="company-grid" id="korea-companies"></div></div>
+  <div id="tab-jobs" class="tab-content"><div id="jobs-content"></div></div>
+  <div id="tab-keywords" class="tab-content"><div id="keywords-content"></div></div>
+  <div id="tab-news" class="tab-content"><div id="news-content"></div></div>
+  <div id="tab-org" class="tab-content"><div id="org-content"></div></div>
+  <div class="data-files" id="data-files"></div>
+</main>
+<div class="popup-overlay" id="company-popup">
+  <div class="popup">
+    <div class="popup-header">
+      <h3 id="popup-company-name"></h3>
+      <button class="popup-close" onclick="closePopup()">&times;</button>
+    </div>
+    <div class="popup-links" id="popup-links"></div>
+  </div>
+</div>
+<footer class="footer">
+  <p>🧭 Korea IT Trend Radar — 🍃 Built by <strong>Leaf</strong></p>
+  <p style="font-size:.75rem">마크다운 기반 정보 관리 & 생성</p>
+</footer>
+<script src="../../assets/js/app.js"></script>
+<script>
+const FOLDER_ID = '2503261000';
+let companyLinksData = [];
+async function loadCompanyLinks(){
+  try{
+    const res = await fetch('../../data/2504021430/company_links.jsonl');
+    const text = await res.text();
+    companyLinksData = text.trim().split('\n').map(line=>JSON.parse(line));
+  }catch(e){}
+}
+function openPopup(companyName){
+  const link = companyLinksData.find(c=>c.name===companyName||c.name.includes(companyName)||companyName.includes(c.name));
+  if(!link) return;
+  document.getElementById('popup-company-name').textContent = link.name;
+  const container = document.getElementById('popup-links');
+  let html = `<div class="popup-link-group"><h4>🌐 대표 홈페이지</h4><a href="${link.homepage}" target="_blank">${link.homepage}</a></div><div class="popup-link-group"><h4>💼 채용 페이지</h4><a href="${link.recruit}" target="_blank">${link.recruit}</a></div><div class="popup-link-group"><h4>🚀 주요 서비스</h4><div class="service-grid">`;
+  (link.services||[]).forEach(s=>{html+=`<a href="${s.url}" target="_blank">${s.name}<small>${s.description||''}</small></a>`;});
+  html+='</div></div>';
+  container.innerHTML=html;
+  document.getElementById('company-popup').classList.add('open');
+}
+function closePopup(){document.getElementById('company-popup').classList.remove('open');}
+document.getElementById('company-popup').addEventListener('click',e=>{if(e.target.id==='company-popup')closePopup();});
+const originalRenderCompanyGrid = renderCompanyGrid;
+renderCompanyGrid = function(containerId, companies, folderId){
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  container.innerHTML = '';
+  companies.forEach(company=>{
+    const card = document.createElement('div');
+    card.className = 'company-card';
+    const tags = (company.tech_keywords||[]).slice(0,5).map(k=>`<span class="tag" data-cat="Dev">${k}</span>`).join('');
+    const newsHtml = (company.news||[]).map(n=>`<li><a href="${n.url}" target="_blank">${n.title}</a> <small>${n.date}</small></li>`).join('');
+    const jobsHtml = (company.jobs_trend||[]).map(j=>`<span class="tag" data-cat="기획">${j}</span>`).join(' ');
+    const mcap = company.market_cap_usd_B?(company.market_cap_krw_T?`시총 ${company.market_cap_krw_T}조원`:`시총 $${company.market_cap_usd_B}B`):'';
+    card.innerHTML = `
+      <div class="company-card-header">
+        <div class="company-rank">#${company.rank}</div>
+        <div class="company-info">
+          <div class="company-name">${company.name} ${company.ticker?'('+company.ticker+')':''}</div>
+          <div class="company-meta">${company.ceo||''} · ${mcap}</div>
+          <div class="company-tags">${tags}</div>
+        </div>
+        <span class="company-toggle">▼</span>
+      </div>
+      <div class="company-detail">
+        <h4>전략 방향</h4><p>${company.strategy||''}</p>
+        ${company.recent_reorg?`<h4>최근 조직개편</h4><p>${company.recent_reorg}</p>`:''}
+        <h4>관련 기업</h4><p>${(company.related_companies||[]).join(', ')}</p>
+        <h4>채용 트렌드</h4><div>${jobsHtml}</div>
+        ${newsHtml?`<h4>관련 기사</h4><ul>${newsHtml}</ul>`:''}
+        <div class="data-links" style="margin-top:1rem">
+          <a href="#" onclick="event.preventDefault();openPopup('${company.name.replace(/'/g,"\\'")}')">🔗 홈페이지·채용·서비스</a>
+        </div>
+      </div>`;
+    container.appendChild(card);
+  });
+  initAccordion();
+};
+document.addEventListener('DOMContentLoaded', async ()=>{
+  await loadCompanyLinks();
+  loadDetailPage(FOLDER_ID);
+});
+</script>
+</body>
+</html>

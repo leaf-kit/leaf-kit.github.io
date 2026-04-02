@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>leaf-kit</title>
+  <meta name="description" content="leaf-kit — 마크다운으로 정보를 조직화합니다.">
+  <meta property="og:title" content="leaf-kit">
+  <meta property="og:description" content="마크다운으로 정보를 조직화합니다.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#FAFAFA;--text:#111;--sub:#888;--accent:#10B981;--border:#E5E5E5;--card:#FFF}
+    @media(prefers-color-scheme:dark){
+      :root{--bg:#0A0A0A;--text:#E5E5E5;--sub:#666;--accent:#34D399;--border:#1F1F1F;--card:#111}
+    }
+    html{font-size:16px}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem}
+
+    .brand{text-align:center;margin-bottom:4rem}
+    .logo{font-size:3rem;margin-bottom:1.5rem;line-height:1}
+    .name{font-size:1.8rem;font-weight:700;letter-spacing:-.02em}
+    .tagline{color:var(--sub);font-size:.95rem;font-weight:300;margin-top:.6rem;line-height:1.6}
+
+    .links{display:flex;flex-direction:column;gap:.75rem;width:100%;max-width:320px}
+    .links a{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.8rem 1.2rem;border:1px solid var(--border);border-radius:8px;color:var(--text);text-decoration:none;font-size:.9rem;font-weight:400;background:var(--card);transition:border-color .2s,transform .15s}
+    .links a:hover{border-color:var(--accent);transform:translateY(-1px)}
+    .links a span.icon{font-size:1rem;width:1.2rem;text-align:center}
+
+    .footer{position:fixed;bottom:1.5rem;color:var(--sub);font-size:.75rem;font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
+  </style>
+</head>
+<body>
+
+  <div class="brand">
+    <div class="logo">🍃</div>
+    <div class="name">leaf-kit</div>
+    <p class="tagline">마크다운으로 정보를 조직화합니다.</p>
+  </div>
+
+  <nav class="links">
+    <a href="trend/"><span class="icon">📡</span> IT Trend Radar</a>
+    <a href="recruit/"><span class="icon">💼</span> 구직 레이더</a>
+    <a href="https://github.com/leaf-kit" target="_blank"><span class="icon">↗</span> GitHub</a>
+  </nav>
+
+  <div class="footer">leaf-kit.github.io</div>
+
+</body>
+</html>

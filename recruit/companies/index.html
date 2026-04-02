@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기업별 채용 정보 — 구직 레이더</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <style>
+    .company-full{background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+    .company-full:hover{border-color:var(--c-primary)}
+    .cf-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem}
+    .cf-name{font-size:1.1rem;font-weight:800}
+    .cf-meta{font-size:.85rem;color:var(--c-text2);margin-top:.2rem}
+    .cf-body{margin-top:.75rem}
+    .cf-row{display:flex;gap:1rem;flex-wrap:wrap;margin:.5rem 0}
+    .cf-row .label{font-size:.8rem;font-weight:700;color:var(--c-primary);min-width:80px}
+    .cf-links{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap}
+    .cf-links a{font-size:.85rem;padding:.4rem .8rem;border:1px solid var(--c-border);border-radius:6px;color:var(--c-text2);transition:all .2s}
+    .cf-links a:hover{border-color:var(--c-primary);color:var(--c-primary);text-decoration:none}
+    .cf-links a.hire{background:var(--c-primary);color:#fff;border-color:var(--c-primary);font-weight:700}
+    .cf-links a.hire:hover{opacity:.9}
+    .services-row{display:flex;flex-wrap:wrap;gap:.3rem}
+    .services-row .svc{font-size:.78rem;padding:.2rem .5rem;background:var(--c-surface);border:1px solid var(--c-border);border-radius:4px}
+    .section-label{font-size:.9rem;font-weight:700;color:var(--c-primary);margin:1.5rem 0 .75rem;padding-bottom:.4rem;border-bottom:1px solid var(--c-border)}
+    .search-bar{margin-bottom:1.5rem}
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-brand" href="../../">🧭 Korea IT Trend Radar</a>
+  <div class="nav-actions">
+    <a href="../../">🏠 홈</a>
+    <a href="../">💼 구직</a>
+    <button id="theme-toggle">🌙</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>🏢 기업별 채용 정보</h1>
+  <p class="subtitle">홈페이지 · 채용 페이지 · 주요 서비스 · 채용 키워드 한눈에</p>
+</section>
+
+<main class="container">
+  <div class="search-bar">
+    <input type="text" id="company-search" placeholder="🔍 기업명 검색...">
+  </div>
+
+  <div class="section-label">🌐 글로벌 기업</div>
+  <div id="global-list"></div>
+
+  <div class="section-label">🇰🇷 국내 기업</div>
+  <div id="korea-list"></div>
+</main>
+
+<footer class="footer">
+  <p>🧭 Korea IT Trend Radar — 🍃 Built by <strong>Leaf</strong></p>
+</footer>
+
+<script src="../../assets/js/app.js"></script>
+<script>
+async function load(){
+  const indexRes = await fetch('../../data/index.json');
+  const indexData = await indexRes.json();
+  const folderId = indexData.collections[0].folder_id;
+  const basePath = `../../data/${folderId}/`;
+
+  const [globalCo, koreaCo, linksText] = await Promise.all([
+    fetch(basePath+'global_top100.json').then(r=>r.json()),
+    fetch(basePath+'korea_top100.json').then(r=>r.json()),
+    fetch(basePath+'company_links.jsonl').then(r=>r.text())
+  ]);
+
+  const links = linksText.trim().split('\n').map(l=>JSON.parse(l));
+
+  renderList('global-list', globalCo, links);
+  renderList('korea-list', koreaCo, links);
+
+  document.getElementById('company-search').addEventListener('input', e=>{
+    const q = e.target.value.toLowerCase().trim();
+    document.querySelectorAll('.company-full').forEach(card=>{
+      const name = card.getAttribute('data-name')||'';
+      card.style.display = (!q || name.includes(q)) ? '' : 'none';
+    });
+  });
+}
+
+function renderList(containerId, companies, links){
+  const container = document.getElementById(containerId);
+  companies.forEach(co=>{
+    const link = links.find(l=>l.name===co.name||l.name.includes(co.name)||co.name.includes(l.name));
+
+    const card = document.createElement('div');
+    card.className = 'company-full';
+    card.setAttribute('data-name', co.name.toLowerCase());
+
+    const services = (link?.services||[]).map(s=>
+      `<a class="svc" href="${s.url}" target="_blank" title="${s.description||''}">${s.name}</a>`
+    ).join('');
+
+    const jobTags = (co.jobs_trend||[]).map(j=>`<span class="tag" data-cat="기획" style="font-size:.75rem;padding:.1rem .4rem">${j}</span>`).join(' ');
+    const techTags = (co.tech_keywords||[]).slice(0,6).map(k=>`<span class="tag" data-cat="Dev" style="font-size:.75rem;padding:.1rem .4rem">${k}</span>`).join(' ');
+
+    card.innerHTML = `
+      <div class="cf-header">
+        <div>
+          <div class="cf-name">#${co.rank} ${co.name} ${co.ticker?'('+co.ticker+')':''}</div>
+          <div class="cf-meta">${co.ceo||''} · ${co.hq||''} · ${co.market_cap_usd_B?'$'+co.market_cap_usd_B+'B':''}${co.market_cap_krw_T?co.market_cap_krw_T+'조원':''}</div>
+        </div>
+      </div>
+      <div class="cf-body">
+        <div class="cf-row"><span class="label">기술 스택</span><div>${techTags||'-'}</div></div>
+        <div class="cf-row"><span class="label">채용 직군</span><div>${jobTags||'-'}</div></div>
+        <div class="cf-row"><span class="label">전략</span><div style="font-size:.88rem">${co.strategy||'-'}</div></div>
+        ${services?`<div class="cf-row"><span class="label">서비스</span><div class="services-row">${services}</div></div>`:''}
+      </div>
+      <div class="cf-links">
+        <a class="hire" href="${link?.recruit||'#'}" target="_blank">💼 채용 페이지</a>
+        <a href="${link?.homepage||'#'}" target="_blank">🌐 홈페이지</a>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', load);
+</script>
+</body>
+</html>

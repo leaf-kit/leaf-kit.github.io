@@ -1,0 +1,32 @@
+{
+  "folder_id": "2504021430",
+  "collected_at": "2025-04-02T14:30:00+09:00",
+  "categories": [
+    {
+      "name": "AI/ML",
+      "roles": [
+        {"title": "AI Engineer", "demand": "🔥급상승", "count": 450, "delta": 120, "skills": ["Python", "PyTorch", "LLM", "RAG"]},
+        {"title": "MLOps Engineer", "demand": "📈상승", "count": 280, "delta": 45, "skills": ["Kubernetes", "Docker", "MLflow", "AWS"]},
+        {"title": "Prompt Engineer", "demand": "🔥급상승", "count": 350, "delta": 180, "skills": ["LLM", "GPT", "Claude", "Prompt Design"]},
+        {"title": "Data Scientist", "demand": "📈유지", "count": 520, "delta": 15, "skills": ["Python", "SQL", "Statistics", "ML"]}
+      ]
+    },
+    {
+      "name": "Development",
+      "roles": [
+        {"title": "Backend Engineer", "demand": "📈유지", "count": 680, "delta": 20, "skills": ["Java", "Spring", "Node.js", "Go"]},
+        {"title": "Frontend Engineer", "demand": "📈유지", "count": 520, "delta": 10, "skills": ["React", "TypeScript", "Next.js", "Vue"]},
+        {"title": "DevOps Engineer", "demand": "📈상승", "count": 380, "delta": 55, "skills": ["AWS", "Kubernetes", "Terraform", "CI/CD"]},
+        {"title": "Full-Stack Engineer", "demand": "📈유지", "count": 420, "delta": 25, "skills": ["React", "Node.js", "TypeScript", "AWS"]}
+      ]
+    },
+    {
+      "name": "Design/기획",
+      "roles": [
+        {"title": "Product Manager", "demand": "📈상승", "count": 350, "delta": 40, "skills": ["Agile", "Data Analysis", "UX", "AI Product"]},
+        {"title": "UX Designer", "demand": "➡️유지", "count": 280, "delta": 5, "skills": ["Figma", "User Research", "Prototyping"]},
+        {"title": "Product Designer", "demand": "📈상승", "count": 220, "delta": 35, "skills": ["Figma", "Design System", "UX Writing"]}
+      ]
+    }
+  ]
+}

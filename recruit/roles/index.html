@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>직군별 상세 — 구직 레이더</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <style>
+    .role-detail{background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;box-shadow:var(--shadow)}
+    .role-detail h2{font-size:1.2rem;font-weight:800;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+    .role-detail h2 .badge{font-size:.75rem;padding:.15rem .5rem;border-radius:2rem;color:#fff}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:.75rem 0}
+    .detail-box{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius);padding:1rem}
+    .detail-box h4{font-size:.85rem;font-weight:700;color:var(--c-primary);margin-bottom:.5rem}
+    .detail-box ul{padding-left:1rem;font-size:.88rem}
+    .detail-box li{margin-bottom:.25rem}
+    .demand-indicator{display:inline-flex;align-items:center;gap:.3rem;font-size:.9rem;font-weight:700;padding:.3rem .8rem;border-radius:2rem;background:var(--c-surface);border:1px solid var(--c-border)}
+    @media(max-width:768px){.detail-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-brand" href="../../">🧭 Korea IT Trend Radar</a>
+  <div class="nav-actions">
+    <a href="../../">🏠 홈</a>
+    <a href="../">💼 구직</a>
+    <button id="theme-toggle">🌙</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>📋 직군별 상세 정보</h1>
+  <p class="subtitle">각 직군의 수요, 필수 스킬, 추천 학습 경로</p>
+</section>
+
+<main class="container" id="roles-container"></main>
+
+<footer class="footer">
+  <p>🧭 Korea IT Trend Radar — 🍃 Built by <strong>Leaf</strong></p>
+</footer>
+
+<script src="../../assets/js/app.js"></script>
+<script>
+const catColors = {'AI/ML':'#7C3AED', Development:'#3B82F6', 'Design/기획':'#EC4899'};
+
+const learningPaths = {
+  'AI Engineer': ['Python 심화','PyTorch/TensorFlow','LLM 파인튜닝','RAG 구현','MLOps 기초'],
+  'MLOps Engineer': ['Docker/Kubernetes','CI/CD 파이프라인','MLflow/Kubeflow','AWS SageMaker','모니터링'],
+  'Prompt Engineer': ['LLM 아키텍처 이해','프롬프트 패턴','평가 메트릭','RAG 설계','API 활용'],
+  'Data Scientist': ['통계학 기초','Python/R','SQL 심화','ML 알고리즘','시각화'],
+  'Backend Engineer': ['Java/Go/Node.js','DB 설계','API 설계','캐싱 전략','대용량 처리'],
+  'Frontend Engineer': ['React/Vue/Next.js','TypeScript','상태관리','성능 최적화','접근성'],
+  'DevOps Engineer': ['AWS/GCP/Azure','Terraform/IaC','Kubernetes','CI/CD','보안'],
+  'Full-Stack Engineer': ['프론트+백 기초','DB 설계','배포 자동화','API 설계','클라우드'],
+  'Product Manager': ['사용자 리서치','데이터 분석','애자일/스크럼','기술 이해','커뮤니케이션'],
+  'UX Designer': ['사용자 리서치','Figma','프로토타이핑','디자인 시스템','A/B 테스트'],
+  'Product Designer': ['UI/UX 기초','Figma 심화','디자인 시스템','UX Writing','데이터 기반 설계']
+};
+
+async function load(){
+  const indexRes = await fetch('../../data/index.json');
+  const indexData = await indexRes.json();
+  const folderId = indexData.collections[0].folder_id;
+
+  const jobsRes = await fetch(`../../data/${folderId}/jobs_trend.json`);
+  const jobs = await jobsRes.json();
+
+  const container = document.getElementById('roles-container');
+
+  jobs.categories.forEach(cat=>{
+    const color = catColors[cat.name]||'#6366F1';
+    cat.roles.forEach(role=>{
+      const sign = role.delta>0?'+':'';
+      const paths = learningPaths[role.title] || ['관련 기술 스택 학습','포트폴리오 구축','오픈소스 기여'];
+
+      const section = document.createElement('div');
+      section.className = 'role-detail';
+      section.innerHTML = `
+        <h2>${role.title} <span class="badge" style="background:${color}">${cat.name}</span></h2>
+        <div class="demand-indicator">${role.demand} · 공고 ${role.count}건 (${sign}${role.delta})</div>
+        <div class="detail-grid">
+          <div class="detail-box">
+            <h4>필수 스킬</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+              ${role.skills.map(s=>`<span class="tag" data-cat="Dev">${s}</span>`).join('')}
+            </div>
+          </div>
+          <div class="detail-box">
+            <h4>추천 학습 경로</h4>
+            <ol style="padding-left:1.2rem;font-size:.88rem">
+              ${paths.map(p=>`<li>${p}</li>`).join('')}
+            </ol>
+          </div>
+        </div>
+      `;
+      container.appendChild(section);
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', load);
+</script>
+</body>
+</html>

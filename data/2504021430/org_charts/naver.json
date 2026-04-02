@@ -1,0 +1,31 @@
+{
+  "company": "Naver",
+  "ceo": "최수연",
+  "divisions": [
+    {
+      "name": "서치플랫폼",
+      "head": "김광현",
+      "teams": ["검색서비스", "AI 검색", "지식iN"]
+    },
+    {
+      "name": "커머스",
+      "head": "박상진",
+      "teams": ["스마트스토어", "네이버쇼핑", "네이버페이"]
+    },
+    {
+      "name": "클라우드",
+      "head": "김유원",
+      "teams": ["네이버클라우드", "B2B AI 서비스", "인프라"]
+    },
+    {
+      "name": "AI Lab",
+      "head": "하정우",
+      "teams": ["HyperCLOVA X", "Vision AI", "NLP Research"]
+    },
+    {
+      "name": "웹툰/콘텐츠",
+      "head": "김준구",
+      "teams": ["네이버웹툰", "시리즈", "V LIVE"]
+    }
+  ]
+}

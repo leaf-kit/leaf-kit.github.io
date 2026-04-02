@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Trend Radar — leaf-kit</title>
+  <meta name="description" content="글로벌·국내 100대 기업 기술 키워드 추적. 매주 업데이트되는 IT 트렌드 아카이브.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="../">🍃 leaf-kit</a>
+  <div class="nav-actions">
+    <a href="../">🏠 홈</a>
+    <a href="../recruit/">💼 구직</a>
+    <a href="https://github.com/leaf-kit" target="_blank">↗ GitHub</a>
+    <button id="theme-toggle">🌙</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>📡 IT Trend Radar</h1>
+  <p class="subtitle">지금 뜨는 기술, 지금 찾는 사람, 지금 움직이는 기업</p>
+  <div class="live-badge">
+    <span class="live-dot"></span>
+    <span id="live-info">누적 수집 중 · 로딩...</span>
+  </div>
+</section>
+
+<main class="container">
+
+  <!-- Keyword Scroll -->
+  <div class="section-title">📈 트렌드 키워드 TOP 10</div>
+  <div class="keyword-scroll" id="keyword-scroll"></div>
+
+  <!-- Timeline -->
+  <div class="section-title">🗓️ 수집 기록 타임라인</div>
+
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="🔍 키워드, 기업명, 기술 검색...">
+    <div class="filter-pills">
+      <span class="filter-pill active">전체</span>
+      <span class="filter-pill">AI</span>
+      <span class="filter-pill">Dev</span>
+      <span class="filter-pill">Design</span>
+      <span class="filter-pill">기획</span>
+      <span class="filter-pill">채용</span>
+    </div>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+
+  <!-- Chart -->
+  <div class="section-title">📊 누적 키워드 트렌드</div>
+  <div class="chart-section">
+    <div class="chart-toggles" id="chart-toggles"></div>
+    <div class="chart-container">
+      <canvas id="trend-chart"></canvas>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>🍃 leaf-kit — 마크다운으로 정보를 조직화합니다</p>
+</footer>
+
+<script src="../assets/js/app.js"></script>
+<script>
+// Override fetch paths for subdirectory
+const _origFetch = window.fetch;
+async function loadTrendIndex(){
+  try{
+    const res = await fetch('../data/index.json');
+    const data = await res.json();
+
+    // Live badge
+    const el = document.getElementById('live-info');
+    if(el) el.textContent = `누적 수집 중 · 총 ${data.total_collections}회차 · 최신: ${data.collections[0]?.label||''}`;
+
+    // Keyword scroll
+    const ks = document.getElementById('keyword-scroll');
+    if(ks){
+      try{
+        const kwRes = await fetch(`../data/${data.collections[0].folder_id}/tech_keywords.json`);
+        const keywords = await kwRes.json();
+        [...keywords].sort((a,b)=>b.count-a.count).slice(0,10).forEach(kw=>{
+          ks.appendChild(createTag(`${kw.keyword} (${kw.count})`, kw.category, kw.delta));
+        });
+      }catch(e){}
+    }
+
+    // Timeline
+    const container = document.getElementById('timeline');
+    if(container){
+      container.innerHTML = '';
+      data.collections.forEach((col, i)=>{
+        const item = document.createElement('div');
+        item.className = 'timeline-item';
+        item.innerHTML = `
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <span class="timeline-date">${col.label}</span>
+              <span>
+                ${i===0?'<span class="new-badge">NEW</span>':''}
+                <span class="folder-badge">${col.folder_id}</span>
+              </span>
+            </div>
+            <div class="timeline-summary">${col.summary}</div>
+            <div class="timeline-tags">
+              ${(col.top_keywords||[]).map(k=>`<span class="tag" data-cat="AI">${k}</span>`).join('')}
+            </div>
+            <div class="timeline-links">
+              <a href="../pages/${col.folder_id}/">📄 상세 보기</a>
+              <a href="../data/${col.folder_id}/global_top100.md">🌐 글로벌.md</a>
+              <a href="../data/${col.folder_id}/korea_top100.md">🇰🇷 국내.md</a>
+              <a href="../data/${col.folder_id}/tech_keywords.json">📊 JSON</a>
+            </div>
+          </div>`;
+        container.appendChild(item);
+      });
+    }
+
+    // Chart
+    await renderTrendChart(data);
+
+    // Search
+    const input = document.getElementById('search-input');
+    if(input){
+      input.addEventListener('input', ()=>{
+        const q = input.value.toLowerCase().trim();
+        document.querySelectorAll('.timeline-item').forEach(item=>{
+          item.style.display = item.textContent.toLowerCase().includes(q)||q==='' ? '' : 'none';
+        });
+      });
+    }
+
+  }catch(e){ console.error(e); }
+}
+
+async function renderTrendChart(data){
+  const canvas = document.getElementById('trend-chart');
+  if(!canvas || typeof Chart==='undefined') return;
+
+  const allKeywords = new Map();
+  const labels = [];
+  const collections = [...data.collections].reverse();
+
+  for(const col of collections){
+    labels.push(col.label.replace('년 ','.').replace('월 ','.').replace('일 ',''));
+    try{
+      const res = await fetch(`../data/${col.folder_id}/tech_keywords.json`);
+      const keywords = await res.json();
+      keywords.forEach(kw=>{
+        if(!allKeywords.has(kw.keyword)) allKeywords.set(kw.keyword,[]);
+        allKeywords.get(kw.keyword).push({label:col.label, count:kw.count});
+      });
+    }catch(e){}
+  }
+
+  const colors = ['#6366F1','#F59E0B','#EF4444','#10B981','#3B82F6','#EC4899','#8B5CF6','#06B6D4'];
+  const topKw = [...allKeywords.entries()]
+    .sort((a,b)=>(b[1][b[1].length-1]?.count||0)-(a[1][a[1].length-1]?.count||0))
+    .slice(0,8);
+
+  const datasets = topKw.map(([name, points], i)=>{
+    const color = colors[i%colors.length];
+    return {
+      label:name,
+      data:collections.map(col=>{const pt=points.find(p=>p.label===col.label);return pt?pt.count:0;}),
+      borderColor:color, backgroundColor:color+'20', tension:.3, pointRadius:4, fill:false
+    };
+  });
+
+  const toggleContainer = document.getElementById('chart-toggles');
+  if(toggleContainer){
+    toggleContainer.innerHTML = '';
+    datasets.forEach((ds,idx)=>{
+      const label = document.createElement('label');
+      label.className = 'chart-toggle';
+      label.innerHTML = `<input type="checkbox" checked data-idx="${idx}"><span style="color:${ds.borderColor}">${ds.label}</span>`;
+      toggleContainer.appendChild(label);
+    });
+  }
+
+  const chart = new Chart(canvas, {
+    type:'line', data:{labels, datasets},
+    options:{responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,grid:{color:'rgba(100,100,100,.1)'}},x:{grid:{display:false}}}}
+  });
+
+  toggleContainer?.querySelectorAll('input').forEach(cb=>{
+    cb.addEventListener('change', e=>{
+      chart.data.datasets[+e.target.dataset.idx].hidden = !e.target.checked;
+      chart.update();
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadTrendIndex);
+</script>
+</body>
+</html>

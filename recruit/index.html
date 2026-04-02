@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>구직 레이더 — IT 채용·직군·기업 한눈에</title>
+  <meta name="description" content="IT 직군별 채용 트렌드, 기업별 채용 페이지, 필요 스킬을 한눈에 정리합니다.">
+  <meta property="og:title" content="💼 구직 레이더 | IT 채용 트렌드 한눈에">
+  <meta property="og:description" content="직군별 수요, 기업별 채용 링크, 핵심 스킬 — 취준생을 위한 원스톱 페이지">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <style>
+    .recruit-hero{text-align:center;padding:3rem 1.5rem 2rem;max-width:900px;margin:0 auto}
+    .recruit-hero h1{font-size:2rem;font-weight:900}
+    .recruit-hero .desc{color:var(--c-text2);margin-top:.5rem;font-size:1rem}
+
+    /* Stat Cards */
+    .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:2rem 0}
+    .stat-card{background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius);padding:1.25rem;text-align:center;box-shadow:var(--shadow)}
+    .stat-card .num{font-size:2rem;font-weight:900;color:var(--c-primary)}
+    .stat-card .label{font-size:.8rem;color:var(--c-text2);margin-top:.25rem}
+
+    /* Role Cards */
+    .role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin:1.5rem 0}
+    .role-card{background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow);transition:transform .2s}
+    .role-card:hover{transform:translateY(-2px)}
+    .role-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+    .role-card-title{font-weight:800;font-size:1.05rem}
+    .role-demand{font-size:.85rem;font-weight:600}
+    .role-stats{display:flex;gap:1.5rem;margin:.5rem 0;font-size:.85rem;color:var(--c-text2)}
+    .role-stats strong{color:var(--c-text)}
+    .role-skills{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.75rem}
+    .role-category-badge{font-size:.7rem;padding:.15rem .5rem;border-radius:2rem;font-weight:700;color:#fff}
+
+    /* Company Recruit Grid */
+    .company-recruit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin:1.5rem 0}
+    .company-recruit-card{background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:.5rem}
+    .company-recruit-card:hover{border-color:var(--c-primary)}
+    .cr-name{font-weight:800;font-size:1rem}
+    .cr-jobs{display:flex;flex-wrap:wrap;gap:.25rem;margin:.25rem 0}
+    .cr-links{display:flex;gap:.5rem;margin-top:auto;padding-top:.5rem;border-top:1px solid var(--c-border)}
+    .cr-links a{font-size:.8rem;padding:.3rem .6rem;border:1px solid var(--c-border);border-radius:4px;flex:1;text-align:center;color:var(--c-text2)}
+    .cr-links a:hover{border-color:var(--c-primary);color:var(--c-primary);text-decoration:none}
+    .cr-links a.primary{background:var(--c-primary);color:#fff;border-color:var(--c-primary)}
+    .cr-links a.primary:hover{opacity:.9}
+
+    /* Skill Ranking */
+    .skill-ranking{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem;margin:1.5rem 0}
+    .skill-item{display:flex;align-items:center;gap:.75rem;background:var(--c-card);border:1px solid var(--c-border);border-radius:var(--radius);padding:.75rem 1rem}
+    .skill-rank{font-size:1.3rem;font-weight:900;color:var(--c-amber);min-width:1.5rem}
+    .skill-name{font-weight:700;font-size:.95rem}
+    .skill-count{font-size:.8rem;color:var(--c-text2);margin-left:auto}
+    .skill-bar{height:4px;background:var(--c-border);border-radius:2px;margin-top:.3rem;overflow:hidden}
+    .skill-bar-fill{height:100%;background:var(--c-primary);border-radius:2px;transition:width .5s}
+
+    /* Quick Nav */
+    .quick-nav{display:flex;gap:.5rem;flex-wrap:wrap;margin:1.5rem 0;justify-content:center}
+    .quick-nav a{padding:.5rem 1rem;border:1px solid var(--c-border);border-radius:2rem;font-size:.85rem;font-weight:600;color:var(--c-text2)}
+    .quick-nav a:hover{border-color:var(--c-primary);color:var(--c-primary);text-decoration:none}
+
+    /* Section Divider */
+    .section-divider{border:none;border-top:1px solid var(--c-border);margin:2.5rem 0}
+
+    @media(max-width:768px){
+      .role-grid{grid-template-columns:1fr}
+      .company-recruit-grid{grid-template-columns:1fr}
+      .stat-row{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="../">🧭 Korea IT Trend Radar</a>
+  <div class="nav-actions">
+    <a href="../">🏠 홈</a>
+    <a href="../trend/">📡 트렌드</a>
+    <a href="./" style="font-weight:700;color:var(--c-primary)">💼 구직</a>
+    <button id="theme-toggle">🌙</button>
+  </div>
+</nav>
+
+<section class="recruit-hero">
+  <h1>💼 구직 레이더</h1>
+  <p class="desc">IT 직군별 채용 수요 · 기업별 채용 페이지 · 핵심 스킬 — 한 페이지에서</p>
+  <div class="live-badge" style="margin-top:1rem">
+    <span class="live-dot"></span>
+    <span id="live-info">데이터 로딩중...</span>
+  </div>
+</section>
+
+<main class="container">
+
+  <!-- Quick Nav -->
+  <div class="quick-nav">
+    <a href="#roles">📋 직군별 트렌드</a>
+    <a href="#skills">🛠️ 핵심 스킬 랭킹</a>
+    <a href="#companies-global">🌐 글로벌 채용</a>
+    <a href="#companies-korea">🇰🇷 국내 채용</a>
+    <a href="roles/">📂 직군 상세</a>
+    <a href="companies/">🏢 기업 상세</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="stat-row" id="stat-row"></div>
+
+  <hr class="section-divider">
+
+  <!-- 직군별 채용 트렌드 -->
+  <div class="section-title" id="roles">📋 직군별 채용 트렌드</div>
+  <p style="color:var(--c-text2);font-size:.9rem;margin-bottom:1rem">최신 수집 데이터 기준 — 채용 공고 수와 전 회차 대비 변동량</p>
+
+  <div class="search-bar" style="margin-bottom:1rem">
+    <input type="text" id="role-search" placeholder="🔍 직군명, 스킬 검색...">
+  </div>
+
+  <div class="role-grid" id="role-grid"></div>
+
+  <hr class="section-divider">
+
+  <!-- 핵심 스킬 랭킹 -->
+  <div class="section-title" id="skills">🛠️ 가장 많이 요구되는 스킬 TOP 15</div>
+  <div class="skill-ranking" id="skill-ranking"></div>
+
+  <hr class="section-divider">
+
+  <!-- 글로벌 기업 채용 -->
+  <div class="section-title" id="companies-global">🌐 글로벌 기업 채용 바로가기</div>
+  <div class="company-recruit-grid" id="global-recruit"></div>
+
+  <hr class="section-divider">
+
+  <!-- 국내 기업 채용 -->
+  <div class="section-title" id="companies-korea">🇰🇷 국내 기업 채용 바로가기</div>
+  <div class="company-recruit-grid" id="korea-recruit"></div>
+
+</main>
+
+<footer class="footer">
+  <p>🧭 Korea IT Trend Radar — 🍃 Built by <strong>Leaf</strong></p>
+  <p style="font-size:.75rem">마크다운 기반 정보 관리 · 데이터 수집일 기준</p>
+</footer>
+
+<script src="../assets/js/app.js"></script>
+<script>
+const catColors = {'AI/ML':'#7C3AED', Development:'#3B82F6', 'Design/기획':'#EC4899'};
+
+async function loadRecruit(){
+  // Find latest folder from index
+  const indexRes = await fetch('../data/index.json');
+  const indexData = await indexRes.json();
+  const latest = indexData.collections[0];
+  const folderId = latest.folder_id;
+  const basePath = `../data/${folderId}/`;
+
+  document.getElementById('live-info').textContent =
+    `${latest.label} 기준 · 총 ${indexData.total_collections}회차 누적`;
+
+  // Load data in parallel
+  const [jobs, companyLinks, globalCo, koreaCo] = await Promise.all([
+    fetch(basePath+'jobs_trend.json').then(r=>r.json()),
+    fetch(basePath+'company_links.jsonl').then(r=>r.text()).then(t=>t.trim().split('\n').map(l=>JSON.parse(l))),
+    fetch(basePath+'global_top100.json').then(r=>r.json()),
+    fetch(basePath+'korea_top100.json').then(r=>r.json())
+  ]);
+
+  renderStats(jobs, companyLinks);
+  renderRoles(jobs);
+  renderSkillRanking(jobs);
+  renderCompanyRecruit('global-recruit', globalCo, companyLinks);
+  renderCompanyRecruit('korea-recruit', koreaCo, companyLinks);
+  initRoleSearch();
+}
+
+function renderStats(jobs, links){
+  const totalRoles = jobs.categories.reduce((s,c)=>s+c.roles.length, 0);
+  const totalPostings = jobs.categories.reduce((s,c)=>s+c.roles.reduce((ss,r)=>ss+r.count,0), 0);
+  const hotRoles = jobs.categories.reduce((s,c)=>s+c.roles.filter(r=>r.demand.includes('급상승')).length, 0);
+
+  document.getElementById('stat-row').innerHTML = `
+    <div class="stat-card"><div class="num">${totalRoles}</div><div class="label">추적 직군</div></div>
+    <div class="stat-card"><div class="num">${totalPostings.toLocaleString()}</div><div class="label">채용 공고 수</div></div>
+    <div class="stat-card"><div class="num">${hotRoles}</div><div class="label">급상승 직군</div></div>
+    <div class="stat-card"><div class="num">${links.length}</div><div class="label">기업 채용 링크</div></div>
+  `;
+}
+
+function renderRoles(jobs){
+  const grid = document.getElementById('role-grid');
+  grid.innerHTML = '';
+
+  jobs.categories.forEach(cat=>{
+    const color = catColors[cat.name]||'#6366F1';
+    cat.roles.forEach(role=>{
+      const sign = role.delta>0?'+':'';
+      const deltaClass = role.delta>0?'color:var(--c-green)':'color:var(--c-red)';
+      const card = document.createElement('div');
+      card.className = 'role-card';
+      card.setAttribute('data-search', `${role.title} ${role.skills.join(' ')} ${cat.name}`.toLowerCase());
+      card.innerHTML = `
+        <div class="role-card-header">
+          <span class="role-card-title">${role.title}</span>
+          <span class="role-category-badge" style="background:${color}">${cat.name}</span>
+        </div>
+        <div style="font-size:.9rem">${role.demand}</div>
+        <div class="role-stats">
+          <span>공고 <strong>${role.count}</strong>건</span>
+          <span style="${deltaClass}">전 회차 대비 <strong>${sign}${role.delta}</strong></span>
+        </div>
+        <div class="role-skills">
+          ${role.skills.map(s=>`<span class="tag" data-cat="Dev">${s}</span>`).join('')}
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  });
+}
+
+function renderSkillRanking(jobs){
+  const skillMap = new Map();
+  jobs.categories.forEach(cat=>{
+    cat.roles.forEach(role=>{
+      role.skills.forEach(s=>{
+        skillMap.set(s, (skillMap.get(s)||0) + role.count);
+      });
+    });
+  });
+
+  const sorted = [...skillMap.entries()].sort((a,b)=>b[1]-a[1]).slice(0,15);
+  const maxCount = sorted[0]?.[1]||1;
+  const container = document.getElementById('skill-ranking');
+  container.innerHTML = '';
+
+  sorted.forEach(([name, count], i)=>{
+    const pct = Math.round(count/maxCount*100);
+    container.innerHTML += `
+      <div class="skill-item">
+        <span class="skill-rank">${i+1}</span>
+        <div style="flex:1">
+          <div class="skill-name">${name}</div>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:${pct}%"></div></div>
+        </div>
+        <span class="skill-count">${count.toLocaleString()}</span>
+      </div>
+    `;
+  });
+}
+
+function renderCompanyRecruit(containerId, companies, companyLinks){
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+
+  companies.forEach(co=>{
+    const link = companyLinks.find(l=>
+      l.name===co.name || l.name.includes(co.name) || co.name.includes(l.name)
+    );
+    const recruitUrl = link?.recruit || '#';
+    const homepageUrl = link?.homepage || '#';
+    const jobTags = (co.jobs_trend||[]).slice(0,4).map(j=>`<span class="tag" data-cat="기획" style="font-size:.7rem;padding:.1rem .35rem">${j}</span>`).join('');
+
+    const card = document.createElement('div');
+    card.className = 'company-recruit-card';
+    card.innerHTML = `
+      <div class="cr-name">${co.name} ${co.ticker?'<span style="color:var(--c-text2);font-weight:400;font-size:.8rem">('+co.ticker+')</span>':''}</div>
+      <div style="font-size:.8rem;color:var(--c-text2)">${co.ceo||''} · ${co.hq||''}</div>
+      <div class="cr-jobs">${jobTags || '<span style="font-size:.8rem;color:var(--c-text2)">채용 키워드 없음</span>'}</div>
+      <div class="cr-links">
+        <a class="primary" href="${recruitUrl}" target="_blank">💼 채용 페이지</a>
+        <a href="${homepageUrl}" target="_blank">🌐 홈페이지</a>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function initRoleSearch(){
+  const input = document.getElementById('role-search');
+  input.addEventListener('input', ()=>{
+    const q = input.value.toLowerCase().trim();
+    document.querySelectorAll('.role-card').forEach(card=>{
+      const text = card.getAttribute('data-search')||'';
+      card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadRecruit);
+</script>
+</body>
+</html>
