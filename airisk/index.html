@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 리스크 — 당신의 직업은 안전한가요?</title>
+  <meta name="description" content="182개 직업의 AI 대체 가능성을 실시간 분석합니다. 뉴스 근거 기반 AI 리스크 분석 서비스.">
+  <meta property="og:title" content="AI 리스크 | 당신의 직업은 안전한가요?">
+  <meta property="og:description" content="182개 직업의 AI 대체 가능성을 뉴스 근거와 함께 분석합니다">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#2563EB;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,.06)}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+
+    /* Nav */
+    .nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:var(--text)}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions::-webkit-scrollbar{display:none}
+    .nav-actions a{color:var(--text2);font-size:.8rem;font-weight:500;padding:.4rem .6rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:var(--primary);background:#EFF6FF;text-decoration:none}
+
+    /* Hero */
+    .hero{text-align:center;padding:3.5rem 2rem 2.5rem;background:linear-gradient(160deg,#fff 0%,#FEF2F2 30%,#FEE2E2 60%,#fff 100%);position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-30%;right:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(239,68,68,.06) 0%,transparent 70%);pointer-events:none}
+    .hero-icon{font-size:3rem;margin-bottom:.75rem;opacity:0;animation:fu .6s ease forwards .1s}
+    .hero h1{font-size:1.8rem;font-weight:900;opacity:0;animation:fu .6s ease forwards .2s}
+    .hero h1 .accent{color:var(--red)}
+    .hero .sub{color:var(--text2);font-size:.9rem;margin-top:.4rem;opacity:0;animation:fu .6s ease forwards .35s}
+    .hero-stats{display:flex;gap:1.5rem;justify-content:center;margin-top:1.25rem;opacity:0;animation:fu .6s ease forwards .5s}
+    .hero-stat .num{font-size:1.5rem;font-weight:800}
+    .hero-stat .label{font-size:.7rem;color:var(--text2)}
+    @keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+    .container{max-width:1200px;margin:0 auto;padding:0 2rem}
+
+    /* Search */
+    .search-area{max-width:600px;margin:1.5rem auto;position:relative}
+    .search-input{width:100%;padding:.7rem 1rem .7rem 2.5rem;border:2px solid var(--border);border-radius:10px;font-size:.9rem;background:#fff;transition:border-color .2s}
+    .search-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+    .search-icon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--text2)}
+
+    /* Risk meter */
+    .risk-meter{width:100%;height:8px;background:#E5E7EB;border-radius:4px;overflow:hidden}
+    .risk-meter-fill{height:100%;border-radius:4px;transition:width 1s ease}
+    .risk-low{background:var(--green)}
+    .risk-mid{background:var(--amber)}
+    .risk-high{background:var(--red)}
+    .risk-critical{background:#991B1B}
+
+    /* Category cards */
+    .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:.75rem;margin:1.5rem 0}
+    .cat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:box-shadow .2s,transform .15s}
+    .cat-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-2px)}
+    .cat-header{padding:1rem;display:flex;align-items:center;gap:.75rem}
+    .cat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+    .cat-info{flex:1}
+    .cat-name{font-size:.95rem;font-weight:700}
+    .cat-desc{font-size:.72rem;color:var(--text2);margin-top:.1rem}
+    .cat-risk-badge{font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:2rem;color:#fff;flex-shrink:0}
+    .cat-jobs-preview{padding:.5rem 1rem 1rem;display:flex;flex-wrap:wrap;gap:.25rem}
+    .cat-jobs-preview .job-chip{font-size:.68rem;padding:.15rem .4rem;border:1px solid var(--border);border-radius:3px;color:var(--text2);background:#fff}
+
+    /* Job detail modal */
+    .modal-backdrop{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.3);z-index:200;display:none;justify-content:center;align-items:flex-start;padding:3rem 1rem;overflow-y:auto}
+    .modal-backdrop.open{display:flex}
+    .modal{background:#fff;border-radius:12px;max-width:640px;width:100%;max-height:calc(100vh - 6rem);overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:modalIn .3s ease}
+    @keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .modal-close{position:absolute;top:.75rem;right:.75rem;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text2);z-index:1}
+    .modal-inner{padding:1.5rem;position:relative}
+    .modal-risk-header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
+    .risk-gauge{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;flex-shrink:0}
+    .risk-gauge .risk-num{font-size:1.5rem;font-weight:900;color:#fff}
+    .risk-gauge .risk-label{font-size:.6rem;color:rgba(255,255,255,.8)}
+    .modal-job-name{font-size:1.2rem;font-weight:800}
+    .modal-job-en{font-size:.8rem;color:var(--text2)}
+    .modal-stage{font-size:.78rem;font-weight:600;padding:.15rem .5rem;border-radius:3px;display:inline-block;margin-top:.25rem}
+    .modal-section{margin-top:1.25rem}
+    .modal-section h4{font-size:.8rem;font-weight:600;color:var(--primary);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.02em}
+    .modal-section p{font-size:.84rem;color:var(--text2);line-height:1.6}
+    .modal-tools{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.3rem}
+    .modal-tool{font-size:.72rem;padding:.15rem .4rem;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:3px;color:var(--primary);font-weight:500}
+    .modal-similar{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.3rem}
+    .modal-similar span{font-size:.72rem;padding:.15rem .4rem;border:1px solid var(--border);border-radius:3px;color:var(--text2);cursor:pointer}
+    .modal-similar span:hover{border-color:var(--primary);color:var(--primary)}
+    .news-links{margin-top:.5rem}
+    .news-link{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.8rem}
+    .news-link:last-child{border-bottom:none}
+    .news-link .src{font-size:.7rem;color:var(--text2);min-width:60px}
+    .news-link a{flex:1;color:var(--text);font-weight:500}
+    .news-link a:hover{color:var(--primary)}
+    .tweet-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .7rem;background:#000;color:#fff;border-radius:5px;font-size:.75rem;font-weight:500;border:none;cursor:pointer;margin-top:.75rem;text-decoration:none}
+    .tweet-btn:hover{opacity:.85;text-decoration:none;color:#fff}
+    .tweet-btn svg{width:14px;height:14px;fill:#fff}
+
+    /* Category detail view */
+    .detail-view{display:none}
+    .detail-view.active{display:block}
+    .back-btn{font-size:.85rem;color:var(--text2);cursor:pointer;margin-bottom:1rem;display:inline-flex;align-items:center;gap:.3rem}
+    .back-btn:hover{color:var(--primary);text-decoration:none}
+    .job-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.5rem}
+    .job-item{
+      background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+      padding:.75rem;cursor:pointer;display:flex;align-items:center;gap:.6rem;
+      transition:border-color .15s,transform .1s;
+    }
+    .job-item:hover{border-color:var(--primary);transform:translateX(3px)}
+    .job-risk-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;flex-shrink:0}
+    .job-item-info{flex:1}
+    .job-item-name{font-size:.88rem;font-weight:600}
+    .job-item-stage{font-size:.7rem;color:var(--text2)}
+
+    /* Section title */
+    .section-title{font-size:1.1rem;font-weight:700;margin:2rem 0 .5rem;display:flex;align-items:center;gap:.4rem}
+
+    /* Shocking stats */
+    .shock-banner{background:linear-gradient(135deg,#1E293B,#0F172A);color:#fff;border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;text-align:center}
+    .shock-item .shock-num{font-size:2rem;font-weight:900;font-variant-numeric:tabular-nums}
+    .shock-item .shock-num.red{color:#FCA5A5}
+    .shock-item .shock-num.amber{color:#FCD34D}
+    .shock-item .shock-num.green{color:#6EE7B7}
+    .shock-item .shock-label{font-size:.72rem;color:rgba(255,255,255,.7);margin-top:.15rem}
+
+    /* Footer */
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+    .disclaimer{margin:1.5rem 0 0;padding:.75rem 1rem;background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--radius);font-size:.78rem;line-height:1.5;color:#92400E}
+
+    @media(max-width:768px){
+      .nav{padding:0 .75rem;height:auto;min-height:44px;flex-wrap:wrap}
+      .nav-brand{padding:.4rem 0;font-size:.85rem}
+      .nav-actions{width:100%;padding-bottom:.35rem}
+      .container{padding:0 1rem}
+      .hero h1{font-size:1.4rem}
+      .hero-stats{gap:1rem}
+      .cat-grid{grid-template-columns:1fr}
+      .job-list{grid-template-columns:1fr}
+      .shock-banner{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>
+    AI 리스크
+  </a>
+  <div class="nav-actions">
+    <a href="./" class="active">직업 분석</a>
+    <a href="../recruit/">리프취준랩</a>
+    <a href="../recruit/graph/">기술 그래프</a>
+    <a href="https://x.com/leafeditor" target="_blank">Twitter</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-icon">⚠️</div>
+  <h1>당신의 직업은 <span class="accent">안전</span>한가요?</h1>
+  <p class="sub">182개 직업의 AI 대체 가능성을 뉴스 근거와 함께 분석합니다</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num" id="h-total">0</div><div class="label">분석 직업</div></div>
+    <div class="hero-stat"><div class="num" id="h-high" style="color:var(--red)">0</div><div class="label">고위험 직업</div></div>
+    <div class="hero-stat"><div class="num" id="h-agents">0</div><div class="label">추적 AI 도구</div></div>
+  </div>
+</section>
+
+<main class="container">
+
+  <!-- Search -->
+  <div class="search-area">
+    <svg class="search-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+    <input class="search-input" type="text" id="job-search" placeholder="직업명을 검색하세요 (예: 회계사, 개발자, 디자이너...)">
+  </div>
+
+  <!-- Shocking stats -->
+  <div class="shock-banner" id="shock-banner"></div>
+
+  <!-- Main view -->
+  <div id="main-view">
+    <div class="section-title">직업군별 AI 리스크 분석</div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+
+  <!-- Detail view (single category) -->
+  <div class="detail-view" id="detail-view">
+    <a class="back-btn" onclick="showMain()">← 전체 직업군으로</a>
+    <div id="detail-header"></div>
+    <div class="job-list" id="job-list"></div>
+  </div>
+
+  <!-- Search results -->
+  <div id="search-results" style="display:none">
+    <div class="section-title">검색 결과</div>
+    <div class="job-list" id="search-list"></div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>안내</strong> &nbsp;AI 리스크 분석은 LLM 기반 분석과 공개 뉴스·보고서를 참고하여 생성되었습니다. 실제 대체 가능성은 산업, 기업, 개인 역량에 따라 크게 다를 수 있으며, 참고 자료로만 활용해 주세요.
+  </div>
+</main>
+
+<!-- Job detail modal -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-inner" id="modal-content"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <p>AI 리스크 — leaf-kit.github.io/airisk</p>
+</footer>
+
+<script>
+const catIcons={business:'💼',tech:'🔬',education:'📚',medical:'🏥',creative:'🎨',service:'🛎️',manufacturing:'🏭',agriculture:'🌾',labor:'⚙️'};
+const catColors={business:'#3B82F6',tech:'#8B5CF6',education:'#F59E0B',medical:'#10B981',creative:'#EC4899',service:'#F97316',manufacturing:'#6366F1',agriculture:'#84CC16',labor:'#6B7280'};
+
+let data=null, newsSources=[];
+
+function riskColor(r){return r>=86?'#991B1B':r>=61?'#EF4444':r>=31?'#F59E0B':'#10B981'}
+function riskBg(r){return r>=86?'#FEE2E2':r>=61?'#FEF2F2':r>=31?'#FFFBEB':'#ECFDF5'}
+function riskClass(r){return r>=86?'risk-critical':r>=61?'risk-high':r>=31?'risk-mid':'risk-low'}
+
+function animateNum(id,target){
+  const el=document.getElementById(id);let c=0;
+  const step=Math.max(1,Math.floor(target/25));
+  const t=setInterval(()=>{c+=step;if(c>=target){c=target;clearInterval(t)}el.textContent=c;},30);
+}
+
+async function init(){
+  const [jobsRes,newsRes]=await Promise.all([
+    fetch('data/20260402/processed/jobs_risk.json').then(r=>r.json()),
+    fetch('data/20260402/sources/news_sources.json').then(r=>r.json()).catch(()=>[])
+  ]);
+  data=jobsRes; newsSources=newsRes;
+
+  const allJobs=data.categories.flatMap(c=>c.jobs);
+  const highRisk=allJobs.filter(j=>j.risk>=61).length;
+  animateNum('h-total',allJobs.length);
+  animateNum('h-high',highRisk);
+  animateNum('h-agents',60);
+
+  renderShock(allJobs);
+  renderCategories();
+  initSearch(allJobs);
+}
+
+function renderShock(jobs){
+  const sorted=[...jobs].sort((a,b)=>b.risk-a.risk);
+  const top5=sorted.slice(0,5);
+  const avgRisk=Math.round(jobs.reduce((s,j)=>s+j.risk,0)/jobs.length);
+  const critical=jobs.filter(j=>j.risk>=86).length;
+  const safe=jobs.filter(j=>j.risk<=30).length;
+
+  document.getElementById('shock-banner').innerHTML=`
+    <div class="shock-item"><div class="shock-num red">${critical}</div><div class="shock-label">대체 진행 중인 직업</div></div>
+    <div class="shock-item"><div class="shock-num amber">${avgRisk}%</div><div class="shock-label">전체 평균 리스크</div></div>
+    <div class="shock-item"><div class="shock-num green">${safe}</div><div class="shock-label">저위험 직업</div></div>
+    <div class="shock-item"><div class="shock-num red">${top5[0].risk}%</div><div class="shock-label">최고위험: ${top5[0].name}</div></div>
+  `;
+}
+
+function renderCategories(){
+  const grid=document.getElementById('cat-grid');
+  grid.innerHTML='';
+  data.categories.forEach(cat=>{
+    const topJobs=cat.jobs.sort((a,b)=>b.risk-a.risk).slice(0,6);
+    const color=catColors[cat.id]||'#6366F1';
+    const card=document.createElement('div');
+    card.className='cat-card';
+    card.onclick=()=>showCategory(cat.id);
+    card.innerHTML=`
+      <div class="cat-header">
+        <div class="cat-icon" style="background:${riskBg(cat.avg_risk)}">${catIcons[cat.id]||'📋'}</div>
+        <div class="cat-info">
+          <div class="cat-name">${cat.name}</div>
+          <div class="cat-desc">${cat.description}</div>
+        </div>
+        <div class="cat-risk-badge" style="background:${riskColor(cat.avg_risk)}">평균 ${cat.avg_risk}%</div>
+      </div>
+      <div style="padding:0 1rem"><div class="risk-meter"><div class="risk-meter-fill ${riskClass(cat.avg_risk)}" style="width:${cat.avg_risk}%"></div></div></div>
+      <div class="cat-jobs-preview">${topJobs.map(j=>`<span class="job-chip" style="border-color:${riskColor(j.risk)};color:${riskColor(j.risk)}">${j.name} ${j.risk}%</span>`).join('')}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function showCategory(catId){
+  const cat=data.categories.find(c=>c.id===catId);
+  if(!cat)return;
+  document.getElementById('main-view').style.display='none';
+  document.getElementById('search-results').style.display='none';
+  const dv=document.getElementById('detail-view');
+  dv.classList.add('active');
+
+  document.getElementById('detail-header').innerHTML=`
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
+      <div class="cat-icon" style="background:${riskBg(cat.avg_risk)};width:48px;height:48px;font-size:1.5rem">${catIcons[cat.id]||'📋'}</div>
+      <div>
+        <div style="font-size:1.2rem;font-weight:800">${cat.name}</div>
+        <div style="font-size:.82rem;color:var(--text2)">${cat.description}</div>
+      </div>
+      <div class="cat-risk-badge" style="background:${riskColor(cat.avg_risk)};font-size:.85rem">평균 ${cat.avg_risk}%</div>
+    </div>
+  `;
+
+  const list=document.getElementById('job-list');
+  const sorted=[...cat.jobs].sort((a,b)=>b.risk-a.risk);
+  list.innerHTML='';
+  sorted.forEach(job=>list.appendChild(createJobItem(job,cat.id)));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showMain(){
+  document.getElementById('main-view').style.display='';
+  document.getElementById('detail-view').classList.remove('active');
+  document.getElementById('search-results').style.display='none';
+}
+
+function createJobItem(job,catId){
+  const item=document.createElement('div');
+  item.className='job-item';
+  item.onclick=()=>openJobModal(job,catId);
+  item.innerHTML=`
+    <div class="job-risk-dot" style="background:${riskColor(job.risk)}">${job.risk}</div>
+    <div class="job-item-info">
+      <div class="job-item-name">${job.name}</div>
+      <div class="job-item-stage">${job.stage} · ${job.nameEn||''}</div>
+    </div>
+  `;
+  return item;
+}
+
+function openJobModal(job,catId){
+  const news=newsSources.filter(n=>n.category===catId||n.related_jobs?.includes(job.name));
+  const naverUrl=`https://m.search.naver.com/search.naver?ssc=tab.m_news.all&where=m_news&sm=mtb_jum&query=${encodeURIComponent(job.news_query||job.name+' AI 대체')}`;
+  const tweetText=encodeURIComponent(`AI 리스크 분석: ${job.name} — 대체 가능성 ${job.risk}%\n\n더 많은 직업군 분석은 여기에서:\nhttps://leaf-kit.github.io/airisk\n\n@leafeditor #AI #직업리스크 #AIrisk`);
+
+  document.getElementById('modal-content').innerHTML=`
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-risk-header">
+      <div class="risk-gauge" style="background:${riskColor(job.risk)}">
+        <div class="risk-num">${job.risk}</div>
+        <div class="risk-label">리스크</div>
+      </div>
+      <div>
+        <div class="modal-job-name">${job.name}</div>
+        <div class="modal-job-en">${job.nameEn||''}</div>
+        <span class="modal-stage" style="background:${riskBg(job.risk)};color:${riskColor(job.risk)}">${job.stage}</span>
+      </div>
+    </div>
+
+    <div style="margin:1rem 0"><div class="risk-meter"><div class="risk-meter-fill ${riskClass(job.risk)}" style="width:0%"></div></div></div>
+
+    <div class="modal-section">
+      <h4>직업 소개</h4>
+      <p>${job.description}</p>
+    </div>
+
+    <div class="modal-section">
+      <h4>AI 대체 현황</h4>
+      <p>${job.ai_impact}</p>
+    </div>
+
+    <div class="modal-section">
+      <h4>관련 AI 도구</h4>
+      <div class="modal-tools">${(job.ai_tools||[]).map(t=>`<span class="modal-tool">${t}</span>`).join('')}</div>
+    </div>
+
+    <div class="modal-section">
+      <h4>유사 직업</h4>
+      <div class="modal-similar">${(job.similar_jobs||[]).map(s=>`<span onclick="searchJob('${s}')">${s}</span>`).join('')}</div>
+    </div>
+
+    <div class="modal-section">
+      <h4>관련 뉴스</h4>
+      ${news.length?`<div class="news-links">${news.slice(0,3).map(n=>`
+        <div class="news-link"><span class="src">${n.source}</span><a href="${n.url}" target="_blank">${n.title}</a></div>
+      `).join('')}</div>`:''}
+      <a href="${naverUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;margin-top:.5rem;font-size:.78rem;padding:.3rem .6rem;border:1px solid #03C75A;border-radius:4px;color:#03C75A;font-weight:600">
+        <svg width="14" height="14" viewBox="0 0 20 20"><rect width="20" height="20" rx="4" fill="#03C75A"/><text x="10" y="15" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">N</text></svg>
+        네이버 뉴스에서 더 보기
+      </a>
+    </div>
+
+    <a class="tweet-btn" href="https://x.com/intent/post?text=${tweetText}" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      트윗하기
+    </a>
+  `;
+
+  document.getElementById('modal-backdrop').classList.add('open');
+  // Animate risk meter
+  setTimeout(()=>{
+    const fill=document.querySelector('.modal .risk-meter-fill');
+    if(fill)fill.style.width=job.risk+'%';
+  },100);
+}
+
+function closeModal(){document.getElementById('modal-backdrop').classList.remove('open')}
+document.getElementById('modal-backdrop').addEventListener('click',e=>{if(e.target.id==='modal-backdrop')closeModal()});
+
+function searchJob(name){
+  closeModal();
+  document.getElementById('job-search').value=name;
+  document.getElementById('job-search').dispatchEvent(new Event('input'));
+}
+
+function initSearch(allJobs){
+  const input=document.getElementById('job-search');
+  input.addEventListener('input',()=>{
+    const q=input.value.trim().toLowerCase();
+    if(!q){
+      document.getElementById('search-results').style.display='none';
+      document.getElementById('main-view').style.display='';
+      document.getElementById('detail-view').classList.remove('active');
+      return;
+    }
+    const results=allJobs.filter(j=>j.name.includes(q)||(j.nameEn||'').toLowerCase().includes(q));
+    document.getElementById('main-view').style.display='none';
+    document.getElementById('detail-view').classList.remove('active');
+    const sr=document.getElementById('search-results');
+    sr.style.display='';
+    const list=document.getElementById('search-list');
+    list.innerHTML='';
+    if(results.length===0){
+      list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);font-size:.9rem">검색 결과가 없습니다</div>';
+      return;
+    }
+    results.sort((a,b)=>b.risk-a.risk).forEach(job=>{
+      const cat=data.categories.find(c=>c.jobs.includes(job));
+      list.appendChild(createJobItem(job,cat?.id||''));
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

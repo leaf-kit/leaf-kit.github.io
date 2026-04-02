@@ -230,7 +230,11 @@ img{max-width:100%}
 
 /* ===== Responsive ===== */
 @media(max-width:768px){
-  .nav{padding:0 1rem}
+  .nav{padding:0 .75rem;height:auto;min-height:48px;flex-wrap:wrap;gap:.25rem}
+  .nav-brand{font-size:.9rem;padding:.5rem 0}
+  .nav-actions{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;gap:0;flex-shrink:0;width:100%;padding-bottom:.4rem;justify-content:flex-start}
+  .nav-actions::-webkit-scrollbar{display:none}
+  .nav-actions a{font-size:.75rem;padding:.3rem .5rem;white-space:nowrap;flex-shrink:0}
   .container{padding:0 1rem}
   .hero h1{font-size:1.35rem}
   .company-grid{grid-template-columns:1fr}
@@ -241,5 +245,4 @@ img{max-width:100%}
 @media(max-width:480px){
   .hot-keywords{grid-template-columns:1fr}
   .summary-banner{grid-template-columns:1fr 1fr}
-  .nav-actions a span.label{display:none}
 }

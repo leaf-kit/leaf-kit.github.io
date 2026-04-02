@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT 역사 타임라인 — 리프취준랩</title>
+  <meta name="description" content="1950년대부터 2025년까지 IT 역사의 모든 것. 프로그래밍 언어, AI 발전, 기업 설립을 한눈에.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <style>
+    .tl-hero{background:linear-gradient(160deg,#fff,#F5F3FF 50%,#EDE9FE 100%);border-bottom:1px solid var(--c-border);padding:2.5rem 2rem 2rem;text-align:center}
+    .tl-hero h1{font-size:1.5rem;font-weight:800;opacity:0;animation:fu .6s ease forwards .1s}
+    .tl-hero .sub{color:var(--c-text2);font-size:.88rem;margin-top:.35rem;opacity:0;animation:fu .6s ease forwards .25s}
+    @keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Tabs */
+    .view-tabs{display:flex;gap:0;border-bottom:1px solid var(--c-border);margin-bottom:1.5rem;justify-content:center}
+    .view-tab{padding:.55rem 1.2rem;font-size:.85rem;font-weight:500;border:none;background:none;cursor:pointer;color:var(--c-text2);border-bottom:2px solid transparent;margin-bottom:-1px}
+    .view-tab:hover{color:var(--c-text)}
+    .view-tab.active{color:var(--c-primary);border-bottom-color:var(--c-primary);font-weight:600}
+    .view-content{display:none}
+    .view-content.active{display:block}
+
+    /* Filter pills */
+    .cat-filters{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:1rem;justify-content:center}
+    .cat-pill{padding:.25rem .6rem;border:1px solid var(--c-border);border-radius:2rem;font-size:.72rem;cursor:pointer;background:#fff;color:var(--c-text2);font-weight:500;transition:all .15s}
+    .cat-pill.active{color:#fff;border-color:transparent}
+    .cat-pill[data-c="all"].active{background:var(--c-primary);border-color:var(--c-primary)}
+    .cat-pill[data-c="language"].active{background:#84CC16}
+    .cat-pill[data-c="ai"].active{background:#8B5CF6}
+    .cat-pill[data-c="company"].active{background:#3B82F6}
+    .cat-pill[data-c="internet"].active{background:#10B981}
+    .cat-pill[data-c="hardware"].active{background:#F59E0B}
+    .cat-pill[data-c="cloud"].active{background:#EF4444}
+    .cat-pill[data-c="mobile"].active{background:#F97316}
+    .cat-pill[data-c="opensource"].active{background:#06B6D4}
+    .cat-pill[data-c="blockchain"].active{background:#8B5CF6}
+
+    /* Era bar */
+    .era-bar{display:flex;height:28px;border-radius:6px;overflow:hidden;margin-bottom:1.5rem;font-size:.65rem;font-weight:600}
+    .era-segment{display:flex;align-items:center;justify-content:center;color:#555;white-space:nowrap;overflow:hidden;transition:all .2s}
+    .era-segment:hover{filter:brightness(.95)}
+
+    /* Timeline */
+    .timeline-list{position:relative;padding-left:2rem}
+    .timeline-list::before{content:'';position:absolute;left:.7rem;top:0;bottom:0;width:2px;background:var(--c-border)}
+    .tl-year-group{margin-bottom:1.5rem}
+    .tl-year-label{font-size:1.1rem;font-weight:800;color:var(--c-primary);margin-bottom:.5rem;position:relative}
+    .tl-year-label::before{content:'';position:absolute;left:-1.55rem;top:.4rem;width:10px;height:10px;border-radius:50%;background:var(--c-primary);border:2px solid #fff;box-shadow:0 0 0 2px var(--c-border)}
+    .tl-event{
+      background:#fff;border:1px solid var(--c-border);border-radius:var(--radius);
+      padding:.6rem .8rem;margin-bottom:.4rem;margin-left:.5rem;
+      display:flex;align-items:flex-start;gap:.5rem;font-size:.82rem;
+      box-shadow:var(--shadow);transition:transform .15s;
+    }
+    .tl-event:hover{transform:translateX(3px)}
+    .tl-cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+    .tl-event-body{flex:1}
+    .tl-event-title{font-weight:600;color:var(--c-text)}
+    .tl-event-desc{font-size:.75rem;color:var(--c-text2);margin-top:.1rem}
+    .tl-impact-high{border-left:3px solid var(--c-primary)}
+
+    /* Heatmap */
+    .heatmap-wrap{overflow-x:auto;margin:1rem 0}
+    .heatmap-table{border-collapse:collapse;font-size:.7rem;width:100%;min-width:700px}
+    .heatmap-table th{padding:.35rem .5rem;font-weight:600;color:var(--c-text2);text-align:center;position:sticky;top:0;background:#fff;border-bottom:1px solid var(--c-border)}
+    .heatmap-table th:first-child{text-align:left;min-width:90px;position:sticky;left:0;z-index:2;background:#fff}
+    .heatmap-table td{padding:.25rem;text-align:center;border:1px solid rgba(0,0,0,.03)}
+    .heatmap-table td:first-child{text-align:left;font-weight:600;color:var(--c-text);position:sticky;left:0;background:#fff;border-right:1px solid var(--c-border);z-index:1;padding:.25rem .5rem}
+    .hm-cell{
+      width:100%;height:24px;border-radius:3px;display:flex;align-items:center;justify-content:center;
+      font-size:.6rem;font-weight:600;color:transparent;transition:all .2s;cursor:default;
+    }
+    .hm-cell:hover{color:rgba(0,0,0,.7);transform:scale(1.1)}
+
+    .heatmap-legend{display:flex;align-items:center;gap:.5rem;justify-content:center;margin-top:.75rem;font-size:.7rem;color:var(--c-text2)}
+    .heatmap-legend .swatch{width:12px;height:12px;border-radius:2px}
+
+    @media(max-width:768px){
+      .era-bar{font-size:.5rem;height:22px}
+      .heatmap-table{font-size:.6rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="../">
+    <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2C7 7 4 12 5 17c1 2 3 4 7 5 4-1 6-3 7-5 1-5-2-10-7-15z" stroke="#22C55E" stroke-width="1.5" fill="#22C55E" fill-opacity=".1"/><path d="M12 6v16" stroke="#22C55E" stroke-width=".8" opacity=".5"/></svg>
+    리프취준랩
+  </a>
+  <div class="nav-actions">
+    <a href="../">채용 트렌드</a>
+    <a href="./" class="active">IT 연표</a>
+    <a href="../graph/">그래프</a>
+    <a href="../match/">직군 매칭</a>
+    <a href="../tips/">가이드</a>
+  </div>
+</nav>
+
+<section class="tl-hero">
+  <h1>IT 역사 타임라인</h1>
+  <p class="sub">1950년대부터 AI 시대까지 — 프로그래밍 언어, AI 발전, 기업 설립의 모든 것</p>
+</section>
+
+<main class="container">
+
+  <div class="view-tabs">
+    <button class="view-tab active" onclick="switchView('timeline',this)">연표</button>
+    <button class="view-tab" onclick="switchView('heatmap',this)">기술 히트맵</button>
+  </div>
+
+  <!-- Timeline View -->
+  <div class="view-content active" id="view-timeline">
+    <div class="era-bar" id="era-bar"></div>
+    <div class="cat-filters" id="cat-filters"></div>
+    <div class="timeline-list" id="timeline-list"></div>
+  </div>
+
+  <!-- Heatmap View -->
+  <div class="view-content" id="view-heatmap">
+    <p style="text-align:center;font-size:.85rem;color:var(--c-text2);margin-bottom:1rem">년도별 기술 주목도 (0~100). 색이 진할수록 주목도 높음.</p>
+    <div class="heatmap-wrap" id="heatmap-wrap"></div>
+    <div class="heatmap-legend">
+      <span>낮음</span>
+      <span class="swatch" style="background:#F3F4F6"></span>
+      <span class="swatch" style="background:#BFDBFE"></span>
+      <span class="swatch" style="background:#60A5FA"></span>
+      <span class="swatch" style="background:#2563EB"></span>
+      <span class="swatch" style="background:#1E40AF"></span>
+      <span>높음</span>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p style="color:var(--c-text2);font-size:.78rem">리프취준랩 — 데이터 수집일 기준</p>
+</footer>
+
+<script>
+const catColors={language:'#84CC16',ai:'#8B5CF6',company:'#3B82F6',internet:'#10B981',hardware:'#F59E0B',cloud:'#EF4444',mobile:'#F97316',opensource:'#06B6D4',blockchain:'#8B5CF6',security:'#EF4444'};
+const catNames={all:'전체',language:'언어',ai:'AI/ML',company:'기업',internet:'인터넷',hardware:'하드웨어',cloud:'클라우드',mobile:'모바일',opensource:'오픈소스',blockchain:'블록체인'};
+let timelineData=null;
+let activeFilter='all';
+
+function switchView(id,btn){
+  document.querySelectorAll('.view-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.view-content').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+}
+
+async function init(){
+  const res=await fetch('../../data/timeline.json');
+  timelineData=await res.json();
+  renderEras();renderFilters();renderTimeline();renderHeatmap();
+}
+
+function renderEras(){
+  const bar=document.getElementById('era-bar');
+  const total=timelineData.eras[timelineData.eras.length-1].end-timelineData.eras[0].start;
+  bar.innerHTML=timelineData.eras.map(e=>{
+    const pct=((e.end-e.start)/total*100);
+    return `<div class="era-segment" style="width:${pct}%;background:${e.color}">${e.name}</div>`;
+  }).join('');
+}
+
+function renderFilters(){
+  const cats=new Set(timelineData.milestones.map(m=>m.category));
+  const el=document.getElementById('cat-filters');
+  el.innerHTML=`<span class="cat-pill active" data-c="all" onclick="filterCat('all',this)">전체</span>`;
+  cats.forEach(c=>{
+    el.innerHTML+=`<span class="cat-pill" data-c="${c}" onclick="filterCat('${c}',this)">${catNames[c]||c}</span>`;
+  });
+}
+
+function filterCat(cat,btn){
+  activeFilter=cat;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  renderTimeline();
+}
+
+function renderTimeline(){
+  const list=document.getElementById('timeline-list');
+  const filtered=activeFilter==='all'?timelineData.milestones:timelineData.milestones.filter(m=>m.category===activeFilter);
+  const grouped={};
+  filtered.forEach(m=>{if(!grouped[m.year])grouped[m.year]=[];grouped[m.year].push(m);});
+  const years=Object.keys(grouped).sort((a,b)=>b-a);
+
+  list.innerHTML=years.map(year=>`
+    <div class="tl-year-group">
+      <div class="tl-year-label">${year}</div>
+      ${grouped[year].map(m=>`
+        <div class="tl-event ${m.impact==='high'?'tl-impact-high':''}">
+          <span class="tl-cat-dot" style="background:${catColors[m.category]||'#9CA3AF'}"></span>
+          <div class="tl-event-body">
+            <div class="tl-event-title">${m.title}</div>
+            <div class="tl-event-desc">${m.desc}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function renderHeatmap(){
+  const hm=timelineData.heatmap;
+  const wrap=document.getElementById('heatmap-wrap');
+
+  function getColor(val){
+    if(val<=10)return'#F9FAFB';if(val<=25)return'#DBEAFE';if(val<=45)return'#93C5FD';
+    if(val<=65)return'#60A5FA';if(val<=80)return'#3B82F6';return'#1E40AF';
+  }
+  function textColor(val){return val>60?'#fff':'transparent'}
+
+  let html=`<table class="heatmap-table"><thead><tr><th></th>${hm.years.map(y=>`<th>${y}</th>`).join('')}</tr></thead><tbody>`;
+  hm.techs.forEach((tech,i)=>{
+    html+=`<tr><td>${tech}</td>`;
+    hm.data[i].forEach(val=>{
+      html+=`<td><div class="hm-cell" style="background:${getColor(val)};color:${textColor(val)}" title="${tech} ${val}">${val}</div></td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table>`;
+  wrap.innerHTML=html;
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나에게 맞는 IT 직군 찾기 — 리프취준랩</title>
+  <meta name="description" content="10개 질문으로 나에게 맞는 IT 직군을 찾아보세요. AI Engineer? Frontend? PM?">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <style>
+    .match-hero{background:linear-gradient(160deg,#fff 0%,#F0FDF4 40%,#ECFDF5 100%);border-bottom:1px solid var(--c-border);padding:3rem 2rem 2.5rem;text-align:center;position:relative}
+    .match-hero h1{font-size:1.6rem;font-weight:800;opacity:0;animation:fu .6s ease forwards .1s}
+    .match-hero .sub{color:var(--c-text2);font-size:.88rem;margin-top:.4rem;opacity:0;animation:fu .6s ease forwards .25s}
+    @keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    .quiz-container{max-width:600px;margin:2rem auto;padding:0 1rem}
+    .quiz-progress{height:4px;background:var(--c-border);border-radius:2px;margin-bottom:2rem;overflow:hidden}
+    .quiz-progress-bar{height:100%;background:var(--c-primary);border-radius:2px;transition:width .4s ease}
+
+    .quiz-card{
+      background:#fff;border:1px solid var(--c-border);border-radius:12px;
+      padding:2rem;box-shadow:var(--shadow);text-align:center;
+      opacity:0;transform:translateX(30px);
+      animation:slideIn .4s ease forwards;
+    }
+    @keyframes slideIn{to{opacity:1;transform:translateX(0)}}
+
+    .quiz-q{font-size:1.05rem;font-weight:700;margin-bottom:.35rem}
+    .quiz-num{font-size:.75rem;color:var(--c-text2);margin-bottom:1rem}
+    .quiz-options{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem}
+    .quiz-opt{
+      padding:.7rem 1rem;border:1px solid var(--c-border);border-radius:8px;
+      font-size:.88rem;cursor:pointer;text-align:left;background:#fff;
+      transition:all .15s;display:flex;align-items:center;gap:.5rem;
+    }
+    .quiz-opt:hover{border-color:var(--c-primary);background:#F8FAFF}
+    .quiz-opt .opt-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+
+    /* Result */
+    .result-card{
+      background:#fff;border:1px solid var(--c-border);border-radius:12px;
+      padding:2rem;box-shadow:0 8px 30px rgba(0,0,0,.08);text-align:center;
+      opacity:0;animation:slideIn .5s ease forwards;
+    }
+    .result-badge{
+      display:inline-block;padding:.4rem 1.2rem;border-radius:2rem;
+      font-size:.85rem;font-weight:700;color:#fff;margin-bottom:.75rem;
+    }
+    .result-title{font-size:1.4rem;font-weight:800;margin-bottom:.25rem}
+    .result-desc{font-size:.88rem;color:var(--c-text2);line-height:1.6;margin-bottom:1rem}
+    .result-section{text-align:left;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--c-border)}
+    .result-section h4{font-size:.82rem;font-weight:600;color:var(--c-primary);margin-bottom:.4rem}
+    .result-skills{display:flex;flex-wrap:wrap;gap:.25rem}
+    .result-links{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:1rem;justify-content:center}
+    .result-links a{padding:.4rem .8rem;border:1px solid var(--c-border);border-radius:5px;font-size:.8rem;color:var(--c-text2);text-decoration:none;font-weight:500}
+    .result-links a:hover{border-color:var(--c-primary);color:var(--c-primary)}
+    .result-links a.primary{background:var(--c-primary);color:#fff;border-color:var(--c-primary)}
+    .result-chart{margin:1rem auto;max-width:300px}
+    .bar-row{display:flex;align-items:center;gap:.5rem;margin:.3rem 0;font-size:.78rem}
+    .bar-label{min-width:80px;text-align:right;font-weight:500;color:var(--c-text2)}
+    .bar-track{flex:1;height:8px;background:var(--c-surface);border-radius:4px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:4px;transition:width .8s ease}
+    .bar-val{min-width:30px;font-weight:600;color:var(--c-text)}
+
+    .retry-btn{
+      margin-top:1.5rem;padding:.5rem 1.5rem;border:1px solid var(--c-border);
+      border-radius:6px;background:#fff;font-size:.85rem;cursor:pointer;
+      font-weight:500;color:var(--c-text2);transition:all .15s;
+    }
+    .retry-btn:hover{border-color:var(--c-primary);color:var(--c-primary)}
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-brand" href="../">
+    <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2C7 7 4 12 5 17c1 2 3 4 7 5 4-1 6-3 7-5 1-5-2-10-7-15z" stroke="#22C55E" stroke-width="1.5" fill="#22C55E" fill-opacity=".1"/><path d="M12 6v16" stroke="#22C55E" stroke-width=".8" opacity=".5"/></svg>
+    리프취준랩
+  </a>
+  <div class="nav-actions">
+    <a href="../">채용 트렌드</a>
+    <a href="./" class="active">직군 매칭</a>
+    <a href="../tips/">취준 가이드</a>
+    <a href="../roles/">직군 상세</a>
+  </div>
+</nav>
+
+<section class="match-hero">
+  <h1>나에게 맞는 IT 직군 찾기</h1>
+  <p class="sub">10개 질문에 답하면, 당신에게 딱 맞는 IT 직군을 추천해 드립니다</p>
+</section>
+
+<div class="quiz-container" id="quiz-container">
+  <div class="quiz-progress"><div class="quiz-progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div id="quiz-area"></div>
+</div>
+
+<script>
+const questions = [
+  {q:"새로운 서비스를 만들 때, 가장 먼저 하고 싶은 건?", opts:[
+    {text:"화면 디자인부터 그려본다", icon:"🎨", scores:{fe:3,pm:1,design:2}},
+    {text:"서버 구조부터 설계한다", icon:"🏗️", scores:{be:3,devops:1}},
+    {text:"데이터 분석부터 한다", icon:"📊", scores:{data:3,ai:1}},
+    {text:"사용자 인터뷰부터 한다", icon:"🗣️", scores:{pm:3,design:1}}
+  ]},
+  {q:"코딩할 때 가장 즐거운 순간은?", opts:[
+    {text:"눈에 보이는 결과물이 나올 때", icon:"✨", scores:{fe:3,mobile:2}},
+    {text:"복잡한 로직이 깔끔하게 풀릴 때", icon:"🧩", scores:{be:3,ai:1}},
+    {text:"대용량 데이터를 처리할 때", icon:"⚡", scores:{data:3,devops:1}},
+    {text:"AI가 똑똑하게 반응할 때", icon:"🤖", scores:{ai:3,data:1}}
+  ]},
+  {q:"팀 프로젝트에서 맡고 싶은 역할은?", opts:[
+    {text:"기획하고 방향을 정하는 사람", icon:"🧭", scores:{pm:3,design:1}},
+    {text:"기술적 난제를 해결하는 사람", icon:"🔧", scores:{be:2,ai:2,devops:1}},
+    {text:"사용자 경험을 책임지는 사람", icon:"💎", scores:{fe:2,design:2,mobile:1}},
+    {text:"인프라를 안정적으로 관리하는 사람", icon:"🛡️", scores:{devops:3,be:1}}
+  ]},
+  {q:"관심 있는 분야를 고르면?", opts:[
+    {text:"AI, 머신러닝, 자동화", icon:"🧠", scores:{ai:3,data:1}},
+    {text:"웹/앱 개발, UI/UX", icon:"📱", scores:{fe:2,mobile:2,design:1}},
+    {text:"서버, 클라우드, 보안", icon:"☁️", scores:{be:1,devops:3}},
+    {text:"데이터 분석, 비즈니스 인사이트", icon:"📈", scores:{data:2,pm:2}}
+  ]},
+  {q:"학습 스타일은?", opts:[
+    {text:"직접 만들어보면서 배운다", icon:"🔨", scores:{fe:2,be:2,mobile:1}},
+    {text:"논문이나 이론부터 파고든다", icon:"📚", scores:{ai:3,data:1}},
+    {text:"다양한 도구를 실험해본다", icon:"🧪", scores:{devops:2,data:2}},
+    {text:"사례를 많이 보고 패턴을 익힌다", icon:"👁️", scores:{pm:2,design:2}}
+  ]},
+  {q:"평소 자주 보는 콘텐츠는?", opts:[
+    {text:"Dribbble, Behance 같은 디자인", icon:"🎨", scores:{fe:1,design:3}},
+    {text:"기술 블로그, GitHub Trending", icon:"💻", scores:{be:2,fe:1,devops:1}},
+    {text:"AI/ML 논문, 연구 동향", icon:"🔬", scores:{ai:3}},
+    {text:"스타트업 뉴스, 시장 분석", icon:"📰", scores:{pm:3}}
+  ]},
+  {q:"가장 갖고 싶은 스킬은?", opts:[
+    {text:"어떤 아이디어든 빠르게 프로토타입", icon:"⚡", scores:{fe:2,mobile:2}},
+    {text:"대규모 트래픽을 안정적으로 처리", icon:"🏔️", scores:{be:2,devops:2}},
+    {text:"데이터에서 인사이트를 끌어내는 능력", icon:"💡", scores:{data:3,ai:1}},
+    {text:"팀을 이끌고 제품을 성장시키는 능력", icon:"🚀", scores:{pm:3}}
+  ]},
+  {q:"완벽한 직장의 조건은?", opts:[
+    {text:"최신 기술을 마음껏 쓸 수 있는 곳", icon:"🔥", scores:{fe:1,be:1,ai:1,devops:1}},
+    {text:"사용자에게 직접 가치를 전달하는 곳", icon:"❤️", scores:{fe:2,pm:2,mobile:1}},
+    {text:"깊이 있는 기술 연구가 가능한 곳", icon:"🔭", scores:{ai:3,data:1}},
+    {text:"빠르게 성장하는 스타트업", icon:"📈", scores:{pm:2,fe:1,be:1}}
+  ]},
+  {q:"이 중 가장 잘하는 것은?", opts:[
+    {text:"시각적으로 예쁘게 만드는 것", icon:"✨", scores:{fe:2,design:3}},
+    {text:"논리적으로 구조를 짜는 것", icon:"🧱", scores:{be:3,devops:1}},
+    {text:"수학적/통계적 분석", icon:"📐", scores:{ai:2,data:2}},
+    {text:"사람들과 소통하고 조율하는 것", icon:"🤝", scores:{pm:3}}
+  ]},
+  {q:"5년 후 나의 모습은?", opts:[
+    {text:"수백만 유저가 쓰는 서비스의 프론트 리드", icon:"🖥️", scores:{fe:3,mobile:1}},
+    {text:"대규모 시스템 아키텍트", icon:"🏗️", scores:{be:3,devops:1}},
+    {text:"AI 연구자 또는 ML 팀 리드", icon:"🤖", scores:{ai:3}},
+    {text:"성공한 프로덕트의 PM/CPO", icon:"👔", scores:{pm:3,design:1}}
+  ]}
+];
+
+const roleInfo = {
+  fe:{name:"Frontend Engineer",color:"#F59E0B",desc:"사용자가 직접 만지는 화면을 만드는 직군입니다. React, TypeScript, Next.js 등을 활용해 직관적이고 빠른 웹 경험을 만듭니다.",skills:["React","TypeScript","Next.js","CSS","Figma"],salary:"신입 4,000~5,500만원"},
+  be:{name:"Backend Engineer",color:"#10B981",desc:"서버, API, 데이터베이스를 설계하고 구현합니다. 대규모 트래픽과 복잡한 비즈니스 로직을 안정적으로 처리하는 것이 핵심입니다.",skills:["Java/Spring","Node.js","Go","PostgreSQL","Redis"],salary:"신입 4,000~6,000만원"},
+  ai:{name:"AI/ML Engineer",color:"#8B5CF6",desc:"머신러닝 모델을 개발하고 서비스에 적용합니다. 2025년 현재 가장 수요가 폭발하는 직군으로, LLM과 RAG 경험이 핵심 차별점입니다.",skills:["Python","PyTorch","LLM","RAG","MLOps"],salary:"신입 5,000~7,000만원"},
+  data:{name:"Data Engineer/Scientist",color:"#06B6D4",desc:"데이터를 수집·정제·분석하여 비즈니스 의사결정을 돕습니다. 데이터 파이프라인 구축부터 인사이트 도출까지 넓은 영역을 다룹니다.",skills:["SQL","Python","Spark","Airflow","Tableau"],salary:"신입 4,500~6,000만원"},
+  devops:{name:"DevOps / SRE",color:"#EF4444",desc:"서비스의 안정성과 배포 자동화를 책임집니다. 클라우드 인프라, CI/CD, 모니터링 등을 통해 개발팀이 빠르게 제품을 출시할 수 있게 합니다.",skills:["Kubernetes","AWS","Terraform","Docker","CI/CD"],salary:"신입 4,500~6,500만원"},
+  pm:{name:"Product Manager",color:"#EC4899",desc:"제품의 방향을 결정하고 팀을 이끕니다. 사용자 리서치, 데이터 분석, 기술 이해를 바탕으로 '무엇을 만들 것인가'를 정의합니다.",skills:["SQL","데이터 분석","Figma","Agile","사용자 리서치"],salary:"신입 4,000~5,500만원"},
+  mobile:{name:"Mobile Developer",color:"#F97316",desc:"iOS/Android 앱을 개발합니다. Swift, Kotlin 또는 Flutter, React Native로 크로스플랫폼 개발도 가능합니다.",skills:["Swift","Kotlin","Flutter","React Native"],salary:"신입 4,000~5,500만원"},
+  design:{name:"Product Designer",color:"#EC4899",desc:"사용자 경험(UX)과 인터페이스(UI)를 설계합니다. 사용자 리서치부터 프로토타이핑, 디자인 시스템 구축까지 담당합니다.",skills:["Figma","User Research","Prototyping","Design System"],salary:"신입 3,500~5,000만원"}
+};
+
+let currentQ = 0;
+const scores = {fe:0,be:0,ai:0,data:0,devops:0,pm:0,mobile:0,design:0};
+
+function renderQuestion(){
+  if(currentQ >= questions.length){showResult();return;}
+  const q = questions[currentQ];
+  const pct = Math.round((currentQ/questions.length)*100);
+  document.getElementById('progress-bar').style.width = pct+'%';
+
+  document.getElementById('quiz-area').innerHTML = `
+    <div class="quiz-card" style="animation-delay:0s">
+      <div class="quiz-num">${currentQ+1} / ${questions.length}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((o,i)=>`
+          <div class="quiz-opt" onclick="answer(${i})">
+            <div class="opt-icon" style="background:var(--c-surface)">${o.icon}</div>
+            ${o.text}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function answer(idx){
+  const q = questions[currentQ];
+  const s = q.opts[idx].scores;
+  for(const k in s) scores[k] = (scores[k]||0) + s[k];
+  currentQ++;
+  renderQuestion();
+}
+
+function showResult(){
+  document.getElementById('progress-bar').style.width = '100%';
+  const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const top = sorted[0][0];
+  const info = roleInfo[top];
+  const maxScore = sorted[0][1];
+
+  const topResults = sorted.slice(0,4);
+
+  document.getElementById('quiz-area').innerHTML = `
+    <div class="result-card">
+      <div style="font-size:.8rem;color:var(--c-text2);margin-bottom:.5rem">당신에게 맞는 IT 직군은</div>
+      <span class="result-badge" style="background:${info.color}">${top.toUpperCase()}</span>
+      <div class="result-title">${info.name}</div>
+      <div class="result-desc">${info.desc}</div>
+
+      <div class="result-chart">
+        ${topResults.map(([k,v])=>{
+          const ri = roleInfo[k];
+          const pct = Math.round(v/maxScore*100);
+          return `<div class="bar-row">
+            <span class="bar-label">${ri?.name?.split(' ')[0]||k}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${ri?.color||'#6366F1'}"></div></div>
+            <span class="bar-val">${pct}%</span>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div class="result-section">
+        <h4>핵심 스킬</h4>
+        <div class="result-skills">
+          ${info.skills.map(s=>`<span class="tag" data-cat="Dev">${s}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="result-section">
+        <h4>예상 연봉 (신입)</h4>
+        <div style="font-size:.9rem;font-weight:600;color:var(--c-primary)">${info.salary}</div>
+      </div>
+
+      <div class="result-links">
+        <a class="primary" href="../roles/">이 직군 상세 보기</a>
+        <a href="../tips/">취준 가이드 보기</a>
+        <a href="../graph/">기술 그래프 보기</a>
+      </div>
+
+      <button class="retry-btn" onclick="retry()">다시 해보기</button>
+    </div>
+  `;
+
+  // Animate bars
+  setTimeout(()=>{
+    document.querySelectorAll('.bar-fill').forEach(el=>{
+      const w = el.style.width; el.style.width='0';
+      setTimeout(()=>el.style.width=w, 50);
+    });
+  },100);
+}
+
+function retry(){
+  currentQ=0;
+  for(const k in scores) scores[k]=0;
+  renderQuestion();
+}
+
+renderQuestion();
+</script>
+</body>
+</html>
