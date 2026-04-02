@@ -427,6 +427,22 @@ async function init(){
     document.getElementById('job-search').value=params.get('search');
     document.getElementById('job-search').dispatchEvent(new Event('input'));
   }
+
+  // Hashbang routing: #job/직업명
+  handleHash(allJobs);
+  window.addEventListener('hashchange',()=>handleHash(allJobs));
+}
+
+function handleHash(allJobs){
+  const hash=decodeURIComponent(window.location.hash);
+  if(hash.startsWith('#job/')){
+    const jobName=hash.slice(5);
+    const job=allJobs.find(j=>j.name===jobName);
+    if(job){
+      const cat=data.categories.find(c=>c.jobs.includes(job));
+      openJobModal(job,cat?.id||'');
+    }
+  }
 }
 
 function renderTicker(allJobs){
@@ -517,9 +533,12 @@ function createJobItem(job,catId){
 }
 
 function openJobModal(job,catId){
+  // Set hashbang URL
+  history.replaceState(null,null,'#job/'+encodeURIComponent(job.name));
   const news=newsSources.filter(n=>n.category===catId||n.related_jobs?.includes(job.name));
   const naverUrl=`https://m.search.naver.com/search.naver?ssc=tab.m_news.all&where=m_news&sm=mtb_jum&query=${encodeURIComponent(job.news_query||job.name+' AI 대체')}`;
-  const tweetText=encodeURIComponent(`AI 리스크 분석: ${job.name} — 대체 가능성 ${job.risk}%\n\nhttps://leaf-kit.github.io/airisk\n\n@leafeditor #AI #직업리스크 #AIrisk`);
+  const jobUrl=`https://leaf-kit.github.io/airisk/#job/${encodeURIComponent(job.name)}`;
+  const tweetText=encodeURIComponent(`AI 리스크 분석: ${job.name} — 대체 가능성 ${job.risk}%\n\n${jobUrl}\n\n@leafeditor #AI #직업리스크 #AIrisk`);
   document.getElementById('modal-content').innerHTML=`
     <button class="modal-close" onclick="closeModal()">&times;</button>
     <div class="modal-risk-header">
@@ -543,10 +562,25 @@ function openJobModal(job,catId){
   setTimeout(()=>{const f=document.querySelector('.modal .risk-meter-fill');if(f)f.style.width=job.risk+'%';},100);
 }
 
-function closeModal(){document.getElementById('modal-backdrop').classList.remove('open')}
+function closeModal(){
+  document.getElementById('modal-backdrop').classList.remove('open');
+  if(window.location.hash.startsWith('#job/'))history.replaceState(null,null,window.location.pathname+window.location.search);
+}
 document.getElementById('modal-backdrop').addEventListener('click',e=>{if(e.target.id==='modal-backdrop')closeModal()});
 
-function searchJob(name){closeModal();document.getElementById('job-search').value=name;document.getElementById('job-search').dispatchEvent(new Event('input'))}
+function searchJob(name){
+  closeModal();
+  // Try to open directly via hash if job exists
+  const allJobs=data.categories.flatMap(c=>c.jobs);
+  const job=allJobs.find(j=>j.name===name);
+  if(job){
+    const cat=data.categories.find(c=>c.jobs.includes(job));
+    openJobModal(job,cat?.id||'');
+  }else{
+    document.getElementById('job-search').value=name;
+    document.getElementById('job-search').dispatchEvent(new Event('input'));
+  }
+}
 
 function initSearch(allJobs){
   document.getElementById('job-search').addEventListener('input',function(){

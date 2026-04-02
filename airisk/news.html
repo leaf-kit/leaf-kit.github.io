@@ -438,7 +438,7 @@ function renderTimeline(){
                     ${n.related_jobs.map(j=>{
                       const risk=getJobRisk(j);
                       const rc=risk!==null?riskColor(risk):'#6B7280';
-                      return `<a class="related-job-tag" href="./?search=${encodeURIComponent(j)}">
+                      return `<a class="related-job-tag" href="./#job/${encodeURIComponent(j)}">
                         ${j}
                         ${risk!==null?`<span class="risk-badge" style="background:${rc}">${risk}%</span>`:''}
                       </a>`;
