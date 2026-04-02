@@ -224,7 +224,7 @@ function renderDashboard(){
     </div>
     <div class="dash-card">
       <h4>채용 활발 기업 Top 5</h4>
-      ${topHire.map(c=>`<div class="dash-item"><span class="name">${c.label}</span><span class="val">${c.openRoles||0}건</span></div>`).join('')}
+      ${topHire.map(c=>{const lvl=(c.openRoles||0)>=100?'매우 활발':(c.openRoles||0)>=50?'활발':'보통';return `<div class="dash-item"><span class="name">${c.label}</span><span class="val">${lvl}</span></div>`;}).join('')}
     </div>
     <div class="dash-card">
       <h4>그래프 현황</h4>
@@ -312,7 +312,7 @@ function renderGraph(){
   // Tooltip
   const tooltip = document.getElementById('tooltip');
   node.on('mouseover', (e,d)=>{
-    tooltip.innerHTML = `<strong>${d.label}</strong><br>${d.type==='tech'?'수요: '+d.demand+' | 트렌드: '+d.trend : d.type==='company'?'채용: '+(d.openRoles||0)+'건 | '+d.region : d.category}`;
+    tooltip.innerHTML = `<strong>${d.label}</strong><br>${d.type==='tech'?'수요: '+d.demand+' | 트렌드: '+d.trend : d.type==='company'?'채용: '+((d.openRoles||0)>=100?'매우 활발':(d.openRoles||0)>=50?'활발':'보통')+' | '+d.region : d.category}`;
     tooltip.classList.add('show');
     tooltip.style.left = (e.pageX - container.getBoundingClientRect().left + 12)+'px';
     tooltip.style.top = (e.pageY - container.getBoundingClientRect().top - 56 - 10)+'px';
@@ -427,7 +427,7 @@ function openPanel(d, nodes, edges){
 
       <div class="sp-section">
         <h4>채용 현황</h4>
-        <p class="sp-meta">채용 공고: <strong>${d.openRoles||0}</strong>건</p>
+        <p class="sp-meta">채용 활동: <strong>${(d.openRoles||0)>=100?'매우 활발':(d.openRoles||0)>=50?'활발':'보통'}</strong></p>
         ${d.marketCap?`<p class="sp-meta">시가총액: ${d.marketCap}</p>`:''}
       </div>
 
