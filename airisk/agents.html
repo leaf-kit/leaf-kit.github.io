@@ -13,12 +13,12 @@
     body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
     a{color:var(--primary);text-decoration:none}
 
-    .nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
-    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:var(--text)}
+    .nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:#fff}
     .nav-brand:hover{text-decoration:none}
-    .nav-actions{display:flex;gap:0}
-    .nav-actions a{color:var(--text2);font-size:.8rem;font-weight:500;padding:.4rem .6rem;border-radius:5px;white-space:nowrap}
-    .nav-actions a:hover,.nav-actions a.active{color:var(--primary);background:#EFF6FF;text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions a{color:rgba(255,255,255,.5);font-size:.78rem;font-weight:500;padding:.4rem .55rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:#fff;background:rgba(255,255,255,.1);text-decoration:none}
 
     .container{max-width:1200px;margin:0 auto;padding:2rem}
 
