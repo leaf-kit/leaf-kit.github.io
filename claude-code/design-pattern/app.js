@@ -1,356 +1,610 @@
 /* ============================================
-   Claude Code Design Patterns v2 — Application
+   Claude Code Design Patterns v3
+   Diagram-First Interactive Architecture
    ============================================ */
+(function(){
+'use strict';
 
-(function () {
-  'use strict';
-
-  // ============================================
-  // Hero — Three.js Neural Network
-  // ============================================
-
-  function initHero() {
-    var canvas = document.getElementById('hero-canvas');
-    if (!canvas || typeof THREE === 'undefined') return;
-
-    var W = canvas.clientWidth, H = canvas.clientHeight;
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 500);
-    camera.position.set(0, 0, 35);
-
-    var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-    renderer.setSize(W, H);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-
-    var N = 180;
-    var pos = new Float32Array(N * 3);
-    var col = new Float32Array(N * 3);
-    var vel = [];
-    var palette = [
-      new THREE.Color(0x6366F1), new THREE.Color(0x818CF8),
-      new THREE.Color(0xA5B4FC), new THREE.Color(0x8B5CF6),
-      new THREE.Color(0xC084FC),
-    ];
-
-    for (var i = 0; i < N; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 60;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 40;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 15;
-      vel.push({ x: (Math.random() - 0.5) * 0.015, y: (Math.random() - 0.5) * 0.015, z: (Math.random() - 0.5) * 0.008 });
-      var c = palette[Math.floor(Math.random() * palette.length)];
-      col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+/* ============================================
+   Pattern → Module mapping + flow data
+   ============================================ */
+var PATTERNS = {
+  instruction: {
+    nodes: ['user','cli','commands','prompts','context','sysprompt','engine','api'],
+    flow: [
+      ['n-user','n-cli'],['n-cli','n-commands'],['n-cli','n-prompts'],
+      ['n-prompts','n-context'],['n-context','n-sysprompt'],
+      ['n-sysprompt','n-engine'],['n-engine','n-api']
+    ],
+    dataLabels: {
+      'n-user': '📝 프롬프트',
+      'n-cli': '⌨️ argv 파싱',
+      'n-prompts': '🧩 15섹션',
+      'n-context': '📄 CLAUDE.md + Git',
+      'n-sysprompt': '🎯 최종 프롬프트',
+      'n-engine': '⚡ API 호출',
+      'n-api': '☁️ 스트리밍'
+    },
+    terminal: {
+      input: 'claude "이 코드 분석해줘"',
+      lines: [
+        {t:'// Pattern: Instruction Following', c:'t-comment'},
+        {t:'getSystemPrompt() → 15 sections assembled', c:'t-fn'},
+        {t:'  Static(7): tools, tone, security → global cache', c:''},
+        {t:'  Dynamic(8): memory, env, MCP → ephemeral', c:''},
+        {t:'buildEffectiveSystemPrompt()', c:'t-fn'},
+        {t:'  → Override → Coordinator → Agent → Custom → Default', c:'t-str'},
+        {t:'getUserContext() → CLAUDE.md 4-layer loaded', c:'t-fn'},
+        {t:'getSystemContext() → git branch: main, 5 commits', c:'t-fn'},
+        {t:'→ API call with assembled prompt...', c:'t-kw'},
+      ]
     }
+  },
+  memory: {
+    nodes: ['user','cli','claudemd','memory','memdir','extract','context','engine','api'],
+    flow: [
+      ['n-user','n-cli'],['n-cli','n-claudemd'],['n-claudemd','n-context'],
+      ['n-cli','n-memory'],['n-memory','n-engine'],
+      ['n-memdir','n-engine'],['n-engine','n-api'],
+      ['n-api','n-extract'],['n-extract','n-memdir']
+    ],
+    dataLabels: {
+      'n-user': '🧠 이전 대화',
+      'n-claudemd': '📋 4-level 계층',
+      'n-memory': '💾 9-section',
+      'n-memdir': '🗂️ MEMORY.md',
+      'n-extract': '💡 4타입 추출',
+      'n-engine': '⚡ 컨텍스트 주입'
+    },
+    terminal: {
+      input: 'claude --resume "이어서 작업해줘"',
+      lines: [
+        {t:'// Pattern: Context Memory', c:'t-comment'},
+        {t:'getClaudeMds() → 4-level hierarchy', c:'t-fn'},
+        {t:'  /etc → ~/.claude → project → local', c:''},
+        {t:'loadMemoryPrompt() → .claude/MEMORY.md', c:'t-fn'},
+        {t:'SessionMemory → 9-section template loaded', c:'t-fn'},
+        {t:'  Title, State, Files, Workflow, Errors...', c:'t-str'},
+        {t:'→ Background sub-agent updating memory...', c:'t-kw'},
+        {t:'extractMemories() → feedback | patterns | workflow | tech', c:'t-fn'},
+      ]
+    }
+  },
+  planning: {
+    nodes: ['user','engine','api','coordinator','agent','tools','executor'],
+    flow: [
+      ['n-user','n-engine'],['n-engine','n-api'],['n-api','n-coordinator'],
+      ['n-coordinator','n-agent'],['n-agent','n-engine'],
+      ['n-coordinator','n-tools'],['n-tools','n-executor']
+    ],
+    dataLabels: {
+      'n-user': '🗺️ 복잡한 작업',
+      'n-coordinator': '📋 3-Phase',
+      'n-agent': '🤖 6종 에이전트',
+      'n-engine': '⚡ 쿼리 루프',
+      'n-api': '☁️ LLM 추론'
+    },
+    terminal: {
+      input: 'claude "전체 리팩토링 수행해줘"',
+      lines: [
+        {t:'// Pattern: Planning & Reasoning', c:'t-comment'},
+        {t:'Coordinator Mode activated', c:'t-kw'},
+        {t:'Phase 1: Research (parallel)', c:'t-fn'},
+        {t:'  → Agent(Explore) scanning src/...', c:'t-str'},
+        {t:'  → Agent(Explore) scanning tests/...', c:'t-str'},
+        {t:'Phase 2: Synthesis', c:'t-fn'},
+        {t:'  → Concrete spec: 12 files, 34 changes', c:'t-str'},
+        {t:'Phase 3: Implement & Verify', c:'t-fn'},
+        {t:'  → Agent(general) implementing...', c:'t-str'},
+        {t:'  → Agent(verify) PASS ✓', c:'t-str'},
+      ]
+    }
+  },
+  tooluse: {
+    nodes: ['engine','api','tools','executor','perms','mcp'],
+    flow: [
+      ['n-api','n-engine'],['n-engine','n-tools'],['n-tools','n-perms'],
+      ['n-perms','n-executor'],['n-executor','n-engine'],
+      ['n-mcp','n-tools']
+    ],
+    dataLabels: {
+      'n-engine': '⚡ tool_use 블록',
+      'n-tools': '🔧 40+ 레지스트리',
+      'n-perms': '🛡️ 3계층 검증',
+      'n-executor': '⚙️ 병렬/순차',
+      'n-mcp': '🔌 외부 도구'
+    },
+    terminal: {
+      input: '→ Tool: FileReadTool("src/main.ts")',
+      lines: [
+        {t:'// Pattern: Tool & Code Execution', c:'t-comment'},
+        {t:'findToolByName("Read") → FileReadTool', c:'t-fn'},
+        {t:'checkPermissions()', c:'t-fn'},
+        {t:'  Layer 1: allowlist → ✓ matched', c:'t-str'},
+        {t:'  → ALLOW', c:'t-str'},
+        {t:'StreamingToolExecutor.addTool()', c:'t-fn'},
+        {t:'  isConcurrencySafe: true → parallel queue', c:''},
+        {t:'tool.call() → reading 245 lines...', c:'t-fn'},
+        {t:'→ ToolResultBlockParam(success)', c:'t-str'},
+      ]
+    }
+  },
+  refinement: {
+    nodes: ['api','engine','query','compact','hooks','messages','ink','output'],
+    flow: [
+      ['n-api','n-engine'],['n-engine','n-query'],['n-query','n-compact'],
+      ['n-compact','n-query'],['n-query','n-hooks'],
+      ['n-hooks','n-messages'],['n-messages','n-ink'],['n-ink','n-output']
+    ],
+    dataLabels: {
+      'n-api': '☁️ 스트리밍',
+      'n-query': '🔄 async generator',
+      'n-compact': '📦 9-item 보존',
+      'n-hooks': '🪝 후처리',
+      'n-messages': '💬 36 컴포넌트',
+      'n-output': '✅ 최종 응답'
+    },
+    terminal: {
+      input: '→ Context: 180K/200K tokens (90%)',
+      lines: [
+        {t:'// Pattern: Refinement & Output', c:'t-comment'},
+        {t:'shouldCompact() → true (threshold exceeded)', c:'t-fn'},
+        {t:'compact() → 9-item preservation strategy', c:'t-fn'},
+        {t:'  1.Request 2.Concepts 3.Code 4.Errors', c:''},
+        {t:'  5.Journey 6.Messages 7.Tasks 8.State 9.Next', c:''},
+        {t:'  → 180K compressed to 25K tokens', c:'t-str'},
+        {t:'extractMemories() → 4-type saved', c:'t-fn'},
+        {t:'postSamplingHooks() → response filtered', c:'t-fn'},
+        {t:'→ Streaming to terminal...', c:'t-kw'},
+      ]
+    }
+  },
+  permission: {
+    nodes: ['engine','tools','perms','executor'],
+    flow: [
+      ['n-engine','n-tools'],['n-tools','n-perms'],['n-perms','n-executor'],
+      ['n-executor','n-engine']
+    ],
+    dataLabels: {
+      'n-tools': '🔧 BashTool',
+      'n-perms': '🛡️ AST 파싱',
+      'n-executor': '⚙️ DENY'
+    },
+    terminal: {
+      input: '→ Tool: BashTool("rm -rf /")',
+      lines: [
+        {t:'// Pattern: Permission & Security', c:'t-comment'},
+        {t:'BashTool.checkPermissions("rm -rf /")', c:'t-fn'},
+        {t:'  Layer 1: Rule check → ⚠ no match', c:'t-warn'},
+        {t:'  Layer 2: AI classifier + tree-sitter AST', c:'t-fn'},
+        {t:'    → parseAST: rm command detected', c:'t-warn'},
+        {t:'    → flags: -r (recursive) -f (force)', c:'t-warn'},
+        {t:'    → path: / (root filesystem)', c:'t-err'},
+        {t:'    → DANGEROUS: destructive root operation', c:'t-err'},
+        {t:'  → DENY: Permission refused', c:'t-err'},
+      ]
+    }
+  },
+  session: {
+    nodes: ['user','cli','session','engine','memory','extract'],
+    flow: [
+      ['n-user','n-cli'],['n-cli','n-session'],['n-session','n-engine'],
+      ['n-engine','n-memory'],['n-memory','n-extract'],['n-extract','n-session']
+    ],
+    dataLabels: {
+      'n-session': '💾 JSONL 저장',
+      'n-engine': '⚡ 대화 재개',
+      'n-memory': '🧠 상태 복원',
+      'n-extract': '💡 메모리 추출'
+    },
+    terminal: {
+      input: 'claude --resume session_abc123',
+      lines: [
+        {t:'// Pattern: Session Persistence', c:'t-comment'},
+        {t:'getSessionIdFromLog("session_abc123")', c:'t-fn'},
+        {t:'  → .claude/sessions/abc123.jsonl loaded', c:'t-str'},
+        {t:'  → 47 messages restored', c:'t-str'},
+        {t:'recordTranscript() → auto-saving enabled', c:'t-fn'},
+        {t:'cacheSessionTitle() → "리팩토링 작업"', c:'t-fn'},
+        {t:'→ Session resumed, context restored', c:'t-kw'},
+      ]
+    }
+  },
+  mcp: {
+    nodes: ['engine','tools','mcp','executor','perms'],
+    flow: [
+      ['n-engine','n-tools'],['n-mcp','n-tools'],['n-tools','n-perms'],
+      ['n-perms','n-executor'],['n-executor','n-engine']
+    ],
+    dataLabels: {
+      'n-mcp': '🔌 MCP 서버',
+      'n-tools': '🔧 mcp__서버__도구',
+      'n-executor': '⚙️ 외부 실행'
+    },
+    terminal: {
+      input: '→ Tool: mcp__github__search_repos',
+      lines: [
+        {t:'// Pattern: MCP Server Extension', c:'t-comment'},
+        {t:'getMcpToolsCommandsAndResources()', c:'t-fn'},
+        {t:'  → 3 MCP servers connected', c:'t-str'},
+        {t:'assembleToolPool() → merge built-in + MCP tools', c:'t-fn'},
+        {t:'  → mcp__github__search_repos found', c:'t-str'},
+        {t:'MCPTool.call() → forwarding to MCP server...', c:'t-fn'},
+        {t:'→ Result: 12 repositories found', c:'t-str'},
+      ]
+    }
+  },
+  compaction: {
+    nodes: ['engine','query','compact','extract','memdir','messages'],
+    flow: [
+      ['n-engine','n-query'],['n-query','n-compact'],['n-compact','n-extract'],
+      ['n-extract','n-memdir'],['n-compact','n-query'],['n-query','n-messages']
+    ],
+    dataLabels: {
+      'n-query': '🔄 토큰 체크',
+      'n-compact': '📦 180K→25K',
+      'n-extract': '💡 동시 추출',
+      'n-memdir': '🗂️ 메모리 저장'
+    },
+    terminal: {
+      input: '→ Auto-compact triggered (180K/200K)',
+      lines: [
+        {t:'// Pattern: Context Compaction', c:'t-comment'},
+        {t:'shouldCompact() → tokens 180K > threshold', c:'t-fn'},
+        {t:'compact() → NO_TOOLS_PREAMBLE (도구 사용 금지)', c:'t-warn'},
+        {t:'  Preserving 9 items:', c:'t-fn'},
+        {t:'  1.요청 2.개념 3.코드 4.오류 5.여정', c:'t-str'},
+        {t:'  6.메시지 7.작업 8.상태 9.다음단계', c:'t-str'},
+        {t:'extractMemories() → running in parallel', c:'t-fn'},
+        {t:'→ Context: 180,000 → 25,000 tokens', c:'t-kw'},
+      ]
+    }
+  },
+  spawning: {
+    nodes: ['engine','coordinator','agent','api','tools','executor'],
+    flow: [
+      ['n-engine','n-coordinator'],['n-coordinator','n-agent'],
+      ['n-agent','n-api'],['n-api','n-agent'],
+      ['n-agent','n-tools'],['n-tools','n-executor'],
+      ['n-agent','n-engine']
+    ],
+    dataLabels: {
+      'n-coordinator': '📋 스펙 생성',
+      'n-agent': '🤖 Fork/Fresh',
+      'n-api': '☁️ 하위 호출',
+      'n-engine': '⚡ 결과 수집'
+    },
+    terminal: {
+      input: '→ Spawning Agent(subagent_type: Explore)',
+      lines: [
+        {t:'// Pattern: Agent Spawning', c:'t-comment'},
+        {t:'AgentTool.call({type: "Explore", prompt: "..."})', c:'t-fn'},
+        {t:'  Strategy: Fork (parent cache shared)', c:'t-str'},
+        {t:'  Agent system prompt: "READ-ONLY file search"', c:'t-str'},
+        {t:'  Available tools: Glob, Grep, Read, Bash(RO)', c:''},
+        {t:'  → Sub-QueryEngine created', c:'t-fn'},
+        {t:'  → Sub-agent executing in isolation...', c:'t-kw'},
+        {t:'  → 3 tool calls completed', c:'t-str'},
+        {t:'→ Text response returned to parent', c:'t-str'},
+      ]
+    }
+  }
+};
 
-    var geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    var mat = new THREE.PointsMaterial({ size: 0.35, vertexColors: true, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false });
-    scene.add(new THREE.Points(geo, mat));
+/* ============================================
+   State
+   ============================================ */
+var activePattern = null;
+var allNodeIds = [];
 
-    // Connection lines
-    var maxConn = 600;
-    var linePos = new Float32Array(maxConn * 6);
-    var lineGeo = new THREE.BufferGeometry();
-    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePos, 3));
-    var lineMat = new THREE.LineBasicMaterial({ color: 0x6366F1, transparent: true, opacity: 0.06, blending: THREE.AdditiveBlending, depthWrite: false });
-    var lines = new THREE.LineSegments(lineGeo, lineMat);
-    scene.add(lines);
+/* ============================================
+   Init
+   ============================================ */
+function init(){
+  // Collect all node IDs
+  document.querySelectorAll('.d-node').forEach(function(n){
+    allNodeIds.push(n.id);
+  });
 
-    var mx = 0, my = 0;
-    document.addEventListener('mousemove', function (e) {
-      mx = (e.clientX / window.innerWidth - 0.5) * 2;
-      my = (e.clientY / window.innerHeight - 0.5) * 2;
+  initPatternList();
+  initFlowCanvas();
+  initExampleTooltips();
+
+  // Auto-select first pattern
+  setTimeout(function(){
+    selectPattern('instruction');
+  }, 400);
+}
+
+/* ============================================
+   Pattern List Interaction
+   ============================================ */
+function initPatternList(){
+  document.querySelectorAll('.pat-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      selectPattern(item.dataset.pattern);
     });
+  });
 
-    function animate() {
-      requestAnimationFrame(animate);
-      for (var i = 0; i < N; i++) {
-        pos[i * 3] += vel[i].x; pos[i * 3 + 1] += vel[i].y; pos[i * 3 + 2] += vel[i].z;
-        if (Math.abs(pos[i * 3]) > 30) vel[i].x *= -1;
-        if (Math.abs(pos[i * 3 + 1]) > 20) vel[i].y *= -1;
-        if (Math.abs(pos[i * 3 + 2]) > 8) vel[i].z *= -1;
+  // Example click → also activates pattern + shows specific input
+  document.querySelectorAll('.pat-ex').forEach(function(ex){
+    ex.addEventListener('click', function(e){
+      e.stopPropagation();
+      var pat = ex.closest('.pat-item').dataset.pattern;
+      selectPattern(pat);
+    });
+  });
+}
+
+function selectPattern(patternKey){
+  if(!PATTERNS[patternKey]) return;
+  activePattern = patternKey;
+  var P = PATTERNS[patternKey];
+
+  // Update sidebar active
+  document.querySelectorAll('.pat-item').forEach(function(item){
+    item.classList.toggle('active', item.dataset.pattern === patternKey);
+  });
+
+  // Dim/activate nodes
+  allNodeIds.forEach(function(nid){
+    var el = document.getElementById(nid);
+    if(!el) return;
+    var mod = el.dataset.module;
+    var isActive = P.nodes.indexOf(mod) !== -1;
+    el.classList.remove('dimmed','active-node','flow-node');
+    if(isActive){
+      el.classList.add('flow-node');
+    } else {
+      el.classList.add('dimmed');
+    }
+  });
+
+  // Show data labels
+  document.querySelectorAll('.d-data').forEach(function(d){ d.classList.remove('show'); d.textContent=''; });
+  Object.keys(P.dataLabels).forEach(function(nid){
+    var dataEl = document.querySelector('#'+nid+' .d-data');
+    if(!dataEl){
+      // Create data badge if not exists
+      var node = document.getElementById(nid);
+      if(node){
+        dataEl = document.createElement('div');
+        dataEl.className = 'd-data';
+        node.appendChild(dataEl);
       }
-      geo.attributes.position.needsUpdate = true;
-
-      var li = 0, lp = lineGeo.attributes.position.array;
-      for (var i = 0; i < N && li < maxConn * 6 - 6; i++) {
-        for (var j = i + 1; j < N && li < maxConn * 6 - 6; j++) {
-          var dx = pos[i * 3] - pos[j * 3], dy = pos[i * 3 + 1] - pos[j * 3 + 1], dz = pos[i * 3 + 2] - pos[j * 3 + 2];
-          if (dx * dx + dy * dy + dz * dz < 49) {
-            lp[li++] = pos[i * 3]; lp[li++] = pos[i * 3 + 1]; lp[li++] = pos[i * 3 + 2];
-            lp[li++] = pos[j * 3]; lp[li++] = pos[j * 3 + 1]; lp[li++] = pos[j * 3 + 2];
-          }
-        }
-      }
-      for (var k = li; k < maxConn * 6; k++) lp[k] = 0;
-      lineGeo.attributes.position.needsUpdate = true;
-      lineGeo.setDrawRange(0, li / 3);
-
-      camera.position.x += (mx * 2.5 - camera.position.x) * 0.015;
-      camera.position.y += (-my * 1.5 - camera.position.y) * 0.015;
-      camera.lookAt(0, 0, 0);
-      renderer.render(scene, camera);
     }
-    animate();
-
-    window.addEventListener('resize', function () {
-      W = canvas.clientWidth; H = canvas.clientHeight;
-      camera.aspect = W / H; camera.updateProjectionMatrix();
-      renderer.setSize(W, H);
-    });
-  }
-
-  // ============================================
-  // Flow Canvas — Connection lines between modules
-  // ============================================
-
-  function initFlowCanvas() {
-    var canvas = document.getElementById('flow-canvas');
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
-    var diagram = document.getElementById('arch-diagram');
-
-    function resize() {
-      var rect = diagram.getBoundingClientRect();
-      canvas.width = rect.width * window.devicePixelRatio;
-      canvas.height = rect.height * window.devicePixelRatio;
-      canvas.style.width = rect.width + 'px';
-      canvas.style.height = rect.height + 'px';
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    if(dataEl){
+      dataEl.textContent = P.dataLabels[nid];
+      setTimeout(function(){ dataEl.classList.add('show'); }, 100);
     }
+  });
 
-    function getCenter(id) {
-      var el = document.getElementById(id);
-      if (!el) return null;
-      var dr = diagram.getBoundingClientRect();
-      var er = el.getBoundingClientRect();
-      return { x: er.left - dr.left + er.width / 2, y: er.top - dr.top + er.height / 2 };
-    }
+  // Highlight source of data (first node as active-node)
+  var firstNode = document.getElementById('n-'+P.nodes[0]);
+  if(firstNode) firstNode.classList.add('active-node');
 
-    // Connections: [from, to, color]
-    var connections = [
-      ['node-input', 'node-p1', '#10B981'],
-      ['node-p1', 'node-p2', '#6366F1'],
-      ['node-p2', 'node-api', '#818CF8'],
-      ['node-api', 'node-p3', '#F59E0B'],
-      ['node-p3', 'node-p4', '#8B5CF6'],
-      ['node-p4', 'node-p5', '#EC4899'],
-      ['node-p5', 'node-output', '#8B5CF6'],
-    ];
+  // Run terminal
+  runTerminal(P.terminal);
+}
 
-    var activePattern = null;
-    var particles = [];
-    var time = 0;
+/* ============================================
+   Flow Canvas — Animated connections
+   ============================================ */
+var flowCtx, flowCanvas, flowW, flowH;
+var flowTime = 0;
 
-    // Highlight connections for active pattern
-    var patternConnections = {
-      1: [['node-input', 'node-p1']],
-      2: [['node-p1', 'node-p2']],
-      3: [['node-p2', 'node-api'], ['node-api', 'node-p3']],
-      4: [['node-p3', 'node-p4']],
-      5: [['node-p4', 'node-p5'], ['node-p5', 'node-output']],
-    };
+function initFlowCanvas(){
+  flowCanvas = document.getElementById('flow-canvas');
+  if(!flowCanvas) return;
+  flowCtx = flowCanvas.getContext('2d');
+  resizeFlowCanvas();
+  window.addEventListener('resize', resizeFlowCanvas);
+  requestAnimationFrame(drawFlow);
+}
 
-    function isActiveConn(from, to) {
-      if (!activePattern) return false;
-      var conns = patternConnections[activePattern] || [];
-      for (var i = 0; i < conns.length; i++) {
-        if (conns[i][0] === from && conns[i][1] === to) return true;
-      }
-      return false;
-    }
+function resizeFlowCanvas(){
+  var area = document.getElementById('diagram-area');
+  if(!area) return;
+  var r = area.getBoundingClientRect();
+  flowW = r.width;
+  flowH = r.height;
+  flowCanvas.width = flowW * window.devicePixelRatio;
+  flowCanvas.height = flowH * window.devicePixelRatio;
+  flowCanvas.style.width = flowW+'px';
+  flowCanvas.style.height = flowH+'px';
+  flowCtx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+}
 
-    function draw() {
-      requestAnimationFrame(draw);
-      time += 0.016;
+function getNodeCenter(id){
+  var el = document.getElementById(id);
+  var area = document.getElementById('diagram-area');
+  if(!el||!area) return null;
+  var ar = area.getBoundingClientRect();
+  var er = el.getBoundingClientRect();
+  return { x: er.left - ar.left + er.width/2, y: er.top - ar.top + er.height/2 };
+}
 
-      var rect = diagram.getBoundingClientRect();
-      if (canvas.width !== rect.width * window.devicePixelRatio) resize();
+function drawFlow(){
+  requestAnimationFrame(drawFlow);
+  flowTime += 0.012;
+  flowCtx.clearRect(0, 0, flowW, flowH);
 
-      ctx.clearRect(0, 0, rect.width, rect.height);
+  if(!activePattern || !PATTERNS[activePattern]) return;
+  var P = PATTERNS[activePattern];
 
-      connections.forEach(function (conn) {
-        var a = getCenter(conn[0]);
-        var b = getCenter(conn[1]);
-        if (!a || !b) return;
+  P.flow.forEach(function(conn, ci){
+    var a = getNodeCenter(conn[0]);
+    var b = getNodeCenter(conn[1]);
+    if(!a||!b) return;
 
-        var active = isActiveConn(conn[0], conn[1]);
-        var alpha = active ? 0.5 : 0.12;
-        var width = active ? 2.5 : 1;
+    // Curved connection
+    var mx = (a.x+b.x)/2;
+    var my = (a.y+b.y)/2;
+    var dx = b.x-a.x, dy = b.y-a.y;
+    var dist = Math.sqrt(dx*dx+dy*dy);
+    // Perpendicular offset for curve
+    var off = Math.min(dist*0.15, 30);
+    var cx = mx + (dy/dist)*off * (ci%2===0?1:-1);
+    var cy = my - (dx/dist)*off * (ci%2===0?1:-1);
 
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
+    // Draw line
+    flowCtx.beginPath();
+    flowCtx.moveTo(a.x, a.y);
+    flowCtx.quadraticCurveTo(cx, cy, b.x, b.y);
+    flowCtx.strokeStyle = 'rgba(99,102,241,0.25)';
+    flowCtx.lineWidth = 2;
+    flowCtx.stroke();
 
-        // Curved line
-        var mx = (a.x + b.x) / 2;
-        var my = (a.y + b.y) / 2 - 20;
-        ctx.quadraticCurveTo(mx, my, b.x, b.y);
+    // Animated particle
+    var speed = 0.4 + (ci%3)*0.15;
+    var t = ((flowTime * speed + ci*0.3) % 1.4) / 1.4;
+    if(t > 1) return; // gap between particles
 
-        ctx.strokeStyle = conn[2];
-        ctx.globalAlpha = alpha;
-        ctx.lineWidth = width;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
+    var px = (1-t)*(1-t)*a.x + 2*(1-t)*t*cx + t*t*b.x;
+    var py = (1-t)*(1-t)*a.y + 2*(1-t)*t*cy + t*t*b.y;
 
-        // Animated particle on active connections
-        if (active) {
-          var t = (time * 0.5) % 1;
-          var px = (1 - t) * (1 - t) * a.x + 2 * (1 - t) * t * mx + t * t * b.x;
-          var py = (1 - t) * (1 - t) * a.y + 2 * (1 - t) * t * my + t * t * b.y;
+    // Glow
+    var grad = flowCtx.createRadialGradient(px, py, 0, px, py, 12);
+    grad.addColorStop(0, 'rgba(99,102,241,0.6)');
+    grad.addColorStop(1, 'rgba(99,102,241,0)');
+    flowCtx.fillStyle = grad;
+    flowCtx.fillRect(px-12, py-12, 24, 24);
 
-          ctx.beginPath();
-          ctx.arc(px, py, 4, 0, Math.PI * 2);
-          ctx.fillStyle = conn[2];
-          ctx.shadowColor = conn[2];
-          ctx.shadowBlur = 12;
-          ctx.fill();
-          ctx.shadowBlur = 0;
+    // Particle
+    flowCtx.beginPath();
+    flowCtx.arc(px, py, 3.5, 0, Math.PI*2);
+    flowCtx.fillStyle = '#6366F1';
+    flowCtx.fill();
 
-          // Glow trail
-          var t2 = ((time * 0.5) - 0.08) % 1;
-          if (t2 < 0) t2 += 1;
-          var px2 = (1 - t2) * (1 - t2) * a.x + 2 * (1 - t2) * t2 * mx + t2 * t2 * b.x;
-          var py2 = (1 - t2) * (1 - t2) * a.y + 2 * (1 - t2) * t2 * my + t2 * t2 * b.y;
-          ctx.beginPath();
-          ctx.arc(px2, py2, 2.5, 0, Math.PI * 2);
-          ctx.globalAlpha = 0.4;
-          ctx.fill();
-          ctx.globalAlpha = 1;
-        }
-      });
+    // Trail
+    var t2 = t - 0.06;
+    if(t2 > 0){
+      var px2 = (1-t2)*(1-t2)*a.x + 2*(1-t2)*t2*cx + t2*t2*b.x;
+      var py2 = (1-t2)*(1-t2)*a.y + 2*(1-t2)*t2*cy + t2*t2*b.y;
+      flowCtx.beginPath();
+      flowCtx.arc(px2, py2, 2, 0, Math.PI*2);
+      flowCtx.fillStyle = 'rgba(99,102,241,0.3)';
+      flowCtx.fill();
     }
 
-    resize();
-    draw();
+    // Arrow head at end
+    if(t > 0.9){
+      var angle = Math.atan2(b.y-cy, b.x-cx);
+      flowCtx.save();
+      flowCtx.translate(b.x, b.y);
+      flowCtx.rotate(angle);
+      flowCtx.beginPath();
+      flowCtx.moveTo(0,0);
+      flowCtx.lineTo(-8,-4);
+      flowCtx.lineTo(-8,4);
+      flowCtx.closePath();
+      flowCtx.fillStyle = 'rgba(99,102,241,0.5)';
+      flowCtx.fill();
+      flowCtx.restore();
+    }
+  });
+}
 
-    // Listen for pattern hover
-    document.querySelectorAll('.mod-pattern').forEach(function (node) {
-      node.addEventListener('mouseenter', function () {
-        activePattern = parseInt(node.dataset.pattern);
-        node.classList.add('active');
+/* ============================================
+   Terminal — Token-by-token typing
+   ============================================ */
+var terminalRunning = false;
+var termAbort = null;
+
+function runTerminal(config){
+  // Abort previous
+  if(termAbort) termAbort.abort = true;
+  var ctrl = { abort: false };
+  termAbort = ctrl;
+
+  var inputEl = document.getElementById('term-input');
+  var outputEl = document.getElementById('term-output');
+  inputEl.textContent = '';
+  outputEl.innerHTML = '';
+
+  terminalRunning = true;
+
+  // Type input
+  typeChars(inputEl, config.input, 30, ctrl, function(){
+    if(ctrl.abort) return;
+    // Show output line by line, token by token
+    var lineIdx = 0;
+    function nextLine(){
+      if(ctrl.abort || lineIdx >= config.lines.length) return;
+      var line = config.lines[lineIdx++];
+      var lineEl = document.createElement('div');
+      outputEl.appendChild(lineEl);
+
+      tokenize(lineEl, line.t, line.c, ctrl, function(){
+        if(ctrl.abort) return;
+        setTimeout(nextLine, 60);
       });
-      node.addEventListener('mouseleave', function () {
-        activePattern = null;
-        node.classList.remove('active');
-      });
+    }
+    setTimeout(nextLine, 200);
+  });
+}
+
+function typeChars(el, text, speed, ctrl, cb){
+  var i = 0;
+  function next(){
+    if(ctrl.abort) return;
+    if(i < text.length){
+      el.textContent += text[i++];
+      setTimeout(next, speed);
+    } else if(cb) cb();
+  }
+  next();
+}
+
+function tokenize(container, text, cls, ctrl, cb){
+  // Split into tokens (words + spaces)
+  var tokens = text.match(/\S+|\s+/g) || [];
+  var i = 0;
+  function next(){
+    if(ctrl.abort) return;
+    if(i < tokens.length){
+      var span = document.createElement('span');
+      span.className = 'tk ' + (cls||'');
+      span.textContent = tokens[i++];
+      span.style.animationDelay = (i*0.03)+'s';
+      container.appendChild(span);
+      setTimeout(next, 25);
+    } else if(cb){
+      // Add newline
+      container.appendChild(document.createTextNode('\n'));
+      cb();
+    }
+  }
+  next();
+}
+
+/* ============================================
+   Example tooltips (hover on pat-ex)
+   ============================================ */
+function initExampleTooltips(){
+  var tip = document.getElementById('hover-tip');
+  document.querySelectorAll('.pat-ex').forEach(function(ex){
+    ex.addEventListener('mouseenter', function(e){
+      tip.textContent = ex.dataset.input || '';
+      tip.classList.add('show');
     });
-
-    window.addEventListener('resize', resize);
-  }
-
-  // ============================================
-  // Pattern Detail scroll reveal
-  // ============================================
-
-  function initDetailReveal() {
-    var details = document.querySelectorAll('.pattern-detail');
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) e.target.classList.add('visible');
-      });
-    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
-    details.forEach(function (d) { observer.observe(d); });
-  }
-
-  // ============================================
-  // E2E Timeline reveal
-  // ============================================
-
-  function initE2EReveal() {
-    var steps = document.querySelectorAll('.e2e-step');
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          var idx = parseInt(e.target.dataset.idx) || 0;
-          setTimeout(function () { e.target.classList.add('visible'); }, idx * 100);
-        }
-      });
-    }, { threshold: 0.3 });
-    steps.forEach(function (s) { observer.observe(s); });
-  }
-
-  // ============================================
-  // Module node tooltip on hover
-  // ============================================
-
-  function initTooltips() {
-    var tooltip = document.getElementById('tooltip');
-    var nodes = document.querySelectorAll('.mod-node[data-label]');
-
-    nodes.forEach(function (node) {
-      node.addEventListener('mouseenter', function () {
-        tooltip.textContent = node.dataset.label;
-        tooltip.classList.add('active');
-      });
-      node.addEventListener('mousemove', function (e) {
-        var x = e.clientX + 14;
-        var y = e.clientY - 40;
-        if (x + 310 > window.innerWidth) x = e.clientX - 310;
-        if (y < 8) y = e.clientY + 20;
-        tooltip.style.left = x + 'px';
-        tooltip.style.top = y + 'px';
-      });
-      node.addEventListener('mouseleave', function () {
-        tooltip.classList.remove('active');
-      });
+    ex.addEventListener('mousemove', function(e){
+      tip.style.left = (e.clientX+12)+'px';
+      tip.style.top = (e.clientY-36)+'px';
     });
-  }
-
-  // ============================================
-  // Pattern node click → scroll to detail
-  // ============================================
-
-  function initPatternNav() {
-    document.querySelectorAll('.mod-pattern').forEach(function (node) {
-      node.style.cursor = 'pointer';
-      node.addEventListener('click', function () {
-        var id = 'detail-' + node.dataset.pattern;
-        var el = document.getElementById(id);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Flash highlight
-          el.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.4), 0 12px 40px rgba(0,0,0,0.08)';
-          setTimeout(function () { el.style.boxShadow = ''; }, 1500);
-        }
-      });
+    ex.addEventListener('mouseleave', function(){
+      tip.classList.remove('show');
     });
-  }
+  });
+}
 
-  // ============================================
-  // Detail card hover — animate arrow particles
-  // ============================================
+/* ============================================
+   Boot
+   ============================================ */
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 
-  function initFlowArrows() {
-    document.querySelectorAll('.pattern-detail').forEach(function (detail) {
-      var arrows = detail.querySelectorAll('.pd-arrow-particle');
-
-      detail.addEventListener('mouseenter', function () {
-        arrows.forEach(function (a) { a.style.animationPlayState = 'running'; });
-      });
-      detail.addEventListener('mouseleave', function () {
-        arrows.forEach(function (a) { a.style.animationPlayState = 'running'; });
-      });
-    });
-  }
-
-  // ============================================
-  // Init
-  // ============================================
-
-  function init() {
-    initHero();
-    initFlowCanvas();
-    initDetailReveal();
-    initE2EReveal();
-    initTooltips();
-    initPatternNav();
-    initFlowArrows();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
 })();

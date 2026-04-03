@@ -3,499 +3,451 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claude Code Agentic Design Patterns | 에이전트 디자인 패턴</title>
-  <meta name="description" content="Claude Code의 핵심 Agentic AI 디자인 패턴을 인터랙티브 애니메이션으로 시각화합니다.">
+  <title>Claude Code Design Patterns | 에이전트 디자인 패턴</title>
+  <meta name="description" content="Claude Code 내부 아키텍처의 Agentic AI 디자인 패턴을 인터랙티브 다이어그램으로 시각화합니다.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Hero -->
-  <header class="hero" id="hero">
-    <canvas id="hero-canvas"></canvas>
-    <div class="hero-content">
-      <div class="hero-badge">AGENTIC AI ARCHITECTURE &middot; SOURCE CODE ANALYSIS</div>
-      <h1 class="hero-title">
-        <span class="hero-kr">클로드 코드의<br>다섯 가지 사고 패턴</span>
-        <span class="hero-en">Five Thinking Patterns of Claude Code</span>
-      </h1>
-      <p class="hero-stat">
-        <span class="hero-stat-item"><strong>1,902</strong> source files</span>
-        <span class="hero-stat-sep">&middot;</span>
-        <span class="hero-stat-item"><strong>40+</strong> tools</span>
-        <span class="hero-stat-sep">&middot;</span>
-        <span class="hero-stat-item"><strong>19</strong> services</span>
-        <span class="hero-stat-sep">&middot;</span>
-        <span class="hero-stat-item"><strong>6</strong> agents</span>
-      </p>
-      <div class="hero-scroll">
-        <div class="hero-scroll-line"></div>
-        <span>SCROLL</span>
-      </div>
+  <!-- Header -->
+  <header class="top-bar">
+    <div class="top-brand">
+      <span class="top-logo">C:</span>
+      <span>Claude Code Design Patterns</span>
+    </div>
+    <div class="top-links">
+      <a href="https://github.com/leaf-kit/claude-analysis" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        Source
+      </a>
+      <a href="https://twitter.com/leafeditor" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        @leafeditor
+      </a>
     </div>
   </header>
 
-  <!-- Module Map — Full Architecture -->
-  <section class="module-map-section" id="module-map">
-    <div class="section-header">
-      <h2><span class="kr">전체 내부 모듈 구조</span><span class="en">Internal Module Architecture</span></h2>
-      <p class="section-sub">패턴 위에 마우스를 올리면 데이터 흐름이 활성화됩니다 <span class="en">Hover a pattern to activate data flow</span></p>
-    </div>
+  <!-- Main Layout: Left Patterns + Right Diagram -->
+  <main class="app">
+    <!-- Left: Pattern List -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1>
+          <span class="sh-kr">디자인 패턴</span>
+          <span class="sh-en">Design Patterns</span>
+        </h1>
+        <p class="sh-desc">패턴을 선택하면 데이터 흐름이 활성화됩니다</p>
+      </div>
 
-    <!-- Central Architecture Diagram -->
-    <div class="arch-diagram" id="arch-diagram">
+      <div class="pattern-list" id="pattern-list">
+
+        <div class="pat-item" data-pattern="instruction">
+          <div class="pat-head">
+            <span class="pat-num">01</span>
+            <div class="pat-title">
+              <strong>명령어 해석</strong>
+              <em>Instruction Following</em>
+            </div>
+          </div>
+          <div class="pat-examples">
+            <div class="pat-ex" data-input='claude "이 코드 분석해줘"'>
+              <span class="pat-emoji">📝</span>
+              <span>claude "이 코드 분석해줘"</span>
+            </div>
+            <div class="pat-ex" data-input='claude --model opus "리팩토링해줘"'>
+              <span class="pat-emoji">⚙️</span>
+              <span>claude --model opus "리팩토링해줘"</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pat-item" data-pattern="memory">
+          <div class="pat-head">
+            <span class="pat-num">02</span>
+            <div class="pat-title">
+              <strong>컨텍스트 메모리</strong>
+              <em>Context Memory</em>
+            </div>
+          </div>
+          <div class="pat-examples">
+            <div class="pat-ex" data-input='claude --resume "이어서 작업해줘"'>
+              <span class="pat-emoji">🧠</span>
+              <span>claude --resume "이어서 작업해줘"</span>
+            </div>
+            <div class="pat-ex" data-input='CLAUDE.md에 규칙 추가'>
+              <span class="pat-emoji">📋</span>
+              <span>CLAUDE.md에 규칙 추가</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pat-item" data-pattern="planning">
+          <div class="pat-head">
+            <span class="pat-num">03</span>
+            <div class="pat-title">
+              <strong>계획 수립 &amp; 추론</strong>
+              <em>Planning &amp; Reasoning</em>
+            </div>
+          </div>
+          <div class="pat-examples">
+            <div class="pat-ex" data-input='claude "전체 리팩토링 수행해줘"'>
+              <span class="pat-emoji">🗺️</span>
+              <span>claude "전체 리팩토링 수행해줘"</span>
+            </div>
+            <div class="pat-ex" data-input='복잡한 버그 추적 및 수정'>
+              <span class="pat-emoji">🔍</span>
+              <span>복잡한 버그 추적 및 수정</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pat-item" data-pattern="tooluse">
+          <div class="pat-head">
+            <span class="pat-num">04</span>
+            <div class="pat-title">
+              <strong>도구 실행</strong>
+              <em>Tool &amp; Code Execution</em>
+            </div>
+          </div>
+          <div class="pat-examples">
+            <div class="pat-ex" data-input='파일 읽기/쓰기/검색 수행'>
+              <span class="pat-emoji">🔧</span>
+              <span>파일 읽기/쓰기/검색 수행</span>
+            </div>
+            <div class="pat-ex" data-input='Bash 명령어 실행 요청'>
+              <span class="pat-emoji">💻</span>
+              <span>Bash 명령어 실행 요청</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pat-item" data-pattern="refinement">
+          <div class="pat-head">
+            <span class="pat-num">05</span>
+            <div class="pat-title">
+              <strong>정제 &amp; 출력</strong>
+              <em>Refinement &amp; Output</em>
+            </div>
+          </div>
+          <div class="pat-examples">
+            <div class="pat-ex" data-input='긴 대화 후 컨텍스트 압축'>
+              <span class="pat-emoji">🔄</span>
+              <span>긴 대화 후 컨텍스트 압축</span>
+            </div>
+            <div class="pat-ex" data-input='최종 응답 스트리밍 출력'>
+              <span class="pat-emoji">✨</span>
+              <span>최종 응답 스트리밍 출력</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pat-item" data-pattern="permission">
+          <div class="pat-head">
+            <span class="pat-num">06</span>
+            <div class="pat-title">
+              <strong>권한 &amp; 보안</strong>
+              <em>Permission &amp; Security</em>
+            </div>
+          </div>
+          <div class="pat-examples">
+            <div class="pat-ex" data-input='rm -rf / 실행 시도'>
+              <span class="pat-emoji">🛡️</span>
+              <span>rm -rf / 실행 시도</span>
+            </div>
+            <div class="pat-ex" data-input='민감한 파일 접근 요청'>
+              <span class="pat-emoji">🔒</span>
+              <span>민감한 파일 접근 요청</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pat-item" data-pattern="session">
+          <div class="pat-head">
+            <span class="pat-num">07</span>
+            <div class="pat-title">
+              <strong>세션 지속성</strong>
+              <em>Session Persistence</em>
+            </div>
+          </div>
+          <div class="pat-examples">
+            <div class="pat-ex" data-input='세션 저장 및 재개'>
+              <span class="pat-emoji">💾</span>
+              <span>세션 저장 및 재개</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pat-item" data-pattern="mcp">
+          <div class="pat-head">
+            <span class="pat-num">08</span>
+            <div class="pat-title">
+              <strong>MCP 확장</strong>
+              <em>MCP Server Extension</em>
+            </div>
+          </div>
+          <div class="pat-examples">
+            <div class="pat-ex" data-input='외부 MCP 서버 도구 호출'>
+              <span class="pat-emoji">🔌</span>
+              <span>외부 MCP 서버 도구 호출</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pat-item" data-pattern="compaction">
+          <div class="pat-head">
+            <span class="pat-num">09</span>
+            <div class="pat-title">
+              <strong>컨텍스트 압축</strong>
+              <em>Context Compaction</em>
+            </div>
+          </div>
+          <div class="pat-examples">
+            <div class="pat-ex" data-input='180K 토큰 → 25K 압축'>
+              <span class="pat-emoji">📦</span>
+              <span>180K 토큰 → 25K 압축</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pat-item" data-pattern="spawning">
+          <div class="pat-head">
+            <span class="pat-num">10</span>
+            <div class="pat-title">
+              <strong>에이전트 스포닝</strong>
+              <em>Agent Spawning</em>
+            </div>
+          </div>
+          <div class="pat-examples">
+            <div class="pat-ex" data-input='서브에이전트 Fork/Fresh 생성'>
+              <span class="pat-emoji">🧬</span>
+              <span>서브에이전트 Fork/Fresh 생성</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Right: Diagram -->
+    <section class="diagram-area" id="diagram-area">
+      <!-- Flow Canvas (animated connections) -->
       <canvas id="flow-canvas"></canvas>
 
-      <!-- User Input Node -->
-      <div class="mod-node mod-input" id="node-input" data-label="User Input">
-        <div class="mod-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+      <!-- Module Nodes — positioned via CSS grid -->
+      <div class="diagram-grid" id="diagram-grid">
+
+        <!-- Row 1: Input -->
+        <div class="d-node node-user" id="n-user" data-module="user">
+          <div class="d-icon">📝</div>
+          <div class="d-label">User Input<br><span>사용자 입력</span></div>
+          <div class="d-data" id="d-data-user"></div>
         </div>
-        <span class="mod-name">사용자 입력<br><em>User Input</em></span>
-      </div>
 
-      <!-- PATTERN 1: Instruction Following -->
-      <div class="mod-node mod-pattern" id="node-p1" data-pattern="1" data-label="Instruction Following">
-        <div class="mod-icon pattern-icon">01</div>
-        <span class="mod-name">명령어 해석<br><em>Instruction Following</em></span>
-        <div class="mod-modules">
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/constants/prompts.ts" target="_blank" class="mod-chip">prompts.ts</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/systemPrompt.ts" target="_blank" class="mod-chip">systemPrompt.ts</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/context.ts" target="_blank" class="mod-chip">context.ts</a>
+        <!-- Row 2: CLI Layer -->
+        <div class="d-node node-internal" id="n-cli" data-module="cli">
+          <div class="d-icon">⌨️</div>
+          <div class="d-label">CLI Entry<br><span>cli.tsx → init.ts</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/cli.tsx" target="_blank">cli.tsx</a>
+        </div>
+
+        <div class="d-node node-internal" id="n-commands" data-module="commands">
+          <div class="d-icon">📜</div>
+          <div class="d-label">Commands<br><span>60+ 슬래시 명령어</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/commands.ts" target="_blank">commands.ts</a>
+        </div>
+
+        <!-- Row 3: Prompt Assembly -->
+        <div class="d-node node-core" id="n-prompts" data-module="prompts">
+          <div class="d-icon">🧩</div>
+          <div class="d-label">System Prompt<br><span>15개 섹션 조립</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/constants/prompts.ts" target="_blank">prompts.ts</a>
+          <div class="d-tooltip">getSystemPrompt()<br>Static 7 (전역 캐시) + Dynamic 8 (세션별)<br>SYSTEM_PROMPT_DYNAMIC_BOUNDARY 마커 기준 분리</div>
+        </div>
+
+        <div class="d-node node-core" id="n-context" data-module="context">
+          <div class="d-icon">📄</div>
+          <div class="d-label">Context<br><span>CLAUDE.md + Git</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/context.ts" target="_blank">context.ts</a>
+          <div class="d-tooltip">getUserContext() → 4-layer CLAUDE.md<br>/etc → ~/.claude → project → local<br>getSystemContext() → Git status 수집</div>
+        </div>
+
+        <div class="d-node node-core" id="n-sysprompt" data-module="sysprompt">
+          <div class="d-icon">🎯</div>
+          <div class="d-label">Priority Chain<br><span>5단계 우선순위</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/systemPrompt.ts" target="_blank">systemPrompt.ts</a>
+          <div class="d-tooltip">buildEffectiveSystemPrompt()<br>Override → Coordinator → Agent Definition → Custom → Default</div>
+        </div>
+
+        <!-- Row 4: Memory -->
+        <div class="d-node node-core" id="n-claudemd" data-module="claudemd">
+          <div class="d-icon">📋</div>
+          <div class="d-label">CLAUDE.md<br><span>4-level 계층</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/claudemd.ts" target="_blank">claudemd.ts</a>
+          <div class="d-tooltip">getClaudeMds()<br>/etc/claude-code/ → ~/.claude/ → project → .claude/CLAUDE.local.md<br>@include 지시어 재귀 참조</div>
+        </div>
+
+        <div class="d-node node-core" id="n-memory" data-module="memory">
+          <div class="d-icon">🧠</div>
+          <div class="d-label">Session Memory<br><span>9-section 템플릿</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/SessionMemory" target="_blank">SessionMemory/</a>
+          <div class="d-tooltip">9개 섹션: 제목, 현재 상태, 작업 사양, 파일/함수, 워크플로우, 오류/수정, 문서, 학습, 핵심 결과<br>백그라운드 서브에이전트가 지속 업데이트</div>
+        </div>
+
+        <div class="d-node node-core" id="n-extract" data-module="extract">
+          <div class="d-icon">💡</div>
+          <div class="d-label">Memory Extract<br><span>4타입 자동 분류</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/extractMemories" target="_blank">extractMemories/</a>
+          <div class="d-tooltip">세션 종료 시 4가지 타입으로 자동 추출:<br>피드백 | 프로젝트 패턴 | 워크플로우 | 기술 발견</div>
+        </div>
+
+        <div class="d-node node-core" id="n-memdir" data-module="memdir">
+          <div class="d-icon">🗂️</div>
+          <div class="d-label">Memdir<br><span>AI 관리 메모리</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/memdir/memdir.ts" target="_blank">memdir.ts</a>
+          <div class="d-tooltip">loadMemoryPrompt()<br>.claude/MEMORY.md 로드<br>관련 메모리만 선별 프리페치</div>
+        </div>
+
+        <!-- Row 5: Query Engine (center) -->
+        <div class="d-node node-engine" id="n-engine" data-module="engine">
+          <div class="d-icon">⚡</div>
+          <div class="d-label">Query Engine<br><span>핵심 상태 머신</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/QueryEngine.ts" target="_blank">QueryEngine.ts</a>
+          <div class="d-tooltip">submitMessage() → async generator<br>시스템 프롬프트 + 메시지 + 도구 → API 호출<br>도구 실행 루프 → 응답 스트리밍</div>
+        </div>
+
+        <!-- Row 5: API -->
+        <div class="d-node node-external" id="n-api" data-module="api">
+          <div class="d-icon">☁️</div>
+          <div class="d-label">Anthropic API<br><span>Claude 서버</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/api" target="_blank">services/api/</a>
+          <div class="d-tooltip">anthropic.beta.messages.create()<br>스트리밍 응답 수신<br>text + tool_use + thinking 블록</div>
+        </div>
+
+        <!-- Row 6: Planning / Agents -->
+        <div class="d-node node-core" id="n-coordinator" data-module="coordinator">
+          <div class="d-icon">🗺️</div>
+          <div class="d-label">Coordinator<br><span>3-Phase 오케스트레이션</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/coordinator/coordinatorMode.ts" target="_blank">coordinatorMode.ts</a>
+          <div class="d-tooltip">Phase 1: Research (병렬 탐색)<br>Phase 2: Synthesis (종합 스펙 생성)<br>Phase 3: Implement & Verify</div>
+        </div>
+
+        <div class="d-node node-core" id="n-agent" data-module="agent">
+          <div class="d-icon">🤖</div>
+          <div class="d-label">AgentTool<br><span>6종 내장 에이전트</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool" target="_blank">AgentTool/</a>
+          <div class="d-tooltip">general-purpose | Explore | Plan | verification | claude-code-guide | statusline-setup<br>Fork(캐시 공유) vs Fresh(독립 컨텍스트)</div>
+        </div>
+
+        <!-- Row 7: Tool Execution -->
+        <div class="d-node node-core" id="n-tools" data-module="tools">
+          <div class="d-icon">🔧</div>
+          <div class="d-label">Tool Registry<br><span>40+ 도구</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/tools.ts" target="_blank">tools.ts</a>
+          <div class="d-tooltip">getAllBaseTools() → 40개 도구<br>File(5) | Shell(2) | Agent(3) | Web(2) | Task(6) | MCP(4) | LSP(1) | System(17)</div>
+        </div>
+
+        <div class="d-node node-core" id="n-executor" data-module="executor">
+          <div class="d-icon">⚙️</div>
+          <div class="d-label">Streaming Executor<br><span>동시성 제어</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/tools/StreamingToolExecutor.ts" target="_blank">StreamingToolExecutor.ts</a>
+          <div class="d-tooltip">읽기전용 → 병렬 | 쓰기 → 순차<br>최대 동시성: 10 (환경변수 조정)<br>결과를 수신 순서대로 버퍼링</div>
+        </div>
+
+        <div class="d-node node-core" id="n-perms" data-module="perms">
+          <div class="d-icon">🛡️</div>
+          <div class="d-label">Permissions<br><span>3계층 권한 시스템</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/permissions" target="_blank">permissions/</a>
+          <div class="d-tooltip">Layer 1: 규칙 기반 (allowlist/denylist)<br>Layer 2: AI 분류기 + Bash AST (tree-sitter)<br>Layer 3: 사용자 다이얼로그</div>
+        </div>
+
+        <!-- Row 8: Refinement -->
+        <div class="d-node node-core" id="n-compact" data-module="compact">
+          <div class="d-icon">📦</div>
+          <div class="d-label">Compact<br><span>9-item 보존 압축</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/compact" target="_blank">compact/</a>
+          <div class="d-tooltip">shouldCompact() → 잔여 토큰 &lt; 임계값<br>9항목 보존: 요청, 개념, 코드, 오류, 여정, 메시지, 작업, 상태, 다음단계<br>180K → 25K 압축</div>
+        </div>
+
+        <div class="d-node node-core" id="n-query" data-module="query">
+          <div class="d-icon">🔄</div>
+          <div class="d-label">Query Loop<br><span>async generator</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/query.ts" target="_blank">query.ts</a>
+          <div class="d-tooltip">query() async generator<br>API 호출 → 도구 실행 → 압축 체크 → 훅 실행<br>도구 결과를 메시지에 추가 후 재호출</div>
+        </div>
+
+        <div class="d-node node-core" id="n-hooks" data-module="hooks">
+          <div class="d-icon">🪝</div>
+          <div class="d-label">Hooks<br><span>후처리 훅</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/hooks" target="_blank">hooks/</a>
+          <div class="d-tooltip">postSamplingHooks<br>settings.json에 등록된 훅 실행<br>응답 수정 후 UI 렌더링</div>
+        </div>
+
+        <!-- Row 9: Support -->
+        <div class="d-node node-support" id="n-mcp" data-module="mcp">
+          <div class="d-icon">🔌</div>
+          <div class="d-label">MCP Servers<br><span>외부 확장</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/mcp" target="_blank">services/mcp/</a>
+          <div class="d-tooltip">MCP 서버 연결 관리<br>mcp__serverName__toolName 형식<br>외부 도구/리소스 통합</div>
+        </div>
+
+        <div class="d-node node-support" id="n-state" data-module="state">
+          <div class="d-icon">📊</div>
+          <div class="d-label">AppState<br><span>불변 상태 관리</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/state" target="_blank">state/</a>
+          <div class="d-tooltip">createStore() → DeepImmutable&lt;AppState&gt;<br>150+ 필드: 설정, 모델, 권한, 작업 등<br>함수형 업데이트 + 구독 패턴</div>
+        </div>
+
+        <div class="d-node node-support" id="n-session" data-module="session">
+          <div class="d-icon">💾</div>
+          <div class="d-label">Session Storage<br><span>세션 저장/재개</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils" target="_blank">utils/sessionStorage.ts</a>
+          <div class="d-tooltip">recordTranscript() → .claude/sessions/<br>JSONL 형식 저장<br>--resume 으로 세션 재개</div>
+        </div>
+
+        <!-- Row 10: Render -->
+        <div class="d-node node-core" id="n-messages" data-module="messages">
+          <div class="d-icon">💬</div>
+          <div class="d-label">Messages<br><span>36개 렌더링 컴포넌트</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/components/Messages" target="_blank">Messages/</a>
+          <div class="d-tooltip">AssistantTextMessage, ToolUseMessage, ThinkingMessage<br>UserToolSuccess/Error/Reject/Canceled<br>SystemText, APIError, RateLimit</div>
+        </div>
+
+        <div class="d-node node-support" id="n-ink" data-module="ink">
+          <div class="d-icon">🖥️</div>
+          <div class="d-label">Ink Renderer<br><span>터미널 UI</span></div>
+          <a class="d-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/ink" target="_blank">ink/</a>
+          <div class="d-tooltip">React + Ink 프레임워크<br>터미널 내 컴포넌트 렌더링<br>389개 커스텀 UI 컴포넌트</div>
+        </div>
+
+        <!-- Output -->
+        <div class="d-node node-output" id="n-output" data-module="output">
+          <div class="d-icon">✅</div>
+          <div class="d-label">Response<br><span>최종 응답</span></div>
         </div>
       </div>
 
-      <!-- PATTERN 2: Context Memory -->
-      <div class="mod-node mod-pattern" id="node-p2" data-pattern="2" data-label="Context Memory">
-        <div class="mod-icon pattern-icon">02</div>
-        <span class="mod-name">컨텍스트 메모리<br><em>Context Memory</em></span>
-        <div class="mod-modules">
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/SessionMemory" target="_blank" class="mod-chip">SessionMemory/</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/extractMemories" target="_blank" class="mod-chip">extractMemories/</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/claudemd.ts" target="_blank" class="mod-chip">claudemd.ts</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/memdir/memdir.ts" target="_blank" class="mod-chip">memdir.ts</a>
+      <!-- Terminal Output -->
+      <div class="terminal" id="terminal">
+        <div class="term-bar">
+          <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+          <span class="term-title">claude-code output</span>
         </div>
-      </div>
-
-      <!-- PATTERN 3: Planning -->
-      <div class="mod-node mod-pattern" id="node-p3" data-pattern="3" data-label="Planning & Reasoning">
-        <div class="mod-icon pattern-icon">03</div>
-        <span class="mod-name">계획 수립 &amp; 추론<br><em>Planning &amp; Reasoning</em></span>
-        <div class="mod-modules">
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/coordinator/coordinatorMode.ts" target="_blank" class="mod-chip">coordinatorMode.ts</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool" target="_blank" class="mod-chip">AgentTool/</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/QueryEngine.ts" target="_blank" class="mod-chip">QueryEngine.ts</a>
-        </div>
-      </div>
-
-      <!-- PATTERN 4: Tool Execution -->
-      <div class="mod-node mod-pattern" id="node-p4" data-pattern="4" data-label="Tool & Code Execution">
-        <div class="mod-icon pattern-icon">04</div>
-        <span class="mod-name">도구 실행<br><em>Tool &amp; Code Execution</em></span>
-        <div class="mod-modules">
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/tools/StreamingToolExecutor.ts" target="_blank" class="mod-chip">StreamingToolExecutor.ts</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/Tool.ts" target="_blank" class="mod-chip">Tool.ts</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/permissions" target="_blank" class="mod-chip">permissions/</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/tools.ts" target="_blank" class="mod-chip">tools.ts</a>
-        </div>
-      </div>
-
-      <!-- PATTERN 5: Refinement -->
-      <div class="mod-node mod-pattern" id="node-p5" data-pattern="5" data-label="Refinement & Output">
-        <div class="mod-icon pattern-icon">05</div>
-        <span class="mod-name">정제 &amp; 출력<br><em>Refinement &amp; Output</em></span>
-        <div class="mod-modules">
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/compact" target="_blank" class="mod-chip">compact/</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/query.ts" target="_blank" class="mod-chip">query.ts</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/components/Messages" target="_blank" class="mod-chip">Messages/</a>
-          <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/toolUseSummary" target="_blank" class="mod-chip">toolUseSummary/</a>
-        </div>
-      </div>
-
-      <!-- Output Node -->
-      <div class="mod-node mod-output" id="node-output" data-label="Output">
-        <div class="mod-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </div>
-        <span class="mod-name">최종 응답<br><em>Response</em></span>
-      </div>
-
-      <!-- Supporting Modules (always visible, dimmed) -->
-      <div class="mod-node mod-support" id="node-state" data-label="AppState">
-        <span class="mod-name-sm">AppState Store</span>
-        <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/state" target="_blank" class="mod-chip-sm">state/</a>
-      </div>
-      <div class="mod-node mod-support" id="node-mcp" data-label="MCP">
-        <span class="mod-name-sm">MCP Servers</span>
-        <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/mcp" target="_blank" class="mod-chip-sm">services/mcp/</a>
-      </div>
-      <div class="mod-node mod-support" id="node-api" data-label="API">
-        <span class="mod-name-sm">Anthropic API</span>
-        <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/api" target="_blank" class="mod-chip-sm">services/api/</a>
-      </div>
-      <div class="mod-node mod-support" id="node-hooks" data-label="Hooks">
-        <span class="mod-name-sm">React Hooks</span>
-        <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/hooks" target="_blank" class="mod-chip-sm">hooks/</a>
-      </div>
-      <div class="mod-node mod-support" id="node-ink" data-label="Ink">
-        <span class="mod-name-sm">Ink Renderer</span>
-        <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/ink" target="_blank" class="mod-chip-sm">ink/</a>
-      </div>
-      <div class="mod-node mod-support" id="node-utils" data-label="Utils">
-        <span class="mod-name-sm">Utils (564)</span>
-        <a href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils" target="_blank" class="mod-chip-sm">utils/</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pattern Detail Panels — Expand on hover/click -->
-  <section class="pattern-details-section" id="pattern-details">
-
-    <!-- Pattern 1 Detail -->
-    <article class="pattern-detail" id="detail-1">
-      <div class="pd-header">
-        <span class="pd-num">01</span>
-        <div>
-          <h3>명령어 해석 <em>Instruction Following</em></h3>
-          <p class="pd-tagline">입력 프롬프트가 15개 섹션으로 분해되어 시스템 프롬프트로 조립되는 과정</p>
-        </div>
-      </div>
-      <div class="pd-flow">
-        <div class="pd-step">
-          <div class="pd-step-label">INPUT</div>
-          <div class="pd-step-box input-box">
-            <code>사용자 프롬프트</code>
-            <span class="pd-arrow-text">+ CLAUDE.md + Git Status</span>
+        <div class="term-body" id="term-body">
+          <div class="term-prompt">
+            <span class="term-prefix">$</span>
+            <span class="term-input" id="term-input"></span>
+            <span class="term-cursor"></span>
           </div>
-        </div>
-        <div class="pd-arrow"><span class="pd-arrow-particle"></span></div>
-        <div class="pd-step">
-          <div class="pd-step-label">PROCESS</div>
-          <div class="pd-step-box process-box">
-            <div class="pd-process-item"><code>getSystemPrompt()</code><span>15개 섹션 순서 조립</span></div>
-            <div class="pd-process-divider"></div>
-            <div class="pd-process-item"><strong>Static (7)</strong><span>전역 캐시 — 도구 규칙, 톤, 보안</span></div>
-            <div class="pd-process-item"><strong>Dynamic (8)</strong><span>세션별 — 메모리, 환경, MCP</span></div>
-            <div class="pd-process-divider"></div>
-            <div class="pd-process-item"><code>buildEffectiveSystemPrompt()</code><span>5단계 우선순위 체인</span></div>
-            <div class="pd-process-item sub"><span>Override → Coordinator → Agent → Custom → Default</span></div>
-          </div>
-        </div>
-        <div class="pd-arrow"><span class="pd-arrow-particle"></span></div>
-        <div class="pd-step">
-          <div class="pd-step-label">OUTPUT</div>
-          <div class="pd-step-box output-box">
-            <code>완성된 System Prompt</code>
-            <span class="pd-arrow-text">cache_control: global + ephemeral</span>
-          </div>
+          <div class="term-output" id="term-output"></div>
         </div>
       </div>
-      <div class="pd-insight">
-        <strong>핵심 인사이트:</strong> Static boundary 마커를 기준으로 프롬프트 전반부는 전역 캐싱(조직 간 공유), 후반부는 세션별 갱신으로 API 비용을 절감합니다.
-      </div>
-    </article>
+    </section>
+  </main>
 
-    <!-- Pattern 2 Detail -->
-    <article class="pattern-detail" id="detail-2">
-      <div class="pd-header">
-        <span class="pd-num">02</span>
-        <div>
-          <h3>컨텍스트 메모리 <em>Context Memory</em></h3>
-          <p class="pd-tagline">대화 히스토리와 학습된 지식이 다층 메모리 스택에 축적되는 과정</p>
-        </div>
-      </div>
-      <div class="pd-flow">
-        <div class="pd-step">
-          <div class="pd-step-label">INPUT</div>
-          <div class="pd-step-box input-box">
-            <code>대화 히스토리</code>
-            <span class="pd-arrow-text">+ 이전 세션 + CLAUDE.md 파일</span>
-          </div>
-        </div>
-        <div class="pd-arrow"><span class="pd-arrow-particle"></span></div>
-        <div class="pd-step">
-          <div class="pd-step-label">PROCESS</div>
-          <div class="pd-step-box process-box">
-            <div class="pd-process-item"><code>getClaudeMds()</code><span>4-level CLAUDE.md 계층 로드</span></div>
-            <div class="pd-process-item sub"><span>/etc → ~/.claude → project → local</span></div>
-            <div class="pd-process-divider"></div>
-            <div class="pd-process-item"><code>loadMemoryPrompt()</code><span>AI 관리 메모리 (.claude/MEMORY.md)</span></div>
-            <div class="pd-process-item"><code>SessionMemory</code><span>9개 섹션 템플릿 (백그라운드 업데이트)</span></div>
-            <div class="pd-process-divider"></div>
-            <div class="pd-process-item"><code>extractMemories()</code><span>4타입 자동 분류 추출</span></div>
-            <div class="pd-process-item sub"><span>피드백 | 패턴 | 워크플로우 | 기술 발견</span></div>
-          </div>
-        </div>
-        <div class="pd-arrow"><span class="pd-arrow-particle"></span></div>
-        <div class="pd-step">
-          <div class="pd-step-label">OUTPUT</div>
-          <div class="pd-step-box output-box">
-            <code>풍부한 컨텍스트</code>
-            <span class="pd-arrow-text">system-reminder로 주입</span>
-          </div>
-        </div>
-      </div>
-      <div class="pd-insight">
-        <strong>핵심 인사이트:</strong> 세션 종료 시 백그라운드 서브에이전트가 대화를 분석하여 4가지 타입으로 메모리를 자동 추출하고, 다음 세션에서 관련 메모리만 선별 로드합니다.
-      </div>
-    </article>
+  <!-- Hover Tooltip -->
+  <div class="hover-tip" id="hover-tip"></div>
 
-    <!-- Pattern 3 Detail -->
-    <article class="pattern-detail" id="detail-3">
-      <div class="pd-header">
-        <span class="pd-num">03</span>
-        <div>
-          <h3>계획 수립 &amp; 추론 <em>Planning &amp; Reasoning</em></h3>
-          <p class="pd-tagline">코디네이터가 복잡한 문제를 분해하고 특화 에이전트들이 협업하는 과정</p>
-        </div>
-      </div>
-      <div class="pd-flow pd-flow-branch">
-        <div class="pd-step">
-          <div class="pd-step-label">INPUT</div>
-          <div class="pd-step-box input-box">
-            <code>복잡한 작업 요청</code>
-            <span class="pd-arrow-text">"대규모 리팩토링 수행해줘"</span>
-          </div>
-        </div>
-        <div class="pd-arrow"><span class="pd-arrow-particle"></span></div>
-        <div class="pd-step pd-step-wide">
-          <div class="pd-step-label">PROCESS — 3-Phase Orchestration</div>
-          <div class="pd-step-box process-box">
-            <div class="pd-phase">
-              <span class="pd-phase-tag">Phase 1</span>
-              <div class="pd-process-item"><strong>Research (병렬)</strong><span>Explore 에이전트 다수 동시 실행</span></div>
-              <div class="pd-agent-row">
-                <span class="pd-agent">Explore</span>
-                <span class="pd-agent">Explore</span>
-                <span class="pd-agent">Plan</span>
-              </div>
-            </div>
-            <div class="pd-phase">
-              <span class="pd-phase-tag">Phase 2</span>
-              <div class="pd-process-item"><strong>Synthesis (종합)</strong><span>결과를 종합하여 구체적 스펙 생성</span></div>
-              <div class="pd-process-item sub"><span>"Never delegate understanding" — 구체적 파일명, 라인번호, 코드 포함</span></div>
-            </div>
-            <div class="pd-phase">
-              <span class="pd-phase-tag">Phase 3</span>
-              <div class="pd-process-item"><strong>Implement &amp; Verify</strong></div>
-              <div class="pd-agent-row">
-                <span class="pd-agent general">General</span>
-                <span class="pd-agent verify">Verify</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="pd-arrow"><span class="pd-arrow-particle"></span></div>
-        <div class="pd-step">
-          <div class="pd-step-label">OUTPUT</div>
-          <div class="pd-step-box output-box">
-            <code>검증된 구현 결과</code>
-            <span class="pd-arrow-text">PASS / FAIL / PARTIAL</span>
-          </div>
-        </div>
-      </div>
-      <div class="pd-agents-grid">
-        <h4>6가지 내장 에이전트 <em>Built-in Agents</em></h4>
-        <div class="pd-agents-list">
-          <div class="pd-agent-card"><strong>general-purpose</strong><span>모든 도구 사용 가능 — 범용 실행</span></div>
-          <div class="pd-agent-card"><strong>Explore</strong><span>읽기전용 탐색 — Glob, Grep, Read</span></div>
-          <div class="pd-agent-card"><strong>Plan</strong><span>읽기전용 설계 — 아키텍처 분석</span></div>
-          <div class="pd-agent-card"><strong>verification</strong><span>적대적 테스팅 — PASS/FAIL 판정</span></div>
-          <div class="pd-agent-card"><strong>claude-code-guide</strong><span>사용법 안내 — WebFetch, Docs</span></div>
-          <div class="pd-agent-card"><strong>statusline-setup</strong><span>설정 전용 — Read, Edit만 가능</span></div>
-        </div>
-      </div>
-      <div class="pd-insight">
-        <strong>핵심 인사이트:</strong> 에이전트 스폰 전략은 Fork(부모 캐시 공유, 저비용)와 Fresh(독립 컨텍스트, 특화) 두 가지가 있으며, 코디네이터는 항상 구체적 스펙을 생성한 후에만 실행 에이전트를 호출합니다.
-      </div>
-    </article>
-
-    <!-- Pattern 4 Detail -->
-    <article class="pattern-detail" id="detail-4">
-      <div class="pd-header">
-        <span class="pd-num">04</span>
-        <div>
-          <h3>도구 실행 <em>Tool &amp; Code Execution</em></h3>
-          <p class="pd-tagline">40개 이상의 도구가 권한 검증과 동시성 제어를 거쳐 스트리밍 실행되는 과정</p>
-        </div>
-      </div>
-      <div class="pd-flow">
-        <div class="pd-step">
-          <div class="pd-step-label">INPUT</div>
-          <div class="pd-step-box input-box">
-            <code>tool_use 블록</code>
-            <span class="pd-arrow-text">모델이 생성한 도구 호출 요청</span>
-          </div>
-        </div>
-        <div class="pd-arrow"><span class="pd-arrow-particle"></span></div>
-        <div class="pd-step pd-step-wide">
-          <div class="pd-step-label">PROCESS — 3-Tier Permission + Streaming Execution</div>
-          <div class="pd-step-box process-box">
-            <div class="pd-process-item"><code>findToolByName()</code><span>40개 도구 레지스트리에서 검색</span></div>
-            <div class="pd-process-divider"></div>
-            <div class="pd-process-item"><strong>Layer 1: 규칙 기반</strong><span>allowlist / denylist 매칭</span></div>
-            <div class="pd-process-item"><strong>Layer 2: AI 분류기</strong><span>LLM 판단 + Bash AST 파싱 (tree-sitter)</span></div>
-            <div class="pd-process-item"><strong>Layer 3: 사용자 확인</strong><span>ALLOW / DENY / ASK 다이얼로그</span></div>
-            <div class="pd-process-divider"></div>
-            <div class="pd-process-item"><code>StreamingToolExecutor</code></div>
-            <div class="pd-process-item sub"><span>읽기전용(Glob, Grep, Read) → <strong>병렬</strong> | 쓰기(Edit, Bash) → <strong>순차</strong></span></div>
-          </div>
-        </div>
-        <div class="pd-arrow"><span class="pd-arrow-particle"></span></div>
-        <div class="pd-step">
-          <div class="pd-step-label">OUTPUT</div>
-          <div class="pd-step-box output-box">
-            <code>ToolResultBlockParam</code>
-            <span class="pd-arrow-text">Success / Error / Canceled</span>
-          </div>
-        </div>
-      </div>
-      <div class="pd-tools-grid">
-        <h4>도구 카테고리 <em>Tool Categories (40+)</em></h4>
-        <div class="pd-tools-list">
-          <div class="pd-tool-tag" data-cat="file">File (5): Read, Edit, Write, Glob, Grep</div>
-          <div class="pd-tool-tag" data-cat="shell">Shell (2): Bash, PowerShell</div>
-          <div class="pd-tool-tag" data-cat="agent">Agent (3): AgentTool, SendMessage, Skill</div>
-          <div class="pd-tool-tag" data-cat="web">Web (2): WebFetch, WebSearch</div>
-          <div class="pd-tool-tag" data-cat="task">Task (6): Create, Update, List, Get, Stop, Output</div>
-          <div class="pd-tool-tag" data-cat="mcp">MCP (4): MCPTool, ListResources, ReadResource, Auth</div>
-          <div class="pd-tool-tag" data-cat="code">LSP (1): Language Server Protocol</div>
-          <div class="pd-tool-tag" data-cat="sys">System (17): Worktree, Plan, Cron, Config...</div>
-        </div>
-      </div>
-      <div class="pd-insight">
-        <strong>핵심 인사이트:</strong> Bash 명령은 tree-sitter로 AST를 파싱하여 <code>rm -rf /</code>, 권한 상승, 명령어 주입 등 위험 패턴을 사전 탐지합니다. 동시성 제어는 최대 10개 병렬 실행(환경변수로 조정 가능).
-      </div>
-    </article>
-
-    <!-- Pattern 5 Detail -->
-    <article class="pattern-detail" id="detail-5">
-      <div class="pd-header">
-        <span class="pd-num">05</span>
-        <div>
-          <h3>정제 &amp; 출력 <em>Refinement &amp; Output</em></h3>
-          <p class="pd-tagline">응답이 컨텍스트 압축, 결과 요약, 후처리 훅을 거쳐 최종 출력되는 과정</p>
-        </div>
-      </div>
-      <div class="pd-flow">
-        <div class="pd-step">
-          <div class="pd-step-label">INPUT</div>
-          <div class="pd-step-box input-box">
-            <code>API 스트리밍 응답</code>
-            <span class="pd-arrow-text">text + tool_use + thinking 블록</span>
-          </div>
-        </div>
-        <div class="pd-arrow"><span class="pd-arrow-particle"></span></div>
-        <div class="pd-step pd-step-wide">
-          <div class="pd-step-label">PROCESS — Context Compaction Pipeline</div>
-          <div class="pd-step-box process-box">
-            <div class="pd-process-item"><code>query()</code><span>async generator — 스트리밍 루프</span></div>
-            <div class="pd-process-divider"></div>
-            <div class="pd-process-item"><code>shouldCompact()</code><span>잔여 토큰 &lt; 임계값 시 자동 트리거</span></div>
-            <div class="pd-process-item"><strong>9-Item Preservation</strong></div>
-            <div class="pd-compact-grid">
-              <span>1. 주요 요청</span><span>2. 기술 개념</span><span>3. 파일/코드</span>
-              <span>4. 오류/수정</span><span>5. 해결 여정</span><span>6. 사용자 메시지</span>
-              <span>7. 대기 작업</span><span>8. 현재 상태</span><span>9. 다음 단계</span>
-            </div>
-            <div class="pd-process-divider"></div>
-            <div class="pd-process-item"><code>toolUseSummaryGenerator</code><span>도구 결과를 1-2줄로 요약</span></div>
-            <div class="pd-process-item"><code>postSamplingHooks</code><span>응답 후처리 (settings.json 등록)</span></div>
-          </div>
-        </div>
-        <div class="pd-arrow"><span class="pd-arrow-particle"></span></div>
-        <div class="pd-step">
-          <div class="pd-step-label">OUTPUT</div>
-          <div class="pd-step-box output-box">
-            <code>최종 렌더링 메시지</code>
-            <span class="pd-arrow-text">36개 Message 컴포넌트</span>
-          </div>
-        </div>
-      </div>
-      <div class="pd-insight">
-        <strong>핵심 인사이트:</strong> 컨텍스트 압축 시 메모리도 동시에 추출합니다. 180K 토큰이 25K로 압축되면서도 9가지 핵심 항목은 원문 인용과 함께 보존됩니다. 압축 중에는 도구 사용이 금지됩니다 (NO_TOOLS_PREAMBLE).
-      </div>
-    </article>
-  </section>
-
-  <!-- End-to-End Flow -->
-  <section class="e2e-section" id="e2e">
-    <div class="section-header">
-      <h2><span class="kr">엔드 투 엔드 처리 흐름</span><span class="en">End-to-End Processing Flow</span></h2>
-    </div>
-    <div class="e2e-timeline">
-      <div class="e2e-step" data-idx="1">
-        <div class="e2e-marker"></div>
-        <div class="e2e-content">
-          <strong>cli.tsx → init.ts → main.tsx</strong>
-          <p>엔트리포인트 부트스트랩, 설정 로드, 키체인 프리페치</p>
-        </div>
-      </div>
-      <div class="e2e-step" data-idx="2">
-        <div class="e2e-marker"></div>
-        <div class="e2e-content">
-          <strong>setup.ts → context.ts</strong>
-          <p>세션 초기화, CWD 설정, 워크트리 지원, Git 상태 수집</p>
-        </div>
-      </div>
-      <div class="e2e-step" data-idx="3">
-        <div class="e2e-marker"></div>
-        <div class="e2e-content">
-          <strong>QueryEngine.submitMessage()</strong>
-          <p>시스템 프롬프트 조립, CLAUDE.md 계층 로드, 메모리 주입</p>
-        </div>
-      </div>
-      <div class="e2e-step" data-idx="4">
-        <div class="e2e-marker"></div>
-        <div class="e2e-content">
-          <strong>query() → Anthropic API</strong>
-          <p>메시지 정규화, API 호출, 스트리밍 응답 수신</p>
-        </div>
-      </div>
-      <div class="e2e-step" data-idx="5">
-        <div class="e2e-marker"></div>
-        <div class="e2e-content">
-          <strong>StreamingToolExecutor → Tool.call()</strong>
-          <p>권한 게이트 → 동시성 파티셔닝 → 도구 실행 → 결과 수집</p>
-        </div>
-      </div>
-      <div class="e2e-step" data-idx="6">
-        <div class="e2e-marker"></div>
-        <div class="e2e-content">
-          <strong>Compact + Hooks → Render</strong>
-          <p>컨텍스트 압축, 메모리 추출, 후처리 훅, 36개 메시지 컴포넌트 렌더링</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <strong>Claude Code Design Patterns</strong>
-        <span>Agentic AI Architecture Visualization</span>
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/leaf-kit/claude-analysis" target="_blank">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          GitHub
-        </a>
-        <a href="https://twitter.com/leafeditor" target="_blank">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          @leafeditor
-        </a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      Based on analysis of <a href="https://github.com/leaf-kit/claude-analysis" target="_blank">claude-analysis</a> — 1,902 source files across 34 modules
-    </div>
-  </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip" id="tooltip"></div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
