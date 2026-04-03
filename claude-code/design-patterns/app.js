@@ -347,6 +347,11 @@ function selectPattern(key,onComplete){
   if(!PATS[key])return;activePat=key;activeFlowIdx=-1;tokenCount=0;
   var P=PATS[key];var lang=document.documentElement.getAttribute('data-lang')||'en';
   document.querySelectorAll('.pl-item').forEach(function(i){i.classList.toggle('active',i.dataset.pat===key);});
+  // Big overlay label
+  var patIdx=PAT_ORDER.indexOf(key)+1;
+  document.getElementById('current-pattern-label').textContent=String(patIdx).padStart(2,'0')+'. '+(lang==='kr'?P.kr:P.en);
+  document.getElementById('current-step-label').textContent='';
+  // Hero
   var hero=document.getElementById('pat-hero');hero.classList.add('show');
   document.getElementById('pat-hero-title').textContent=(lang==='kr'?P.kr:P.en);
   document.getElementById('pat-hero-desc').textContent=lang==='kr'?P.descKr:P.descEn;
@@ -381,6 +386,8 @@ function runSteppedAnimation(P,onComplete){
     }
     var step=steps[cur],num=cur+1;activeFlowIdx=cur;
     stepInd.textContent='Step '+num+'/'+steps.length;
+    // Update right overlay with current step action
+    document.getElementById('current-step-label').textContent='Step '+num+': '+(step.data||'');
     var words=(step.term.t||'').split(/\s+/).length;tokenCount+=words*3;tokensEl.textContent=tokenCount+' tk';tokensEl.classList.add('streaming');
     setTimeout(function(){tokensEl.classList.remove('streaming');},400);
     var tgt=document.getElementById(step.to);
