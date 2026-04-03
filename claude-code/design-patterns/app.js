@@ -246,9 +246,16 @@ function initTheme(){
 }
 function updTI(){document.getElementById('theme-icon').textContent=document.documentElement.getAttribute('data-theme')==='dark'?'☀️':'🌙';}
 
-/* Lang */
+/* Lang — 브라우저 언어 감지, 디폴트 영어, 한국어일 때만 한국어 */
 function initLang(){
-  var s=localStorage.getItem('dp-lang');if(s)document.documentElement.setAttribute('data-lang',s);updLL();
+  var s=localStorage.getItem('dp-lang');
+  if(s){document.documentElement.setAttribute('data-lang',s);}
+  else{
+    var bl=(navigator.language||navigator.userLanguage||'en').toLowerCase();
+    var lang=bl.startsWith('ko')?'kr':'en';
+    document.documentElement.setAttribute('data-lang',lang);
+  }
+  updLL();
   document.getElementById('btn-lang').onclick=function(){var c=document.documentElement.getAttribute('data-lang'),n=c==='en'?'kr':'en';document.documentElement.setAttribute('data-lang',n);localStorage.setItem('dp-lang',n);updLL();applyLang();};
 }
 function updLL(){document.getElementById('lang-label').textContent=document.documentElement.getAttribute('data-lang')==='en'?'KR':'EN';}
@@ -335,7 +342,6 @@ function selectPattern(key,onComplete){
   document.querySelectorAll('.pl-item').forEach(function(i){i.classList.toggle('active',i.dataset.pat===key);});
   // Hero
   var hero=document.getElementById('pat-hero');hero.classList.add('show');
-  document.getElementById('pat-hero-anim').textContent=P.heroAnim||P.label;
   document.getElementById('pat-hero-title').textContent=P.label+' '+(lang==='kr'?P.kr:P.en);
   document.getElementById('pat-hero-desc').textContent=lang==='kr'?P.descKr:P.descEn;
   document.getElementById('pat-hero-tags').innerHTML='<span class="tag-in">IN: '+(lang==='kr'?P.inputKr:P.inputEn)+'</span><span class="tag-out">OUT: '+(lang==='kr'?P.outputKr:P.outputEn)+'</span>';
