@@ -217,17 +217,12 @@ Layer 3: Show user permission dialog
     </section>
   </main>
 
-  <!-- Learn Modal -->
-  <div class="modal-overlay" id="modal-overlay">
-    <div class="modal" id="modal">
-      <button class="modal-close" id="modal-close">&times;</button>
-      <div class="modal-header" id="modal-header"></div>
-      <div class="modal-body" id="modal-body"></div>
-      <pre class="modal-code" id="modal-code"></pre>
-      <div class="modal-footer">
-        <a class="modal-src-link" id="modal-src-link" target="_blank" data-kr="소스 코드 보기 →" data-en="View source code →"></a>
-      </div>
-    </div>
+  <!-- Learn Popover (hover) -->
+  <div class="learn-popover" id="learn-popover">
+    <div class="lp-header" id="lp-header"></div>
+    <div class="lp-body" id="lp-body"></div>
+    <pre class="lp-code" id="lp-code"></pre>
+    <a class="lp-src" id="lp-src" target="_blank"></a>
   </div>
 
   <div class="hover-tip" id="hover-tip"></div>

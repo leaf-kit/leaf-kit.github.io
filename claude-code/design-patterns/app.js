@@ -478,24 +478,65 @@ function initTips(){
 }
 
 function initModal(){
-  var overlay=document.getElementById('modal-overlay');
-  document.getElementById('modal-close').onclick=function(){overlay.classList.remove('show');};
-  overlay.onclick=function(e){if(e.target===overlay)overlay.classList.remove('show');};
-  document.getElementById('diagram').addEventListener('click',function(e){
-    var node=e.target.closest('.dg-node');if(!node||e.target.closest('a'))return;
+  var pop=document.getElementById('learn-popover');
+  var hideTimer=null;
+  var diagram=document.getElementById('diagram');
+
+  diagram.addEventListener('mouseenter',function(e){
+    var node=e.target.closest('.dg-node');
+    if(node) showPop(node);
+  },true);
+
+  diagram.addEventListener('mouseover',function(e){
+    var node=e.target.closest('.dg-node');
+    if(node){clearTimeout(hideTimer);showPop(node);}
+  });
+
+  diagram.addEventListener('mouseout',function(e){
+    var node=e.target.closest('.dg-node');
+    if(node){hideTimer=setTimeout(function(){pop.classList.remove('show');},200);}
+  });
+
+  pop.addEventListener('mouseenter',function(){clearTimeout(hideTimer);});
+  pop.addEventListener('mouseleave',function(){pop.classList.remove('show');});
+
+  function showPop(node){
     var lang=document.documentElement.getAttribute('data-lang')||'en';
     var learn=node.getAttribute('data-learn-'+lang)||node.getAttribute('data-learn-en');
-    var code=node.getAttribute('data-code');var src=node.querySelector('.nd-src');
+    var code=node.getAttribute('data-code');
+    var src=node.querySelector('.nd-src');
     if(!learn&&!code)return;
+
     var name=node.querySelector('.nd-info strong');
-    document.getElementById('modal-header').textContent=name?name.textContent:'';
-    document.getElementById('modal-body').textContent=learn||'';
-    document.getElementById('modal-code').textContent=code||'';
-    document.getElementById('modal-code').style.display=code?'block':'none';
-    var srcLink=document.getElementById('modal-src-link');
-    if(src){srcLink.href=src.href;srcLink.style.display='inline';}else{srcLink.style.display='none';}
-    overlay.classList.add('show');applyLang();
-  });
+    document.getElementById('lp-header').textContent=name?name.textContent:'';
+    document.getElementById('lp-body').textContent=learn||'';
+    document.getElementById('lp-code').textContent=code||'';
+    document.getElementById('lp-code').style.display=code?'block':'none';
+    var srcLink=document.getElementById('lp-src');
+    if(src){srcLink.href=src.href;srcLink.textContent=lang==='kr'?'source code →':'source code →';srcLink.style.display='inline';}
+    else{srcLink.style.display='none';}
+
+    // Position: right or left of node, within viewport
+    var nr=node.getBoundingClientRect();
+    var pw=390,vw=window.innerWidth,vh=window.innerHeight;
+    var left,top;
+
+    // Try right side first
+    if(nr.right+pw+16<vw){
+      left=nr.right+12;
+    } else if(nr.left-pw-16>0){
+      // Left side
+      left=nr.left-pw-12;
+    } else {
+      // Center fallback
+      left=Math.max(8,Math.min(vw-pw-8,(nr.left+nr.right)/2-pw/2));
+    }
+    top=Math.max(8,Math.min(vh-420,nr.top));
+
+    pop.style.left=left+'px';
+    pop.style.top=top+'px';
+    pop.classList.add('show');
+  }
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
