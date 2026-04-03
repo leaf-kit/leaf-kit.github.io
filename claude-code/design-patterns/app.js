@@ -1,228 +1,297 @@
 /* ============================================
-   Claude Code Design Patterns v5
-   Synced diagram stepping + terminal output
+   Claude Code Design Patterns v6
+   Sequential stepping + synced terminal
    ============================================ */
 (function(){
 'use strict';
 
-/* ===== PATTERNS (16개) ===== */
+/* ===== PATTERN DATA (16) ===== */
 var PATS={
 instruction:{label:'📝',kr:'명령어 해석',en:'Instruction Following',
+  descKr:'사용자가 프롬프트를 입력하면, 15개 섹션의 시스템 프롬프트로 조립되어 API에 전달됩니다. 정적 영역은 전역 캐싱되고, 동적 영역은 세션마다 갱신됩니다.',
+  descEn:'When a user enters a prompt, it is assembled into a 15-section system prompt and sent to the API. Static sections are globally cached, dynamic sections refresh per session.',
+  inputKr:'사용자 프롬프트 텍스트',inputEn:'User prompt text',
+  outputKr:'완성된 System Prompt + API 스트리밍 응답',outputEn:'Assembled System Prompt + API streaming response',
   nodes:['user','cli','commands','prompts','context','sysprompt','engine','api'],
-  flow:[['n-user','n-cli','📝 argv'],['n-cli','n-commands','📜 slash?'],['n-cli','n-prompts','🧩 조립 시작'],['n-prompts','n-context','📄 CLAUDE.md'],['n-context','n-sysprompt','🎯 우선순위'],['n-sysprompt','n-engine','✅ 최종 프롬프트'],['n-engine','n-api','☁️ API 호출']],
-  badges:{'badge-prompts':'🧩 15섹션','badge-context':'📄 CLAUDE.md','badge-api':'☁️ 스트리밍'},
+  steps:[
+    {from:'n-user',to:'n-cli',data:'📝 "이 코드 분석해줘"',term:{t:'$ claude "이 코드 분석해줘"',c:'t-kw'}},
+    {from:'n-cli',to:'n-commands',data:'📜 슬래시 명령 체크',term:{t:'  processUserInput() → not a slash command',c:'t-fn'}},
+    {from:'n-cli',to:'n-prompts',data:'🧩 프롬프트 조립 시작',term:{t:'getSystemPrompt() → 15 sections',c:'t-fn'}},
+    {from:'n-prompts',to:'n-context',data:'📄 CLAUDE.md 로드',term:{t:'  Static(7): global cache | Dynamic(8): ephemeral',c:'t-str'}},
+    {from:'n-context',to:'n-sysprompt',data:'🎯 우선순위 적용',term:{t:'buildEffectiveSystemPrompt() → 5-tier priority',c:'t-fn'}},
+    {from:'n-sysprompt',to:'n-engine',data:'✅ 최종 프롬프트',term:{t:'  Override → Coordinator → Agent → Custom → Default',c:'t-str'}},
+    {from:'n-engine',to:'n-api',data:'☁️ API 호출',term:{t:'→ anthropic.messages.create() streaming...',c:'t-kw'}}
+  ],
   exs:[{e:'📝',t:'claude "이 코드 분석해줘"'},{e:'⚙️',t:'claude --model opus'}],
-  srcs:['prompts.ts — 15섹션 조립|https://github.com/leaf-kit/claude-analysis/tree/main/src/constants/prompts.ts','systemPrompt.ts — 우선순위|https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/systemPrompt.ts'],
-  term:{input:'claude "이 코드 분석해줘"',lines:[
-    {t:'// Instruction Following',c:'t-comment'},{t:'getSystemPrompt()',c:'t-fn'},{t:'  Static(7): tools, tone, security → global cache',c:''},{t:'  Dynamic(8): memory, env, MCP → ephemeral',c:''},
-    {t:'buildEffectiveSystemPrompt()',c:'t-fn'},{t:'  Override → Coordinator → Agent → Custom → Default',c:'t-str'},
-    {t:'getUserContext() → CLAUDE.md 4-layer loaded',c:'t-fn'},{t:'getSystemContext() → git:main',c:'t-fn'},{t:'→ API call with assembled prompt...',c:'t-kw'}
-  ]}},
+  srcs:['prompts.ts — 15섹션|https://github.com/leaf-kit/claude-analysis/tree/main/src/constants/prompts.ts','systemPrompt.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/systemPrompt.ts']},
 memory:{label:'🧠',kr:'컨텍스트 메모리',en:'Context Memory',
+  descKr:'CLAUDE.md 4단계 계층, 세션 메모리 9-section 템플릿, AI 관리 MEMORY.md가 유기적으로 연동되어 풍부한 컨텍스트를 제공합니다.',
+  descEn:'4-layer CLAUDE.md hierarchy, 9-section session memory template, and AI-managed MEMORY.md work together to provide rich context.',
+  inputKr:'이전 대화 히스토리 + CLAUDE.md 파일들',inputEn:'Previous conversation history + CLAUDE.md files',
+  outputKr:'컨텍스트가 주입된 시스템 프롬프트',outputEn:'Context-injected system prompt',
   nodes:['user','cli','claudemd','memory','memdir','extract','context','engine','api'],
-  flow:[['n-user','n-cli','🧠 이전 대화'],['n-cli','n-claudemd','📋 4-layer'],['n-claudemd','n-context','📄 계층 병합'],['n-cli','n-memory','💾 세션 복원'],['n-memory','n-engine','🧠 9-section'],['n-memdir','n-engine','🗂️ MEMORY.md'],['n-engine','n-api','☁️ 컨텍스트 주입'],['n-api','n-extract','💡 추출 트리거'],['n-extract','n-memdir','📝 4타입 저장']],
-  badges:{'badge-memory':'💾 9-section','badge-engine':'⚡ 주입'},
+  steps:[
+    {from:'n-user',to:'n-cli',data:'🧠 --resume 세션 재개',term:{t:'$ claude --resume "이어서 작업해줘"',c:'t-kw'}},
+    {from:'n-cli',to:'n-claudemd',data:'📋 4-layer 계층 로드',term:{t:'getClaudeMds() → /etc → ~/.claude → project → local',c:'t-fn'}},
+    {from:'n-claudemd',to:'n-context',data:'📄 계층 병합',term:{t:'  @include directives resolved (recursive)',c:'t-str'}},
+    {from:'n-cli',to:'n-memory',data:'💾 세션 메모리 복원',term:{t:'SessionMemory → 9-section template loaded',c:'t-fn'}},
+    {from:'n-memdir',to:'n-engine',data:'🗂️ MEMORY.md 로드',term:{t:'loadMemoryPrompt() → relevant memories prefetched',c:'t-fn'}},
+    {from:'n-memory',to:'n-engine',data:'🧠 9-section 주입',term:{t:'  Title, State, Files, Workflow, Errors, Docs, Learn, Results, Log',c:'t-str'}},
+    {from:'n-engine',to:'n-api',data:'☁️ 컨텍스트 주입 호출',term:{t:'→ API call with enriched context...',c:'t-kw'}},
+    {from:'n-api',to:'n-extract',data:'💡 추출 트리거',term:{t:'extractMemories() → analyzing conversation...',c:'t-fn'}},
+    {from:'n-extract',to:'n-memdir',data:'📝 4타입 저장',term:{t:'  → feedback | patterns | workflow | tech discoveries saved',c:'t-str'}}
+  ],
   exs:[{e:'💾',t:'claude --resume'},{e:'📋',t:'CLAUDE.md 4-layer'}],
-  srcs:['SessionMemory/|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/SessionMemory','extractMemories/|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/extractMemories','claudemd.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/claudemd.ts'],
-  term:{input:'claude --resume "이어서 작업해줘"',lines:[
-    {t:'// Context Memory',c:'t-comment'},{t:'getClaudeMds() → 4-level hierarchy',c:'t-fn'},{t:'  /etc → ~/.claude → project → local',c:''},
-    {t:'loadMemoryPrompt() → .claude/MEMORY.md',c:'t-fn'},{t:'SessionMemory → 9-section template',c:'t-fn'},{t:'extractMemories() → feedback|patterns|workflow|tech',c:'t-fn'},{t:'→ Background sub-agent updating...',c:'t-kw'}
-  ]}},
+  srcs:['SessionMemory/|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/SessionMemory','claudemd.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/claudemd.ts']},
 planning:{label:'🗺️',kr:'계획 수립 & 추론',en:'Planning & Reasoning',
+  descKr:'코디네이터가 복잡한 작업을 3단계로 분해합니다: Research(병렬 탐색) → Synthesis(종합) → Implement & Verify. 6종 특화 에이전트가 협업합니다.',
+  descEn:'Coordinator decomposes complex tasks in 3 phases: Research (parallel) → Synthesis → Implement & Verify. 6 specialized agents collaborate.',
+  inputKr:'복잡한 작업 요청',inputEn:'Complex task request',
+  outputKr:'검증된 구현 결과 (PASS/FAIL)',outputEn:'Verified implementation (PASS/FAIL)',
   nodes:['user','engine','api','coordinator','agent','tools','executor'],
-  flow:[['n-user','n-engine','🗺️ 복잡한 작업'],['n-engine','n-api','☁️ LLM 추론'],['n-api','n-coordinator','📋 코디네이터'],['n-coordinator','n-agent','🤖 Phase 1: 탐색'],['n-agent','n-engine','📊 결과 수집'],['n-coordinator','n-tools','🔧 Phase 3: 실행'],['n-tools','n-executor','⚙️ 도구 실행']],
-  badges:{'badge-engine':'⚡ 쿼리 루프','badge-api':'☁️ LLM'},
+  steps:[
+    {from:'n-user',to:'n-engine',data:'🗺️ "전체 리팩토링"',term:{t:'$ claude "전체 리팩토링 수행해줘"',c:'t-kw'}},
+    {from:'n-engine',to:'n-api',data:'☁️ LLM 추론',term:{t:'Coordinator Mode activated',c:'t-fn'}},
+    {from:'n-api',to:'n-coordinator',data:'📋 작업 분석',term:{t:'Phase 1: Research (parallel)',c:'t-fn'}},
+    {from:'n-coordinator',to:'n-agent',data:'🤖 병렬 탐색',parallel:true,term:{t:'  → Agent(Explore) ∥ Agent(Explore) scanning...',c:'t-str'}},
+    {from:'n-coordinator',to:'n-engine',data:'📊 종합 스펙',term:{t:'Phase 2: Synthesis → 12 files, 34 changes',c:'t-fn'}},
+    {from:'n-coordinator',to:'n-tools',data:'🔧 구현 실행',term:{t:'Phase 3: Agent(general) implementing...',c:'t-fn'}},
+    {from:'n-tools',to:'n-executor',data:'⚙️ 도구 실행',term:{t:'  → Agent(verify) testing...',c:'t-str'}},
+    {from:'n-agent',to:'n-engine',data:'✅ PASS',term:{t:'→ Verification: PASS ✓',c:'t-str'}}
+  ],
   exs:[{e:'🗺️',t:'전체 리팩토링'}],
-  srcs:['coordinatorMode.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/coordinator/coordinatorMode.ts','AgentTool/|https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool'],
-  term:{input:'claude "전체 리팩토링 수행해줘"',lines:[
-    {t:'// Planning & Reasoning',c:'t-comment'},{t:'Coordinator Mode activated',c:'t-kw'},
-    {t:'Phase 1: Research (parallel)',c:'t-fn'},{t:'  → Agent(Explore) scanning src/...',c:'t-str'},{t:'  → Agent(Explore) scanning tests/...',c:'t-str'},
-    {t:'Phase 2: Synthesis',c:'t-fn'},{t:'  → Concrete spec: 12 files, 34 changes',c:'t-str'},
-    {t:'Phase 3: Implement & Verify',c:'t-fn'},{t:'  → Agent(general) implementing...',c:'t-str'},{t:'  → Agent(verify) PASS ✓',c:'t-str'}
-  ]}},
+  srcs:['coordinatorMode.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/coordinator/coordinatorMode.ts','AgentTool/|https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool']},
 tooluse:{label:'🔧',kr:'도구 실행',en:'Tool Execution',
+  descKr:'40개 이상의 도구가 3계층 권한 검증을 거쳐 스트리밍 실행기에서 실행됩니다. 읽기 전용 도구는 병렬, 쓰기 도구는 순차 실행됩니다.',
+  descEn:'40+ tools pass through 3-tier permission checks and run in the streaming executor. Read-only tools run in parallel, write tools run serially.',
+  inputKr:'모델이 생성한 tool_use 블록',inputEn:'Model-generated tool_use block',
+  outputKr:'ToolResultBlockParam (Success/Error/Canceled)',outputEn:'ToolResultBlockParam (Success/Error/Canceled)',
   nodes:['engine','api','tools','executor','perms','mcp'],
-  flow:[['n-api','n-engine','⚡ tool_use 블록'],['n-engine','n-tools','🔧 도구 검색'],['n-tools','n-perms','🛡️ 권한 검증'],['n-perms','n-executor','⚙️ 실행 큐'],['n-executor','n-engine','📊 결과 반환'],['n-mcp','n-tools','🔌 외부 도구']],
-  badges:{'badge-tools':'🔧 40+'},
+  steps:[
+    {from:'n-api',to:'n-engine',data:'⚡ tool_use 블록 수신',term:{t:'→ Tool: FileReadTool("src/main.ts")',c:'t-kw'}},
+    {from:'n-engine',to:'n-tools',data:'🔧 도구 검색',term:{t:'findToolByName("Read") → FileReadTool',c:'t-fn'}},
+    {from:'n-tools',to:'n-perms',data:'🛡️ 권한 검증',term:{t:'checkPermissions() → Layer 1: allowlist ✓',c:'t-fn'}},
+    {from:'n-perms',to:'n-executor',data:'✅ ALLOW → 실행 큐',term:{t:'  → ALLOW (concurrent-safe: parallel queue)',c:'t-str'}},
+    {from:'n-executor',to:'n-engine',data:'📊 결과 반환',term:{t:'tool.call() → 245 lines read → ToolResult(success)',c:'t-str'}}
+  ],
   exs:[{e:'🔧',t:'Read, Edit, Bash...'},{e:'💻',t:'Bash 명령 실행'}],
-  srcs:['StreamingToolExecutor.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/tools/StreamingToolExecutor.ts','Tool.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/Tool.ts'],
-  term:{input:'→ Tool: FileReadTool("src/main.ts")',lines:[
-    {t:'// Tool Execution',c:'t-comment'},{t:'findToolByName("Read") → FileReadTool',c:'t-fn'},
-    {t:'checkPermissions()',c:'t-fn'},{t:'  Layer 1: allowlist → ✓ matched → ALLOW',c:'t-str'},
-    {t:'StreamingToolExecutor.addTool()',c:'t-fn'},{t:'  concurrent-safe → parallel',c:''},{t:'tool.call() → 245 lines read',c:'t-fn'},{t:'→ ToolResult(success)',c:'t-str'}
-  ]}},
+  srcs:['StreamingToolExecutor.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/tools/StreamingToolExecutor.ts','Tool.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/Tool.ts']},
 refinement:{label:'✨',kr:'정제 & 출력',en:'Refinement & Output',
+  descKr:'응답은 query() async generator 루프를 거쳐 컨텍스트 압축, 도구 결과 요약, 후처리 훅을 통과한 뒤 36개 메시지 컴포넌트로 렌더링됩니다.',
+  descEn:'Responses pass through the query() async generator loop with context compaction, tool result summarization, and post-sampling hooks before rendering via 36 message components.',
+  inputKr:'API 스트리밍 응답 (text + tool_use + thinking)',inputEn:'API streaming response (text + tool_use + thinking)',
+  outputKr:'최종 터미널 렌더링 메시지',outputEn:'Final rendered terminal message',
   nodes:['api','engine','query','compact','hooks','messages','ink','output'],
-  flow:[['n-api','n-engine','☁️ 스트리밍'],['n-engine','n-query','🔄 generator'],['n-query','n-compact','📦 압축 체크'],['n-compact','n-query','✅ 9-item 보존'],['n-query','n-hooks','🪝 후처리'],['n-hooks','n-messages','💬 렌더링'],['n-messages','n-ink','🖥️ 터미널'],['n-ink','n-output','✅ 최종 응답']],
-  badges:{'badge-output':'✅ 응답'},
+  steps:[
+    {from:'n-api',to:'n-engine',data:'☁️ 스트리밍 수신',term:{t:'→ API streaming response received',c:'t-kw'}},
+    {from:'n-engine',to:'n-query',data:'🔄 generator 루프',term:{t:'query() async generator → processing blocks...',c:'t-fn'}},
+    {from:'n-query',to:'n-compact',data:'📦 토큰 체크 (180K)',term:{t:'shouldCompact() → true (180K/200K = 90%)',c:'t-fn'}},
+    {from:'n-compact',to:'n-query',data:'✅ 25K로 압축',term:{t:'  9-item preservation → 180K → 25K tokens',c:'t-num'}},
+    {from:'n-query',to:'n-hooks',data:'🪝 후처리 적용',term:{t:'postSamplingHooks() → response filtered',c:'t-fn'}},
+    {from:'n-hooks',to:'n-messages',data:'💬 컴포넌트 선택',term:{t:'AssistantTextMessage → markdown rendering',c:'t-fn'}},
+    {from:'n-messages',to:'n-ink',data:'🖥️ Ink 렌더링',term:{t:'Ink.render() → terminal output',c:'t-fn'}},
+    {from:'n-ink',to:'n-output',data:'✅ 최종 출력',term:{t:'→ Response streamed to user ✓',c:'t-str'}}
+  ],
   exs:[{e:'✨',t:'스트리밍 + 압축'}],
-  srcs:['query.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/query.ts','Messages/|https://github.com/leaf-kit/claude-analysis/tree/main/src/components/Messages'],
-  term:{input:'→ Context: 180K/200K tokens',lines:[
-    {t:'// Refinement & Output',c:'t-comment'},{t:'shouldCompact() → true',c:'t-fn'},{t:'compact() → 9-item preservation',c:'t-fn'},
-    {t:'  1.Request 2.Concepts 3.Code 4.Errors 5.Journey',c:'t-str'},{t:'  6.Messages 7.Tasks 8.State 9.Next',c:'t-str'},
-    {t:'  → 180K → 25K tokens',c:'t-num'},{t:'postSamplingHooks()',c:'t-fn'},{t:'→ Streaming to terminal...',c:'t-kw'}
-  ]}},
+  srcs:['query.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/query.ts','Messages/|https://github.com/leaf-kit/claude-analysis/tree/main/src/components/Messages']},
 permission:{label:'🛡️',kr:'권한 & 보안',en:'Permission & Security',
+  descKr:'모든 도구 호출은 3계층 권한 게이트를 통과합니다: 규칙 기반 → AI 분류기(Bash AST tree-sitter) → 사용자 확인. 위험한 명령은 자동 차단됩니다.',
+  descEn:'All tool calls pass through a 3-tier permission gate: rule-based → AI classifier (Bash AST tree-sitter) → user dialog. Dangerous commands are auto-blocked.',
+  inputKr:'도구 실행 요청 (예: rm -rf /)',inputEn:'Tool execution request (e.g., rm -rf /)',
+  outputKr:'ALLOW / DENY / ASK 결정',outputEn:'ALLOW / DENY / ASK decision',
   nodes:['engine','tools','perms','executor'],
-  flow:[['n-engine','n-tools','🔧 BashTool'],['n-tools','n-perms','🛡️ AST 파싱'],['n-perms','n-executor','🚫 DENY'],['n-executor','n-engine','📊 거부 결과']],
-  badges:{'badge-tools':'🔧 BashTool'},
+  steps:[
+    {from:'n-engine',to:'n-tools',data:'🔧 BashTool("rm -rf /")',term:{t:'→ BashTool.checkPermissions("rm -rf /")',c:'t-kw'}},
+    {from:'n-tools',to:'n-perms',data:'🛡️ Layer 1: 규칙 체크',term:{t:'  Layer 1: Rule check → ⚠ no match',c:'t-warn'}},
+    {from:'n-perms',to:'n-perms',data:'🔍 Layer 2: AST 파싱',term:{t:'  Layer 2: tree-sitter AST → rm -r -f / → DANGEROUS',c:'t-err'}},
+    {from:'n-perms',to:'n-executor',data:'🚫 DENY',term:{t:'  → DENY: destructive root operation blocked',c:'t-err'}},
+    {from:'n-executor',to:'n-engine',data:'📊 거부 결과 반환',term:{t:'→ ToolResult: Permission refused',c:'t-err'}}
+  ],
   exs:[{e:'🚫',t:'rm -rf / → DENY'}],
-  srcs:['permissions/ — 26 files|https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/permissions'],
-  term:{input:'→ BashTool("rm -rf /")',lines:[
-    {t:'// Permission & Security',c:'t-comment'},{t:'checkPermissions("rm -rf /")',c:'t-fn'},
-    {t:'  Layer 1: Rule check → no match',c:'t-warn'},{t:'  Layer 2: tree-sitter AST',c:'t-fn'},
-    {t:'    → rm: recursive, force, root',c:'t-err'},{t:'    → DANGEROUS',c:'t-err'},{t:'  → DENY: Permission refused',c:'t-err'}
-  ]}},
+  srcs:['permissions/ 26 files|https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/permissions']},
 session:{label:'💾',kr:'세션 지속성',en:'Session Persistence',
+  descKr:'모든 대화는 JSONL 형식으로 .claude/sessions/에 자동 저장되며, --resume 플래그로 이전 세션을 복원할 수 있습니다.',
+  descEn:'All conversations auto-save in JSONL format to .claude/sessions/, and previous sessions can be restored with the --resume flag.',
+  inputKr:'세션 ID 또는 --resume 플래그',inputEn:'Session ID or --resume flag',
+  outputKr:'복원된 대화 상태',outputEn:'Restored conversation state',
   nodes:['user','cli','session','engine','memory','extract'],
-  flow:[['n-user','n-cli','💾 재개 요청'],['n-cli','n-session','📂 JSONL 로드'],['n-session','n-engine','🔄 47 메시지 복원'],['n-engine','n-memory','🧠 상태 복원'],['n-memory','n-extract','💡 추출'],['n-extract','n-session','💾 저장']],
-  badges:{},
+  steps:[
+    {from:'n-user',to:'n-cli',data:'💾 --resume abc123',term:{t:'$ claude --resume session_abc123',c:'t-kw'}},
+    {from:'n-cli',to:'n-session',data:'📂 JSONL 로드',term:{t:'getSessionIdFromLog("abc123") → found',c:'t-fn'}},
+    {from:'n-session',to:'n-engine',data:'🔄 47 메시지 복원',term:{t:'  → 47 messages restored from .jsonl',c:'t-str'}},
+    {from:'n-engine',to:'n-memory',data:'🧠 상태 재구성',term:{t:'recordTranscript() → auto-saving enabled',c:'t-fn'}},
+    {from:'n-memory',to:'n-extract',data:'💡 메모리 동기화',term:{t:'→ Session resumed ✓',c:'t-kw'}}
+  ],
   exs:[{e:'💾',t:'--resume 세션 재개'}],
-  srcs:['sessionStorage.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/utils'],
-  term:{input:'claude --resume session_abc123',lines:[
-    {t:'// Session Persistence',c:'t-comment'},{t:'getSessionIdFromLog("abc123")',c:'t-fn'},
-    {t:'  → .claude/sessions/abc123.jsonl',c:'t-str'},{t:'  → 47 messages restored',c:'t-str'},
-    {t:'recordTranscript() → auto-saving',c:'t-fn'},{t:'→ Session resumed',c:'t-kw'}
-  ]}},
+  srcs:['sessionStorage|https://github.com/leaf-kit/claude-analysis/tree/main/src/utils']},
 memwrite:{label:'📝',kr:'메모리 저장 프로세스',en:'Memory Write Process',
+  descKr:'세션 종료 시 포크된 서브에이전트가 대화를 분석하여 4가지 타입(피드백, 패턴, 워크플로우, 기술 발견)으로 분류하고 MEMORY.md 인덱스에 저장합니다. 24시간마다 autoDream이 과거 세션을 통합합니다.',
+  descEn:'At session end, a forked sub-agent analyzes conversation into 4 types (feedback, patterns, workflow, tech discoveries) and saves to MEMORY.md index. autoDream consolidates past sessions every 24 hours.',
+  inputKr:'세션 대화 내용',inputEn:'Session conversation content',
+  outputKr:'분류된 메모리 파일 + MEMORY.md 인덱스',outputEn:'Classified memory files + MEMORY.md index',
   nodes:['engine','extract','memdir','memory','session'],
-  flow:[['n-engine','n-extract','💡 대화 분석'],['n-extract','n-memdir','📝 user_*.md 저장'],['n-extract','n-memdir','📝 feedback_*.md'],['n-memdir','n-memory','🗂️ MEMORY.md 인덱스'],['n-memory','n-session','💾 세션 저장']],
-  badges:{},
+  steps:[
+    {from:'n-engine',to:'n-extract',data:'💡 대화 분석 시작',term:{t:'→ Session end: extracting memories...',c:'t-kw'}},
+    {from:'n-extract',to:'n-extract',data:'🔍 4타입 분류',term:{t:'extractMemoriesFromConversation() → forked agent',c:'t-fn'}},
+    {from:'n-extract',to:'n-memdir',data:'📝 user_role.md',term:{t:'  → user_role.md: "senior engineer, Go expert"',c:'t-str'}},
+    {from:'n-extract',to:'n-memdir',data:'📝 feedback_*.md',term:{t:'  → feedback_testing.md: "use real DB, not mocks"',c:'t-str'}},
+    {from:'n-memdir',to:'n-memory',data:'🗂️ 인덱스 업데이트',term:{t:'MEMORY.md index updated (+3 entries)',c:'t-fn'}},
+    {from:'n-memory',to:'n-session',data:'💾 세션 저장',term:{t:'→ autoDream: 7 sessions consolidated (24h batch)',c:'t-kw'}}
+  ],
   exs:[{e:'📝',t:'자동 메모리 추출 & 저장'}],
-  srcs:['extractMemories/|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/extractMemories','memdir.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/memdir/memdir.ts'],
-  term:{input:'→ Session end: extracting memories',lines:[
-    {t:'// Memory Write Process',c:'t-comment'},{t:'extractMemoriesFromConversation()',c:'t-fn'},
-    {t:'  → Analyzing last 24 messages...',c:''},{t:'  → user_role.md: "senior engineer"',c:'t-str'},
-    {t:'  → feedback_testing.md: "use real DB"',c:'t-str'},{t:'  → project_deploy.md: "freeze Mar 5"',c:'t-str'},
-    {t:'MEMORY.md index updated (+3 entries)',c:'t-fn'},{t:'autoDream: 7 sessions consolidated',c:'t-kw'}
-  ]}},
+  srcs:['extractMemories/|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/extractMemories','memdir.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/memdir/memdir.ts']},
 mcp:{label:'🔌',kr:'MCP 확장',en:'MCP Extension',
+  descKr:'외부 MCP 서버의 도구/리소스를 built-in 도구 풀에 병합합니다. mcp__서버명__도구명 형식으로 통합되어 동일한 권한 게이트를 통과합니다.',
+  descEn:'External MCP server tools/resources are merged into the built-in tool pool as mcp__serverName__toolName, passing through the same permission gate.',
+  inputKr:'MCP 서버 설정 + 도구 호출 요청',inputEn:'MCP server config + tool call request',
+  outputKr:'외부 도구 실행 결과',outputEn:'External tool execution result',
   nodes:['engine','tools','mcp','executor','perms'],
-  flow:[['n-engine','n-tools','🔧 도구 검색'],['n-mcp','n-tools','🔌 MCP 도구 병합'],['n-tools','n-perms','🛡️ 권한'],['n-perms','n-executor','⚙️ 외부 실행'],['n-executor','n-engine','📊 결과']],
-  badges:{},
-  exs:[{e:'🔌',t:'외부 MCP 서버 도구'}],
-  srcs:['services/mcp/|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/mcp'],
-  term:{input:'→ mcp__github__search_repos',lines:[
-    {t:'// MCP Extension',c:'t-comment'},{t:'getMcpTools() → 3 servers',c:'t-fn'},
-    {t:'assembleToolPool() → merge built-in + MCP',c:'t-fn'},{t:'MCPTool.call() → forwarding...',c:'t-fn'},{t:'→ 12 repos found',c:'t-str'}
-  ]}},
+  steps:[
+    {from:'n-engine',to:'n-tools',data:'🔧 도구 검색',term:{t:'→ mcp__github__search_repos',c:'t-kw'}},
+    {from:'n-mcp',to:'n-tools',data:'🔌 MCP 도구 병합',term:{t:'getMcpTools() → 3 servers, assembleToolPool()',c:'t-fn'}},
+    {from:'n-tools',to:'n-perms',data:'🛡️ 권한 검증',term:{t:'checkPermissions() → ALLOW',c:'t-fn'}},
+    {from:'n-perms',to:'n-executor',data:'⚙️ 외부 전송',term:{t:'MCPTool.call() → forwarding to MCP server...',c:'t-fn'}},
+    {from:'n-executor',to:'n-engine',data:'📊 12 repos',term:{t:'→ Result: 12 repositories found',c:'t-str'}}
+  ],
+  exs:[{e:'🔌',t:'외부 MCP 도구'}],
+  srcs:['services/mcp/|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/mcp']},
 compaction:{label:'📦',kr:'컨텍스트 압축',en:'Context Compaction',
+  descKr:'컨텍스트 토큰이 임계값(~80%)에 도달하면 9가지 핵심 항목을 보존하며 자동 압축합니다. 압축 중에는 도구 사용이 금지됩니다(NO_TOOLS_PREAMBLE).',
+  descEn:'When context tokens reach ~80% threshold, auto-compaction preserves 9 critical items. Tool use is forbidden during compaction (NO_TOOLS_PREAMBLE).',
+  inputKr:'180K 토큰 대화 컨텍스트',inputEn:'180K token conversation context',
+  outputKr:'25K 토큰 압축 요약 + 추출된 메모리',outputEn:'25K token compressed summary + extracted memories',
   nodes:['engine','query','compact','extract','memdir','messages'],
-  flow:[['n-engine','n-query','🔄 토큰 체크'],['n-query','n-compact','📦 180K > threshold'],['n-compact','n-extract','💡 동시 추출'],['n-extract','n-memdir','📝 메모리 저장'],['n-compact','n-query','✅ 25K 압축완료'],['n-query','n-messages','💬 재개']],
-  badges:{},
+  steps:[
+    {from:'n-engine',to:'n-query',data:'🔄 토큰 체크',term:{t:'→ Auto-compact triggered (180K/200K = 90%)',c:'t-kw'}},
+    {from:'n-query',to:'n-compact',data:'📦 압축 시작',term:{t:'shouldCompact() → true, NO_TOOLS_PREAMBLE',c:'t-warn'}},
+    {from:'n-compact',to:'n-compact',data:'📋 9-item 보존',term:{t:'  Preserving: request, concepts, code, errors, journey,',c:'t-str'}},
+    {from:'n-compact',to:'n-extract',data:'💡 동시 메모리 추출',term:{t:'  messages, tasks, state, next step',c:'t-str'}},
+    {from:'n-extract',to:'n-memdir',data:'📝 메모리 저장',term:{t:'extractMemories() → running in parallel',c:'t-fn'}},
+    {from:'n-compact',to:'n-query',data:'✅ 25K 완료',term:{t:'→ Context: 180,000 → 25,000 tokens compressed',c:'t-num'}}
+  ],
   exs:[{e:'📦',t:'180K → 25K 압축'}],
-  srcs:['compact/|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/compact'],
-  term:{input:'→ Auto-compact (180K/200K)',lines:[
-    {t:'// Context Compaction',c:'t-comment'},{t:'shouldCompact() → threshold exceeded',c:'t-fn'},
-    {t:'compact() → NO_TOOLS_PREAMBLE',c:'t-warn'},{t:'  9 items preserved',c:'t-fn'},
-    {t:'  요청, 개념, 코드, 오류, 여정, 메시지, 작업, 상태, 다음',c:'t-str'},
-    {t:'→ 180,000 → 25,000 tokens',c:'t-num'}
-  ]}},
+  srcs:['compact/|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/compact']},
 spawning:{label:'🧬',kr:'에이전트 스포닝',en:'Agent Spawning',
+  descKr:'서브에이전트를 Fork(부모 캐시 공유, 저비용) 또는 Fresh(독립 컨텍스트, 특화) 전략으로 생성합니다. 각 에이전트는 고유 시스템 프롬프트와 도구 세트를 가집니다.',
+  descEn:'Sub-agents are spawned with Fork (shared cache, low cost) or Fresh (isolated context, specialized) strategy. Each has its own system prompt and tool set.',
+  inputKr:'에이전트 타입 + 작업 프롬프트',inputEn:'Agent type + task prompt',
+  outputKr:'서브에이전트 텍스트 응답',outputEn:'Sub-agent text response',
   nodes:['engine','coordinator','agent','api','tools','executor'],
-  flow:[['n-engine','n-coordinator','📋 스펙 생성'],['n-coordinator','n-agent','🧬 Fork 전략'],['n-agent','n-api','☁️ 하위 API'],['n-api','n-agent','📊 응답'],['n-agent','n-tools','🔧 도구 사용'],['n-tools','n-executor','⚙️ 실행'],['n-agent','n-engine','✅ 텍스트 반환']],
-  badges:{},
+  steps:[
+    {from:'n-engine',to:'n-coordinator',data:'📋 스펙 생성',term:{t:'→ Agent(subagent_type: Explore)',c:'t-kw'}},
+    {from:'n-coordinator',to:'n-agent',data:'🧬 Fork 전략 선택',term:{t:'AgentTool.call() → Fork (parent cache shared)',c:'t-fn'}},
+    {from:'n-agent',to:'n-api',data:'☁️ Sub-API 호출',term:{t:'  System prompt: "READ-ONLY file search specialist"',c:'t-str'}},
+    {from:'n-api',to:'n-agent',data:'📊 응답 수신',term:{t:'  Tools: Glob, Grep, Read, Bash(RO)',c:'t-str'}},
+    {from:'n-agent',to:'n-tools',data:'🔧 도구 사용',term:{t:'  → Sub-QueryEngine: 3 tool calls completed',c:'t-fn'}},
+    {from:'n-agent',to:'n-engine',data:'✅ 텍스트 반환',term:{t:'→ Text response returned to parent ✓',c:'t-str'}}
+  ],
   exs:[{e:'🧬',t:'Fork / Fresh 전략'}],
-  srcs:['AgentTool.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool/AgentTool.ts'],
-  term:{input:'→ Agent(Explore)',lines:[
-    {t:'// Agent Spawning',c:'t-comment'},{t:'AgentTool.call({type:"Explore"})',c:'t-fn'},
-    {t:'  Fork (parent cache shared)',c:'t-str'},{t:'  Prompt: "READ-ONLY search"',c:'t-str'},
-    {t:'  → Sub-QueryEngine created',c:'t-fn'},{t:'  → 3 tool calls',c:'t-str'},{t:'→ Text response → parent',c:'t-kw'}
-  ]}},
+  srcs:['AgentTool.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool/AgentTool.ts']},
 cost:{label:'💰',kr:'비용 추적',en:'Cost Tracking',
+  descKr:'모든 API 호출의 토큰 사용량을 모델별 단가로 계산하여 세션/생애 비용을 누적 추적합니다.',
+  descEn:'Token usage from every API call is calculated at model-specific rates, tracking cumulative session and lifetime costs.',
+  inputKr:'API 응답의 usage 데이터',inputEn:'API response usage data',
+  outputKr:'누적 비용 (세션/전체)',outputEn:'Cumulative cost (session/lifetime)',
   nodes:['api','engine','cost','session'],
-  flow:[['n-api','n-engine','☁️ usage 데이터'],['n-engine','n-cost','💰 토큰×단가'],['n-cost','n-session','💾 비용 저장']],
-  badges:{},
+  steps:[
+    {from:'n-api',to:'n-engine',data:'📊 usage: 1,245 tokens',term:{t:'→ API response: 847 input + 398 output tokens',c:'t-kw'}},
+    {from:'n-engine',to:'n-cost',data:'💰 비용 계산',term:{t:'calculateModelCost() → sonnet: $0.003/1K in, $0.015/1K out',c:'t-fn'}},
+    {from:'n-cost',to:'n-session',data:'💾 비용 저장',term:{t:'  this call: $0.003 | session: $0.085 | lifetime: $12.43',c:'t-num'}}
+  ],
   exs:[{e:'💰',t:'토큰 비용 누적'}],
-  srcs:['cost-tracker.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/cost-tracker.ts'],
-  term:{input:'→ API response received',lines:[
-    {t:'// Cost Tracking',c:'t-comment'},{t:'usage: 847 in + 398 out = 1,245 tokens',c:'t-fn'},
-    {t:'model: claude-sonnet-4',c:''},{t:'cost: $0.003 (this call)',c:'t-num'},
-    {t:'session total: $0.085 | lifetime: $12.43',c:'t-num'}
-  ]}},
+  srcs:['cost-tracker.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/cost-tracker.ts']},
 retry:{label:'🔁',kr:'에러 복구 & 재시도',en:'Error Recovery & Retry',
+  descKr:'API 오류 시 지수적 백오프(1s→2s→4s)와 jitter로 최대 3회 재시도합니다. 429(Rate Limit), 500(Server Error)은 재시도, 400(Bad Request)은 즉시 실패합니다.',
+  descEn:'On API errors, exponential backoff (1s→2s→4s) with jitter retries up to 3 times. 429/500 are retryable, 400 fails immediately.',
+  inputKr:'API 오류 응답',inputEn:'API error response',
+  outputKr:'성공 응답 또는 최종 실패',outputEn:'Successful response or final failure',
   nodes:['engine','api','retry'],
-  flow:[['n-engine','n-api','☁️ API 호출'],['n-api','n-retry','❌ 429 Rate Limit'],['n-retry','n-api','🔁 1.2s 대기 후 재시도']],
-  badges:{},
-  exs:[{e:'🔁',t:'지수적 백오프 재시도'}],
-  srcs:['withRetry.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/api'],
-  term:{input:'→ API Error: 429 Rate Limited',lines:[
-    {t:'// Error Recovery',c:'t-comment'},{t:'isRetryable(429) → true',c:'t-fn'},
-    {t:'Retry 1/3: waiting 1.2s...',c:'t-warn'},{t:'Retry 2/3: waiting 2.4s...',c:'t-warn'},
-    {t:'Success on attempt 3 ✓',c:'t-str'}
-  ]}},
+  steps:[
+    {from:'n-engine',to:'n-api',data:'☁️ API 호출',term:{t:'→ API call failed: 429 Too Many Requests',c:'t-err'}},
+    {from:'n-api',to:'n-retry',data:'❌ 429 Rate Limit',term:{t:'isRetryable(429) → true',c:'t-fn'}},
+    {from:'n-retry',to:'n-api',data:'🔁 1.2s 후 재시도',term:{t:'  Retry 1/3: waiting 1.2s (backoff + jitter)...',c:'t-warn'}},
+    {from:'n-api',to:'n-retry',data:'❌ 또 실패',term:{t:'  Retry 2/3: waiting 2.4s...',c:'t-warn'}},
+    {from:'n-retry',to:'n-api',data:'🔁 재시도 3',term:{t:'  Retry 3/3: waiting 4.8s...',c:'t-warn'}},
+    {from:'n-api',to:'n-engine',data:'✅ 성공',term:{t:'→ Success on attempt 3 ✓',c:'t-str'}}
+  ],
+  exs:[{e:'🔁',t:'지수적 백오프'}],
+  srcs:['withRetry|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/api']},
 cache:{label:'🗄️',kr:'프롬프트 캐시 전략',en:'Prompt Cache Strategy',
+  descKr:'시스템 프롬프트를 Static(30-40K, 전역 공유)과 Dynamic(세션별)으로 분리하여 API 비용을 절감합니다. 12차원 해싱으로 캐시 브레이크 원인을 추적합니다.',
+  descEn:'System prompt is split into Static (30-40K, globally shared) and Dynamic (per-session) to reduce API costs. 12-dimensional hashing tracks cache break causes.',
+  inputKr:'시스템 프롬프트 + 도구 스키마',inputEn:'System prompt + tool schemas',
+  outputKr:'캐시 히트/미스 결과',outputEn:'Cache hit/miss result',
   nodes:['prompts','context','sysprompt','engine','api','cache'],
-  flow:[['n-prompts','n-cache','🗄️ Static 해싱'],['n-cache','n-engine','✅ 캐시 히트'],['n-engine','n-api','☁️ cache_control'],['n-api','n-engine','📊 45K 캐시 절약']],
-  badges:{},
+  steps:[
+    {from:'n-prompts',to:'n-cache',data:'🗄️ Static 해싱',term:{t:'→ Cache status check',c:'t-kw'}},
+    {from:'n-cache',to:'n-engine',data:'✅ 캐시 히트',term:{t:'splitSysPromptPrefix() → Static 30-40K (global)',c:'t-fn'}},
+    {from:'n-engine',to:'n-api',data:'☁️ cache_control',term:{t:'  Dynamic 5-10K (ephemeral) + tool schemas pinned',c:'t-str'}},
+    {from:'n-api',to:'n-engine',data:'📊 45K 절약',term:{t:'→ Cache hit: 45K tokens saved ($0.02 saved)',c:'t-num'}}
+  ],
   exs:[{e:'🗄️',t:'글로벌 스코프 분할'}],
-  srcs:['promptCacheBreak|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/api'],
-  term:{input:'→ Cache status check',lines:[
-    {t:'// Prompt Cache Strategy',c:'t-comment'},{t:'splitSysPromptPrefix()',c:'t-fn'},
-    {t:'  Static: 30-40K tokens (global cache)',c:'t-str'},{t:'  Dynamic: 5-10K tokens (ephemeral)',c:''},
-    {t:'computeSystemPromptHash() → 12-dim check',c:'t-fn'},{t:'→ Cache hit: 45K tokens saved',c:'t-num'}
-  ]}},
+  srcs:['promptCacheBreak|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/api']},
 skill:{label:'🎯',kr:'스킬 시스템',en:'Skill System',
+  descKr:'YAML frontmatter로 정의된 스킬을 /skill 명령으로 실행합니다. 각 스킬은 허용 도구, 모델, 실행 컨텍스트(inline/fork)를 지정할 수 있습니다.',
+  descEn:'Skills defined with YAML frontmatter are executed via /skill commands. Each skill specifies allowed tools, model, and execution context (inline/fork).',
+  inputKr:'/skill 명령 + 스킬 정의',inputEn:'/skill command + skill definition',
+  outputKr:'스킬 실행 결과',outputEn:'Skill execution result',
   nodes:['user','cli','commands','engine','agent','tools'],
-  flow:[['n-user','n-cli','🎯 /skill 명령'],['n-cli','n-commands','📜 스킬 파싱'],['n-commands','n-engine','🧩 프롬프트 주입'],['n-engine','n-agent','🤖 Fork 실행'],['n-agent','n-tools','🔧 제한 도구']],
-  badges:{},
+  steps:[
+    {from:'n-user',to:'n-cli',data:'🎯 /simplify 입력',term:{t:'$ /simplify',c:'t-kw'}},
+    {from:'n-cli',to:'n-commands',data:'📜 스킬 파싱',term:{t:'loadSkill("simplify") → YAML frontmatter parsed',c:'t-fn'}},
+    {from:'n-commands',to:'n-engine',data:'🧩 프롬프트 주입',term:{t:'  model: opus, context: fork, tools: Read, Grep, Glob',c:'t-str'}},
+    {from:'n-engine',to:'n-agent',data:'🤖 Fork 실행',term:{t:'Running skill in forked agent...',c:'t-fn'}},
+    {from:'n-agent',to:'n-tools',data:'🔧 제한 도구',term:{t:'  → 3 tool calls (Glob, Grep, Read)',c:'t-str'}},
+    {from:'n-agent',to:'n-engine',data:'✅ 결과',term:{t:'→ 3 recommendations: consolidate, extract, simplify',c:'t-str'}}
+  ],
   exs:[{e:'🎯',t:'/simplify 코드 정리'}],
-  srcs:['skills/|https://github.com/leaf-kit/claude-analysis/tree/main/src/skills'],
-  term:{input:'/simplify',lines:[
-    {t:'// Skill System',c:'t-comment'},{t:'loadSkill("simplify")',c:'t-fn'},
-    {t:'  YAML frontmatter parsed',c:''},{t:'  allowed_tools: Read, Grep, Glob',c:'t-str'},
-    {t:'  context: fork (isolated agent)',c:'t-str'},{t:'Running skill in forked agent...',c:'t-fn'},
-    {t:'→ 3 recommendations generated',c:'t-kw'}
-  ]}},
+  srcs:['skills/|https://github.com/leaf-kit/claude-analysis/tree/main/src/skills']},
 worktree:{label:'🌿',kr:'워크트리 격리',en:'Worktree Isolation',
+  descKr:'Git worktree를 사용하여 격리된 브랜치 환경에서 작업합니다. 메인 워킹트리에 영향 없이 독립적으로 파일을 수정하고, 완료 후 유지/삭제를 선택합니다.',
+  descEn:'Uses Git worktree for isolated branch environments. Files are modified independently without affecting the main working tree, with keep/remove options on exit.',
+  inputKr:'--worktree 플래그 + 브랜치명',inputEn:'--worktree flag + branch name',
+  outputKr:'격리된 작업 환경 (유지/삭제 선택)',outputEn:'Isolated work environment (keep/remove option)',
   nodes:['user','cli','engine','session','tools','executor'],
-  flow:[['n-user','n-cli','🌿 --worktree'],['n-cli','n-engine','📂 격리 환경'],['n-engine','n-tools','🔧 격리 도구'],['n-tools','n-executor','⚙️ 브랜치 작업'],['n-executor','n-session','💾 워크트리 저장']],
-  badges:{},
+  steps:[
+    {from:'n-user',to:'n-cli',data:'🌿 --worktree feature',term:{t:'$ claude --worktree feature-xyz',c:'t-kw'}},
+    {from:'n-cli',to:'n-engine',data:'📂 워크트리 생성',term:{t:'git worktree add .claude/worktrees/feature-xyz -b feature-xyz',c:'t-fn'}},
+    {from:'n-engine',to:'n-tools',data:'🔧 격리 도구 실행',term:{t:'  CWD: /project/.claude/worktrees/feature-xyz',c:'t-str'}},
+    {from:'n-tools',to:'n-executor',data:'⚙️ 브랜치 작업',term:{t:'  (isolated file modifications...)',c:''},},
+    {from:'n-executor',to:'n-session',data:'💾 워크트리 저장',term:{t:'exit-worktree --keep → worktree preserved',c:'t-fn'}},
+    {from:'n-session',to:'n-engine',data:'🔄 CWD 복원',term:{t:'→ CWD restored to /project ✓',c:'t-str'}}
+  ],
   exs:[{e:'🌿',t:'Git 워크트리 격리'}],
-  srcs:['worktree.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool'],
-  term:{input:'claude --worktree feature-xyz',lines:[
-    {t:'// Worktree Isolation',c:'t-comment'},{t:'git worktree add .claude/worktrees/feature-xyz',c:'t-fn'},
-    {t:'  Branch: feature-xyz (from main)',c:'t-str'},{t:'  CWD changed to isolated worktree',c:''},
-    {t:'(작업 수행 후)',c:'t-comment'},{t:'exit-worktree --keep',c:'t-fn'},{t:'→ Worktree preserved, CWD restored',c:'t-kw'}
-  ]}}
+  srcs:['worktree|https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool']}
 };
 
-var allNodes=[],activePat=null,termAbort=null,flowLabels=[];
+var allNodes=[],activePat=null,termAbort=null,flowLabels=[],stepNums=[];
+var activeFlowIdx=-1; // which flow connection is currently animating
 
-/* ===== INIT ===== */
 function init(){
   document.querySelectorAll('.dg-node').forEach(function(n){allNodes.push(n.id);});
-  buildPatternList();
-  initTheme();initLang();initPatterns();initFlowCanvas();initThree();initTips();
+  buildPatternList();initTheme();initLang();initPatterns();initFlowCanvas();initThree();initTips();
   applyLang();
-  setTimeout(function(){selectPattern('instruction');},300);
+  setTimeout(function(){selectPattern('instruction');},400);
 }
 
-/* Build sidebar from PATS data */
+/* Build sidebar */
 function buildPatternList(){
   var list=document.getElementById('pl-list');if(!list)return;
-  var html='';var idx=1;
+  var html='',idx=1;
   Object.keys(PATS).forEach(function(key){
-    var P=PATS[key];
-    var num=String(idx).padStart(2,'0');idx++;
-    html+='<div class="pl-item" data-pat="'+key+'">';
-    html+='<div class="pl-row"><span class="pl-num">'+num+'</span><span class="pl-emoji">'+P.label+'</span><strong data-kr="'+P.kr+'" data-en="'+P.en+'"></strong></div>';
-    html+='<div class="pl-exs">';
-    (P.exs||[]).forEach(function(ex){
-      html+='<div class="pl-ex" data-input="'+ex.t+'"><span>'+ex.e+'</span> <code>'+ex.t+'</code></div>';
-    });
-    (P.srcs||[]).forEach(function(s){
-      var parts=s.split('|');
-      html+='<a class="pl-src" href="'+parts[1]+'" target="_blank">📂 '+parts[0]+'</a>';
-    });
+    var P=PATS[key],num=String(idx++).padStart(2,'0');
+    html+='<div class="pl-item" data-pat="'+key+'"><div class="pl-row"><span class="pl-num">'+num+'</span><span class="pl-emoji">'+P.label+'</span><strong data-kr="'+P.kr+'" data-en="'+P.en+'"></strong></div><div class="pl-exs">';
+    (P.exs||[]).forEach(function(ex){html+='<div class="pl-ex" data-input="'+ex.t+'"><span>'+ex.e+'</span> <code>'+ex.t+'</code></div>';});
+    (P.srcs||[]).forEach(function(s){var p=s.split('|');html+='<a class="pl-src" href="'+p[1]+'" target="_blank">📂 '+p[0]+'</a>';});
     html+='</div></div>';
   });
   list.innerHTML=html;
 }
 
-/* Theme */
+/* Theme (dark default) */
 function initTheme(){
-  var s=localStorage.getItem('dp-theme');if(s)document.documentElement.setAttribute('data-theme',s);
+  var s=localStorage.getItem('dp-theme');
+  if(s)document.documentElement.setAttribute('data-theme',s);
   updTI();
   document.getElementById('btn-theme').onclick=function(){
     var c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';
@@ -233,8 +302,7 @@ function updTI(){document.getElementById('theme-icon').textContent=document.docu
 
 /* Lang */
 function initLang(){
-  var s=localStorage.getItem('dp-lang');if(s)document.documentElement.setAttribute('data-lang',s);
-  updLL();
+  var s=localStorage.getItem('dp-lang');if(s)document.documentElement.setAttribute('data-lang',s);updLL();
   document.getElementById('btn-lang').onclick=function(){
     var c=document.documentElement.getAttribute('data-lang'),n=c==='en'?'kr':'en';
     document.documentElement.setAttribute('data-lang',n);localStorage.setItem('dp-lang',n);updLL();applyLang();
@@ -244,7 +312,7 @@ function updLL(){document.getElementById('lang-label').textContent=document.docu
 function applyLang(){
   var l=document.documentElement.getAttribute('data-lang')||'kr';
   document.querySelectorAll('[data-kr][data-en]').forEach(function(el){
-    if(['STRONG','H2','SPAN','P'].indexOf(el.tagName)!==-1)el.textContent=el.getAttribute('data-'+l)||'';
+    if(['STRONG','H2','SPAN','P','DIV'].indexOf(el.tagName)!==-1)el.textContent=el.getAttribute('data-'+l)||'';
   });
 }
 
@@ -256,95 +324,124 @@ function initPatterns(){
 }
 
 function selectPattern(key){
-  if(!PATS[key])return;activePat=key;var P=PATS[key];
+  if(!PATS[key])return;activePat=key;activeFlowIdx=-1;
+  var P=PATS[key];
+  var lang=document.documentElement.getAttribute('data-lang')||'kr';
+  // Sidebar active
   document.querySelectorAll('.pl-item').forEach(function(i){i.classList.toggle('active',i.dataset.pat===key);});
-  // Reset all nodes
+  // Show pattern info
+  var info=document.getElementById('pat-info');
+  info.classList.add('show');
+  document.getElementById('pat-info-icon').textContent=P.label;
+  document.getElementById('pat-info-title').textContent=lang==='kr'?P.kr:P.en;
+  document.getElementById('pat-info-desc').textContent=lang==='kr'?P.descKr:P.descEn;
+  var tagsHtml='<span class="pat-info-tag in">INPUT: '+(lang==='kr'?P.inputKr:P.inputEn)+'</span>';
+  tagsHtml+='<span class="pat-info-tag out">OUTPUT: '+(lang==='kr'?P.outputKr:P.outputEn)+'</span>';
+  document.getElementById('pat-info-tags').innerHTML=tagsHtml;
+  // Reset nodes
   allNodes.forEach(function(nid){
     var el=document.getElementById(nid);if(!el)return;
-    el.classList.remove('dimmed','active-node','flow-node','stepping');
+    el.classList.remove('dimmed','active-node','flow-node','done-node','stepping');
     if(P.nodes.indexOf(el.dataset.mod)!==-1)el.classList.add('flow-node');
     else el.classList.add('dimmed');
   });
-  // Badges
+  // Clear badges, labels, step nums
   document.querySelectorAll('.nd-badge').forEach(function(b){b.classList.remove('show');b.textContent='';});
-  Object.keys(P.badges||{}).forEach(function(bid){
-    var b=document.getElementById(bid);if(b){b.textContent=P.badges[bid];setTimeout(function(){b.classList.add('show');},100);}
-  });
-  // Clear flow labels
   flowLabels.forEach(function(el){el.remove();});flowLabels=[];
-  // Sync: step through nodes + terminal
-  runSyncedAnimation(P);
+  stepNums.forEach(function(el){el.remove();});stepNums=[];
+  // Run synced stepping
+  runSteppedAnimation(P);
   applyLang();
 }
 
-/* ===== SYNCED ANIMATION: diagram steps + terminal ===== */
-function runSyncedAnimation(P){
+/* ===== SEQUENTIAL STEPPING ===== */
+function runSteppedAnimation(P){
   if(termAbort)termAbort.stop=true;
   var ctrl={stop:false};termAbort=ctrl;
   var inp=document.getElementById('term-input'),out=document.getElementById('term-output');
-  inp.textContent='';out.innerHTML='';
+  var stepInd=document.getElementById('term-step-ind');
+  inp.textContent='';out.innerHTML='';stepInd.textContent='';
 
-  var flowSteps=P.flow||[];
-  var termLines=P.term.lines||[];
-  var stepIdx=0;
-  var lineIdx=0;
+  var steps=P.steps||[];
+  var currentStep=0;
 
-  // Type input first
-  typeC(inp,P.term.input,25,ctrl,function(){
+  // Type first step's terminal input
+  var firstInput=steps.length>0?steps[0].term.t:'';
+  typeC(inp,P.steps[0]?P.steps[0].term.t.replace(/^[$>→]\s*/,''):'',22,ctrl,function(){
     if(ctrl.stop)return;
-    // Then step through flow + terminal lines simultaneously
-    function nextStep(){
-      if(ctrl.stop)return;
-      // Highlight current flow step
-      if(stepIdx<flowSteps.length){
-        var fs=flowSteps[stepIdx];
-        var targetNode=document.getElementById(fs[1]);
-        if(targetNode){
-          targetNode.classList.add('stepping');
-          setTimeout(function(){if(!ctrl.stop&&targetNode)targetNode.classList.remove('stepping');},600);
-        }
-        // Show flow label
-        if(fs[2]){
-          showFlowLabel(fs[0],fs[1],fs[2]);
-        }
-        stepIdx++;
-      }
-      // Show corresponding terminal line(s)
-      var linesToShow=Math.ceil(termLines.length/Math.max(flowSteps.length,1));
-      for(var i=0;i<linesToShow&&lineIdx<termLines.length;i++){
-        var line=termLines[lineIdx++];
-        var div=document.createElement('div');out.appendChild(div);
-        tok(div,line.t,line.c,ctrl,null);
-      }
-      out.parentElement.scrollTop=out.parentElement.scrollHeight;
-
-      if(stepIdx<flowSteps.length||lineIdx<termLines.length){
-        setTimeout(nextStep,400);
-      }
-    }
-    setTimeout(nextStep,200);
+    stepThrough();
   });
+
+  function stepThrough(){
+    if(ctrl.stop||currentStep>=steps.length)return;
+    var step=steps[currentStep];
+    var stepNum=currentStep+1;
+    activeFlowIdx=currentStep;
+
+    // Update step indicator
+    stepInd.textContent='Step '+stepNum+'/'+steps.length;
+
+    // Highlight target node with step number
+    var targetNode=document.getElementById(step.to);
+    if(targetNode){
+      // Remove previous stepping
+      document.querySelectorAll('.stepping').forEach(function(n){n.classList.remove('stepping');n.classList.add('done-node');});
+      targetNode.classList.add('stepping');
+      targetNode.classList.remove('flow-node');
+      // Add step number badge
+      var badge=document.createElement('div');
+      badge.className='step-num'+(step.parallel?' parallel':'');
+      badge.textContent=step.parallel?'∥'+stepNum:stepNum;
+      targetNode.appendChild(badge);
+      stepNums.push(badge);
+      setTimeout(function(){badge.classList.add('show');},50);
+    }
+
+    // Show flow label (speech bubble)
+    if(step.data){
+      showFlowLabel(step.from,step.to,step.data,step.parallel);
+    }
+
+    // Terminal line with step prefix
+    var div=document.createElement('div');
+    var prefix=document.createElement('span');
+    prefix.className='tk t-step';
+    prefix.textContent='['+stepNum+'] ';
+    prefix.style.animationDelay='0s';
+    div.appendChild(prefix);
+    out.appendChild(div);
+    tok(div,step.term.t,step.term.c,ctrl,function(){
+      if(ctrl.stop)return;
+      out.parentElement.scrollTop=out.parentElement.scrollHeight;
+      currentStep++;
+      if(currentStep<steps.length){
+        setTimeout(stepThrough, 600);
+      } else {
+        activeFlowIdx=-1;
+        stepInd.textContent='Complete ✓';
+      }
+    });
+  }
 }
 
-function showFlowLabel(fromId,toId,text){
+function showFlowLabel(fromId,toId,text,isParallel){
   var area=document.getElementById('diagram-wrap');
   var from=document.getElementById(fromId),to=document.getElementById(toId);
   if(!area||!from||!to)return;
   var ar=area.getBoundingClientRect();
   var fr=from.getBoundingClientRect(),tr=to.getBoundingClientRect();
   var x=(fr.left+fr.width/2+tr.left+tr.width/2)/2-ar.left;
-  var y=(fr.top+fr.height/2+tr.top+tr.height/2)/2-ar.top-16;
+  var y=(fr.top+fr.height/2+tr.top+tr.height/2)/2-ar.top-20;
   var label=document.createElement('div');
-  label.className='flow-label';
+  label.className='flow-label'+(isParallel?' parallel-label':'');
   label.textContent=text;
-  label.style.left=x+'px';label.style.top=y+'px';label.style.transform='translate(-50%,-50%) scale(.7)';
-  area.appendChild(label);
-  flowLabels.push(label);
-  setTimeout(function(){label.classList.add('show');label.style.transform='translate(-50%,-50%) scale(1)';},50);
-  setTimeout(function(){label.style.opacity='0';setTimeout(function(){if(label.parentNode)label.remove();},300);},2500);
+  label.style.left=x+'px';label.style.top=y+'px';
+  area.appendChild(label);flowLabels.push(label);
+  setTimeout(function(){label.classList.add('show');},30);
+  setTimeout(function(){label.style.opacity='0';setTimeout(function(){if(label.parentNode)label.remove();},400);},2800);
 }
 
-/* Flow Canvas */
+/* ===== FLOW CANVAS — only current step animates ===== */
 var fCtx,fCan,fW,fH,fTime=0;
 function initFlowCanvas(){
   fCan=document.getElementById('flow-canvas');if(!fCan)return;
@@ -359,48 +456,150 @@ function resizeF(){
   fCtx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
 }
 function nc(id){var e=document.getElementById(id),a=document.getElementById('diagram-wrap');if(!e||!a)return null;var ar=a.getBoundingClientRect(),er=e.getBoundingClientRect();return{x:er.left-ar.left+er.width/2,y:er.top-ar.top+er.height/2};}
+
 function drawF(){
-  requestAnimationFrame(drawF);fTime+=.014;fCtx.clearRect(0,0,fW,fH);
+  requestAnimationFrame(drawF);fTime+=.016;fCtx.clearRect(0,0,fW,fH);
   if(!activePat||!PATS[activePat])return;
-  var P=PATS[activePat],dk=document.documentElement.getAttribute('data-theme')==='dark';
-  P.flow.forEach(function(c,ci){
-    var a=nc(c[0]),b=nc(c[1]);if(!a||!b)return;
+  var P=PATS[activePat];
+  var dk=document.documentElement.getAttribute('data-theme')==='dark';
+
+  P.steps.forEach(function(step,ci){
+    var a=nc(step.from),b=nc(step.to);if(!a||!b)return;
     var dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
-    var off=Math.min(d*.12,25);
+    var off=Math.min(d*.1,20);
     var cx=(a.x+b.x)/2+(dy/d)*off*(ci%2?1:-1);
     var cy=(a.y+b.y)/2-(dx/d)*off*(ci%2?1:-1);
+
+    var isActive=(ci===activeFlowIdx);
+    var isDone=(ci<activeFlowIdx);
+
+    // Draw line — dim for inactive, bright for active, medium for done
     fCtx.beginPath();fCtx.moveTo(a.x,a.y);fCtx.quadraticCurveTo(cx,cy,b.x,b.y);
-    fCtx.strokeStyle='rgba(99,102,241,'+(dk?.35:.2)+')';fCtx.lineWidth=2.5;fCtx.stroke();
-    var sp=.45+(ci%3)*.12,t=((fTime*sp+ci*.35)%1.5)/1.5;if(t>1)return;
-    var px=(1-t)*(1-t)*a.x+2*(1-t)*t*cx+t*t*b.x;
-    var py=(1-t)*(1-t)*a.y+2*(1-t)*t*cy+t*t*b.y;
-    var g=fCtx.createRadialGradient(px,py,0,px,py,18);
-    g.addColorStop(0,'rgba(99,102,241,'+(dk?.7:.5)+')');g.addColorStop(1,'rgba(99,102,241,0)');
-    fCtx.fillStyle=g;fCtx.fillRect(px-18,py-18,36,36);
-    fCtx.beginPath();fCtx.arc(px,py,4.5,0,Math.PI*2);fCtx.fillStyle='#6366F1';fCtx.fill();
-    if(t>.92){var ang=Math.atan2(b.y-cy,b.x-cx);fCtx.save();fCtx.translate(b.x,b.y);fCtx.rotate(ang);fCtx.beginPath();fCtx.moveTo(0,0);fCtx.lineTo(-10,-5);fCtx.lineTo(-10,5);fCtx.closePath();fCtx.fillStyle='rgba(99,102,241,.5)';fCtx.fill();fCtx.restore();}
+    if(isActive){
+      fCtx.strokeStyle=dk?'rgba(99,102,241,.6)':'rgba(99,102,241,.5)';fCtx.lineWidth=3;
+    } else if(isDone){
+      fCtx.strokeStyle=dk?'rgba(99,102,241,.2)':'rgba(99,102,241,.15)';fCtx.lineWidth=2;
+    } else {
+      fCtx.strokeStyle=dk?'rgba(99,102,241,.06)':'rgba(99,102,241,.05)';fCtx.lineWidth=1;
+    }
+    fCtx.stroke();
+
+    // Only animate particle on ACTIVE step
+    if(isActive){
+      var t=(fTime*.6)%1;
+      var px=(1-t)*(1-t)*a.x+2*(1-t)*t*cx+t*t*b.x;
+      var py=(1-t)*(1-t)*a.y+2*(1-t)*t*cy+t*t*b.y;
+
+      // Glow
+      var g=fCtx.createRadialGradient(px,py,0,px,py,22);
+      g.addColorStop(0,'rgba(99,102,241,'+(dk?.8:.6)+')');
+      g.addColorStop(1,'rgba(99,102,241,0)');
+      fCtx.fillStyle=g;fCtx.fillRect(px-22,py-22,44,44);
+
+      // Main particle
+      fCtx.beginPath();fCtx.arc(px,py,5,0,Math.PI*2);
+      fCtx.fillStyle='#6366F1';fCtx.fill();
+
+      // Trail
+      var t2=t-.08;if(t2>0){
+        var px2=(1-t2)*(1-t2)*a.x+2*(1-t2)*t2*cx+t2*t2*b.x;
+        var py2=(1-t2)*(1-t2)*a.y+2*(1-t2)*t2*cy+t2*t2*b.y;
+        fCtx.beginPath();fCtx.arc(px2,py2,3,0,Math.PI*2);fCtx.fillStyle='rgba(99,102,241,.3)';fCtx.fill();
+      }
+      var t3=t-.16;if(t3>0){
+        var px3=(1-t3)*(1-t3)*a.x+2*(1-t3)*t3*cx+t3*t3*b.x;
+        var py3=(1-t3)*(1-t3)*a.y+2*(1-t3)*t3*cy+t3*t3*b.y;
+        fCtx.beginPath();fCtx.arc(px3,py3,2,0,Math.PI*2);fCtx.fillStyle='rgba(99,102,241,.15)';fCtx.fill();
+      }
+
+      // Arrow
+      if(t>.85){
+        var ang=Math.atan2(b.y-cy,b.x-cx);
+        fCtx.save();fCtx.translate(b.x,b.y);fCtx.rotate(ang);
+        fCtx.beginPath();fCtx.moveTo(0,0);fCtx.lineTo(-12,-6);fCtx.lineTo(-12,6);fCtx.closePath();
+        fCtx.fillStyle='rgba(99,102,241,.6)';fCtx.fill();fCtx.restore();
+      }
+
+      // Signal line from active node to terminal
+      var termEl=document.getElementById('terminal');
+      if(termEl){
+        var tr2=termEl.getBoundingClientRect();
+        var wrap=document.getElementById('diagram-wrap').getBoundingClientRect();
+        var termTop=tr2.top-wrap.top;
+        var nodeBottom=b.y+30;
+        if(termTop>nodeBottom){
+          fCtx.beginPath();
+          fCtx.moveTo(b.x,b.y+28);
+          fCtx.lineTo(b.x,termTop-5);
+          fCtx.strokeStyle='rgba(99,102,241,.15)';
+          fCtx.lineWidth=1;
+          fCtx.setLineDash([4,4]);
+          fCtx.stroke();
+          fCtx.setLineDash([]);
+          // Small dot at terminal entry
+          fCtx.beginPath();fCtx.arc(b.x,termTop-5,3,0,Math.PI*2);
+          fCtx.fillStyle='rgba(99,102,241,.4)';fCtx.fill();
+        }
+      }
+    }
   });
 }
 
-/* Three.js */
+/* Three.js — LLM-inspired neural background */
 function initThree(){
   var cv=document.getElementById('three-canvas');if(!cv||typeof THREE==='undefined')return;
-  var area=document.getElementById('diagram-wrap');var W=area.clientWidth,H=area.clientHeight;
-  var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(50,W/H,.1,500);cam.position.z=30;
+  var area=document.getElementById('diagram-wrap');
+  var W=area.clientWidth,H=area.clientHeight;
+  var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(55,W/H,.1,500);cam.position.z=35;
   var ren=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true});
   ren.setSize(W,H);ren.setPixelRatio(Math.min(devicePixelRatio,2));ren.setClearColor(0,0);
-  var N=80,pos=new Float32Array(N*3),col=new Float32Array(N*3),vel=[];
-  var pal=[new THREE.Color(0x6366F1),new THREE.Color(0x818CF8),new THREE.Color(0xA5B4FC)];
-  for(var i=0;i<N;i++){pos[i*3]=(Math.random()-.5)*50;pos[i*3+1]=(Math.random()-.5)*35;pos[i*3+2]=(Math.random()-.5)*10;vel.push({x:(Math.random()-.5)*.008,y:(Math.random()-.5)*.008,z:(Math.random()-.5)*.004});var c=pal[i%pal.length];col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
-  var geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('color',new THREE.BufferAttribute(col,3));
-  scene.add(new THREE.Points(geo,new THREE.PointsMaterial({size:.5,vertexColors:true,transparent:true,opacity:.35,blending:THREE.AdditiveBlending,depthWrite:false})));
-  var mL=200,lp=new Float32Array(mL*6),lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.BufferAttribute(lp,3));
-  scene.add(new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:0x6366F1,transparent:true,opacity:.03,blending:THREE.AdditiveBlending,depthWrite:false})));
-  (function anim(){requestAnimationFrame(anim);
-    for(var i=0;i<N;i++){pos[i*3]+=vel[i].x;pos[i*3+1]+=vel[i].y;pos[i*3+2]+=vel[i].z;if(Math.abs(pos[i*3])>25)vel[i].x*=-1;if(Math.abs(pos[i*3+1])>18)vel[i].y*=-1;if(Math.abs(pos[i*3+2])>5)vel[i].z*=-1;}
+
+  // Neural network-like particle layers
+  var layers=[],N=120;
+  var pos=new Float32Array(N*3),col=new Float32Array(N*3),vel=[];
+  var pal=[new THREE.Color(0x4338CA),new THREE.Color(0x6366F1),new THREE.Color(0x818CF8),new THREE.Color(0x312E81)];
+  for(var i=0;i<N;i++){
+    // Distribute in layers (like neural network layers)
+    var layer=Math.floor(i/(N/5));
+    pos[i*3]=-20+layer*10+(Math.random()-.5)*6;
+    pos[i*3+1]=(Math.random()-.5)*30;
+    pos[i*3+2]=(Math.random()-.5)*15;
+    vel.push({x:(Math.random()-.5)*.003,y:(Math.random()-.5)*.008,z:(Math.random()-.5)*.003});
+    var c=pal[i%pal.length];col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+  }
+  var geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  scene.add(new THREE.Points(geo,new THREE.PointsMaterial({size:.5,vertexColors:true,transparent:true,opacity:.3,blending:THREE.AdditiveBlending,depthWrite:false})));
+
+  // Connections between nearby particles
+  var mL=300,lp=new Float32Array(mL*6),lg=new THREE.BufferGeometry();
+  lg.setAttribute('position',new THREE.BufferAttribute(lp,3));
+  scene.add(new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:0x6366F1,transparent:true,opacity:.025,blending:THREE.AdditiveBlending,depthWrite:false})));
+
+  // Slow rotation
+  var time=0;
+  (function anim(){
+    requestAnimationFrame(anim);time+=.003;
+    for(var i=0;i<N;i++){
+      pos[i*3+1]+=vel[i].y;pos[i*3+2]+=vel[i].z;
+      if(Math.abs(pos[i*3+1])>15)vel[i].y*=-1;
+      if(Math.abs(pos[i*3+2])>8)vel[i].z*=-1;
+      // Gentle wave
+      pos[i*3+1]+=Math.sin(time*2+i*.1)*.003;
+    }
     geo.attributes.position.needsUpdate=true;
-    var li=0,la=lg.attributes.position.array;for(var i=0;i<N&&li<mL*6-6;i++){for(var j=i+1;j<N&&li<mL*6-6;j++){var dx=pos[i*3]-pos[j*3],dy=pos[i*3+1]-pos[j*3+1],dz=pos[i*3+2]-pos[j*3+2];if(dx*dx+dy*dy+dz*dz<36){la[li++]=pos[i*3];la[li++]=pos[i*3+1];la[li++]=pos[i*3+2];la[li++]=pos[j*3];la[li++]=pos[j*3+1];la[li++]=pos[j*3+2];}}}
-    for(var k=li;k<mL*6;k++)la[k]=0;lg.attributes.position.needsUpdate=true;lg.setDrawRange(0,li/3);
+    var li=0,la=lg.attributes.position.array;
+    for(var i=0;i<N&&li<mL*6-6;i++){for(var j=i+1;j<N&&li<mL*6-6;j++){
+      var dx=pos[i*3]-pos[j*3],dy=pos[i*3+1]-pos[j*3+1],dz=pos[i*3+2]-pos[j*3+2];
+      if(dx*dx+dy*dy+dz*dz<30){la[li++]=pos[i*3];la[li++]=pos[i*3+1];la[li++]=pos[i*3+2];la[li++]=pos[j*3];la[li++]=pos[j*3+1];la[li++]=pos[j*3+2];}
+    }}
+    for(var k=li;k<mL*6;k++)la[k]=0;
+    lg.attributes.position.needsUpdate=true;lg.setDrawRange(0,li/3);
+    // Slow orbit
+    cam.position.x=Math.sin(time*.3)*3;
+    cam.position.y=Math.cos(time*.2)*2;
+    cam.lookAt(0,0,0);
     ren.render(scene,cam);
   })();
   window.addEventListener('resize',function(){W=area.clientWidth;H=area.clientHeight;cam.aspect=W/H;cam.updateProjectionMatrix();ren.setSize(W,H);});
@@ -408,7 +607,7 @@ function initThree(){
 
 /* Terminal helpers */
 function typeC(el,t,s,c,cb){var i=0;(function n(){if(c.stop)return;if(i<t.length){el.textContent+=t[i++];setTimeout(n,s);}else if(cb)cb();})();}
-function tok(el,t,cls,c,cb){var ts=t.match(/\S+|\s+/g)||[],i=0;(function n(){if(c&&c.stop)return;if(i<ts.length){var s=document.createElement('span');s.className='tk '+(cls||'');s.textContent=ts[i];s.style.animationDelay=(i*.02)+'s';el.appendChild(s);i++;setTimeout(n,15);}else{el.appendChild(document.createTextNode('\n'));if(cb)cb();}})();}
+function tok(el,t,cls,c,cb){var ts=t.match(/\S+|\s+/g)||[],i=0;(function n(){if(c&&c.stop)return;if(i<ts.length){var s=document.createElement('span');s.className='tk '+(cls||'');s.textContent=ts[i];s.style.animationDelay=(i*.018)+'s';el.appendChild(s);i++;setTimeout(n,12);}else{el.appendChild(document.createTextNode('\n'));if(cb)cb();}})();}
 
 /* Tooltips */
 function initTips(){
@@ -418,9 +617,7 @@ function initTips(){
     if(ex){tip.textContent=ex.dataset.input;tip.classList.add('show');}
     else tip.classList.remove('show');
   });
-  document.addEventListener('mousemove',function(e){
-    if(tip.classList.contains('show')){tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-40)+'px';}
-  });
+  document.addEventListener('mousemove',function(e){if(tip.classList.contains('show')){tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-40)+'px';}});
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
