@@ -10,13 +10,8 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-  <!-- ===== Top Bar ===== -->
   <header class="topbar">
-    <div class="tb-left">
-      <span class="tb-logo">C:</span>
-      <span class="tb-title" data-kr="클로드 코드 디자인 패턴" data-en="Claude Code Design Patterns"></span>
-    </div>
+    <div class="tb-left"><span class="tb-logo">C:</span><span class="tb-title" data-kr="클로드 코드 디자인 패턴" data-en="Claude Code Design Patterns"></span></div>
     <div class="tb-right">
       <button class="tb-btn" id="btn-lang" title="한/영 전환"><span id="lang-label">EN</span></button>
       <button class="tb-btn" id="btn-theme" title="테마 전환"><span id="theme-icon">🌙</span></button>
@@ -25,151 +20,74 @@
     </div>
   </header>
 
-  <!-- ===== Main 3-Column Layout ===== -->
   <main class="app">
-
     <!-- LEFT: Pattern List -->
     <aside class="panel-left" id="panel-left">
       <div class="pl-header">
         <h2 data-kr="디자인 패턴" data-en="Design Patterns"></h2>
-        <p class="pl-hint" data-kr="패턴을 선택하면 데이터 흐름이 활성화됩니다" data-en="Select a pattern to activate data flow"></p>
+        <p class="pl-hint" data-kr="패턴을 선택하면 데이터 흐름이 활성화됩니다" data-en="Select a pattern to see data flow"></p>
       </div>
-      <nav class="pl-list" id="pl-list">
-        <div class="pl-item" data-pat="instruction">
-          <div class="pl-row"><span class="pl-num">01</span><span class="pl-emoji">📝</span><strong data-kr="명령어 해석" data-en="Instruction Following"></strong></div>
-          <div class="pl-exs">
-            <div class="pl-ex" data-input='claude "이 코드 분석해줘"'><span>📝</span> <code>claude "이 코드 분석해줘"</code></div>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/constants/prompts.ts" target="_blank">📂 prompts.ts — 15섹션 조립</a>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/systemPrompt.ts" target="_blank">📂 systemPrompt.ts — 우선순위 체인</a>
-          </div>
-        </div>
-        <div class="pl-item" data-pat="memory">
-          <div class="pl-row"><span class="pl-num">02</span><span class="pl-emoji">🧠</span><strong data-kr="컨텍스트 메모리" data-en="Context Memory"></strong></div>
-          <div class="pl-exs">
-            <div class="pl-ex" data-input='claude --resume session_abc123'><span>💾</span> <code>claude --resume</code></div>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/SessionMemory" target="_blank">📂 SessionMemory/ — 9-section</a>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/extractMemories" target="_blank">📂 extractMemories/ — 4타입</a>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/claudemd.ts" target="_blank">📂 claudemd.ts — 계층 로드</a>
-          </div>
-        </div>
-        <div class="pl-item" data-pat="planning">
-          <div class="pl-row"><span class="pl-num">03</span><span class="pl-emoji">🗺️</span><strong data-kr="계획 수립 & 추론" data-en="Planning & Reasoning"></strong></div>
-          <div class="pl-exs">
-            <div class="pl-ex" data-input='claude "전체 리팩토링 수행해줘"'><span>🗺️</span> <code>전체 리팩토링</code></div>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/coordinator/coordinatorMode.ts" target="_blank">📂 coordinatorMode.ts — 3-Phase</a>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool" target="_blank">📂 AgentTool/ — 6종 에이전트</a>
-          </div>
-        </div>
-        <div class="pl-item" data-pat="tooluse">
-          <div class="pl-row"><span class="pl-num">04</span><span class="pl-emoji">🔧</span><strong data-kr="도구 실행" data-en="Tool Execution"></strong></div>
-          <div class="pl-exs">
-            <div class="pl-ex" data-input='FileReadTool("src/main.ts")'><span>🔧</span> <code>Read, Edit, Bash...</code></div>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/tools/StreamingToolExecutor.ts" target="_blank">📂 StreamingToolExecutor.ts</a>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/Tool.ts" target="_blank">📂 Tool.ts — 인터페이스</a>
-          </div>
-        </div>
-        <div class="pl-item" data-pat="refinement">
-          <div class="pl-row"><span class="pl-num">05</span><span class="pl-emoji">✨</span><strong data-kr="정제 & 출력" data-en="Refinement & Output"></strong></div>
-          <div class="pl-exs">
-            <div class="pl-ex" data-input='스트리밍 + 컨텍스트 압축'><span>✨</span> <code>query() generator</code></div>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/query.ts" target="_blank">📂 query.ts — async generator</a>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/components/Messages" target="_blank">📂 Messages/ — 36 컴포넌트</a>
-          </div>
-        </div>
-        <div class="pl-item" data-pat="permission">
-          <div class="pl-row"><span class="pl-num">06</span><span class="pl-emoji">🛡️</span><strong data-kr="권한 & 보안" data-en="Permission & Security"></strong></div>
-          <div class="pl-exs">
-            <div class="pl-ex" data-input='rm -rf / → DENY'><span>🚫</span> <code>rm -rf / → DENY</code></div>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/permissions" target="_blank">📂 permissions/ — 26 files</a>
-          </div>
-        </div>
-        <div class="pl-item" data-pat="session">
-          <div class="pl-row"><span class="pl-num">07</span><span class="pl-emoji">💾</span><strong data-kr="세션 지속성" data-en="Session Persistence"></strong></div>
-          <div class="pl-exs">
-            <div class="pl-ex" data-input='세션 저장 → .claude/sessions/'><span>💾</span> <code>JSONL 저장/재개</code></div>
-          </div>
-        </div>
-        <div class="pl-item" data-pat="mcp">
-          <div class="pl-row"><span class="pl-num">08</span><span class="pl-emoji">🔌</span><strong data-kr="MCP 확장" data-en="MCP Extension"></strong></div>
-          <div class="pl-exs">
-            <div class="pl-ex" data-input='mcp__github__search_repos'><span>🔌</span> <code>외부 MCP 도구</code></div>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/mcp" target="_blank">📂 services/mcp/</a>
-          </div>
-        </div>
-        <div class="pl-item" data-pat="compaction">
-          <div class="pl-row"><span class="pl-num">09</span><span class="pl-emoji">📦</span><strong data-kr="컨텍스트 압축" data-en="Context Compaction"></strong></div>
-          <div class="pl-exs">
-            <div class="pl-ex" data-input='180K → 25K 토큰 압축'><span>📦</span> <code>9-item 보존</code></div>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/compact" target="_blank">📂 compact/ — 압축 엔진</a>
-          </div>
-        </div>
-        <div class="pl-item" data-pat="spawning">
-          <div class="pl-row"><span class="pl-num">10</span><span class="pl-emoji">🧬</span><strong data-kr="에이전트 스포닝" data-en="Agent Spawning"></strong></div>
-          <div class="pl-exs">
-            <div class="pl-ex" data-input='Fork(캐시 공유) vs Fresh(독립)'><span>🧬</span> <code>Fork / Fresh</code></div>
-            <a class="pl-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool/AgentTool.ts" target="_blank">📂 AgentTool.ts</a>
-          </div>
-        </div>
-      </nav>
-      <div class="pl-footer">
-        <a href="https://github.com/leaf-kit/claude-analysis" target="_blank">1,902 files &middot; 34 modules</a>
-      </div>
+      <nav class="pl-list" id="pl-list"></nav>
+      <div class="pl-footer"><a href="https://github.com/leaf-kit/claude-analysis" target="_blank">1,902 files · 34 modules</a></div>
     </aside>
 
-    <!-- CENTER: Diagram -->
+    <!-- CENTER: Diagram + Terminal(bottom) -->
     <section class="panel-center" id="panel-center">
-      <canvas id="three-canvas"></canvas>
-      <canvas id="flow-canvas"></canvas>
-      <div class="diagram" id="diagram">
-        <div class="dg-node nd-input" id="n-user" data-mod="user" style="grid-column:3;grid-row:1"><span class="nd-emoji">📝</span><div class="nd-info"><strong data-kr="사용자 입력" data-en="User Input"></strong></div><div class="nd-badge" id="badge-user"></div></div>
+      <div class="diagram-wrap" id="diagram-wrap">
+        <canvas id="three-canvas"></canvas>
+        <canvas id="flow-canvas"></canvas>
+        <div class="diagram" id="diagram">
+          <!-- Row 1 -->
+          <div class="dg-node nd-input" id="n-user" data-mod="user" style="grid-column:3;grid-row:1"><span class="nd-emoji">📝</span><div class="nd-info"><strong data-kr="사용자 입력" data-en="User Input"></strong></div><div class="nd-badge" id="badge-user"></div></div>
+          <!-- Row 2 -->
+          <div class="dg-node nd-int" id="n-cli" data-mod="cli" style="grid-column:2;grid-row:2"><span class="nd-emoji">⌨️</span><div class="nd-info"><strong data-kr="CLI 엔트리" data-en="CLI Entry"></strong><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/cli.tsx" target="_blank">cli.tsx</a></div><div class="nd-tip" data-kr="cli.tsx → init.ts → main.tsx 부트스트랩" data-en="cli.tsx → init.ts → main.tsx bootstrap chain"></div></div>
+          <div class="dg-node nd-int" id="n-commands" data-mod="commands" style="grid-column:4;grid-row:2"><span class="nd-emoji">📜</span><div class="nd-info"><strong>Commands</strong><span class="nd-sub">60+</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/commands.ts" target="_blank">commands.ts</a></div></div>
+          <!-- Row 3: Prompt -->
+          <div class="dg-node nd-core" id="n-prompts" data-mod="prompts" style="grid-column:1;grid-row:3"><span class="nd-emoji">🧩</span><div class="nd-info"><strong>System Prompt</strong><span class="nd-sub" data-kr="15개 섹션" data-en="15 sections"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/constants/prompts.ts" target="_blank">prompts.ts</a></div><div class="nd-tip" data-kr="getSystemPrompt()\nStatic 7 (전역 캐시) + Dynamic 8 (세션별)" data-en="getSystemPrompt()\nStatic 7 (global cache) + Dynamic 8 (per-session)"></div><div class="nd-badge" id="badge-prompts"></div></div>
+          <div class="dg-node nd-core" id="n-context" data-mod="context" style="grid-column:3;grid-row:3"><span class="nd-emoji">📄</span><div class="nd-info"><strong>Context</strong><span class="nd-sub">CLAUDE.md + Git</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/context.ts" target="_blank">context.ts</a></div><div class="nd-tip" data-kr="getUserContext() → 4-layer CLAUDE.md\ngetSystemContext() → Git status" data-en="getUserContext() → 4-layer CLAUDE.md\ngetSystemContext() → Git status"></div><div class="nd-badge" id="badge-context"></div></div>
+          <div class="dg-node nd-core" id="n-sysprompt" data-mod="sysprompt" style="grid-column:5;grid-row:3"><span class="nd-emoji">🎯</span><div class="nd-info"><strong>Priority Chain</strong><span class="nd-sub" data-kr="5단계" data-en="5-tier"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/systemPrompt.ts" target="_blank">systemPrompt.ts</a></div><div class="nd-tip" data-kr="Override → Coordinator → Agent → Custom → Default" data-en="Override → Coordinator → Agent → Custom → Default"></div></div>
+          <!-- Row 4: Memory -->
+          <div class="dg-node nd-core" id="n-claudemd" data-mod="claudemd" style="grid-column:1;grid-row:4"><span class="nd-emoji">📋</span><div class="nd-info"><strong>CLAUDE.md</strong><span class="nd-sub" data-kr="4-level 계층" data-en="4-level"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/claudemd.ts" target="_blank">claudemd.ts</a></div></div>
+          <div class="dg-node nd-core" id="n-memory" data-mod="memory" style="grid-column:2;grid-row:4"><span class="nd-emoji">🧠</span><div class="nd-info"><strong>Session Memory</strong><span class="nd-sub">9-section</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/SessionMemory" target="_blank">SessionMemory/</a></div><div class="nd-badge" id="badge-memory"></div></div>
+          <div class="dg-node nd-core" id="n-extract" data-mod="extract" style="grid-column:4;grid-row:4"><span class="nd-emoji">💡</span><div class="nd-info"><strong>Memory Extract</strong><span class="nd-sub" data-kr="4타입 분류" data-en="4-type"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/extractMemories" target="_blank">extractMemories/</a></div></div>
+          <div class="dg-node nd-core" id="n-memdir" data-mod="memdir" style="grid-column:5;grid-row:4"><span class="nd-emoji">🗂️</span><div class="nd-info"><strong>Memdir</strong><span class="nd-sub">MEMORY.md</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/memdir/memdir.ts" target="_blank">memdir.ts</a></div></div>
+          <!-- Row 5: Engine -->
+          <div class="dg-node nd-engine" id="n-engine" data-mod="engine" style="grid-column:3;grid-row:5"><span class="nd-emoji">⚡</span><div class="nd-info"><strong>Query Engine</strong><span class="nd-sub" data-kr="핵심 상태 머신" data-en="Core state machine"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/QueryEngine.ts" target="_blank">QueryEngine.ts</a></div><div class="nd-badge" id="badge-engine"></div></div>
+          <div class="dg-node nd-ext" id="n-api" data-mod="api" style="grid-column:5;grid-row:5"><span class="nd-emoji">☁️</span><div class="nd-info"><strong>Anthropic API</strong><span class="nd-sub" data-kr="Claude 서버" data-en="Claude Server"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/api" target="_blank">services/api/</a></div><div class="nd-badge" id="badge-api"></div></div>
+          <div class="dg-node nd-core" id="n-coordinator" data-mod="coordinator" style="grid-column:1;grid-row:5"><span class="nd-emoji">🗺️</span><div class="nd-info"><strong>Coordinator</strong><span class="nd-sub">3-Phase</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/coordinator/coordinatorMode.ts" target="_blank">coordinatorMode.ts</a></div></div>
+          <!-- Row 6 -->
+          <div class="dg-node nd-core" id="n-agent" data-mod="agent" style="grid-column:1;grid-row:6"><span class="nd-emoji">🤖</span><div class="nd-info"><strong>AgentTool</strong><span class="nd-sub" data-kr="6종 에이전트" data-en="6 agents"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool" target="_blank">AgentTool/</a></div></div>
+          <div class="dg-node nd-core" id="n-tools" data-mod="tools" style="grid-column:2;grid-row:6"><span class="nd-emoji">🔧</span><div class="nd-info"><strong>Tool Registry</strong><span class="nd-sub">40+</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/tools.ts" target="_blank">tools.ts</a></div><div class="nd-badge" id="badge-tools"></div></div>
+          <div class="dg-node nd-core" id="n-executor" data-mod="executor" style="grid-column:3;grid-row:6"><span class="nd-emoji">⚙️</span><div class="nd-info"><strong>Streaming Executor</strong><span class="nd-sub" data-kr="동시성 제어" data-en="Concurrency"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/tools/StreamingToolExecutor.ts" target="_blank">Executor.ts</a></div></div>
+          <div class="dg-node nd-core" id="n-perms" data-mod="perms" style="grid-column:4;grid-row:6"><span class="nd-emoji">🛡️</span><div class="nd-info"><strong>Permissions</strong><span class="nd-sub" data-kr="3계층 보안" data-en="3-tier"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/permissions" target="_blank">permissions/</a></div></div>
+          <!-- Row 7 -->
+          <div class="dg-node nd-core" id="n-compact" data-mod="compact" style="grid-column:1;grid-row:7"><span class="nd-emoji">📦</span><div class="nd-info"><strong>Compact</strong><span class="nd-sub" data-kr="9-item 보존" data-en="9-item"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/compact" target="_blank">compact/</a></div></div>
+          <div class="dg-node nd-core" id="n-query" data-mod="query" style="grid-column:2;grid-row:7"><span class="nd-emoji">🔄</span><div class="nd-info"><strong>Query Loop</strong><span class="nd-sub">async gen</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/query.ts" target="_blank">query.ts</a></div></div>
+          <div class="dg-node nd-core" id="n-hooks" data-mod="hooks" style="grid-column:3;grid-row:7"><span class="nd-emoji">🪝</span><div class="nd-info"><strong>Hooks</strong><span class="nd-sub" data-kr="후처리" data-en="Post-hook"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/hooks" target="_blank">hooks/</a></div></div>
+          <div class="dg-node nd-core" id="n-cost" data-mod="cost" style="grid-column:4;grid-row:7"><span class="nd-emoji">💰</span><div class="nd-info"><strong>Cost Tracker</strong><span class="nd-sub" data-kr="토큰 비용" data-en="Token cost"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/cost-tracker.ts" target="_blank">cost-tracker.ts</a></div></div>
+          <div class="dg-node nd-core" id="n-retry" data-mod="retry" style="grid-column:5;grid-row:6"><span class="nd-emoji">🔁</span><div class="nd-info"><strong>Retry</strong><span class="nd-sub" data-kr="백오프" data-en="Backoff"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/api" target="_blank">withRetry.ts</a></div></div>
+          <!-- Row 8 -->
+          <div class="dg-node nd-core" id="n-messages" data-mod="messages" style="grid-column:1;grid-row:8"><span class="nd-emoji">💬</span><div class="nd-info"><strong>Messages</strong><span class="nd-sub" data-kr="36 컴포넌트" data-en="36 renders"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/components/Messages" target="_blank">Messages/</a></div></div>
+          <div class="dg-node nd-int" id="n-ink" data-mod="ink" style="grid-column:2;grid-row:8"><span class="nd-emoji">🖥️</span><div class="nd-info"><strong>Ink</strong><span class="nd-sub" data-kr="터미널 UI" data-en="Terminal UI"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/ink" target="_blank">ink/</a></div></div>
+          <div class="dg-node nd-output" id="n-output" data-mod="output" style="grid-column:3;grid-row:8"><span class="nd-emoji">✅</span><div class="nd-info"><strong data-kr="최종 응답" data-en="Response"></strong></div><div class="nd-badge" id="badge-output"></div></div>
+          <!-- Support -->
+          <div class="dg-node nd-sup" id="n-mcp" data-mod="mcp" style="grid-column:5;grid-row:7"><span class="nd-emoji">🔌</span><div class="nd-info"><strong>MCP</strong><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/mcp" target="_blank">mcp/</a></div></div>
+          <div class="dg-node nd-sup" id="n-state" data-mod="state" style="grid-column:4;grid-row:8"><span class="nd-emoji">📊</span><div class="nd-info"><strong>AppState</strong><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/state" target="_blank">state/</a></div></div>
+          <div class="dg-node nd-sup" id="n-session" data-mod="session" style="grid-column:5;grid-row:8"><span class="nd-emoji">💾</span><div class="nd-info"><strong>Session</strong><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils" target="_blank">session.ts</a></div></div>
+          <div class="dg-node nd-sup" id="n-skill" data-mod="skill" style="grid-column:5;grid-row:5" style="display:none"><span class="nd-emoji">🎯</span><div class="nd-info"><strong>Skills</strong><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/skills" target="_blank">skills/</a></div></div>
+          <div class="dg-node nd-sup" id="n-cache" data-mod="cache" style="grid-column:4;grid-row:5"><span class="nd-emoji">🗄️</span><div class="nd-info"><strong>Cache</strong><span class="nd-sub">LRU</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils" target="_blank">fileStateCache</a></div></div>
+        </div>
+      </div>
 
-        <div class="dg-node nd-int" id="n-cli" data-mod="cli" style="grid-column:2;grid-row:2"><span class="nd-emoji">⌨️</span><div class="nd-info"><strong data-kr="CLI 엔트리" data-en="CLI Entry"></strong><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/cli.tsx" target="_blank">cli.tsx</a></div><div class="nd-tip" data-kr="cli.tsx → init.ts → main.tsx 부트스트랩" data-en="cli.tsx → init.ts → main.tsx bootstrap"></div></div>
-        <div class="dg-node nd-int" id="n-commands" data-mod="commands" style="grid-column:4;grid-row:2"><span class="nd-emoji">📜</span><div class="nd-info"><strong>Commands</strong><span class="nd-sub">60+</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/commands.ts" target="_blank">commands.ts</a></div></div>
-
-        <div class="dg-node nd-core" id="n-prompts" data-mod="prompts" style="grid-column:1;grid-row:3"><span class="nd-emoji">🧩</span><div class="nd-info"><strong>System Prompt</strong><span class="nd-sub" data-kr="15개 섹션" data-en="15 sections"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/constants/prompts.ts" target="_blank">prompts.ts</a></div><div class="nd-tip" data-kr="getSystemPrompt()\nStatic 7 (전역 캐시) + Dynamic 8 (세션별)" data-en="getSystemPrompt()\nStatic 7 (global cache) + Dynamic 8 (per-session)"></div><div class="nd-badge" id="badge-prompts"></div></div>
-        <div class="dg-node nd-core" id="n-context" data-mod="context" style="grid-column:3;grid-row:3"><span class="nd-emoji">📄</span><div class="nd-info"><strong>Context</strong><span class="nd-sub">CLAUDE.md + Git</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/context.ts" target="_blank">context.ts</a></div><div class="nd-tip" data-kr="getUserContext() → 4-layer CLAUDE.md\ngetSystemContext() → Git status" data-en="getUserContext() → 4-layer CLAUDE.md\ngetSystemContext() → Git status"></div><div class="nd-badge" id="badge-context"></div></div>
-        <div class="dg-node nd-core" id="n-sysprompt" data-mod="sysprompt" style="grid-column:5;grid-row:3"><span class="nd-emoji">🎯</span><div class="nd-info"><strong>Priority Chain</strong><span class="nd-sub" data-kr="5단계" data-en="5-tier"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/systemPrompt.ts" target="_blank">systemPrompt.ts</a></div><div class="nd-tip" data-kr="Override → Coordinator → Agent → Custom → Default" data-en="Override → Coordinator → Agent → Custom → Default"></div></div>
-
-        <div class="dg-node nd-core" id="n-claudemd" data-mod="claudemd" style="grid-column:1;grid-row:4"><span class="nd-emoji">📋</span><div class="nd-info"><strong>CLAUDE.md</strong><span class="nd-sub" data-kr="4-level 계층" data-en="4-level hierarchy"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/claudemd.ts" target="_blank">claudemd.ts</a></div><div class="nd-tip" data-kr="/etc → ~/.claude → project → local" data-en="/etc → ~/.claude → project → local"></div></div>
-        <div class="dg-node nd-core" id="n-memory" data-mod="memory" style="grid-column:2;grid-row:4"><span class="nd-emoji">🧠</span><div class="nd-info"><strong>Session Memory</strong><span class="nd-sub" data-kr="9-section" data-en="9-section"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/SessionMemory" target="_blank">SessionMemory/</a></div><div class="nd-badge" id="badge-memory"></div></div>
-        <div class="dg-node nd-core" id="n-extract" data-mod="extract" style="grid-column:4;grid-row:4"><span class="nd-emoji">💡</span><div class="nd-info"><strong>Memory Extract</strong><span class="nd-sub" data-kr="4타입" data-en="4-type"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/extractMemories" target="_blank">extractMemories/</a></div></div>
-        <div class="dg-node nd-core" id="n-memdir" data-mod="memdir" style="grid-column:5;grid-row:4"><span class="nd-emoji">🗂️</span><div class="nd-info"><strong>Memdir</strong><span class="nd-sub">MEMORY.md</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/memdir/memdir.ts" target="_blank">memdir.ts</a></div></div>
-
-        <div class="dg-node nd-engine" id="n-engine" data-mod="engine" style="grid-column:3;grid-row:5"><span class="nd-emoji">⚡</span><div class="nd-info"><strong>Query Engine</strong><span class="nd-sub" data-kr="핵심 상태 머신" data-en="Core state machine"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/QueryEngine.ts" target="_blank">QueryEngine.ts</a></div><div class="nd-tip" data-kr="submitMessage() → 프롬프트 + 메시지 + 도구 → API → 도구 루프" data-en="submitMessage() → prompt + messages + tools → API → tool loop"></div><div class="nd-badge" id="badge-engine"></div></div>
-        <div class="dg-node nd-ext" id="n-api" data-mod="api" style="grid-column:5;grid-row:5"><span class="nd-emoji">☁️</span><div class="nd-info"><strong>Anthropic API</strong><span class="nd-sub" data-kr="Claude 서버" data-en="Claude Server"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/api" target="_blank">services/api/</a></div><div class="nd-tip" data-kr="messages.create()\ntext + tool_use + thinking 스트리밍" data-en="messages.create()\ntext + tool_use + thinking streaming"></div><div class="nd-badge" id="badge-api"></div></div>
-        <div class="dg-node nd-core" id="n-coordinator" data-mod="coordinator" style="grid-column:1;grid-row:5"><span class="nd-emoji">🗺️</span><div class="nd-info"><strong>Coordinator</strong><span class="nd-sub">3-Phase</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/coordinator/coordinatorMode.ts" target="_blank">coordinatorMode.ts</a></div><div class="nd-tip" data-kr="Phase 1: Research (병렬)\nPhase 2: Synthesis\nPhase 3: Implement & Verify" data-en="Phase 1: Research (parallel)\nPhase 2: Synthesis\nPhase 3: Implement & Verify"></div></div>
-        <div class="dg-node nd-core" id="n-agent" data-mod="agent" style="grid-column:1;grid-row:6"><span class="nd-emoji">🤖</span><div class="nd-info"><strong>AgentTool</strong><span class="nd-sub" data-kr="6종 에이전트" data-en="6 agents"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/tools/AgentTool" target="_blank">AgentTool/</a></div><div class="nd-tip" data-kr="general | Explore | Plan | verify | guide | statusline\nFork(캐시) vs Fresh(독립)" data-en="general | Explore | Plan | verify | guide | statusline\nFork(cache) vs Fresh(isolated)"></div></div>
-
-        <div class="dg-node nd-core" id="n-tools" data-mod="tools" style="grid-column:2;grid-row:6"><span class="nd-emoji">🔧</span><div class="nd-info"><strong>Tool Registry</strong><span class="nd-sub">40+</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/tools.ts" target="_blank">tools.ts</a></div><div class="nd-tip" data-kr="File(5) Shell(2) Agent(3) Web(2) Task(6) MCP(4) LSP(1) System(17)" data-en="File(5) Shell(2) Agent(3) Web(2) Task(6) MCP(4) LSP(1) System(17)"></div><div class="nd-badge" id="badge-tools"></div></div>
-        <div class="dg-node nd-core" id="n-executor" data-mod="executor" style="grid-column:3;grid-row:6"><span class="nd-emoji">⚙️</span><div class="nd-info"><strong>Streaming Executor</strong><span class="nd-sub" data-kr="동시성 제어" data-en="Concurrency"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/tools/StreamingToolExecutor.ts" target="_blank">Executor.ts</a></div></div>
-        <div class="dg-node nd-core" id="n-perms" data-mod="perms" style="grid-column:4;grid-row:6"><span class="nd-emoji">🛡️</span><div class="nd-info"><strong>Permissions</strong><span class="nd-sub" data-kr="3계층" data-en="3-tier"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/permissions" target="_blank">permissions/</a></div><div class="nd-tip" data-kr="Layer 1: 규칙\nLayer 2: AI + Bash AST\nLayer 3: 사용자 확인" data-en="Layer 1: Rules\nLayer 2: AI + Bash AST\nLayer 3: User dialog"></div></div>
-
-        <div class="dg-node nd-core" id="n-compact" data-mod="compact" style="grid-column:1;grid-row:7"><span class="nd-emoji">📦</span><div class="nd-info"><strong>Compact</strong><span class="nd-sub" data-kr="9-item 보존" data-en="9-item preserve"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/compact" target="_blank">compact/</a></div></div>
-        <div class="dg-node nd-core" id="n-query" data-mod="query" style="grid-column:2;grid-row:7"><span class="nd-emoji">🔄</span><div class="nd-info"><strong>Query Loop</strong><span class="nd-sub">async gen</span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/query.ts" target="_blank">query.ts</a></div></div>
-        <div class="dg-node nd-core" id="n-hooks" data-mod="hooks" style="grid-column:4;grid-row:7"><span class="nd-emoji">🪝</span><div class="nd-info"><strong>Hooks</strong><span class="nd-sub" data-kr="후처리" data-en="Post-sampling"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/hooks" target="_blank">hooks/</a></div></div>
-
-        <div class="dg-node nd-core" id="n-messages" data-mod="messages" style="grid-column:2;grid-row:8"><span class="nd-emoji">💬</span><div class="nd-info"><strong>Messages</strong><span class="nd-sub" data-kr="36 컴포넌트" data-en="36 components"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/components/Messages" target="_blank">Messages/</a></div></div>
-        <div class="dg-node nd-int" id="n-ink" data-mod="ink" style="grid-column:3;grid-row:8"><span class="nd-emoji">🖥️</span><div class="nd-info"><strong>Ink</strong><span class="nd-sub" data-kr="터미널 UI" data-en="Terminal UI"></span><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/ink" target="_blank">ink/</a></div></div>
-        <div class="dg-node nd-output" id="n-output" data-mod="output" style="grid-column:4;grid-row:8"><span class="nd-emoji">✅</span><div class="nd-info"><strong data-kr="최종 응답" data-en="Response"></strong></div><div class="nd-badge" id="badge-output"></div></div>
-
-        <div class="dg-node nd-sup" id="n-mcp" data-mod="mcp" style="grid-column:5;grid-row:6"><span class="nd-emoji">🔌</span><div class="nd-info"><strong>MCP</strong><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/services/mcp" target="_blank">mcp/</a></div></div>
-        <div class="dg-node nd-sup" id="n-state" data-mod="state" style="grid-column:5;grid-row:7"><span class="nd-emoji">📊</span><div class="nd-info"><strong>AppState</strong><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/state" target="_blank">state/</a></div></div>
-        <div class="dg-node nd-sup" id="n-session" data-mod="session" style="grid-column:5;grid-row:8"><span class="nd-emoji">💾</span><div class="nd-info"><strong>Session</strong><a class="nd-src" href="https://github.com/leaf-kit/claude-analysis/tree/main/src/utils" target="_blank">session.ts</a></div></div>
+      <!-- Terminal at BOTTOM -->
+      <div class="terminal" id="terminal">
+        <div class="term-bar"><div class="term-dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div><span class="term-title">console output</span></div>
+        <div class="term-body" id="term-body">
+          <div class="term-prompt"><span class="term-prefix">$</span><span class="term-input" id="term-input"></span><span class="term-cursor"></span></div>
+          <div class="term-output" id="term-output"></div>
+        </div>
       </div>
     </section>
-
-    <!-- RIGHT: Console -->
-    <aside class="panel-right" id="panel-right">
-      <div class="pr-header">
-        <div class="pr-dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
-        <span class="pr-title">console output</span>
-      </div>
-      <div class="pr-body" id="pr-body">
-        <div class="pr-prompt"><span class="pr-prefix">$</span><span class="pr-input" id="pr-input"></span><span class="pr-cursor"></span></div>
-        <div class="pr-output" id="pr-output"></div>
-      </div>
-    </aside>
-
   </main>
   <div class="hover-tip" id="hover-tip"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
