@@ -194,13 +194,19 @@ worktree:{label:'🌿',kr:'워크트리 격리',en:'Worktree Isolation',heroAnim
 
 var allNodes=[],activePat=null,termAbort=null,flowLabels=[],stepNums=[];
 var activeFlowIdx=-1,autoPlaying=false,autoPlayIdx=0;
-var speedMultiplier=2; // default slow
+var speedMultiplier=1.5; // default: 조금 느림
 
 function init(){
   document.querySelectorAll('.dg-node').forEach(function(n){allNodes.push(n.id);});
   buildPatternList();initTheme();initLang();initPatterns();initSpeed();initAutoplay();
   initFlowCanvas();initThree();initTips();applyLang();
-  setTimeout(function(){selectPattern('instruction');},400);
+  // 기본: 자동 순차 재생 시작
+  setTimeout(function(){
+    autoPlaying=true;autoPlayIdx=0;
+    document.getElementById('btn-autoplay').classList.add('active-btn');
+    document.getElementById('autoplay-icon').textContent='⏸';
+    runAutoPlay();
+  },500);
 }
 
 /* Build sidebar */
@@ -217,16 +223,16 @@ function buildPatternList(){
   list.innerHTML=html;
 }
 
-/* Speed */
+/* Speed — 1=매우느림, 3=조금느림(기본), 5=보통, 7=빠름, 10=매우빠름 */
 function initSpeed(){
   var slider=document.getElementById('speed-slider');
   var label=document.getElementById('speed-label');
+  slider.value='3'; // 조금 느림 기본값
   function update(){
     var v=parseInt(slider.value);
-    // 1=slowest(×3), 5=normal(×1), 10=fastest(×0.3)
-    speedMultiplier=3/v;
-    var display=v<=3?'느림':v<=6?'보통':'빠름';
-    label.textContent=display;
+    speedMultiplier=4/v; // v=1→4x, v=3→1.33x, v=5→0.8x, v=10→0.4x
+    var names=['','매우 느림','느림','조금 느림','조금 느림','보통','보통','빠름','빠름','매우 빠름','매우 빠름'];
+    label.textContent=names[v]||'보통';
   }
   slider.addEventListener('input',update);
   update();
@@ -256,18 +262,34 @@ function applyLang(){
 /* Autoplay */
 function initAutoplay(){
   document.getElementById('btn-autoplay').onclick=function(){
-    autoPlaying=!autoPlaying;
-    this.classList.toggle('active-btn',autoPlaying);
-    document.getElementById('autoplay-icon').textContent=autoPlaying?'⏸':'▶';
-    if(autoPlaying){autoPlayIdx=0;runAutoPlay();}
+    toggleAutoplay();
   };
+}
+function toggleAutoplay(){
+  autoPlaying=!autoPlaying;
+  document.getElementById('btn-autoplay').classList.toggle('active-btn',autoPlaying);
+  document.getElementById('autoplay-icon').textContent=autoPlaying?'⏸':'▶';
+  if(autoPlaying){
+    // 현재 선택된 패턴의 다음부터 재개
+    if(activePat){
+      var idx=PAT_ORDER.indexOf(activePat);
+      if(idx>=0) autoPlayIdx=idx+1;
+    }
+    runAutoPlay();
+  }
 }
 function runAutoPlay(){
   if(!autoPlaying||autoPlayIdx>=PAT_ORDER.length){
-    autoPlaying=false;
-    document.getElementById('btn-autoplay').classList.remove('active-btn');
-    document.getElementById('autoplay-icon').textContent='▶';
-    return;
+    // 끝까지 갔으면 처음부터 다시
+    if(autoPlayIdx>=PAT_ORDER.length){
+      autoPlayIdx=0;
+      document.querySelectorAll('.pl-item.done-pat').forEach(function(el){el.classList.remove('done-pat');});
+    }
+    if(!autoPlaying){
+      document.getElementById('btn-autoplay').classList.remove('active-btn');
+      document.getElementById('autoplay-icon').textContent='▶';
+      return;
+    }
   }
   var key=PAT_ORDER[autoPlayIdx];
   // Mark previous as done
@@ -277,15 +299,31 @@ function runAutoPlay(){
   }
   selectPattern(key,function(){
     autoPlayIdx++;
-    if(autoPlaying)setTimeout(runAutoPlay,getDelay(800));
+    if(autoPlaying)setTimeout(runAutoPlay,getDelay(600));
   });
 }
 
-/* Pattern */
+/* Pattern — 클릭 시 해당 패턴 실행 + 자동재생 일시정지 */
 function initPatterns(){
   document.getElementById('pl-list').addEventListener('click',function(e){
     var item=e.target.closest('.pl-item');
-    if(item){autoPlaying=false;document.getElementById('btn-autoplay').classList.remove('active-btn');document.getElementById('autoplay-icon').textContent='▶';selectPattern(item.dataset.pat);}
+    if(!item)return;
+    var key=item.dataset.pat;
+    if(autoPlaying){
+      // 자동재생 중 클릭 → 일시정지하고 해당 패턴 실행
+      autoPlaying=false;
+      document.getElementById('btn-autoplay').classList.remove('active-btn');
+      document.getElementById('autoplay-icon').textContent='▶';
+      selectPattern(key);
+    } else if(activePat===key){
+      // 같은 패턴 다시 클릭 → 자동재생 재개
+      var idx=PAT_ORDER.indexOf(key);
+      if(idx>=0) autoPlayIdx=idx;
+      toggleAutoplay();
+    } else {
+      // 다른 패턴 클릭 → 해당 패턴만 실행 (정지 유지)
+      selectPattern(key);
+    }
   });
 }
 
