@@ -80,11 +80,11 @@ a{color:inherit;text-decoration:none}
 /* Diagram */
 .diagram-wrap{flex:1;position:relative;overflow:hidden}
 [data-theme="dark"] .diagram-wrap{background:transparent}
-/* Current pattern overlay */
-.current-pattern-label{position:absolute;top:16px;right:20px;z-index:5;font:900 2rem var(--font);color:var(--accent);opacity:.18;letter-spacing:-.02em;pointer-events:none;text-align:right;line-height:1.2;transition:opacity .5s}
-.current-step-label{position:absolute;top:56px;right:20px;z-index:5;font:600 1rem var(--mono);color:var(--accent2);opacity:.35;pointer-events:none;text-align:right;transition:opacity .4s}
-[data-theme="dark"] .current-pattern-label{opacity:.12}
-[data-theme="dark"] .current-step-label{opacity:.25}
+/* Current pattern overlay — large watermark */
+.current-pattern-label{position:absolute;top:12px;right:24px;z-index:5;font:900 3.2rem var(--font);color:var(--accent);opacity:.15;letter-spacing:-.03em;pointer-events:none;text-align:right;line-height:1.1;transition:all .5s}
+.current-step-label{position:absolute;top:80px;right:24px;z-index:5;font:800 1.6rem var(--font);color:var(--accent2);opacity:.5;pointer-events:none;text-align:right;line-height:1.2;transition:all .4s;max-width:50%}
+[data-theme="dark"] .current-pattern-label{opacity:.1}
+[data-theme="dark"] .current-step-label{opacity:.35}
 
 #three-canvas,#flow-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #three-canvas{z-index:0}#flow-canvas{z-index:1}

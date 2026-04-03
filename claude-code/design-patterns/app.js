@@ -237,7 +237,7 @@ worktree:{label:'',kr:'워크트리 격리',en:'Worktree Isolation',
 
 var allNodes=[],activePat=null,termAbort=null,flowLabels=[],stepNums=[];
 var activeFlowIdx=-1,autoPlaying=false,autoPlayIdx=0;
-var speedMultiplier=1.5;
+var speedMultiplier=5; // default: very slow
 
 function init(){
   document.querySelectorAll('.dg-node').forEach(function(n){allNodes.push(n.id);});
@@ -267,10 +267,10 @@ function buildPatternList(){
 function initSpeed(){
   var slider=document.getElementById('speed-slider');
   var label=document.getElementById('speed-label');
-  slider.value='3';
+  slider.value='1';
   function update(){
     var v=parseInt(slider.value);
-    speedMultiplier=4/v;
+    speedMultiplier=5/v; // v=1→5x(매우느림), v=3→1.67x, v=5→1x, v=10→0.5x
     var names=['','Very Slow','Slow','Slightly Slow','Slightly Slow','Normal','Normal','Fast','Fast','Very Fast','Very Fast'];
     label.textContent=names[v]||'Normal';
   }
@@ -386,8 +386,8 @@ function runSteppedAnimation(P,onComplete){
     }
     var step=steps[cur],num=cur+1;activeFlowIdx=cur;
     stepInd.textContent='Step '+num+'/'+steps.length;
-    // Update right overlay with current step action
-    document.getElementById('current-step-label').textContent='Step '+num+': '+(step.data||'');
+    // Update right overlay — big keyword
+    document.getElementById('current-step-label').textContent=(step.data||'');
     var words=(step.term.t||'').split(/\s+/).length;tokenCount+=words*3;tokensEl.textContent=tokenCount+' tk';tokensEl.classList.add('streaming');
     setTimeout(function(){tokensEl.classList.remove('streaming');},400);
     var tgt=document.getElementById(step.to);
@@ -426,18 +426,39 @@ function drawF(){
   P.steps.forEach(function(step,ci){
     var a=nc(step.from),b=nc(step.to);if(!a||!b)return;
     var dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
-    var off=Math.min(d*.1,18),cx=(a.x+b.x)/2+(dy/d)*off*(ci%2?1:-1),cy=(a.y+b.y)/2-(dx/d)*off*(ci%2?1:-1);
+    // Dynamic curve: more curve for longer distances, alternate sides
+    var curveFactor=Math.min(d*.2,50)*(ci%2?1:-1);
+    // Perpendicular offset for natural curve
+    var nx=-dy/d,ny=dx/d;
+    var cx=(a.x+b.x)/2+nx*curveFactor;
+    var cy=(a.y+b.y)/2+ny*curveFactor;
+    // For mostly vertical connections, use horizontal offset instead
+    if(Math.abs(dy)>Math.abs(dx)*2){cx=(a.x+b.x)/2+(ci%2?1:-1)*Math.min(d*.15,35);cy=(a.y+b.y)/2;}
+
     var isA=ci===activeFlowIdx,isD=ci<activeFlowIdx;
     fCtx.beginPath();fCtx.moveTo(a.x,a.y);fCtx.quadraticCurveTo(cx,cy,b.x,b.y);
-    fCtx.strokeStyle=isA?(dk?'rgba(99,102,241,.6)':'rgba(99,102,241,.5)'):isD?(dk?'rgba(99,102,241,.18)':'rgba(99,102,241,.12)'):(dk?'rgba(99,102,241,.04)':'rgba(99,102,241,.03)');
-    fCtx.lineWidth=isA?3:isD?2:1;fCtx.stroke();
+    fCtx.strokeStyle=isA?(dk?'rgba(99,102,241,.55)':'rgba(99,102,241,.45)'):isD?(dk?'rgba(99,102,241,.15)':'rgba(99,102,241,.10)'):(dk?'rgba(99,102,241,.04)':'rgba(99,102,241,.03)');
+    fCtx.lineWidth=isA?3:isD?1.5:1;fCtx.stroke();
     if(isA){
-      var t=(fTime*.5)%1,px=(1-t)*(1-t)*a.x+2*(1-t)*t*cx+t*t*b.x,py=(1-t)*(1-t)*a.y+2*(1-t)*t*cy+t*t*b.y;
-      var g=fCtx.createRadialGradient(px,py,0,px,py,20);g.addColorStop(0,'rgba(99,102,241,'+(dk?.8:.6)+')');g.addColorStop(1,'rgba(99,102,241,0)');
-      fCtx.fillStyle=g;fCtx.fillRect(px-20,py-20,40,40);
-      fCtx.beginPath();fCtx.arc(px,py,5,0,Math.PI*2);fCtx.fillStyle='#6366F1';fCtx.fill();
+      var t=(fTime*.4)%1;
+      var px=(1-t)*(1-t)*a.x+2*(1-t)*t*cx+t*t*b.x;
+      var py=(1-t)*(1-t)*a.y+2*(1-t)*t*cy+t*t*b.y;
+      // Glow
+      var g=fCtx.createRadialGradient(px,py,0,px,py,24);
+      g.addColorStop(0,'rgba(99,102,241,'+(dk?.8:.6)+')');g.addColorStop(1,'rgba(99,102,241,0)');
+      fCtx.fillStyle=g;fCtx.fillRect(px-24,py-24,48,48);
+      // Main particle
+      fCtx.beginPath();fCtx.arc(px,py,5.5,0,Math.PI*2);fCtx.fillStyle='#6366F1';fCtx.fill();
+      // Trail particles
+      for(var ti=1;ti<=3;ti++){var tt2=t-ti*.06;if(tt2<0)continue;
+        var tx=(1-tt2)*(1-tt2)*a.x+2*(1-tt2)*tt2*cx+tt2*tt2*b.x;
+        var ty=(1-tt2)*(1-tt2)*a.y+2*(1-tt2)*tt2*cy+tt2*tt2*b.y;
+        fCtx.beginPath();fCtx.arc(tx,ty,4-ti,0,Math.PI*2);fCtx.fillStyle='rgba(99,102,241,'+(0.4-ti*.1)+')';fCtx.fill();}
+      // Arrow at end
+      if(t>.88){var ang=Math.atan2(b.y-cy,b.x-cx);fCtx.save();fCtx.translate(b.x,b.y);fCtx.rotate(ang);fCtx.beginPath();fCtx.moveTo(0,0);fCtx.lineTo(-11,-6);fCtx.lineTo(-11,6);fCtx.closePath();fCtx.fillStyle='rgba(99,102,241,.5)';fCtx.fill();fCtx.restore();}
+      // Terminal signal line
       var tb=document.getElementById('terminal');if(tb){var wr=document.getElementById('diagram-wrap').getBoundingClientRect(),tr2=tb.getBoundingClientRect();
-        var tt=tr2.top-wr.top;if(b.y+30<tt){fCtx.beginPath();fCtx.moveTo(b.x,b.y+26);fCtx.lineTo(b.x,tt-4);fCtx.strokeStyle='rgba(99,102,241,.12)';fCtx.lineWidth=1;fCtx.setLineDash([3,3]);fCtx.stroke();fCtx.setLineDash([]);}}
+        var ttt=tr2.top-wr.top;if(b.y+30<ttt){fCtx.beginPath();fCtx.moveTo(b.x,b.y+26);fCtx.lineTo(b.x,ttt-4);fCtx.strokeStyle='rgba(99,102,241,.1)';fCtx.lineWidth=1;fCtx.setLineDash([4,4]);fCtx.stroke();fCtx.setLineDash([]);}}
     }
   });
 }
