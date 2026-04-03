@@ -80,11 +80,17 @@ a{color:inherit;text-decoration:none}
 /* Diagram */
 .diagram-wrap{flex:1;position:relative;overflow:hidden}
 [data-theme="dark"] .diagram-wrap{background:transparent}
-/* Current pattern overlay — large watermark */
-.current-pattern-label{position:absolute;top:12px;right:24px;z-index:5;font:900 3.2rem var(--font);color:var(--accent);opacity:.15;letter-spacing:-.03em;pointer-events:none;text-align:right;line-height:1.1;transition:all .5s}
-.current-step-label{position:absolute;top:80px;right:24px;z-index:5;font:800 1.6rem var(--font);color:var(--accent2);opacity:.5;pointer-events:none;text-align:right;line-height:1.2;transition:all .4s;max-width:50%}
-[data-theme="dark"] .current-pattern-label{opacity:.1}
-[data-theme="dark"] .current-step-label{opacity:.35}
+/* Current pattern overlay */
+.current-pattern-label{position:absolute;top:10px;right:24px;z-index:5;font:900 1.4rem var(--mono);color:var(--accent);opacity:.3;letter-spacing:-.01em;pointer-events:none;text-align:right;line-height:1.1;transition:all .5s}
+.current-step-label{position:absolute;top:44px;right:24px;z-index:5;font:900 48px var(--font);color:var(--text);opacity:.85;pointer-events:none;text-align:right;line-height:1.15;transition:all .4s ease;max-width:55%;letter-spacing:-.03em}
+[data-theme="dark"] .current-pattern-label{opacity:.25}
+[data-theme="dark"] .current-step-label{opacity:.7;color:var(--text)}
+/* Prompt icon on nodes */
+.prompt-icon{position:absolute;top:-8px;right:30px;width:28px;height:28px;border-radius:50%;background:var(--amber);color:#fff;font:700 .75rem var(--mono);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(245,158,11,.4);z-index:25;cursor:pointer;opacity:0;transform:scale(0);transition:all .3s cubic-bezier(.34,1.56,.64,1);letter-spacing:-.02em}
+.prompt-icon.show{opacity:1;transform:scale(1)}
+.prompt-icon:hover{transform:scale(1.15)}
+.prompt-tooltip{position:absolute;bottom:calc(100% + 8px);right:0;width:320px;padding:14px 16px;background:var(--conBg);color:var(--conTx);font:400 .8rem/1.6 var(--mono);border-radius:12px;box-shadow:var(--shL);border:1px solid rgba(255,255,255,.08);z-index:100;opacity:0;pointer-events:none;transform:translateY(6px);transition:all .25s;white-space:pre-wrap}
+.prompt-icon:hover .prompt-tooltip{opacity:1;pointer-events:auto;transform:translateY(0)}
 
 #three-canvas,#flow-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #three-canvas{z-index:0}#flow-canvas{z-index:1}
