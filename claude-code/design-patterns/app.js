@@ -15,10 +15,10 @@ instruction:{label:'',kr:'명령어 해석',en:'Instruction Following',
   steps:[
     {from:'n-user',to:'n-cli',data:'Prompt Input',prompt:'"이 코드 분석해줘"\n→ argv로 파싱되어 CLI에 전달',promptEn:'"analyze this code"\n→ parsed as CLI argv',term:{kr:'$ claude "이 코드 분석해줘"',en:'$ claude "analyze this code"',c:'t-kw'}},
     {from:'n-cli',to:'n-commands',data:'Command Check',term:{t:'processUserInput() → not a slash command',c:'t-fn'}},
-    {from:'n-cli',to:'n-prompts',data:'Prompt Assembly',prompt:'getSystemPrompt() 호출\n15개 섹션을 순서대로 조립\nStatic 7개 → Dynamic 8개',term:{t:'getSystemPrompt() → 15 sections assembling',c:'t-fn'}},
-    {from:'n-prompts',to:'n-context',data:'CLAUDE.md Loading',prompt:'getUserContext() 호출\n/etc → ~/.claude → project → local\n4단계 계층에서 규칙 병합',term:{t:'  Static(7): global cache | Dynamic(8): ephemeral',c:'t-str'}},
+    {from:'n-cli',to:'n-prompts',data:'Prompt Assembly',prompt:'getSystemPrompt() 호출\n15개 섹션을 순서대로 조립\nStatic 7개 → Dynamic 8개',promptEn:'getSystemPrompt() called\nAssemble 15 sections in order\nStatic 7 → Dynamic 8',term:{t:'getSystemPrompt() → 15 sections assembling',c:'t-fn'}},
+    {from:'n-prompts',to:'n-context',data:'CLAUDE.md Loading',prompt:'getUserContext() 호출\n/etc → ~/.claude → project → local\n4단계 계층에서 규칙 병합',promptEn:'getUserContext() called\n/etc → ~/.claude → project → local\nMerge rules from 4-level hierarchy',term:{t:'  Static(7): global cache | Dynamic(8): ephemeral',c:'t-str'}},
     {from:'n-context',to:'n-sysprompt',data:'Priority Resolve',term:{t:'buildEffectiveSystemPrompt() → 5-tier chain',c:'t-fn'}},
-    {from:'n-sysprompt',to:'n-engine',data:'Final Prompt',prompt:'최종 시스템 프롬프트 완성\ncache_control: global(정적) + ephemeral(동적)\n→ QueryEngine에 전달',term:{t:'  Override > Coordinator > Agent > Custom > Default',c:'t-str'}},
+    {from:'n-sysprompt',to:'n-engine',data:'Final Prompt',prompt:'최종 시스템 프롬프트 완성\ncache_control: global(정적) + ephemeral(동적)\n→ QueryEngine에 전달',promptEn:'Final system prompt assembled\ncache_control: global(static) + ephemeral(dynamic)\n→ Passed to QueryEngine',term:{t:'  Override > Coordinator > Agent > Custom > Default',c:'t-str'}},
     {from:'n-engine',to:'n-api',data:'API Streaming',prompt:'anthropic.messages.create({\n  model, system, messages, tools,\n  stream: true\n})',term:{t:'→ messages.create() streaming...',c:'t-kw'}}
   ],exs:[{t:'claude "analyze code"'}],srcs:['prompts.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/constants/prompts.ts']},
 
@@ -30,12 +30,12 @@ memory:{label:'',kr:'컨텍스트 메모리',en:'Context Memory',
   nodes:['user','cli','claudemd','memory','memdir','extract','context','engine','api'],
   steps:[
     {from:'n-user',to:'n-cli',data:'Session Resume',prompt:'--resume session_abc123\n이전 세션 ID로 복원 요청',promptEn:'--resume session_abc123\nRestore previous session by ID',term:{kr:'$ claude --resume "이어서 작업해줘"',en:'$ claude --resume "continue working"',c:'t-kw'}},
-    {from:'n-cli',to:'n-claudemd',data:'Config Loading',prompt:'getClaudeMds()\n4-level: /etc → ~/.claude → project → local\n@include 재귀 참조 지원',term:{t:'getClaudeMds() → /etc > ~/.claude > project > local',c:'t-fn'}},
+    {from:'n-cli',to:'n-claudemd',data:'Config Loading',prompt:'getClaudeMds()\n4-level: /etc → ~/.claude → project → local\n@include 재귀 참조 지원',promptEn:'getClaudeMds()\n4-level: /etc → ~/.claude → project → local\n@include recursive references supported',term:{t:'getClaudeMds() → /etc > ~/.claude > project > local',c:'t-fn'}},
     {from:'n-claudemd',to:'n-context',data:'Layer Merge',term:{t:'  @include directives resolved recursively',c:'t-str'}},
-    {from:'n-cli',to:'n-memory',data:'Memory Restore',prompt:'SessionMemory 9-section 로드:\nTitle, State, Files, Workflow,\nErrors, Docs, Learnings, Results, Log',term:{t:'SessionMemory → 9-section template loaded',c:'t-fn'}},
-    {from:'n-memdir',to:'n-engine',data:'Memory Loading',prompt:'loadMemoryPrompt()\n.claude/MEMORY.md에서 관련 메모리만 선별 로드',term:{t:'loadMemoryPrompt() → relevant memories prefetched',c:'t-fn'}},
+    {from:'n-cli',to:'n-memory',data:'Memory Restore',prompt:'SessionMemory 9-section 로드:\nTitle, State, Files, Workflow,\nErrors, Docs, Learnings, Results, Log',promptEn:'SessionMemory 9-section load:\nTitle, State, Files, Workflow,\nErrors, Docs, Learnings, Results, Log',term:{t:'SessionMemory → 9-section template loaded',c:'t-fn'}},
+    {from:'n-memdir',to:'n-engine',data:'Memory Loading',prompt:'loadMemoryPrompt()\n.claude/MEMORY.md에서 관련 메모리만 선별 로드',promptEn:'loadMemoryPrompt()\nSelectively load relevant memories from .claude/MEMORY.md',term:{t:'loadMemoryPrompt() → relevant memories prefetched',c:'t-fn'}},
     {from:'n-engine',to:'n-api',data:'Context Inject',term:{t:'→ API call with enriched context...',c:'t-kw'}},
-    {from:'n-api',to:'n-extract',data:'Memory Extract',prompt:'extractMemories()\n포크된 서브에이전트가 대화 분석\n4타입으로 분류하여 저장',term:{t:'extractMemories() → 4-type classify & save',c:'t-fn'}},
+    {from:'n-api',to:'n-extract',data:'Memory Extract',prompt:'extractMemories()\n포크된 서브에이전트가 대화 분석\n4타입으로 분류하여 저장',promptEn:'extractMemories()\nForked sub-agent analyzes conversation\nClassifies into 4 types and saves',term:{t:'extractMemories() → 4-type classify & save',c:'t-fn'}},
     {from:'n-extract',to:'n-memdir',data:'Memory Save',term:{t:'  feedback | patterns | workflow | tech saved',c:'t-str'}}
   ],exs:[{t:'claude --resume'}],srcs:['SessionMemory/|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/SessionMemory']},
 
@@ -62,9 +62,9 @@ tooluse:{label:'',kr:'도구 실행',en:'Tool Execution',
   outputKr:'도구 실행 결과 (성공/실패)',outputEn:'Tool result (success/error)',
   nodes:['engine','api','tools','executor','perms','mcp'],
   steps:[
-    {from:'n-api',to:'n-engine',data:'Tool Request',prompt:'API 응답에 tool_use 블록 포함:\n{name:"Read", input:{path:"src/main.ts"}}',term:{t:'→ Tool: FileReadTool("src/main.ts")',c:'t-kw'}},
+    {from:'n-api',to:'n-engine',data:'Tool Request',prompt:'API 응답에 tool_use 블록 포함:\n{name:"Read", input:{path:"src/main.ts"}}',promptEn:'API response contains tool_use block:\n{name:"Read", input:{path:"src/main.ts"}}',term:{t:'→ Tool: FileReadTool("src/main.ts")',c:'t-kw'}},
     {from:'n-engine',to:'n-tools',data:'Tool Lookup',term:{t:'findToolByName("Read") → FileReadTool',c:'t-fn'}},
-    {from:'n-tools',to:'n-perms',data:'Permission Gate',prompt:'3-tier 검증:\nLayer 1: allowlist/denylist\nLayer 2: AI classifier + AST\nLayer 3: user dialog',term:{t:'checkPermissions() → Layer 1: allowlist match',c:'t-fn'}},
+    {from:'n-tools',to:'n-perms',data:'Permission Gate',prompt:'3-tier 검증:\nLayer 1: allowlist/denylist\nLayer 2: AI classifier + AST\nLayer 3: user dialog',promptEn:'3-tier verification:\nLayer 1: allowlist/denylist\nLayer 2: AI classifier + AST\nLayer 3: user dialog',term:{t:'checkPermissions() → Layer 1: allowlist match',c:'t-fn'}},
     {from:'n-perms',to:'n-executor',data:'Execute Tool',term:{t:'  ALLOW → concurrent-safe, parallel queue',c:'t-str'}},
     {from:'n-executor',to:'n-engine',data:'Tool Result',prompt:'ToolResultBlockParam {\n  type: "tool_result",\n  content: "245 lines of code...",\n  is_error: false\n}',term:{t:'→ tool.call() → 245 lines → ToolResult(success)',c:'t-str'}}
   ],exs:[{t:'Read, Edit, Bash'}],srcs:['StreamingToolExecutor.ts|https://github.com/leaf-kit/claude-analysis/tree/main/src/services/tools/StreamingToolExecutor.ts']},
@@ -92,9 +92,9 @@ permission:{label:'',kr:'권한 & 보안',en:'Permission & Security',
   outputKr:'허용/거부/확인 요청',outputEn:'ALLOW / DENY / ASK',
   nodes:['engine','tools','perms','executor'],
   steps:[
-    {from:'n-engine',to:'n-tools',data:'Security Check',prompt:'BashTool.checkPermissions(\n  "rm -rf /"\n)\n위험 명령어 검증 시작',term:{t:'→ BashTool("rm -rf /")',c:'t-kw'}},
+    {from:'n-engine',to:'n-tools',data:'Security Check',prompt:'BashTool.checkPermissions(\n  "rm -rf /"\n)\n위험 명령어 검증 시작',promptEn:'BashTool.checkPermissions(\n  "rm -rf /"\n)\nDangerous command verification starts',term:{t:'→ BashTool("rm -rf /")',c:'t-kw'}},
     {from:'n-tools',to:'n-perms',data:'Rule Matching',term:{t:'  Layer 1: Rule check → no match',c:'t-warn'}},
-    {from:'n-perms',to:'n-perms',data:'AST Analysis',prompt:'tree-sitter로 Bash AST 파싱:\n→ command: rm\n→ flags: -r (recursive), -f (force)\n→ path: / (root)\n→ DANGEROUS 판정',term:{t:'  Layer 2: tree-sitter AST → DANGEROUS',c:'t-err'}},
+    {from:'n-perms',to:'n-perms',data:'AST Analysis',prompt:'tree-sitter로 Bash AST 파싱:\n→ command: rm\n→ flags: -r (recursive), -f (force)\n→ path: / (root)\n→ DANGEROUS 판정',promptEn:'tree-sitter Bash AST parsing:\n→ command: rm\n→ flags: -r (recursive), -f (force)\n→ path: / (root)\n→ DANGEROUS verdict',term:{t:'  Layer 2: tree-sitter AST → DANGEROUS',c:'t-err'}},
     {from:'n-perms',to:'n-executor',data:'BLOCKED',term:{t:'  → DENY: destructive operation blocked',c:'t-err'}}
   ],exs:[{t:'rm -rf / → DENY'}],srcs:['permissions/|https://github.com/leaf-kit/claude-analysis/tree/main/src/utils/permissions']},
 
