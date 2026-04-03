@@ -30,6 +30,7 @@
     </div>
     <div class="tb-right">
       <button class="tb-btn" id="btn-autoplay" title="Auto-play"><span id="autoplay-icon">⏸</span></button>
+      <button class="tb-btn" id="btn-help" title="About">?</button>
       <button class="tb-btn" id="btn-lang"><span id="lang-label">KR</span></button>
       <button class="tb-btn" id="btn-theme"><span id="theme-icon">☀️</span></button>
       <a class="tb-link" href="https://github.com/leaf-kit/claude-analysis" target="_blank"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a>
@@ -223,6 +224,46 @@ Layer 3: Show user permission dialog
     <div class="lp-body" id="lp-body"></div>
     <pre class="lp-code" id="lp-code"></pre>
     <a class="lp-src" id="lp-src" target="_blank"></a>
+  </div>
+
+  <!-- Help Panel -->
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-panel">
+      <button class="help-close" id="help-close">&times;</button>
+      <div class="help-content" id="help-content">
+        <h2 data-kr="이 프로젝트에 대해" data-en="About This Project"></h2>
+
+        <div data-kr="
+        <h3>어떻게 만들었나</h3>
+        <p>이 페이지는 Claude Code의 실제 소스 코드(1,902개 TypeScript 파일)를 직접 분석한 결과물입니다.</p>
+        <p>npm 패키지에 포함된 소스맵을 통해 공개된 코드를 바탕으로, 사람이 직접 코드를 읽고 구조를 파악한 뒤, LLM을 활용하여 패턴을 체계적으로 정리했습니다.</p>
+        <ul>
+          <li><strong>1단계 — 사람의 분석:</strong> 소스 코드를 직접 읽으며 주요 모듈 간의 호출 관계, 데이터 흐름, 설계 의도를 파악했습니다. QueryEngine이 어떻게 도구 실행 루프를 돌리는지, 프롬프트가 15개 섹션으로 어떻게 나뉘는지 등을 하나씩 추적했습니다.</li>
+          <li><strong>2단계 — LLM 보조 분석:</strong> 파악한 구조를 LLM에 제공하여, 누락된 패턴이 없는지 검토하고, 각 패턴의 설명을 더 명확하게 다듬었습니다. 코드 스니펫과 데이터 흐름 다이어그램도 함께 정리했습니다.</li>
+          <li><strong>3단계 — 교차 검증:</strong> LLM이 제안한 내용을 다시 실제 코드와 대조하여 사실과 다른 부분을 걸러냈습니다. 근거 없는 추측은 포함하지 않았습니다.</li>
+        </ul>
+        <h3>왜 만들었나</h3>
+        <p>Claude Code처럼 복잡한 에이전트 시스템의 내부 동작을 이해하기는 쉽지 않습니다. 코드를 직접 읽어도 전체 그림을 그리기 어렵고, 문서만으로는 실제 데이터 흐름을 파악하기 힘듭니다.</p>
+        <p>그래서 '움직이는 아키텍처 다이어그램'을 만들었습니다. 각 컴포넌트가 어떤 순서로 호출되고, 어떤 데이터가 흘러가는지를 애니메이션으로 보여주면, 글로 읽는 것보다 훨씬 직관적으로 이해할 수 있으니까요.</p>
+        <h3>참고 사항</h3>
+        <p>이 분석은 특정 시점의 소스 코드를 기반으로 합니다. Claude Code는 지속적으로 업데이트되므로, 현재 버전과 차이가 있을 수 있습니다. 모든 소스 코드 링크는 분석 저장소(<a href='https://github.com/leaf-kit/claude-analysis' target='_blank'>claude-analysis</a>)를 가리킵니다.</p>
+        " data-en="
+        <h3>How It Was Made</h3>
+        <p>This page is the result of directly analyzing Claude Code's actual source code (1,902 TypeScript files).</p>
+        <p>Based on code made public through source maps included in the npm package, a human read through the code and mapped out the architecture, then used LLM assistance to systematically organize the patterns.</p>
+        <ul>
+          <li><strong>Step 1 — Human Analysis:</strong> Read the source code directly to understand call relationships between modules, data flows, and design intentions. Traced how QueryEngine runs the tool execution loop, how prompts split into 15 sections, and more.</li>
+          <li><strong>Step 2 — LLM-Assisted Review:</strong> Provided the mapped structure to an LLM to check for missed patterns and refine explanations. Code snippets and data flow diagrams were organized together.</li>
+          <li><strong>Step 3 — Cross-Verification:</strong> Compared LLM suggestions against actual code to filter out inaccuracies. No ungrounded speculation was included.</li>
+        </ul>
+        <h3>Why It Was Made</h3>
+        <p>Understanding the internals of a complex agent system like Claude Code is not easy. Even reading the code directly, it's hard to see the big picture, and documentation alone doesn't reveal actual data flows.</p>
+        <p>So we built a 'living architecture diagram'. By animating which components are called in what order and what data flows between them, it becomes far more intuitive than reading text alone.</p>
+        <h3>Notes</h3>
+        <p>This analysis is based on source code from a specific point in time. Claude Code is continuously updated, so the current version may differ. All source code links point to the analysis repository (<a href='https://github.com/leaf-kit/claude-analysis' target='_blank'>claude-analysis</a>).</p>
+        "></div>
+      </div>
+    </div>
   </div>
 
   <div class="hover-tip" id="hover-tip"></div>

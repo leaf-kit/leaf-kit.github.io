@@ -242,7 +242,7 @@ var speedMultiplier=5; // default: very slow
 function init(){
   document.querySelectorAll('.dg-node').forEach(function(n){allNodes.push(n.id);});
   buildPatternList();initTheme();initLang();initPatterns();initSpeed();initAutoplay();
-  initFlowCanvas();initThree();initTips();initModal();applyLang();
+  initFlowCanvas();initThree();initTips();initModal();initHelp();applyLang();
   setTimeout(function(){
     autoPlaying=true;autoPlayIdx=0;
     document.getElementById('btn-autoplay').classList.add('active-btn');
@@ -581,6 +581,22 @@ function initModal(){
     pop.style.top=top+'px';
     pop.classList.add('show');
   }
+}
+
+function initHelp(){
+  var overlay=document.getElementById('help-overlay');
+  document.getElementById('btn-help').onclick=function(){
+    overlay.classList.add('show');
+    // Apply language to help content
+    var l=document.documentElement.getAttribute('data-lang')||'en';
+    var contentDiv=document.getElementById('help-content');
+    contentDiv.querySelectorAll('[data-kr][data-en]').forEach(function(el){
+      if(el.tagName==='H2'){el.textContent=el.getAttribute('data-'+l);}
+      else if(el.tagName==='DIV'){el.innerHTML=el.getAttribute('data-'+l)||'';}
+    });
+  };
+  document.getElementById('help-close').onclick=function(){overlay.classList.remove('show');};
+  overlay.onclick=function(e){if(e.target===overlay)overlay.classList.remove('show');};
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
