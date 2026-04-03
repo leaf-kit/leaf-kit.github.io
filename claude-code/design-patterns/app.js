@@ -13,7 +13,7 @@ instruction:{label:'',kr:'명령어 해석',en:'Instruction Following',
   outputKr:'완성된 규칙서 + AI 응답 시작',outputEn:'Completed rulebook + AI response starts',
   nodes:['user','cli','commands','prompts','context','sysprompt','engine','api'],
   steps:[
-    {from:'n-user',to:'n-cli',data:'Prompt Input',prompt:'"이 코드 분석해줘"\n→ argv로 파싱되어 CLI에 전달',term:{t:'$ claude "이 코드 분석해줘"',c:'t-kw'}},
+    {from:'n-user',to:'n-cli',data:'Prompt Input',prompt:'"이 코드 분석해줘"\n→ argv로 파싱되어 CLI에 전달',promptEn:'"analyze this code"\n→ parsed as CLI argv',term:{kr:'$ claude "이 코드 분석해줘"',en:'$ claude "analyze this code"',c:'t-kw'}},
     {from:'n-cli',to:'n-commands',data:'Command Check',term:{t:'processUserInput() → not a slash command',c:'t-fn'}},
     {from:'n-cli',to:'n-prompts',data:'Prompt Assembly',prompt:'getSystemPrompt() 호출\n15개 섹션을 순서대로 조립\nStatic 7개 → Dynamic 8개',term:{t:'getSystemPrompt() → 15 sections assembling',c:'t-fn'}},
     {from:'n-prompts',to:'n-context',data:'CLAUDE.md Loading',prompt:'getUserContext() 호출\n/etc → ~/.claude → project → local\n4단계 계층에서 규칙 병합',term:{t:'  Static(7): global cache | Dynamic(8): ephemeral',c:'t-str'}},
@@ -29,7 +29,7 @@ memory:{label:'',kr:'컨텍스트 메모리',en:'Context Memory',
   outputKr:'기억이 담긴 풍부한 컨텍스트',outputEn:'Rich context with memories',
   nodes:['user','cli','claudemd','memory','memdir','extract','context','engine','api'],
   steps:[
-    {from:'n-user',to:'n-cli',data:'Session Resume',prompt:'--resume session_abc123\n이전 세션 ID로 복원 요청',term:{t:'$ claude --resume "이어서 작업해줘"',c:'t-kw'}},
+    {from:'n-user',to:'n-cli',data:'Session Resume',prompt:'--resume session_abc123\n이전 세션 ID로 복원 요청',promptEn:'--resume session_abc123\nRestore previous session by ID',term:{kr:'$ claude --resume "이어서 작업해줘"',en:'$ claude --resume "continue working"',c:'t-kw'}},
     {from:'n-cli',to:'n-claudemd',data:'Config Loading',prompt:'getClaudeMds()\n4-level: /etc → ~/.claude → project → local\n@include 재귀 참조 지원',term:{t:'getClaudeMds() → /etc > ~/.claude > project > local',c:'t-fn'}},
     {from:'n-claudemd',to:'n-context',data:'Layer Merge',term:{t:'  @include directives resolved recursively',c:'t-str'}},
     {from:'n-cli',to:'n-memory',data:'Memory Restore',prompt:'SessionMemory 9-section 로드:\nTitle, State, Files, Workflow,\nErrors, Docs, Learnings, Results, Log',term:{t:'SessionMemory → 9-section template loaded',c:'t-fn'}},
@@ -46,7 +46,7 @@ planning:{label:'',kr:'계획 수립 & 추론',en:'Planning & Reasoning',
   outputKr:'검증 완료된 결과 (PASS/FAIL)',outputEn:'Verified result (PASS/FAIL)',
   nodes:['user','engine','api','coordinator','agent','tools','executor'],
   steps:[
-    {from:'n-user',to:'n-engine',data:'Complex task',term:{t:'$ claude "전체 리팩토링 수행해줘"',c:'t-kw'}},
+    {from:'n-user',to:'n-engine',data:'Complex task',term:{kr:'$ claude "전체 리팩토링 수행해줘"',en:'$ claude "refactor the entire codebase"',c:'t-kw'}},
     {from:'n-engine',to:'n-api',data:'LLM reasoning',term:{t:'Coordinator Mode activated',c:'t-fn'}},
     {from:'n-api',to:'n-coordinator',data:'Task analysis',term:{t:'Phase 1: Research (parallel)',c:'t-fn'}},
     {from:'n-coordinator',to:'n-agent',data:'Parallel scouts',parallel:true,term:{t:'  Agent(Explore) || Agent(Explore) scanning...',c:'t-str'}},
@@ -368,6 +368,20 @@ function selectPattern(key,onComplete){
   runSteppedAnimation(P,onComplete);applyLang();
 }
 
+function termText(term){
+  // term can be {t:'...',c:'...'} or {kr:'...',en:'...',c:'...'}
+  if(term.kr||term.en){
+    var l=document.documentElement.getAttribute('data-lang')||'en';
+    return term[l]||term.en||term.kr||'';
+  }
+  return term.t||'';
+}
+function promptText(step){
+  var l=document.documentElement.getAttribute('data-lang')||'en';
+  if(l==='en'&&step.promptEn) return step.promptEn;
+  return step.prompt||step.promptEn||'';
+}
+
 function runSteppedAnimation(P,onComplete){
   if(termAbort)termAbort.stop=true;
   var ctrl={stop:false};termAbort=ctrl;
@@ -375,7 +389,7 @@ function runSteppedAnimation(P,onComplete){
   var stepInd=document.getElementById('term-step-ind'),tokensEl=document.getElementById('tb-tokens');
   inp.textContent='';out.innerHTML='';stepInd.textContent='';tokenCount=0;tokensEl.textContent='0 tokens';
   var steps=P.steps||[],cur=0;
-  var firstText=steps[0]?steps[0].term.t.replace(/^[$>]\s*/,''):'';
+  var firstText=steps[0]?termText(steps[0].term).replace(/^[$>]\s*/,''):'';
   typeC(inp,firstText,getDelay(18),ctrl,function(){if(ctrl.stop)return;go();});
 
   function go(){
@@ -388,7 +402,8 @@ function runSteppedAnimation(P,onComplete){
     stepInd.textContent='Step '+num+'/'+steps.length;
     // Update right overlay — big keyword
     document.getElementById('current-step-label').textContent=(step.data||'');
-    var words=(step.term.t||'').split(/\s+/).length;tokenCount+=words*3;tokensEl.textContent=tokenCount+' tk';tokensEl.classList.add('streaming');
+    var termT=termText(step.term);
+    var words=(termT||'').split(/\s+/).length;tokenCount+=words*3;tokensEl.textContent=tokenCount+' tk';tokensEl.classList.add('streaming');
     setTimeout(function(){tokensEl.classList.remove('streaming');},400);
     var tgt=document.getElementById(step.to);
     if(tgt){document.querySelectorAll('.stepping').forEach(function(n){n.classList.remove('stepping');n.classList.add('done-node');});
@@ -396,9 +411,10 @@ function runSteppedAnimation(P,onComplete){
       var b=document.createElement('div');b.className='step-num'+(step.parallel?' parallel':'');b.textContent=step.parallel?'||'+num:num;
       tgt.appendChild(b);stepNums.push(b);setTimeout(function(){b.classList.add('show');},50);
       // Prompt icon
-      if(step.prompt){
+      var pText=promptText(step);
+      if(pText){
         var pi=document.createElement('div');pi.className='prompt-icon';pi.textContent='P';
-        var pt=document.createElement('div');pt.className='prompt-tooltip';pt.textContent=step.prompt;
+        var pt=document.createElement('div');pt.className='prompt-tooltip';pt.textContent=pText;
         pi.appendChild(pt);tgt.appendChild(pi);stepNums.push(pi);
         setTimeout(function(){pi.classList.add('show');},100);
       }
@@ -407,7 +423,7 @@ function runSteppedAnimation(P,onComplete){
     var div=document.createElement('div');
     var pfx=document.createElement('span');pfx.className='tk t-step';pfx.textContent='['+num+'] ';pfx.style.animationDelay='0s';
     div.appendChild(pfx);out.appendChild(div);
-    tok(div,step.term.t,step.term.c,ctrl,function(){if(ctrl.stop)return;out.parentElement.scrollTop=out.parentElement.scrollHeight;cur++;setTimeout(go,getDelay(500));});
+    tok(div,termT,step.term.c,ctrl,function(){if(ctrl.stop)return;out.parentElement.scrollTop=out.parentElement.scrollHeight;cur++;setTimeout(go,getDelay(500));});
   }
 }
 
