@@ -295,8 +295,23 @@ function updLL(){document.getElementById('lang-label').textContent=document.docu
 function applyLang(){
   var l=document.documentElement.getAttribute('data-lang')||'en';
   document.querySelectorAll('[data-kr][data-en]').forEach(function(el){
-    if(['STRONG','H2','SPAN','P','DIV','LABEL','A'].indexOf(el.tagName)!==-1)el.textContent=el.getAttribute('data-'+l)||'';
+    var val=el.getAttribute('data-'+l)||'';
+    // Use innerHTML for elements containing HTML markup
+    if(val.indexOf('<')!==-1){
+      el.innerHTML=val;
+    } else {
+      el.textContent=val;
+    }
   });
+  // Update pat-hero if active
+  if(activePat&&PATS[activePat]){
+    var P=PATS[activePat];
+    document.getElementById('pat-hero-title').textContent=(l==='kr'?P.kr:P.en);
+    document.getElementById('pat-hero-desc').textContent=l==='kr'?P.descKr:P.descEn;
+    document.getElementById('pat-hero-tags').innerHTML='<span class="tag-in">IN: '+(l==='kr'?P.inputKr:P.inputEn)+'</span><span class="tag-out">OUT: '+(l==='kr'?P.outputKr:P.outputEn)+'</span>';
+    var patIdx=PAT_ORDER.indexOf(activePat)+1;
+    document.getElementById('current-pattern-label').textContent=String(patIdx).padStart(2,'0')+'. '+(l==='kr'?P.kr:P.en);
+  }
 }
 
 function initAutoplay(){
@@ -586,14 +601,8 @@ function initModal(){
 function initHelp(){
   var overlay=document.getElementById('help-overlay');
   document.getElementById('btn-help').onclick=function(){
+    applyLang(); // ensure help content is in correct language
     overlay.classList.add('show');
-    // Apply language to help content
-    var l=document.documentElement.getAttribute('data-lang')||'en';
-    var contentDiv=document.getElementById('help-content');
-    contentDiv.querySelectorAll('[data-kr][data-en]').forEach(function(el){
-      if(el.tagName==='H2'){el.textContent=el.getAttribute('data-'+l);}
-      else if(el.tagName==='DIV'){el.innerHTML=el.getAttribute('data-'+l)||'';}
-    });
   };
   document.getElementById('help-close').onclick=function(){overlay.classList.remove('show');};
   overlay.onclick=function(e){if(e.target===overlay)overlay.classList.remove('show');};
