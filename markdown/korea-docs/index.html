@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>한국 공문서 마크다운 변환 프로젝트 — 리프 Markdown Guide</title>
+  <meta name="description" content="한국 정부 공문서의 마크다운 변환 현황. 법령, 행정규칙, 정책문서, 교육과정 등 공공문서 목록과 변환 도구 안내.">
+  <meta property="og:title" content="한국 공문서 마크다운 변환 프로젝트">
+  <meta property="og:description" content="한국 공문서를 마크다운으로. 법령부터 백서까지, 변환 대상 문서와 현황을 정리했다.">
+  <meta property="og:url" content="https://leaf-kit.github.io/markdown/korea-docs/">
+  <link rel="canonical" href="https://leaf-kit.github.io/markdown/korea-docs/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#FAFAFA;--surface:#fff;--text:#1a1a2e;--text2:#64748B;--primary:#0047A0;--accent:#CD2E3A;--border:#E2E8F0;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,.06);--green:#10B981;--yellow:#F59E0B;--red:#EF4444}
+    html{font-size:17px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+    a{color:var(--primary);text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:rgba(0,71,160,.12)}
+
+    .page{display:flex;max-width:1400px;margin:0 auto}
+    .sidebar{width:260px;position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.5rem 1rem;border-right:1px solid var(--border);background:var(--surface);flex-shrink:0;scrollbar-width:thin}
+    .sidebar::-webkit-scrollbar{width:4px}
+    .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+    .main{flex:1;min-width:0;padding:2.5rem 3rem 4rem}
+
+    .sidebar-brand{font-size:.88rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.35rem;margin-bottom:1.25rem;text-decoration:none;letter-spacing:-.01em}
+    .sidebar-brand:hover{text-decoration:none;color:var(--primary)}
+    .sidebar-nav{display:flex;flex-direction:column;gap:1px;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+    .sidebar-nav a{font-size:.82rem;font-weight:500;padding:.35rem .6rem;color:var(--text2);text-decoration:none;transition:all .12s;border-radius:5px;display:block}
+    .sidebar-nav a:hover{color:var(--text);background:rgba(0,0,0,.03);text-decoration:none}
+    .sidebar-nav a.active{color:var(--primary);font-weight:700;background:rgba(0,71,160,.06)}
+    .sidebar-section{font-size:.68rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin:1.2rem 0 .4rem;padding-left:.5rem}
+    .sidebar-link{display:block;font-size:.8rem;color:var(--text2);padding:.25rem .5rem;border-radius:4px;margin-bottom:.1rem;transition:all .15s;text-decoration:none;border-left:2px solid transparent}
+    .sidebar-link:hover{color:var(--primary);background:rgba(0,71,160,.04);text-decoration:none}
+    .sidebar-link.active{color:var(--primary);font-weight:600;border-left-color:var(--primary)}
+
+    /* Hero */
+    .hero{margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:1px solid var(--border)}
+    .hero-label{font-size:.72rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+    .hero h1{font-size:1.8rem;font-weight:900;line-height:1.3;margin-bottom:.5rem}
+    .hero .lead{font-size:.95rem;color:var(--text2);max-width:640px;line-height:1.8}
+    .hero .meta{display:flex;gap:1rem;flex-wrap:wrap;font-size:.78rem;color:var(--text2);margin-top:.75rem}
+    .hero .meta span{display:flex;align-items:center;gap:.2rem}
+
+    /* Sections */
+    article{max-width:860px}
+    section{margin-bottom:3rem;scroll-margin-top:1.5rem}
+    section h2{font-size:1.4rem;font-weight:800;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:.5rem}
+    section h3{font-size:1.1rem;font-weight:700;margin:1.5rem 0 .6rem;color:var(--text)}
+    section h4{font-size:.95rem;font-weight:700;margin:1.2rem 0 .4rem}
+    section p{margin-bottom:.75rem;font-size:.9rem}
+    section ul,section ol{margin-bottom:1rem;padding-left:1.5rem}
+    section li{margin-bottom:.3rem;font-size:.88rem}
+
+    /* Chart container */
+    .chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;box-shadow:var(--shadow)}
+    .chart-wrap canvas{max-height:380px}
+
+    /* Stats bar */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:1.5rem 0}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;text-align:center;box-shadow:var(--shadow)}
+    .stat-num{font-size:1.8rem;font-weight:900;line-height:1}
+    .stat-label{font-size:.75rem;color:var(--text2);margin-top:.3rem;font-weight:500}
+
+    /* Source cards */
+    .source-grid{display:grid;grid-template-columns:1fr;gap:.75rem;margin:1rem 0}
+    .source-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;transition:border-color .15s;box-shadow:var(--shadow)}
+    .source-card:hover{border-color:var(--primary)}
+    .source-header{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.4rem;flex-wrap:wrap}
+    .source-name{font-size:.92rem;font-weight:700}
+    .source-badges{display:flex;gap:.3rem;flex-wrap:wrap}
+    .badge{font-size:.62rem;font-weight:600;padding:.15rem .45rem;border-radius:3px;text-transform:uppercase;letter-spacing:.03em}
+    .badge-hwp{background:#FEF3C7;color:#92400E}
+    .badge-pdf{background:#FEE2E2;color:#991B1B}
+    .badge-md{background:#D1FAE5;color:#065F46}
+    .badge-xml{background:#DBEAFE;color:#1E40AF}
+    .badge-html{background:#EDE9FE;color:#5B21B6}
+    .badge-docx{background:#E0E7FF;color:#3730A3}
+    .badge-csv{background:#ECFDF5;color:#047857}
+    .badge-api{background:#F0FDFA;color:#0F766E;border:1px solid #99F6E4}
+    .source-desc{font-size:.82rem;color:var(--text2);line-height:1.6}
+    .source-url{font-size:.75rem;color:var(--primary);margin-top:.3rem;display:inline-block;word-break:break-all}
+    .source-status{display:inline-flex;align-items:center;gap:.25rem;font-size:.7rem;font-weight:600;padding:.15rem .5rem;border-radius:10px;margin-top:.4rem}
+    .status-done{background:#D1FAE5;color:#065F46}
+    .status-partial{background:#FEF3C7;color:#92400E}
+    .status-none{background:#FEE2E2;color:#991B1B}
+
+    /* Tool cards */
+    .tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:.75rem;box-shadow:var(--shadow)}
+    .tool-card:hover{border-color:var(--primary)}
+    .tool-name{font-size:.92rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+    .tool-stars{font-size:.7rem;color:var(--yellow);font-weight:600}
+    .tool-desc{font-size:.82rem;color:var(--text2);margin-top:.25rem}
+    .tool-url{font-size:.75rem;margin-top:.3rem;display:inline-block}
+
+    /* Form cards */
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.75rem;margin:1rem 0}
+    .form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem 1rem;box-shadow:var(--shadow);transition:border-color .15s}
+    .form-card:hover{border-color:var(--primary)}
+    .form-card .fc-name{font-size:.88rem;font-weight:700;margin-bottom:.2rem}
+    .form-card .fc-org{font-size:.72rem;color:var(--text2);margin-bottom:.3rem}
+    .form-card .fc-link{font-size:.75rem}
+
+    /* Notice */
+    .notice{background:#FFFBEB;border:1px solid #FDE68A;border-left:4px solid var(--yellow);border-radius:0 var(--radius) var(--radius) 0;padding:1rem 1.25rem;margin:2rem 0;font-size:.85rem;color:#92400E;line-height:1.7}
+    .notice strong{font-weight:700}
+
+    .footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem;margin-top:2rem}
+
+    /* Mobile */
+    .mobile-header{display:none;position:sticky;top:0;z-index:200;background:var(--surface);border-bottom:1px solid var(--border);padding:.6rem 1rem;align-items:center;justify-content:space-between}
+    .mobile-brand{font-size:.88rem;font-weight:800;color:var(--text);text-decoration:none}
+    .mobile-brand:hover{text-decoration:none}
+    .hamburger{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;color:var(--text2)}
+    .hamburger:hover{background:rgba(0,0,0,.03);color:var(--text)}
+    .mobile-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.3);z-index:300}
+    .mobile-overlay.open{display:block}
+    .mobile-drawer{position:fixed;top:0;left:0;width:280px;height:100%;background:var(--surface);z-index:301;transform:translateX(-100%);transition:transform .25s ease;overflow-y:auto;padding:1.5rem 1rem}
+    .mobile-drawer.open{transform:translateX(0)}
+    .mobile-drawer .sidebar-brand{font-size:.88rem;font-weight:800;color:var(--text);display:block;margin-bottom:1.25rem;text-decoration:none}
+    .mobile-drawer .sidebar-nav{display:flex;flex-direction:column;gap:1px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+    .mobile-drawer .sidebar-nav a{font-size:.88rem;font-weight:500;padding:.5rem .6rem;color:var(--text2);text-decoration:none;border-radius:5px;display:block}
+    .mobile-drawer .sidebar-nav a:hover{color:var(--text);background:rgba(0,0,0,.03)}
+    .mobile-drawer .sidebar-nav a.active{color:var(--primary);font-weight:700;background:rgba(0,71,160,.06)}
+    .mobile-close{position:absolute;top:.75rem;right:.75rem;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;color:var(--text2);font-size:1.2rem}
+
+    @media(max-width:900px){
+      .sidebar{display:none}
+      .mobile-header{display:flex}
+      .main{padding:1.5rem 1rem 3rem}
+      .hero h1{font-size:1.5rem}
+      .stats-row{grid-template-columns:repeat(2,1fr)}
+      .form-grid{grid-template-columns:1fr}
+      html{font-size:16px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="mobile-header">
+  <a class="mobile-brand" href="../">리프 Markdown Guide</a>
+  <button class="hamburger" onclick="document.getElementById('mobile-drawer').classList.add('open');document.getElementById('mobile-overlay').classList.add('open')">
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+  </button>
+</div>
+<div class="mobile-overlay" id="mobile-overlay" onclick="this.classList.remove('open');document.getElementById('mobile-drawer').classList.remove('open')"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+  <button class="mobile-close" onclick="this.parentElement.classList.remove('open');document.getElementById('mobile-overlay').classList.remove('open')">&times;</button>
+  <a class="sidebar-brand" href="../">리프 Markdown Guide</a>
+  <div class="sidebar-nav">
+    <a href="../">표준 문법</a>
+    <a href="../extended/">변형 문법</a>
+    <a href="../history/">역사</a>
+    <a href="../ai-strategy/">국가AI전략위</a>
+    <a href="./" class="active">공문서 변환</a>
+    <a href="../cheatsheet/">퀵시트</a>
+    <a href="../playground/">Playground</a>
+    <a href="../game/">게임</a>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <a class="sidebar-brand" href="../">리프 Markdown Guide</a>
+  <div class="sidebar-nav">
+    <a href="../">표준 문법</a>
+    <a href="../extended/">변형 문법</a>
+    <a href="../history/">역사</a>
+    <a href="../ai-strategy/">국가AI전략위</a>
+    <a href="./" class="active">공문서 변환</a>
+    <a href="../cheatsheet/">퀵시트</a>
+    <a href="../playground/">Playground</a>
+    <a href="../game/">게임</a>
+  </div>
+
+  <div class="sidebar-section">변환 현황</div>
+  <a class="sidebar-link" href="#overview">개요</a>
+  <a class="sidebar-link" href="#chart">변환 진행률</a>
+
+  <div class="sidebar-section">문서 출처</div>
+  <a class="sidebar-link" href="#law">법령/법률</a>
+  <a class="sidebar-link" href="#admin">행정규칙/관보</a>
+  <a class="sidebar-link" href="#policy">정책/백서</a>
+  <a class="sidebar-link" href="#research">연구/학술</a>
+  <a class="sidebar-link" href="#data">공공데이터</a>
+  <a class="sidebar-link" href="#edu">교육/표준</a>
+  <a class="sidebar-link" href="#archive">기록/특허</a>
+
+  <div class="sidebar-section">도구/양식</div>
+  <a class="sidebar-link" href="#tools">변환 도구</a>
+  <a class="sidebar-link" href="#github">GitHub 프로젝트</a>
+  <a class="sidebar-link" href="#forms">공문서 양식</a>
+</aside>
+
+<!-- Main -->
+<main class="main">
+
+<div class="hero">
+  <div class="hero-label">Korea Public Document &rarr; Markdown</div>
+  <h1>한국 공문서 마크다운 변환 프로젝트</h1>
+  <p class="lead">한국 정부 기관과 공공기관에서 발행하는 공문서를 마크다운으로 변환하는 프로젝트다. HWP, PDF, DOCX 등 다양한 포맷의 공공문서를 수집하고, 마크다운으로 변환해 누구나 열람할 수 있게 만드는 것이 목표다.</p>
+  <div class="meta">
+    <span>최종 업데이트: 2026-04-03</span>
+    <span>수집 대상: 30+ 기관</span>
+    <span>변환 완료: 1건</span>
+  </div>
+</div>
+
+<article>
+
+<!-- ===== 개요 ===== -->
+<section id="overview">
+  <h2>개요</h2>
+  <p>한국 공공기관은 대부분 <strong>HWP(한글)</strong>, <strong>PDF</strong>, <strong>DOCX</strong> 형식으로 문서를 배포한다. 이런 문서들은 검색이 어렵고, 버전 관리가 안 되며, 프로그래밍으로 처리하기 힘들다. 마크다운으로 변환하면 Git을 통한 이력 관리, 전문 검색, 자동화 처리가 가능해진다.</p>
+  <p>현재 변환이 완료된 문서는 <strong>대한민국 법령</strong>(legalize-kr) 1건뿐이다. 나머지는 모두 변환 대기 상태이며, 순차적으로 진행할 예정이다.</p>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--primary)">30+</div>
+      <div class="stat-label">수집 대상 기관</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--green)">1</div>
+      <div class="stat-label">변환 완료</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--yellow)">2</div>
+      <div class="stat-label">부분 변환</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--red)">27</div>
+      <div class="stat-label">미변환</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 변환 진행률 차트 ===== -->
+<section id="chart">
+  <h2>변환 진행률</h2>
+  <p>각 분야별 마크다운 변환 현황을 나타낸다. 아직 초기 단계이므로 대부분 미변환 상태다.</p>
+
+  <div class="chart-wrap">
+    <canvas id="progressChart"></canvas>
+  </div>
+
+  <div class="chart-wrap" style="margin-top:1rem">
+    <canvas id="categoryChart"></canvas>
+  </div>
+</section>
+
+<!-- ===== 법령/법률 ===== -->
+<section id="law">
+  <h2>법령 / 법률</h2>
+
+  <div class="source-grid">
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">국가법령정보센터</span>
+        <div class="source-badges">
+          <span class="badge badge-html">HTML</span>
+          <span class="badge badge-xml">XML</span>
+          <span class="badge badge-pdf">PDF</span>
+          <span class="badge badge-api">Open API</span>
+        </div>
+      </div>
+      <div class="source-desc">현행법령(법률, 대통령령, 총리령, 부령), 행정규칙(훈령, 예규, 고시), 판례, 조약 등 대한민국 법령 전체를 수록한 법제처 운영 사이트.</div>
+      <a class="source-url" href="https://www.law.go.kr" target="_blank">www.law.go.kr</a> · <a class="source-url" href="https://open.law.go.kr" target="_blank">open.law.go.kr (API)</a>
+      <div><span class="source-status status-done">변환 완료 (legalize-kr)</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">자치법규정보시스템 (ELIS)</span>
+        <div class="source-badges">
+          <span class="badge badge-html">HTML</span>
+        </div>
+      </div>
+      <div class="source-desc">전국 17개 광역 + 226개 기초 지방자치단체의 조례, 규칙, 훈령, 예규. 지방행정의 근간을 이루는 자치법규 원문 제공.</div>
+      <a class="source-url" href="https://www.elis.go.kr" target="_blank">www.elis.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">국세법령정보시스템</span>
+        <div class="source-badges">
+          <span class="badge badge-html">HTML</span>
+        </div>
+      </div>
+      <div class="source-desc">세법, 세법해석례, 판례, 심판결정례 등 국세 관련 법령을 전문 검색할 수 있는 국세청 운영 시스템.</div>
+      <a class="source-url" href="https://taxlaw.nts.go.kr" target="_blank">taxlaw.nts.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">헌법재판소 결정문</span>
+        <div class="source-badges">
+          <span class="badge badge-html">HTML</span>
+          <span class="badge badge-pdf">PDF</span>
+        </div>
+      </div>
+      <div class="source-desc">헌법재판소 결정문, 공보, 판례집. 위헌 결정, 헌법소원 등 헌법 관련 주요 결정을 원문으로 열람 가능.</div>
+      <a class="source-url" href="https://www.ccourt.go.kr" target="_blank">www.ccourt.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">대법원 사법정보공개포털</span>
+        <div class="source-badges">
+          <span class="badge badge-html">HTML</span>
+        </div>
+      </div>
+      <div class="source-desc">대법원/하급심 판례, 대법원 규칙, 예규, 선례. 민사/행정 2015년~, 형사 2013년~ 익명처리 후 공개.</div>
+      <a class="source-url" href="https://portal.scourt.go.kr" target="_blank">portal.scourt.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 행정규칙/관보 ===== -->
+<section id="admin">
+  <h2>행정규칙 / 관보</h2>
+
+  <div class="source-grid">
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">전자관보</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+        </div>
+      </div>
+      <div class="source-desc">법률, 대통령령, 총리령, 부령, 고시, 공고 등 관보 게재 사항을 PDF로 매일 발행. 2021.03.25부터 상세 검색 지원.</div>
+      <a class="source-url" href="https://gwanbo.go.kr" target="_blank">gwanbo.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">국회 의안정보시스템</span>
+        <div class="source-badges">
+          <span class="badge badge-hwp">HWP</span>
+          <span class="badge badge-pdf">PDF</span>
+          <span class="badge badge-api">Open API</span>
+        </div>
+      </div>
+      <div class="source-desc">법률안, 예산안, 결산, 동의안, 청원 등 국회에 제출된 의안 원문(HWP/PDF). 열린국회정보 API로도 접근 가능.</div>
+      <a class="source-url" href="https://likms.assembly.go.kr/bill/main.do" target="_blank">likms.assembly.go.kr/bill</a> · <a class="source-url" href="https://open.assembly.go.kr" target="_blank">open.assembly.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">행정규칙 (훈령/예규/고시/공고)</span>
+        <div class="source-badges">
+          <span class="badge badge-html">HTML</span>
+          <span class="badge badge-xml">XML</span>
+        </div>
+      </div>
+      <div class="source-desc">법제처를 통해 공개되는 각 부처의 훈령, 예규, 고시, 공고. 법령 하위 규범으로서 실무 행정의 핵심 문서.</div>
+      <a class="source-url" href="https://www.law.go.kr/admRulSc.do" target="_blank">law.go.kr/admRulSc.do</a>
+      <div><span class="source-status status-partial">부분 변환 (법령 API 경유)</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 정책/백서 ===== -->
+<section id="policy">
+  <h2>정책 문서 / 백서</h2>
+
+  <div class="source-grid">
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">대한민국 정책브리핑</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+          <span class="badge badge-hwp">HWP</span>
+        </div>
+      </div>
+      <div class="source-desc">각 부처의 연감, 백서, 정책보고서, 전문자료. 수천 건의 정책 문서가 PDF/HWP로 다운로드 가능.</div>
+      <a class="source-url" href="https://www.korea.kr/archive/expDocMainList.do" target="_blank">korea.kr/archive</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">PRISM 정책연구관리시스템</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+        </div>
+      </div>
+      <div class="source-desc">정부 정책연구 용역 결과물. 정부가 외부에 의뢰한 정책연구 보고서 원문 열람.</div>
+      <a class="source-url" href="https://www.prism.go.kr" target="_blank">www.prism.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">감사원 감사보고서</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+          <span class="badge badge-html">HTML</span>
+        </div>
+      </div>
+      <div class="source-desc">감사원이 수행한 감사 결과 보고서. 2003년 8월부터 공개된 공공기관 감사결과 전문.</div>
+      <a class="source-url" href="https://www.bai.go.kr" target="_blank">www.bai.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">정부업무평가포털</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+        </div>
+      </div>
+      <div class="source-desc">부처별 업무보고서, 업무평가 결과 보고서.</div>
+      <a class="source-url" href="https://www.evaluation.go.kr" target="_blank">www.evaluation.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">한국은행 보고서</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+          <span class="badge badge-csv">Excel/CSV</span>
+        </div>
+      </div>
+      <div class="source-desc">경제전망보고서, 통화신용정책보고서, 지역경제보고서, 연차보고서, 경제통계연보. 700+ 통계 시계열.</div>
+      <a class="source-url" href="https://ecos.bok.or.kr" target="_blank">ecos.bok.or.kr</a> · <a class="source-url" href="https://www.bok.or.kr" target="_blank">www.bok.or.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 연구/학술 ===== -->
+<section id="research">
+  <h2>연구 / 학술</h2>
+
+  <div class="source-grid">
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">NTIS 국가과학기술지식정보서비스</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+        </div>
+      </div>
+      <div class="source-desc">국가 R&amp;D 연구보고서, 연구성과 정보. 약 247만 건의 연구보고서, 1억 8,680만 건의 논문 정보.</div>
+      <a class="source-url" href="https://www.ntis.go.kr" target="_blank">www.ntis.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">ScienceON (KISTI)</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+        </div>
+      </div>
+      <div class="source-desc">과학기술 논문, 보고서, 특허 정보를 통합 제공하는 과학기술 지식인프라.</div>
+      <a class="source-url" href="https://scienceon.kisti.re.kr" target="_blank">scienceon.kisti.re.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">RISS 학술연구정보서비스</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+        </div>
+      </div>
+      <div class="source-desc">학위논문, 학술논문, 학술지, 단행본 원문. 5만+ 학술지, 전국 4년제 대학 참여.</div>
+      <a class="source-url" href="https://www.riss.kr" target="_blank">www.riss.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">국회도서관 디지털도서관</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+        </div>
+      </div>
+      <div class="source-desc">국회도서관 소장 단행본, 학위논문, 학술지 원문 디지털 열람 서비스.</div>
+      <a class="source-url" href="https://dl.nanet.go.kr" target="_blank">dl.nanet.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 공공데이터 ===== -->
+<section id="data">
+  <h2>공공데이터</h2>
+
+  <div class="source-grid">
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">공공데이터포털</span>
+        <div class="source-badges">
+          <span class="badge badge-csv">CSV</span>
+          <span class="badge badge-xml">JSON/XML</span>
+          <span class="badge badge-hwp">HWP</span>
+          <span class="badge badge-pdf">PDF</span>
+          <span class="badge badge-api">Open API</span>
+        </div>
+      </div>
+      <div class="source-desc">10만+ 데이터셋. CSV, JSON, XML, Excel, HWP, PDF 등 다양한 형식의 공공데이터를 API 또는 파일로 제공.</div>
+      <a class="source-url" href="https://www.data.go.kr" target="_blank">www.data.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">서울 열린데이터광장</span>
+        <div class="source-badges">
+          <span class="badge badge-csv">CSV</span>
+          <span class="badge badge-xml">JSON/XML</span>
+        </div>
+      </div>
+      <div class="source-desc">서울특별시 공공데이터 개방 포털. 교통, 환경, 복지, 행정 등 분야별 데이터셋.</div>
+      <a class="source-url" href="https://data.seoul.go.kr" target="_blank">data.seoul.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">정보공개포털</span>
+        <div class="source-badges">
+          <span class="badge badge-hwp">HWP</span>
+          <span class="badge badge-pdf">PDF</span>
+          <span class="badge badge-docx">DOCX</span>
+        </div>
+      </div>
+      <div class="source-desc">정보공개청구 및 사전정보공표 포털. 각 공공기관에 정보공개를 청구하고 결과를 받을 수 있다.</div>
+      <a class="source-url" href="https://www.open.go.kr" target="_blank">www.open.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 교육/표준 ===== -->
+<section id="edu">
+  <h2>교육 / 표준</h2>
+
+  <div class="source-grid">
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">NCIC 국가교육과정정보센터</span>
+        <div class="source-badges">
+          <span class="badge badge-hwp">HWP</span>
+          <span class="badge badge-pdf">PDF</span>
+          <span class="badge badge-docx">PPTX/XLSX</span>
+        </div>
+      </div>
+      <div class="source-desc">초중고 교육과정 원문, 해설서, 학교급별/시기별 교육과정 문서 제공.</div>
+      <a class="source-url" href="https://ncic.re.kr" target="_blank">ncic.re.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">e-나라 표준인증 (KS 표준)</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+        </div>
+      </div>
+      <div class="source-desc">KS 한국산업표준(A~X, 21개 부문). 산업 전반의 기술표준 문서. 일부 유료.</div>
+      <a class="source-url" href="https://standard.go.kr" target="_blank">standard.go.kr</a> · <a class="source-url" href="https://e-ks.kr" target="_blank">e-ks.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 기록/특허 ===== -->
+<section id="archive">
+  <h2>기록 / 특허</h2>
+
+  <div class="source-grid">
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">국가기록원</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+          <span class="badge badge-hwp">HWP</span>
+        </div>
+      </div>
+      <div class="source-desc">관보, 국무회의록, 정부간행물, 독립운동 기록, 토지기록물, 판결문, 건축도면. 174만+ 건 공개(2026.02 기준).</div>
+      <a class="source-url" href="https://www.archives.go.kr" target="_blank">www.archives.go.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+
+    <div class="source-card">
+      <div class="source-header">
+        <span class="source-name">KIPRIS 특허정보검색서비스</span>
+        <div class="source-badges">
+          <span class="badge badge-pdf">PDF</span>
+          <span class="badge badge-xml">XML</span>
+          <span class="badge badge-api">API</span>
+        </div>
+      </div>
+      <div class="source-desc">특허, 실용신안, 디자인, 상표 원문 검색. KIPRIS Plus API로 프로그래밍 접근 가능.</div>
+      <a class="source-url" href="https://www.kipris.or.kr" target="_blank">www.kipris.or.kr</a> · <a class="source-url" href="https://plus.kipris.or.kr" target="_blank">plus.kipris.or.kr</a>
+      <div><span class="source-status status-none">미변환</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 변환 도구 ===== -->
+<section id="tools">
+  <h2>변환 도구</h2>
+  <p>HWP, PDF 등 한국 공문서를 마크다운으로 변환하는 데 사용할 수 있는 오픈소스 도구들이다.</p>
+
+  <div class="tool-card">
+    <div class="tool-name">kordoc <span class="tool-stars">556 stars</span></div>
+    <div class="tool-desc">HWP/HWPX/PDF를 마크다운으로 변환. npm + CLI + MCP Server. 실제 정부 프로젝트 5건에서 테스트 완료.</div>
+    <a class="tool-url" href="https://github.com/chrisryugj/kordoc" target="_blank">github.com/chrisryugj/kordoc</a>
+    <div class="source-badges" style="margin-top:.3rem">
+      <span class="badge badge-hwp">HWP</span>
+      <span class="badge badge-pdf">PDF</span>
+      <span class="badge badge-md">MD</span>
+    </div>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-name">hwp2md <span class="tool-stars">105 stars</span></div>
+    <div class="tool-desc">Go 언어로 작성된 HWP -> Markdown 변환기.</div>
+    <a class="tool-url" href="https://github.com/roboco-io/hwp2md" target="_blank">github.com/roboco-io/hwp2md</a>
+    <div class="source-badges" style="margin-top:.3rem">
+      <span class="badge badge-hwp">HWP</span>
+      <span class="badge badge-md">MD</span>
+    </div>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-name">pyhwp <span class="tool-stars">296 stars</span></div>
+    <div class="tool-desc">Python HWP v5 파일 포맷 파서. HWP 파일의 구조 분석과 텍스트 추출.</div>
+    <a class="tool-url" href="https://github.com/mete0r/pyhwp" target="_blank">github.com/mete0r/pyhwp</a>
+    <div class="source-badges" style="margin-top:.3rem">
+      <span class="badge badge-hwp">HWP</span>
+    </div>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-name">hwp-rs <span class="tool-stars">228 stars</span></div>
+    <div class="tool-desc">Rust 기반 HWP 파서. 고성능 HWP 파일 처리.</div>
+    <a class="tool-url" href="https://github.com/hahnlee/hwp-rs" target="_blank">github.com/hahnlee/hwp-rs</a>
+    <div class="source-badges" style="margin-top:.3rem">
+      <span class="badge badge-hwp">HWP</span>
+    </div>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-name">hwp2hwpx <span class="tool-stars">46 stars</span></div>
+    <div class="tool-desc">Java로 작성된 HWP -> HWPX 변환기. HWPX는 ODF 기반 개방형 포맷.</div>
+    <a class="tool-url" href="https://github.com/neolord0/hwp2hwpx" target="_blank">github.com/neolord0/hwp2hwpx</a>
+    <div class="source-badges" style="margin-top:.3rem">
+      <span class="badge badge-hwp">HWP</span>
+      <span class="badge badge-docx">HWPX</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GitHub 프로젝트 ===== -->
+<section id="github">
+  <h2>GitHub 프로젝트</h2>
+  <p>한국 공문서를 마크다운으로 변환하거나 관련 데이터를 수집하는 오픈소스 프로젝트들이다.</p>
+
+  <div class="tool-card">
+    <div class="tool-name">legalize-kr <span class="tool-stars">614 stars</span></div>
+    <div class="tool-desc">대한민국 법령을 Git 저장소로 관리. 각 법령은 Markdown 파일이고, 각 개정은 실제 공포일자를 가진 Git commit. legalize(스페인 법령 Git 프로젝트)에서 영감.</div>
+    <a class="tool-url" href="https://github.com/legalize-kr/legalize-kr" target="_blank">github.com/legalize-kr/legalize-kr</a>
+    <div class="source-badges" style="margin-top:.3rem">
+      <span class="badge badge-md">Markdown</span>
+    </div>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-name">korean-law-mcp <span class="tool-stars">1,044 stars</span></div>
+    <div class="tool-desc">한국 법률 89개 도구 제공 MCP 서버. 법령, 판례, 자치법규, 법령해석례 검색. HWP/HWPX -> Markdown 변환 내장.</div>
+    <a class="tool-url" href="https://github.com/chrisryugj/korean-law-mcp" target="_blank">github.com/chrisryugj/korean-law-mcp</a>
+    <div class="source-badges" style="margin-top:.3rem">
+      <span class="badge badge-api">MCP</span>
+      <span class="badge badge-md">Markdown</span>
+    </div>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-name">awesome-hangul</div>
+    <div class="tool-desc">한글/한국어 관련 라이브러리, 모듈 모음. 한국어 텍스트 처리를 위한 참고 자료.</div>
+    <a class="tool-url" href="https://github.com/lqez/awesome-hangul" target="_blank">github.com/lqez/awesome-hangul</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-name">AwesomeKorean_Data</div>
+    <div class="tool-desc">한국어 데이터셋 링크 모음. NLP 학습용 한국어 말뭉치, 공공데이터 등.</div>
+    <a class="tool-url" href="https://github.com/songys/AwesomeKorean_Data" target="_blank">github.com/songys/AwesomeKorean_Data</a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-name">public-apis-4Kr</div>
+    <div class="tool-desc">한국 서비스에서 사용 가능한 공개 API 목록.</div>
+    <a class="tool-url" href="https://github.com/yybmion/public-apis-4Kr" target="_blank">github.com/yybmion/public-apis-4Kr</a>
+  </div>
+</section>
+
+<!-- ===== 공문서 양식 ===== -->
+<section id="forms">
+  <h2>공문서 양식 모음</h2>
+  <p>각 기관에서 제공하는 공문서 서식/양식 다운로드 링크다. 대부분 HWP 또는 DOCX 형식이며, 마크다운 변환 대상이기도 하다.</p>
+
+  <h3>중앙행정기관 서식</h3>
+  <div class="form-grid">
+    <div class="form-card">
+      <div class="fc-name">정부24 민원서식</div>
+      <div class="fc-org">행정안전부</div>
+      <a class="fc-link" href="https://www.gov.kr/portal/rcvfvrSvc/main" target="_blank">gov.kr &mdash; 민원서식 안내</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">법제처 법령서식</div>
+      <div class="fc-org">법제처 / 국가법령정보센터</div>
+      <a class="fc-link" href="https://www.law.go.kr/LSW/lsBylInfoP.do" target="_blank">law.go.kr &mdash; 별표/서식</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">국세청 세무서식</div>
+      <div class="fc-org">국세청</div>
+      <a class="fc-link" href="https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=2304&cntntsId=7695" target="_blank">nts.go.kr &mdash; 국세 서식</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">고용노동부 서식</div>
+      <div class="fc-org">고용노동부</div>
+      <a class="fc-link" href="https://www.moel.go.kr/policy/policydata/list.do" target="_blank">moel.go.kr &mdash; 서식/자료</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">법원 재판서식</div>
+      <div class="fc-org">대법원</div>
+      <a class="fc-link" href="https://help.scourt.go.kr/nm/min_4/min_4_1/index.html" target="_blank">help.scourt.go.kr &mdash; 재판서식</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">검찰청 서식</div>
+      <div class="fc-org">대검찰청</div>
+      <a class="fc-link" href="https://www.spo.go.kr/site/spo/crmnlJstcInfo.do" target="_blank">spo.go.kr &mdash; 형사사법절차</a>
+    </div>
+  </div>
+
+  <h3>지방자치단체 서식</h3>
+  <div class="form-grid">
+    <div class="form-card">
+      <div class="fc-name">서울시 서식</div>
+      <div class="fc-org">서울특별시</div>
+      <a class="fc-link" href="https://news.seoul.go.kr/gov/archives/category/form" target="_blank">seoul.go.kr &mdash; 서식 자료실</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">경기도 민원서식</div>
+      <div class="fc-org">경기도</div>
+      <a class="fc-link" href="https://www.gg.go.kr/contents/contents.do?ciIdx=679" target="_blank">gg.go.kr &mdash; 민원서식</a>
+    </div>
+  </div>
+
+  <h3>공공기관 서식</h3>
+  <div class="form-grid">
+    <div class="form-card">
+      <div class="fc-name">국민건강보험공단 서식</div>
+      <div class="fc-org">국민건강보험공단</div>
+      <a class="fc-link" href="https://www.nhis.or.kr/nhis/minwon/retrieveFormList.do" target="_blank">nhis.or.kr &mdash; 서식 다운로드</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">국민연금공단 서식</div>
+      <div class="fc-org">국민연금공단</div>
+      <a class="fc-link" href="https://www.nps.or.kr/jsppage/cyber/form_download.jsp" target="_blank">nps.or.kr &mdash; 서식 다운로드</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">근로복지공단 서식</div>
+      <div class="fc-org">근로복지공단</div>
+      <a class="fc-link" href="https://www.comwel.or.kr/comwel/data/form.jsp" target="_blank">comwel.or.kr &mdash; 서식 모음</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">한국토지주택공사(LH) 서식</div>
+      <div class="fc-org">한국토지주택공사</div>
+      <a class="fc-link" href="https://www.lh.or.kr/menu.es?mid=a10503010000" target="_blank">lh.or.kr &mdash; 서식/자료</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">특허청 서식</div>
+      <div class="fc-org">특허청</div>
+      <a class="fc-link" href="https://www.kipo.go.kr/ko/kpoContentView.do?menuCate=m01_05" target="_blank">kipo.go.kr &mdash; 민원서식</a>
+    </div>
+    <div class="form-card">
+      <div class="fc-name">관세청 서식</div>
+      <div class="fc-org">관세청</div>
+      <a class="fc-link" href="https://www.customs.go.kr/kcs/ad/cesf/listCesf.do" target="_blank">customs.go.kr &mdash; 세관서식</a>
+    </div>
+  </div>
+
+  <div class="notice">
+    <strong>안내</strong><br>
+    이 페이지에 수집된 공문서 출처, 양식 링크, GitHub 프로젝트 정보는 LLM(대규모 언어 모델) 분석을 통해 수집된 정보입니다. URL 변경, 서비스 종료, 정보 오류 등이 있을 수 있으며, 일부 내용이 실제와 다를 수 있습니다.<br><br>
+    오류를 발견하거나 추가해야 할 공문서 출처가 있다면 <a href="https://x.com/leafeditor" target="_blank">@leafeditor</a>로 제보해 주세요. 제보를 받아 지속적으로 내용을 검증하고 개선해 나가겠습니다.
+  </div>
+</section>
+
+</article>
+
+<footer class="footer">
+  <p>리프 Markdown Guide &mdash; leaf-kit.github.io/markdown</p>
+  <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
+    <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
+    <a href="https://x.com/intent/post?text=%ED%95%9C%EA%B5%AD%20%EA%B3%B5%EB%AC%B8%EC%84%9C%20%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%EB%B3%80%ED%99%98%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%0A%0Ahttps%3A%2F%2Fleaf-kit.github.io%2Fmarkdown%2Fkorea-docs%2F%0A%0A%40leafeditor%20%23%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%23%EA%B3%B5%EB%AC%B8%EC%84%9C" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+  </div>
+  <div style="margin-top:.5rem;font-size:.65rem;color:rgba(100,116,139,.5)">Release v2026.04.03 · 2026-04-03</div>
+</footer>
+
+</main>
+</div>
+
+<script>
+// Sidebar scroll spy
+const sections=document.querySelectorAll('section[id]');
+const links=document.querySelectorAll('.sidebar-link');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const link=document.querySelector(`.sidebar-link[href="#${e.target.id}"]`);
+      if(link)link.classList.add('active');
+    }
+  });
+},{rootMargin:'-10% 0px -80% 0px'});
+sections.forEach(s=>obs.observe(s));
+
+// Progress Chart - 분야별 변환 현황
+const ctx1=document.getElementById('progressChart').getContext('2d');
+new Chart(ctx1,{
+  type:'bar',
+  data:{
+    labels:['법령/법률','행정규칙/관보','정책/백서','연구/학술','공공데이터','교육/표준','기록/특허'],
+    datasets:[{
+      label:'변환 완료',
+      data:[1,0,0,0,0,0,0],
+      backgroundColor:'#10B981',
+      borderRadius:4
+    },{
+      label:'부분 변환',
+      data:[0,1,0,0,0,0,0],
+      backgroundColor:'#F59E0B',
+      borderRadius:4
+    },{
+      label:'미변환',
+      data:[4,2,5,4,3,2,2],
+      backgroundColor:'#EF4444',
+      borderRadius:4
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      title:{display:true,text:'분야별 마크다운 변환 현황 (건수)',font:{size:14,weight:'bold',family:'Noto Sans KR'},padding:{bottom:16}},
+      legend:{position:'bottom',labels:{font:{size:11,family:'Noto Sans KR'},padding:16}}
+    },
+    scales:{
+      x:{stacked:true,grid:{display:false},ticks:{font:{size:11,family:'Noto Sans KR'}}},
+      y:{stacked:true,beginAtZero:true,ticks:{stepSize:1,font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}}
+    }
+  }
+});
+
+// Category Chart - 문서 형식별 분포
+const ctx2=document.getElementById('categoryChart').getContext('2d');
+new Chart(ctx2,{
+  type:'doughnut',
+  data:{
+    labels:['PDF','HWP','HTML','XML/JSON','CSV/Excel','API 제공'],
+    datasets:[{
+      data:[22,8,10,6,4,5],
+      backgroundColor:['#EF4444','#F59E0B','#8B5CF6','#3B82F6','#10B981','#06B6D4'],
+      borderWidth:2,
+      borderColor:'#fff'
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      title:{display:true,text:'수집 대상 문서 형식 분포',font:{size:14,weight:'bold',family:'Noto Sans KR'},padding:{bottom:16}},
+      legend:{position:'bottom',labels:{font:{size:11,family:'Noto Sans KR'},padding:12,usePointStyle:true}}
+    }
+  }
+});
+</script>
+</body>
+</html>
