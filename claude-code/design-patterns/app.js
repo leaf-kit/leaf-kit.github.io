@@ -343,19 +343,28 @@ function playCombo(count){
 function initSound(){
   var btn=document.getElementById('btn-sound');
   var icon=document.getElementById('sound-icon');
+  // Default is ON. Only OFF if user explicitly turned it off.
   var stored=localStorage.getItem('dp-sound');
-  if(stored==='off'){soundEnabled=false;btn.classList.remove('active-btn');icon.textContent='x';}
-  else{soundEnabled=true;btn.classList.add('active-btn');icon.textContent='ON';}
+  soundEnabled=(stored!=='off');
+  applySoundUI();
+
   btn.onclick=function(){
     soundEnabled=!soundEnabled;
-    btn.classList.toggle('active-btn',soundEnabled);
-    icon.textContent=soundEnabled?'ON':'x';
     localStorage.setItem('dp-sound',soundEnabled?'on':'off');
+    applySoundUI();
     if(soundEnabled){getAudioCtx();playStepChime(3);}
   };
-  // Init audio context on first user interaction
-  document.addEventListener('click',function(){getAudioCtx();},{once:true});
-  document.addEventListener('keydown',function(){getAudioCtx();},{once:true});
+
+  function applySoundUI(){
+    btn.classList.toggle('active-btn',soundEnabled);
+    icon.textContent=soundEnabled?'ON':'x';
+    btn.title=soundEnabled?'Sound ON':'Sound OFF';
+  }
+
+  // Pre-warm audio context on any user gesture
+  ['click','keydown','touchstart'].forEach(function(evt){
+    document.addEventListener(evt,function(){getAudioCtx();},{once:true});
+  });
 }
 
 /* ============================================
