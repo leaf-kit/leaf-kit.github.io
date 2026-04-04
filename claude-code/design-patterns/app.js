@@ -241,118 +241,145 @@ var speedMultiplier=5; // default: very slow
 
 /* ============================================
    SOUND SYSTEM — Web Audio API
+   Browser requires a user gesture before AudioContext
+   can produce sound. We create context eagerly, then
+   resume it on the first interaction. All play*()
+   functions check ctx.state==='running' before scheduling.
    ============================================ */
-var soundEnabled=true,audioCtx=null;
+var soundEnabled=true,audioCtx=null,audioReady=false;
 
-function getAudioCtx(){
-  if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){soundEnabled=false;}}
-  if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();
+function ensureAudioCtx(){
+  if(!audioCtx){
+    try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+    catch(e){soundEnabled=false;return null;}
+  }
+  return audioCtx;
+}
+
+function resumeAudio(){
+  var ctx=ensureAudioCtx();
+  if(ctx&&ctx.state==='suspended'){
+    ctx.resume().then(function(){audioReady=true;});
+  }
+  if(ctx&&ctx.state==='running')audioReady=true;
+}
+
+function snd(){
+  // Returns ctx only if sound is enabled AND context is running
+  if(!soundEnabled||!audioCtx||audioCtx.state!=='running')return null;
   return audioCtx;
 }
 
 function playKeyClick(){
-  if(!soundEnabled)return;var ctx=getAudioCtx();if(!ctx)return;
+  var ctx=snd();if(!ctx)return;
   var t=ctx.currentTime;
   var osc=ctx.createOscillator(),gain=ctx.createGain();
   osc.connect(gain);gain.connect(ctx.destination);
   osc.type='square';osc.frequency.setValueAtTime(1800+Math.random()*600,t);
-  gain.gain.setValueAtTime(.025,t);gain.gain.exponentialRampToValueAtTime(.001,t+.025);
-  osc.start(t);osc.stop(t+.03);
-  // Add noise click
-  var buf=ctx.createBuffer(1,ctx.sampleRate*.012,ctx.sampleRate);
-  var d=buf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*.15;
+  gain.gain.setValueAtTime(.12,t);gain.gain.exponentialRampToValueAtTime(.001,t+.03);
+  osc.start(t);osc.stop(t+.035);
+  var buf=ctx.createBuffer(1,ctx.sampleRate*.015,ctx.sampleRate);
+  var d=buf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*.4;
   var n=ctx.createBufferSource(),ng=ctx.createGain();
   n.buffer=buf;n.connect(ng);ng.connect(ctx.destination);
-  ng.gain.setValueAtTime(.06,t);ng.gain.exponentialRampToValueAtTime(.001,t+.012);
+  ng.gain.setValueAtTime(.18,t);ng.gain.exponentialRampToValueAtTime(.001,t+.015);
   n.start(t);
 }
 
 function playWhoosh(){
-  if(!soundEnabled)return;var ctx=getAudioCtx();if(!ctx)return;
+  var ctx=snd();if(!ctx)return;
   var t=ctx.currentTime;
-  var buf=ctx.createBuffer(1,ctx.sampleRate*.25,ctx.sampleRate);
+  var buf=ctx.createBuffer(1,ctx.sampleRate*.3,ctx.sampleRate);
   var d=buf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
   var n=ctx.createBufferSource(),filt=ctx.createBiquadFilter(),g=ctx.createGain();
   n.buffer=buf;n.connect(filt);filt.connect(g);g.connect(ctx.destination);
-  filt.type='bandpass';filt.frequency.setValueAtTime(600,t);filt.frequency.exponentialRampToValueAtTime(2400,t+.12);filt.frequency.exponentialRampToValueAtTime(300,t+.25);filt.Q.value=2;
-  g.gain.setValueAtTime(.04,t);g.gain.linearRampToValueAtTime(.07,t+.06);g.gain.exponentialRampToValueAtTime(.001,t+.25);
-  n.start(t);n.stop(t+.26);
+  filt.type='bandpass';filt.frequency.setValueAtTime(400,t);filt.frequency.exponentialRampToValueAtTime(3000,t+.12);filt.frequency.exponentialRampToValueAtTime(200,t+.3);filt.Q.value=2.5;
+  g.gain.setValueAtTime(.12,t);g.gain.linearRampToValueAtTime(.2,t+.08);g.gain.exponentialRampToValueAtTime(.001,t+.3);
+  n.start(t);n.stop(t+.32);
 }
 
 function playStepChime(stepNum){
-  if(!soundEnabled)return;var ctx=getAudioCtx();if(!ctx)return;
+  var ctx=snd();if(!ctx)return;
   var t=ctx.currentTime;
   var baseFreq=440+stepNum*60;
   var osc=ctx.createOscillator(),g=ctx.createGain();
   osc.connect(g);g.connect(ctx.destination);
-  osc.type='sine';osc.frequency.setValueAtTime(baseFreq,t);osc.frequency.exponentialRampToValueAtTime(baseFreq*1.5,t+.08);
-  g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);
-  osc.start(t);osc.stop(t+.22);
+  osc.type='sine';osc.frequency.setValueAtTime(baseFreq,t);osc.frequency.exponentialRampToValueAtTime(baseFreq*1.5,t+.1);
+  g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+.25);
+  osc.start(t);osc.stop(t+.28);
+  // Harmonic layer
+  var osc2=ctx.createOscillator(),g2=ctx.createGain();
+  osc2.connect(g2);g2.connect(ctx.destination);
+  osc2.type='triangle';osc2.frequency.setValueAtTime(baseFreq*2,t);
+  g2.gain.setValueAtTime(.06,t);g2.gain.exponentialRampToValueAtTime(.001,t+.15);
+  osc2.start(t);osc2.stop(t+.18);
 }
 
 function playDataTransfer(){
-  if(!soundEnabled)return;var ctx=getAudioCtx();if(!ctx)return;
+  var ctx=snd();if(!ctx)return;
   var t=ctx.currentTime;
-  [0,.04,.08].forEach(function(off,i){
+  [0,.05,.1].forEach(function(off,i){
     var osc=ctx.createOscillator(),g=ctx.createGain();
     osc.connect(g);g.connect(ctx.destination);
-    osc.type='sine';osc.frequency.setValueAtTime(800+i*200,t+off);
-    g.gain.setValueAtTime(.03,t+off);g.gain.exponentialRampToValueAtTime(.001,t+off+.06);
-    osc.start(t+off);osc.stop(t+off+.07);
+    osc.type='sine';osc.frequency.setValueAtTime(700+i*250,t+off);
+    g.gain.setValueAtTime(.12,t+off);g.gain.exponentialRampToValueAtTime(.001,t+off+.08);
+    osc.start(t+off);osc.stop(t+off+.1);
   });
 }
 
 function playPatternComplete(){
-  if(!soundEnabled)return;var ctx=getAudioCtx();if(!ctx)return;
+  var ctx=snd();if(!ctx)return;
   var t=ctx.currentTime;
   var notes=[523,659,784,1047];
   notes.forEach(function(freq,i){
     var osc=ctx.createOscillator(),g=ctx.createGain();
     osc.connect(g);g.connect(ctx.destination);
-    osc.type='sine';osc.frequency.setValueAtTime(freq,t+i*.1);
-    g.gain.setValueAtTime(.06,t+i*.1);g.gain.exponentialRampToValueAtTime(.001,t+i*.1+.3);
-    osc.start(t+i*.1);osc.stop(t+i*.1+.32);
+    osc.type='sine';osc.frequency.setValueAtTime(freq,t+i*.12);
+    g.gain.setValueAtTime(.2,t+i*.12);g.gain.exponentialRampToValueAtTime(.001,t+i*.12+.35);
+    osc.start(t+i*.12);osc.stop(t+i*.12+.38);
   });
 }
 
 function playAchievement(){
-  if(!soundEnabled)return;var ctx=getAudioCtx();if(!ctx)return;
+  var ctx=snd();if(!ctx)return;
   var t=ctx.currentTime;
   var notes=[659,784,988,1319];
   notes.forEach(function(freq,i){
-    var osc=ctx.createOscillator(),g=ctx.createGain(),g2=ctx.createGain();
-    osc.connect(g);g.connect(g2);g2.connect(ctx.destination);
-    osc.type=i<2?'triangle':'sine';osc.frequency.setValueAtTime(freq,t+i*.08);
-    g.gain.setValueAtTime(.08,t+i*.08);g.gain.exponentialRampToValueAtTime(.001,t+i*.08+.4);
-    g2.gain.setValueAtTime(1,t+i*.08);
-    osc.start(t+i*.08);osc.stop(t+i*.08+.42);
+    var osc=ctx.createOscillator(),g=ctx.createGain();
+    osc.connect(g);g.connect(ctx.destination);
+    osc.type=i<2?'triangle':'sine';osc.frequency.setValueAtTime(freq,t+i*.09);
+    g.gain.setValueAtTime(.2,t+i*.09);g.gain.exponentialRampToValueAtTime(.001,t+i*.09+.45);
+    osc.start(t+i*.09);osc.stop(t+i*.09+.48);
   });
 }
 
 function playCombo(count){
-  if(!soundEnabled)return;var ctx=getAudioCtx();if(!ctx)return;
+  var ctx=snd();if(!ctx)return;
   var t=ctx.currentTime;
   var base=440+count*40;
   var osc=ctx.createOscillator(),g=ctx.createGain();
   osc.connect(g);g.connect(ctx.destination);
-  osc.type='sawtooth';osc.frequency.setValueAtTime(base,t);osc.frequency.exponentialRampToValueAtTime(base*2,t+.15);
-  g.gain.setValueAtTime(.04,t);g.gain.exponentialRampToValueAtTime(.001,t+.18);
-  osc.start(t);osc.stop(t+.2);
+  osc.type='sawtooth';osc.frequency.setValueAtTime(base,t);osc.frequency.exponentialRampToValueAtTime(base*2,t+.18);
+  g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.22);
+  osc.start(t);osc.stop(t+.25);
 }
 
 function initSound(){
   var btn=document.getElementById('btn-sound');
   var icon=document.getElementById('sound-icon');
-  // Default is ON. Only OFF if user explicitly turned it off.
   var stored=localStorage.getItem('dp-sound');
   soundEnabled=(stored!=='off');
   applySoundUI();
 
+  // Create AudioContext eagerly (will be suspended until user gesture)
+  ensureAudioCtx();
+
   btn.onclick=function(){
+    resumeAudio();
     soundEnabled=!soundEnabled;
     localStorage.setItem('dp-sound',soundEnabled?'on':'off');
     applySoundUI();
-    if(soundEnabled){getAudioCtx();playStepChime(3);}
+    if(soundEnabled)playStepChime(3);
   };
 
   function applySoundUI(){
@@ -361,9 +388,16 @@ function initSound(){
     btn.title=soundEnabled?'Sound ON':'Sound OFF';
   }
 
-  // Pre-warm audio context on any user gesture
-  ['click','keydown','touchstart'].forEach(function(evt){
-    document.addEventListener(evt,function(){getAudioCtx();},{once:true});
+  // Resume AudioContext on ANY user gesture — this is the key fix.
+  // Once resumed, all subsequent play*() calls will produce sound.
+  ['click','keydown','touchstart','mousedown','scroll'].forEach(function(evt){
+    document.addEventListener(evt,function onGesture(){
+      resumeAudio();
+      // Keep listening until actually running (some browsers need multiple gestures)
+      if(audioCtx&&audioCtx.state==='running'){
+        document.removeEventListener(evt,onGesture);
+      }
+    });
   });
 }
 
