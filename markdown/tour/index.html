@@ -359,7 +359,9 @@ function resumeCtx(){var c=ensureCtx();if(c&&c.state==='suspended')c.resume();re
 function ctx(){if(!soundOn||!audioCtx||audioCtx.state!=='running')return null;return audioCtx;}
 function pn(i){return PENTA[((i%PENTA.length)+PENTA.length)%PENTA.length];}
 
-/* ---- Sound v1.3: Noise-only, natural UI feedback ---- */
+/* ---- Sound v1.4: Audible + Pleasant ----
+   Noise-based but with enough volume and duration to actually hear.
+   Bandpass at mid frequencies (1k-3k) for clarity without shrillness. */
 var noiseBuf=null;
 function getNoise(c){
   if(noiseBuf)return noiseBuf;
@@ -369,92 +371,92 @@ function getNoise(c){
   return noiseBuf;
 }
 
-// Typing: soft wooden "tok" — like tapping a desk with a pencil
-// Low frequency (800Hz), wide band (Q=0.8), very short (8ms), quiet
+// Typing: keyboard click — crisp but not harsh
 function sndType(){
   var c=ctx();if(!c)return;sndStep++;var t=c.currentTime;
   var s=c.createBufferSource();s.buffer=getNoise(c);
-  var lp=c.createBiquadFilter();lp.type='lowpass';
-  lp.frequency.value=600+Math.random()*400;lp.Q.value=.5;
+  var bp=c.createBiquadFilter();bp.type='bandpass';
+  bp.frequency.value=1200+Math.random()*600;bp.Q.value=0.8;
   var g=c.createGain();
-  g.gain.setValueAtTime(.03,t);g.gain.exponentialRampToValueAtTime(.0001,t+.008);
-  s.connect(lp);lp.connect(g);g.connect(c.destination);
-  s.start(t);s.stop(t+.015);
+  g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+.025);
+  s.connect(bp);bp.connect(g);g.connect(c.destination);
+  s.start(t);s.stop(t+.04);
 }
 
-// Render: gentle breeze — very low, slow sweep
+// Render: whoosh sweep — page turning
 function sndRender(){
   var c=ctx();if(!c)return;var t=c.currentTime;
   var s=c.createBufferSource();s.buffer=getNoise(c);
-  var lp=c.createBiquadFilter();lp.type='lowpass';
-  lp.frequency.setValueAtTime(100,t);
-  lp.frequency.linearRampToValueAtTime(500,t+.2);
-  lp.frequency.linearRampToValueAtTime(100,t+.4);
-  lp.Q.value=.3;
+  var bp=c.createBiquadFilter();bp.type='bandpass';
+  bp.frequency.setValueAtTime(300,t);
+  bp.frequency.linearRampToValueAtTime(1500,t+.15);
+  bp.frequency.linearRampToValueAtTime(300,t+.35);
+  bp.Q.value=0.5;
   var g=c.createGain();
   g.gain.setValueAtTime(0,t);
-  g.gain.linearRampToValueAtTime(.04,t+.1);
-  g.gain.exponentialRampToValueAtTime(.0001,t+.4);
-  s.connect(lp);lp.connect(g);g.connect(c.destination);
-  s.start(t);s.stop(t+.42);
+  g.gain.linearRampToValueAtTime(.12,t+.08);
+  g.gain.exponentialRampToValueAtTime(.001,t+.35);
+  s.connect(bp);bp.connect(g);g.connect(c.destination);
+  s.start(t);s.stop(t+.37);
 }
 
-// XP: game bonus "plop" — downward frequency sweep (satisfying drop)
+// XP: game coin — quick downward sweep plop
 function sndXP(){
   var c=ctx();if(!c)return;var t=c.currentTime;
   var s=c.createBufferSource();s.buffer=getNoise(c);
   var bp=c.createBiquadFilter();bp.type='bandpass';
-  // Start at mid, sweep down quickly = "plop" not "beep"
-  bp.frequency.setValueAtTime(1200,t);
-  bp.frequency.exponentialRampToValueAtTime(200,t+.04);
-  bp.Q.value=1.5;
+  bp.frequency.setValueAtTime(2500,t);
+  bp.frequency.exponentialRampToValueAtTime(400,t+.06);
+  bp.Q.value=2;
   var g=c.createGain();
-  g.gain.setValueAtTime(.04,t);g.gain.exponentialRampToValueAtTime(.0001,t+.06);
+  g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+.1);
   s.connect(bp);bp.connect(g);g.connect(c.destination);
-  s.start(t);s.stop(t+.08);
+  s.start(t);s.stop(t+.12);
 }
 
-// Completion: 4 gentle plops cascading down — like rain on a leaf
+// Completion: cascading plops — satisfying finish
 function sndComplete(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  for(var i=0;i<4;i++){
+  for(var i=0;i<5;i++){
     (function(idx){
       var s=c.createBufferSource();s.buffer=getNoise(c);
       var bp=c.createBiquadFilter();bp.type='bandpass';
-      bp.frequency.setValueAtTime(800-idx*100,t+idx*.12);
-      bp.frequency.exponentialRampToValueAtTime(150,t+idx*.12+.05);
-      bp.Q.value=1;
+      bp.frequency.setValueAtTime(2000+idx*200,t+idx*.1);
+      bp.frequency.exponentialRampToValueAtTime(300,t+idx*.1+.06);
+      bp.Q.value=1.5;
       var g=c.createGain();
-      g.gain.setValueAtTime(.03,t+idx*.12);g.gain.exponentialRampToValueAtTime(.0001,t+idx*.12+.08);
+      g.gain.setValueAtTime(.1,t+idx*.1);g.gain.exponentialRampToValueAtTime(.001,t+idx*.1+.1);
       s.connect(bp);bp.connect(g);g.connect(c.destination);
-      s.start(t+idx*.12);s.stop(t+idx*.12+.1);
+      s.start(t+idx*.1);s.stop(t+idx*.1+.12);
     })(i);
   }
 }
 
-// Navigation: soft low tap
+// Navigation: soft tap
 function sndNav(){
   var c=ctx();if(!c)return;var t=c.currentTime;
   var s=c.createBufferSource();s.buffer=getNoise(c);
-  var lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;lp.Q.value=.3;
+  var bp=c.createBiquadFilter();bp.type='bandpass';
+  bp.frequency.value=800;bp.Q.value=0.6;
   var g=c.createGain();
-  g.gain.setValueAtTime(.03,t);g.gain.exponentialRampToValueAtTime(.0001,t+.015);
-  s.connect(lp);lp.connect(g);g.connect(c.destination);
-  s.start(t);s.stop(t+.025);
+  g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.03);
+  s.connect(bp);bp.connect(g);g.connect(c.destination);
+  s.start(t);s.stop(t+.05);
 }
 
-// Combo: double plop
+// Combo: double plop (louder than single)
 function sndCombo(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  [0,.05].forEach(function(off){
+  [0,.06].forEach(function(off){
     var s=c.createBufferSource();s.buffer=getNoise(c);
     var bp=c.createBiquadFilter();bp.type='bandpass';
-    bp.frequency.setValueAtTime(900,t+off);bp.frequency.exponentialRampToValueAtTime(200,t+off+.03);
-    bp.Q.value=1;
+    bp.frequency.setValueAtTime(1800,t+off);
+    bp.frequency.exponentialRampToValueAtTime(400,t+off+.05);
+    bp.Q.value=1.5;
     var g=c.createGain();
-    g.gain.setValueAtTime(.025,t+off);g.gain.exponentialRampToValueAtTime(.0001,t+off+.05);
+    g.gain.setValueAtTime(.1,t+off);g.gain.exponentialRampToValueAtTime(.001,t+off+.08);
     s.connect(bp);bp.connect(g);g.connect(c.destination);
-    s.start(t+off);s.stop(t+off+.07);
+    s.start(t+off);s.stop(t+off+.1);
   });
 }
 
