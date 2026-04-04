@@ -376,121 +376,78 @@ function addReverb(c,src,dry,wet){
   return src;
 }
 
-// Retro mechanical keyboard — thocky keyswitch sound
+// Soft retro typing — gentle sine tap with melodic variation
 function sndType(){
   var c=ctx();if(!c)return;var t=c.currentTime;
   sndStep++;
-  // Base thock: low resonant hit
-  var thockFreq=80+Math.random()*40;
-  var o1=c.createOscillator(),g1=c.createGain();
-  o1.type='sine';o1.frequency.setValueAtTime(thockFreq,t);o1.frequency.exponentialRampToValueAtTime(thockFreq*.3,t+.06);
-  g1.gain.setValueAtTime(.18,t);g1.gain.exponentialRampToValueAtTime(.001,t+.07);
-  o1.connect(g1);g1.connect(c.destination);
-  o1.start(t);o1.stop(t+.08);
-  // Click transient: short noise burst
-  var nLen=Math.floor(c.sampleRate*.008);
-  var nb=c.createBuffer(1,nLen,c.sampleRate);
-  var nd=nb.getChannelData(0);
-  for(var i=0;i<nLen;i++)nd[i]=(Math.random()*2-1)*(.6-i/nLen*.5);
-  var ns=c.createBufferSource(),nf=c.createBiquadFilter(),ng=c.createGain();
-  ns.buffer=nb;nf.type='highpass';nf.frequency.value=2000+Math.random()*2000;
-  ng.gain.setValueAtTime(.14,t);ng.gain.exponentialRampToValueAtTime(.001,t+.015);
-  ns.connect(nf);nf.connect(ng);ng.connect(c.destination);
-  ns.start(t);
-  // Subtle melodic overtone (pentatonic, very quiet — gives it character)
-  var mf=pn(sndStep)*(sndStep%3===0?2:4);
-  var o2=c.createOscillator(),g2=c.createGain();
-  o2.type='sine';o2.frequency.setValueAtTime(mf,t);
-  g2.gain.setValueAtTime(.02,t);g2.gain.exponentialRampToValueAtTime(.001,t+.08);
-  o2.connect(g2);g2.connect(c.destination);
-  o2.start(t);o2.stop(t+.1);
+  // Gentle melodic tap (pentatonic, sine only — no noise)
+  var f=pn(sndStep)*2;
+  var o=c.createOscillator(),g=c.createGain();
+  o.type='sine';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.6,t+.04);
+  g.gain.setValueAtTime(.04,t);g.gain.exponentialRampToValueAtTime(.001,t+.06);
+  o.connect(g);g.connect(c.destination);
+  o.start(t);o.stop(t+.07);
 }
 
-// Render transform: magical shimmer with reverb
+// Render: soft ascending shimmer
 function sndRender(){
   var c=ctx();if(!c)return;var t=c.currentTime;
   makeReverb(c);
-  // Ascending shimmer chord
-  [0,.07,.14,.21,.28].forEach(function(off,i){
-    var f=pn(curSlide*2+i)*(i<2?2:4);
+  [0,.08,.16].forEach(function(off,i){
+    var f=pn(curSlide+i)*2;
     var o=c.createOscillator(),g=c.createGain();
-    o.type=i<3?'sine':'triangle';o.frequency.setValueAtTime(f,t+off);
-    g.gain.setValueAtTime(.1,t+off);g.gain.exponentialRampToValueAtTime(.001,t+off+.5);
-    addReverb(c,o,.3,.15);
-    o.start(t+off);o.stop(t+off+.52);
+    o.type='sine';o.frequency.setValueAtTime(f,t+off);
+    g.gain.setValueAtTime(.05,t+off);g.gain.exponentialRampToValueAtTime(.001,t+off+.4);
+    addReverb(c,o,.3,.12);
+    o.start(t+off);o.stop(t+off+.42);
   });
-  // Breathy whoosh
-  var dur=.35;
-  var wb=c.createBuffer(1,c.sampleRate*dur,c.sampleRate);
-  var wd=wb.getChannelData(0);for(var i=0;i<wd.length;i++)wd[i]=(Math.random()*2-1);
-  var ws=c.createBufferSource(),wf=c.createBiquadFilter(),wg=c.createGain();
-  ws.buffer=wb;wf.type='bandpass';wf.frequency.setValueAtTime(800,t);wf.frequency.exponentialRampToValueAtTime(3000,t+dur*.4);wf.frequency.exponentialRampToValueAtTime(400,t+dur);wf.Q.value=1.5;
-  wg.gain.setValueAtTime(0,t);wg.gain.linearRampToValueAtTime(.08,t+dur*.15);wg.gain.exponentialRampToValueAtTime(.001,t+dur);
-  ws.connect(wf);wf.connect(wg);wg.connect(c.destination);
-  ws.start(t);ws.stop(t+dur+.01);
 }
 
-// XP coin sound — satisfying retro coin pickup
+// XP: gentle two-tone chime
 function sndXP(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  // Two-tone coin ding
-  [987.8,1318.5].forEach(function(f,i){
+  [784,1047].forEach(function(f,i){
     var o=c.createOscillator(),g=c.createGain();
-    o.type='sine';o.frequency.setValueAtTime(f,t+i*.06);
-    g.gain.setValueAtTime(.12,t+i*.06);g.gain.exponentialRampToValueAtTime(.001,t+i*.06+.2);
+    o.type='sine';o.frequency.setValueAtTime(f,t+i*.07);
+    g.gain.setValueAtTime(.05,t+i*.07);g.gain.exponentialRampToValueAtTime(.001,t+i*.07+.2);
     o.connect(g);g.connect(c.destination);
-    o.start(t+i*.06);o.stop(t+i*.06+.22);
+    o.start(t+i*.07);o.stop(t+i*.07+.22);
   });
 }
 
-// Completion fanfare
+// Completion: soft ascending chord with reverb
 function sndComplete(){
   var c=ctx();if(!c)return;var t=c.currentTime;
   makeReverb(c);
-  var notes=[523.3,659.3,784.0,1047,1319,1568];
-  notes.forEach(function(f,i){
+  [523.3,659.3,784.0,1047].forEach(function(f,i){
     var o=c.createOscillator(),g=c.createGain();
-    o.type=i<3?'sine':'triangle';o.frequency.setValueAtTime(f,t+i*.1);
-    g.gain.setValueAtTime(.14,t+i*.1);g.gain.exponentialRampToValueAtTime(.001,t+i*.1+.7);
-    addReverb(c,o,.4,.2);
-    o.start(t+i*.1);o.stop(t+i*.1+.72);
+    o.type='sine';o.frequency.setValueAtTime(f,t+i*.12);
+    g.gain.setValueAtTime(.06,t+i*.12);g.gain.exponentialRampToValueAtTime(.001,t+i*.12+.6);
+    addReverb(c,o,.3,.15);
+    o.start(t+i*.12);o.stop(t+i*.12+.62);
   });
 }
 
-// Navigation — soft bell
+// Navigation: single soft bell
 function sndNav(){
   var c=ctx();if(!c)return;var t=c.currentTime;
   var f=pn(curSlide)*2;
   var o=c.createOscillator(),g=c.createGain();
   o.type='sine';o.frequency.setValueAtTime(f,t);
-  g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.25);
+  g.gain.setValueAtTime(.04,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);
   o.connect(g);g.connect(c.destination);
-  o.start(t);o.stop(t+.28);
-  // Soft harmonic
-  var o2=c.createOscillator(),g2=c.createGain();
-  o2.type='sine';o2.frequency.setValueAtTime(f*1.5,t+.02);
-  g2.gain.setValueAtTime(.04,t+.02);g2.gain.exponentialRampToValueAtTime(.001,t+.15);
-  o2.connect(g2);g2.connect(c.destination);
-  o2.start(t+.02);o2.stop(t+.18);
+  o.start(t);o.stop(t+.32);
 }
 
-// Combo power-up
+// Combo: gentle rising tone
 function sndCombo(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  var f=pn(combo+4);
-  // Rising sweep
+  var f=pn(combo+3)*2;
   var o=c.createOscillator(),g=c.createGain();
-  o.type='sawtooth';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*3,t+.15);
-  g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);
-  var filt=c.createBiquadFilter();filt.type='lowpass';filt.frequency.value=2000;
-  o.connect(filt);filt.connect(g);g.connect(c.destination);
-  o.start(t);o.stop(t+.22);
-  // Sparkle
-  var o2=c.createOscillator(),g2=c.createGain();
-  o2.type='sine';o2.frequency.setValueAtTime(f*4,t+.05);
-  g2.gain.setValueAtTime(.05,t+.05);g2.gain.exponentialRampToValueAtTime(.001,t+.15);
-  o2.connect(g2);g2.connect(c.destination);
-  o2.start(t+.05);o2.stop(t+.17);
+  o.type='sine';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*1.5,t+.12);
+  g.gain.setValueAtTime(.04,t);g.gain.exponentialRampToValueAtTime(.001,t+.18);
+  o.connect(g);g.connect(c.destination);
+  o.start(t);o.stop(t+.2);
 }
 
 /* ============ PARTICLES ============ */
