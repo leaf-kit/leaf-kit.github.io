@@ -1009,14 +1009,26 @@ function init(){
   buildPatternList();initTheme();initLang();initPatterns();initSpeed();initAutoplay();
   initFlowCanvas();initThree();initTips();initModal();initHelp();initShare();applyLang();
   initMobileTouch();
-  // New systems
   initSound();initParticleCanvas();initConfetti();loadAchievements();
-  setTimeout(function(){
-    autoPlaying=true;autoPlayIdx=0;
-    document.getElementById('btn-autoplay').classList.add('active-btn');
-    document.getElementById('autoplay-icon').textContent='||';
-    runAutoPlay();
-  },500);
+
+  // Show intro overlay — auto-play starts only after user clicks
+  var overlay=document.getElementById('intro-overlay');
+  var introBtn=document.getElementById('intro-btn');
+  if(overlay&&introBtn){
+    applyLang(); // translate intro text
+    introBtn.onclick=function(){
+      // This click IS the user gesture — resume AudioContext
+      resumeAudio();
+      // Dismiss overlay
+      overlay.classList.add('hide');
+      setTimeout(function(){overlay.style.display='none';},500);
+      // Start auto-play with sound
+      autoPlaying=true;autoPlayIdx=0;
+      document.getElementById('btn-autoplay').classList.add('active-btn');
+      document.getElementById('autoplay-icon').textContent='||';
+      runAutoPlay();
+    };
+  }
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
