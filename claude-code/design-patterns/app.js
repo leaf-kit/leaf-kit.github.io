@@ -239,17 +239,7 @@ var allNodes=[],activePat=null,termAbort=null,flowLabels=[],stepNums=[];
 var activeFlowIdx=-1,autoPlaying=false,autoPlayIdx=0;
 var speedMultiplier=5; // default: very slow
 
-function init(){
-  document.querySelectorAll('.dg-node').forEach(function(n){allNodes.push(n.id);});
-  buildPatternList();initTheme();initLang();initPatterns();initSpeed();initAutoplay();
-  initFlowCanvas();initThree();initTips();initModal();initHelp();applyLang();
-  setTimeout(function(){
-    autoPlaying=true;autoPlayIdx=0;
-    document.getElementById('btn-autoplay').classList.add('active-btn');
-    document.getElementById('autoplay-icon').textContent='||';
-    runAutoPlay();
-  },500);
-}
+/* init moved to bottom */
 
 function buildPatternList(){
   var list=document.getElementById('pl-list');if(!list)return;
@@ -606,6 +596,60 @@ function initHelp(){
   };
   document.getElementById('help-close').onclick=function(){overlay.classList.remove('show');};
   overlay.onclick=function(e){if(e.target===overlay)overlay.classList.remove('show');};
+}
+
+function initShare(){
+  var url='https://leaf-kit.github.io/claude-code/design-patterns/';
+  var title='Claude Code — 16 Agentic AI Design Patterns Visualized';
+  var desc='1,902 TypeScript files analyzed. Interactive deep-dive into Claude Code\'s agent architecture.';
+  var tag='ClaudeCode';
+
+  var xBtn=document.getElementById('share-x');
+  var liBtn=document.getElementById('share-linkedin');
+  var rdBtn=document.getElementById('share-reddit');
+  var cpBtn=document.getElementById('share-copy');
+
+  if(xBtn)xBtn.href='https://x.com/intent/tweet?text='+encodeURIComponent(title+' @leafeditor #'+tag)+'&url='+encodeURIComponent(url);
+  if(liBtn)liBtn.href='https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(url);
+  if(rdBtn)rdBtn.href='https://www.reddit.com/submit?url='+encodeURIComponent(url)+'&title='+encodeURIComponent(title);
+  if(cpBtn)cpBtn.onclick=function(e){
+    e.preventDefault();
+    navigator.clipboard.writeText(url).then(function(){
+      cpBtn.style.borderColor='var(--green)';cpBtn.style.color='var(--green)';
+      setTimeout(function(){cpBtn.style.borderColor='';cpBtn.style.color='';},1500);
+    });
+  };
+}
+
+function initMobileTouch(){
+  if(window.innerWidth>680)return;
+  // Disable Three.js on mobile for performance
+  var tc=document.getElementById('three-canvas');
+  if(tc)tc.style.display='none';
+
+  // Scroll active pattern into view in horizontal list
+  var list=document.getElementById('pl-list');
+  var origSelect=selectPattern;
+  var _origSelect=selectPattern;
+  // Observe active class change to scroll into view
+  var observer=new MutationObserver(function(){
+    var active=list.querySelector('.pl-item.active');
+    if(active)active.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  });
+  observer.observe(list,{subtree:true,attributes:true,attributeFilter:['class']});
+}
+
+function init(){
+  document.querySelectorAll('.dg-node').forEach(function(n){allNodes.push(n.id);});
+  buildPatternList();initTheme();initLang();initPatterns();initSpeed();initAutoplay();
+  initFlowCanvas();initThree();initTips();initModal();initHelp();initShare();applyLang();
+  initMobileTouch();
+  setTimeout(function(){
+    autoPlaying=true;autoPlayIdx=0;
+    document.getElementById('btn-autoplay').classList.add('active-btn');
+    document.getElementById('autoplay-icon').textContent='||';
+    runAutoPlay();
+  },500);
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
