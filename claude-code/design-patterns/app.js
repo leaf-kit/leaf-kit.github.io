@@ -592,46 +592,6 @@ function spawnDataRain(){
   }
 }
 
-/* ============================================
-   VISITOR COUNTER (localStorage + realistic sim)
-   ============================================ */
-function initVisitorCounter(){
-  var liveEl=document.getElementById('visitors-live');
-  var totalEl=document.getElementById('visitors-total');
-  if(!liveEl||!totalEl)return;
-  // Base: launched 2026-04-04. Accumulate ~6,200/day avg → ~1M feel
-  var launchDate=new Date('2026-04-04T00:00:00Z').getTime();
-  var now=Date.now();
-  var daysSince=Math.max(0,(now-launchDate)/(1000*60*60*24));
-  // Stored visit count + daily organic growth
-  var stored=parseInt(localStorage.getItem('dp-visitor-total'))||0;
-  var base=Math.floor(100347200+daysSince*6217);
-  var total=Math.max(base,stored)+1;
-  localStorage.setItem('dp-visitor-total',String(total));
-  // Simulate live viewers (time-of-day weighted)
-  var hour=new Date().getHours();
-  var peak=(hour>=9&&hour<=23)?1:.4;
-  var live=Math.floor(180*peak+Math.random()*120*peak);
-  // Animate counter
-  animateCounter(totalEl,0,total,1200);
-  liveEl.textContent=live+' viewing now';
-  // Fluctuate live count
-  setInterval(function(){
-    live=Math.max(30,live+Math.floor(Math.random()*11)-5);
-    liveEl.textContent=live+' viewing now';
-  },4000);
-}
-function animateCounter(el,from,to,duration){
-  var start=performance.now();
-  (function step(ts){
-    var p=Math.min(1,(ts-start)/duration);
-    var eased=1-Math.pow(1-p,3); // easeOutCubic
-    var val=Math.floor(from+(to-from)*eased);
-    el.textContent=val.toLocaleString()+' total views';
-    if(p<1)requestAnimationFrame(step);
-  })(start);
-}
-
 /* init moved to bottom */
 
 function buildPatternList(){
@@ -1115,9 +1075,6 @@ function init(){
         b.textContent='Start with Sound';
       }
     }
-    // Visitor counter (localStorage-based with realistic numbers)
-    initVisitorCounter();
-
     introBtn.onclick=function(){
       // Save selected language
       document.documentElement.setAttribute('data-lang',introLang);
