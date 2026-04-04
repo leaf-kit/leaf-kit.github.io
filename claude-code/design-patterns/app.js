@@ -345,6 +345,7 @@ function initSound(){
   var icon=document.getElementById('sound-icon');
   var stored=localStorage.getItem('dp-sound');
   if(stored==='off'){soundEnabled=false;btn.classList.remove('active-btn');icon.textContent='x';}
+  else{soundEnabled=true;btn.classList.add('active-btn');icon.textContent='ON';}
   btn.onclick=function(){
     soundEnabled=!soundEnabled;
     btn.classList.toggle('active-btn',soundEnabled);
