@@ -18,6 +18,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 
+/* Animated background */
+.bg-canvas{position:fixed;inset:0;z-index:-1;pointer-events:none}
+
 /* Intro */
 .intro{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
 .intro.hide{opacity:0;visibility:hidden;pointer-events:none}
@@ -41,6 +44,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 .tb-btn{width:36px;height:36px;border:1px solid rgba(255,255,255,.1);background:transparent;border-radius:9px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .2s;text-decoration:none}
 .tb-btn:hover{border-color:var(--accent);color:var(--accent)}
 .tb-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.tb-logo-btn{background:transparent;border:none;color:var(--accent);font:800 .88rem var(--mono);cursor:pointer;padding:4px 10px;border-radius:8px;transition:all .2s;letter-spacing:-.02em}
+.tb-logo-btn:hover{background:rgba(99,102,241,.1);color:#fff}
 .tb-label{font:700 .72rem var(--mono);color:var(--text2)}
 
 /* Progress */
@@ -165,12 +170,15 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 </head>
 <body>
 
+<!-- Animated Background -->
+<canvas class="bg-canvas" id="bg-canvas"></canvas>
+
 <!-- Intro -->
 <div class="intro" id="intro">
   <div class="intro-card">
     <span class="intro-icon">M↓</span>
     <h1 class="intro-title" id="intro-title">Markdown Tour</h1>
-    <p class="intro-desc" id="intro-desc">마크다운 문법을 타이핑하고, 렌더링되는 모습을 직접 보세요.</p>
+    <p class="intro-desc" id="intro-desc">마크다운 문법이 타이핑되는 과정을 보고, 렌더링 결과를 비교하며 자연스럽게 익히세요.</p>
     <div class="lang-btns" id="lang-btns">
       <button class="lang-btn" data-l="kr">한국어</button>
       <button class="lang-btn" data-l="en">English</button>
@@ -188,8 +196,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 <!-- Top Bar -->
 <header class="topbar" id="topbar">
   <div class="tb-left">
-    <button class="tb-btn" id="btn-restart" title="Restart">↻</button>
-    <a class="tb-btn" href="/markdown/" title="Markdown Manual">M</a>
+    <button class="tb-logo-btn" id="btn-restart" title="Restart">M↓ Tour</button>
+    <a class="tb-btn" href="/markdown/" title="Markdown Manual">📖</a>
     <span class="tb-label" id="slide-counter">1 / 18</span>
   </div>
   <div class="tb-right">
@@ -247,52 +255,82 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 
 /* ============ TRANSLATIONS ============ */
 var UI={
-kr:{start:'사운드와 함께 시작',desc:'마크다운 문법을 타이핑하고, 렌더링되는 모습을 직접 보세요.',complete:'마크다운 마스터!',replay:'다시 보기',stats:'총 {xp} XP 획득 · 최고 {combo}x 콤보',lvNames:['입문자','초보','중급','고급','마스터'],toast_level:'레벨 업!',toast_combo:'콤보!',toast_half:'절반 완료!',toast_done:'투어 완료!'},
-en:{start:'Start with Sound',desc:'Watch Markdown syntax being typed, then rendered before your eyes.',complete:'Markdown Master!',replay:'Replay',stats:'Total {xp} XP · Best {combo}x combo',lvNames:['Beginner','Novice','Intermediate','Advanced','Master'],toast_level:'Level Up!',toast_combo:'Combo!',toast_half:'Halfway!',toast_done:'Tour Complete!'},
-cn:{start:'带声音开始',desc:'看着 Markdown 语法被输入，然后在您眼前渲染。',complete:'Markdown 大师!',replay:'重新播放',stats:'共获得 {xp} XP · 最高 {combo}x 连击',lvNames:['入门','初级','中级','高级','大师'],toast_level:'升级!',toast_combo:'连击!',toast_half:'完成一半!',toast_done:'完成!'},
-jp:{start:'サウンドで開始',desc:'Markdown構文が入力され、レンダリングされる様子をご覧ください。',complete:'Markdownマスター!',replay:'もう一度',stats:'合計 {xp} XP · 最高 {combo}x コンボ',lvNames:['入門','初心者','中級','上級','マスター'],toast_level:'レベルアップ!',toast_combo:'コンボ!',toast_half:'半分完了!',toast_done:'完了!'}
+kr:{start:'사운드와 함께 시작',desc:'마크다운 문법이 타이핑되는 과정을 보고, 렌더링 결과를 비교하며 자연스럽게 익히세요.',complete:'마크다운 마스터!',replay:'다시 보기',stats:'총 {xp} XP 획득 · 최고 {combo}x 콤보',lvNames:['입문자','초보','중급','고급','마스터'],toast_level:'레벨 업!',toast_combo:'콤보!',toast_half:'절반 완료!',toast_done:'투어 완료!'},
+en:{start:'Start with Sound',desc:'Watch Markdown being typed and see it rendered in real time. Learn by watching, not by doing.',complete:'Markdown Master!',replay:'Replay',stats:'Total {xp} XP · Best {combo}x combo',lvNames:['Beginner','Novice','Intermediate','Advanced','Master'],toast_level:'Level Up!',toast_combo:'Combo!',toast_half:'Halfway!',toast_done:'Tour Complete!'},
+cn:{start:'带声音开始',desc:'观看 Markdown 语法的输入过程，对比渲染效果，轻松学习。',complete:'Markdown 大师!',replay:'重新播放',stats:'共获得 {xp} XP · 最高 {combo}x 连击',lvNames:['入门','初级','中级','高级','大师'],toast_level:'升级!',toast_combo:'连击!',toast_half:'完成一半!',toast_done:'完成!'},
+jp:{start:'サウンドで開始',desc:'Markdownの入力過程を見て、レンダリング結果と比較しながら自然に学べます。',complete:'Markdownマスター!',replay:'もう一度',stats:'合計 {xp} XP · 最高 {combo}x コンボ',lvNames:['入門','初心者','中級','上級','マスター'],toast_level:'レベルアップ!',toast_combo:'コンボ!',toast_half:'半分完了!',toast_done:'完了!'}
 };
 
 /* ============ SLIDES DATA ============ */
+// Helper: if val is object {kr,en,cn,jp}, pick lang; else return as-is
+function L(val){return(typeof val==='object'&&val!==null&&!Array.isArray(val))?(val[lang]||val.en):val;}
+
 var SLIDES=[
 {id:'heading',label:'HEADINGS',raw:'# Hello, Markdown!',html:'<h1>Hello, Markdown!</h1>',
-  desc:{kr:'# 뒤에 공백 하나, 그러면 제목이 됩니다. #은 1~6개까지 쓸 수 있어요.',en:'A # followed by a space creates a heading. Use 1-6 # symbols for different sizes.',cn:'# 后面加一个空格就能创建标题。可以使用 1-6 个 # 号。',jp:'# の後にスペースを入れると見出しになります。1〜6個まで使えます。'},
+  desc:{kr:'# 뒤에 공백 하나, 그러면 제목이 됩니다. #은 1~6개까지 쓸 수 있어요.',en:'A # followed by a space creates a heading. Use 1-6 # symbols.',cn:'# 后面加一个空格就能创建标题。可以使用 1-6 个 #。',jp:'# の後にスペースを入れると見出しに。1〜6個まで使えます。'},
   tip:{kr:'## 중제목 ### 소제목 ... ###### 가장 작은 제목',en:'## Medium ### Small ... ###### Smallest',cn:'## 中标题 ### 小标题',jp:'## 中見出し ### 小見出し'},xp:10},
 {id:'heading-levels',label:'HEADING LEVELS',raw:'## Second\n### Third\n#### Fourth',html:'<h2>Second</h2><h3>Third</h3><h4>Fourth</h4>',
   desc:{kr:'#이 많을수록 작아져요. 글의 구조를 잡을 때 사용합니다.',en:'More #s = smaller heading. Use them to structure your document.',cn:'# 越多标题越小，用来组织文档结构。',jp:'# が多いほど小さい見出し。文書の構造化に使います。'},xp:10},
-{id:'bold',label:'BOLD',raw:'**굵은 글씨**',html:'<p><strong>굵은 글씨</strong></p>',
-  desc:{kr:'별표 2개(**)로 감싸면 굵게! 중요한 단어를 강조할 때 써요.',en:'Wrap text in ** to make it bold! Great for emphasis.',cn:'用 ** 包裹文字就能加粗！用来强调重要内容。',jp:'** で囲むと太字に！重要な部分を強調するときに。'},
+{id:'bold',label:'BOLD',
+  raw:{kr:'**굵은 글씨**',en:'**bold text**',cn:'**粗体文字**',jp:'**太字テキスト**'},
+  html:{kr:'<p><strong>굵은 글씨</strong></p>',en:'<p><strong>bold text</strong></p>',cn:'<p><strong>粗体文字</strong></p>',jp:'<p><strong>太字テキスト</strong></p>'},
+  desc:{kr:'별표 2개(**)로 감싸면 굵게!',en:'Wrap text in ** to make it bold!',cn:'用 ** 包裹文字就能加粗！',jp:'** で囲むと太字に！'},
   tip:{kr:'__밑줄 2개__로도 됩니다',en:'__double underscores__ also work',cn:'__双下划线__也可以',jp:'__アンダースコア2つ__でもOK'},xp:10},
-{id:'italic',label:'ITALIC',raw:'*기울임꼴*',html:'<p><em>기울임꼴</em></p>',
-  desc:{kr:'별표 1개(*)로 감싸면 이탤릭체가 됩니다.',en:'Wrap text in single * for italics.',cn:'用单个 * 包裹文字就能变成斜体。',jp:'* 1つで囲むとイタリック体に。'},xp:10},
-{id:'bold-italic',label:'BOLD + ITALIC',raw:'***굵고 기울어진 글씨***',html:'<p><strong><em>굵고 기울어진 글씨</em></strong></p>',
-  desc:{kr:'별표 3개(***)면 굵으면서 기울어져요. 최강 강조!',en:'Triple *** = bold AND italic. Maximum emphasis!',cn:'三个 *** = 粗体加斜体。最强调！',jp:'*** 3つ = 太字＋イタリック。最強の強調！'},xp:15},
-{id:'strikethrough',label:'STRIKETHROUGH',raw:'~~취소선~~',html:'<p><del>취소선</del></p>',
+{id:'italic',label:'ITALIC',
+  raw:{kr:'*기울임꼴*',en:'*italic text*',cn:'*斜体文字*',jp:'*イタリック*'},
+  html:{kr:'<p><em>기울임꼴</em></p>',en:'<p><em>italic text</em></p>',cn:'<p><em>斜体文字</em></p>',jp:'<p><em>イタリック</em></p>'},
+  desc:{kr:'별표 1개(*)로 감싸면 이탤릭체가 됩니다.',en:'Wrap text in single * for italics.',cn:'用单个 * 包裹就能变成斜体。',jp:'* 1つで囲むとイタリック体に。'},xp:10},
+{id:'bold-italic',label:'BOLD + ITALIC',
+  raw:{kr:'***굵고 기울어진 글씨***',en:'***bold and italic***',cn:'***粗斜体***',jp:'***太字イタリック***'},
+  html:{kr:'<p><strong><em>굵고 기울어진 글씨</em></strong></p>',en:'<p><strong><em>bold and italic</em></strong></p>',cn:'<p><strong><em>粗斜体</em></strong></p>',jp:'<p><strong><em>太字イタリック</em></strong></p>'},
+  desc:{kr:'별표 3개(***)면 굵으면서 기울어져요. 최강 강조!',en:'Triple *** = bold AND italic. Maximum emphasis!',cn:'三个 *** = 粗体加斜体。最强调！',jp:'*** 3つ = 太字＋イタリック。最強！'},xp:15},
+{id:'strikethrough',label:'STRIKETHROUGH',
+  raw:{kr:'~~취소선~~',en:'~~strikethrough~~',cn:'~~删除线~~',jp:'~~取り消し線~~'},
+  html:{kr:'<p><del>취소선</del></p>',en:'<p><del>strikethrough</del></p>',cn:'<p><del>删除线</del></p>',jp:'<p><del>取り消し線</del></p>'},
   desc:{kr:'물결 2개(~~)로 감싸면 취소선이 그어져요.',en:'Wrap in ~~ for strikethrough text.',cn:'用 ~~ 包裹就能加删除线。',jp:'~~ で囲むと取り消し線に。'},xp:10},
-{id:'blockquote',label:'BLOCKQUOTE',raw:'> 누군가 말했다.\n> 마크다운은 쉽다.',html:'<blockquote>누군가 말했다.<br>마크다운은 쉽다.</blockquote>',
-  desc:{kr:'> 기호로 인용문을 만들어요. 다른 사람의 말을 인용할 때 유용해요.',en:'> creates a blockquote. Perfect for citing someone.',cn:'> 创建引用块，适合引用他人的话。',jp:'> で引用ブロックを作ります。'},xp:10},
-{id:'ul',label:'UNORDERED LIST',raw:'- 사과\n- 바나나\n- 체리',html:'<ul><li>사과</li><li>바나나</li><li>체리</li></ul>',
-  desc:{kr:'- 또는 * 뒤에 공백을 넣으면 순서 없는 목록이 돼요.',en:'- or * followed by a space creates bullet lists.',cn:'- 或 * 后加空格就能创建无序列表。',jp:'- か * の後にスペースで箇条書きに。'},xp:10},
-{id:'ol',label:'ORDERED LIST',raw:'1. 첫 번째\n2. 두 번째\n3. 세 번째',html:'<ol><li>첫 번째</li><li>두 번째</li><li>세 번째</li></ol>',
-  desc:{kr:'숫자 뒤에 점(.)과 공백을 넣으면 순서 있는 목록이 됩니다.',en:'Numbers followed by a dot create ordered lists.',cn:'数字加点号创建有序列表。',jp:'数字とピリオドで番号付きリストに。'},xp:10},
-{id:'code-inline',label:'INLINE CODE',raw:'`console.log("hi")`를 실행하세요',html:'<p><code>console.log("hi")</code>를 실행하세요</p>',
-  desc:{kr:'백틱(`)으로 감싸면 코드처럼 표시돼요.',en:'Wrap in backticks ` for inline code.',cn:'用反引号 ` 包裹就能显示为代码。',jp:'バッククォート ` で囲むとコード表示に。'},xp:10},
-{id:'code-block',label:'CODE BLOCK',raw:'```javascript\nfunction hello() {\n  return "world";\n}\n```',html:'<pre><code><span style="color:#89B4FA">function</span> <span style="color:#A6E3A1">hello</span>() {\n  <span style="color:#89B4FA">return</span> <span style="color:#F9E2AF">"world"</span>;\n}</code></pre>',
-  desc:{kr:'백틱 3개(```)로 코드 블록을 만들어요. 언어 이름을 쓰면 문법 강조도 됩니다.',en:'Triple backticks create code blocks. Add the language name for syntax highlighting.',cn:'三个反引号创建代码块。加语言名称可以语法高亮。',jp:'バッククォート3つでコードブロック。言語名で構文ハイライト。'},xp:15},
-{id:'link',label:'LINK',raw:'[구글](https://google.com)',html:'<p><a href="https://google.com" target="_blank">구글</a></p>',
-  desc:{kr:'[보여줄 텍스트](URL) 형식으로 링크를 만들어요.',en:'[display text](URL) creates a clickable link.',cn:'[显示文字](URL) 创建链接。',jp:'[表示テキスト](URL) でリンクを作成。'},xp:10},
-{id:'image',label:'IMAGE',raw:'![풍경](https://picsum.photos/400/200)',html:'<img src="https://picsum.photos/400/200" alt="풍경" style="border-radius:12px">',
-  desc:{kr:'링크 앞에 !를 붙이면 이미지가 표시돼요.',en:'Add ! before a link to display an image.',cn:'在链接前加 ! 就能显示图片。',jp:'リンクの前に ! を付けると画像表示。'},xp:10},
+{id:'blockquote',label:'BLOCKQUOTE',
+  raw:{kr:'> 누군가 말했다.\n> 마크다운은 쉽다.',en:'> Someone said:\n> Markdown is easy.',cn:'> 有人说过：\n> Markdown很简单。',jp:'> 誰かが言った：\n> Markdownは簡単だ。'},
+  html:{kr:'<blockquote>누군가 말했다.<br>마크다운은 쉽다.</blockquote>',en:'<blockquote>Someone said:<br>Markdown is easy.</blockquote>',cn:'<blockquote>有人说过：<br>Markdown很简单。</blockquote>',jp:'<blockquote>誰かが言った：<br>Markdownは簡単だ。</blockquote>'},
+  desc:{kr:'> 기호로 인용문을 만들어요.',en:'> creates a blockquote.',cn:'> 创建引用块。',jp:'> で引用ブロックを作ります。'},xp:10},
+{id:'ul',label:'UNORDERED LIST',
+  raw:{kr:'- 사과\n- 바나나\n- 체리',en:'- Apple\n- Banana\n- Cherry',cn:'- 苹果\n- 香蕉\n- 樱桃',jp:'- りんご\n- バナナ\n- さくらんぼ'},
+  html:{kr:'<ul><li>사과</li><li>바나나</li><li>체리</li></ul>',en:'<ul><li>Apple</li><li>Banana</li><li>Cherry</li></ul>',cn:'<ul><li>苹果</li><li>香蕉</li><li>樱桃</li></ul>',jp:'<ul><li>りんご</li><li>バナナ</li><li>さくらんぼ</li></ul>'},
+  desc:{kr:'- 또는 * 뒤에 공백을 넣으면 목록이 돼요.',en:'- or * followed by a space creates bullet lists.',cn:'- 或 * 后加空格创建无序列表。',jp:'- か * の後にスペースで箇条書きに。'},xp:10},
+{id:'ol',label:'ORDERED LIST',
+  raw:{kr:'1. 첫 번째\n2. 두 번째\n3. 세 번째',en:'1. First\n2. Second\n3. Third',cn:'1. 第一\n2. 第二\n3. 第三',jp:'1. 一番目\n2. 二番目\n3. 三番目'},
+  html:{kr:'<ol><li>첫 번째</li><li>두 번째</li><li>세 번째</li></ol>',en:'<ol><li>First</li><li>Second</li><li>Third</li></ol>',cn:'<ol><li>第一</li><li>第二</li><li>第三</li></ol>',jp:'<ol><li>一番目</li><li>二番目</li><li>三番目</li></ol>'},
+  desc:{kr:'숫자 뒤에 점(.)과 공백을 넣으면 순서 있는 목록.',en:'Numbers followed by a dot create ordered lists.',cn:'数字加点号创建有序列表。',jp:'数字とピリオドで番号付きリストに。'},xp:10},
+{id:'code-inline',label:'INLINE CODE',
+  raw:{kr:'`console.log("hi")`를 실행',en:'Run `console.log("hi")`',cn:'运行 `console.log("hi")`',jp:'`console.log("hi")`を実行'},
+  html:{kr:'<p><code>console.log("hi")</code>를 실행</p>',en:'<p>Run <code>console.log("hi")</code></p>',cn:'<p>运行 <code>console.log("hi")</code></p>',jp:'<p><code>console.log("hi")</code>を実行</p>'},
+  desc:{kr:'백틱(`)으로 감싸면 코드처럼 표시돼요.',en:'Wrap in backticks ` for inline code.',cn:'用反引号 ` 包裹显示为代码。',jp:'バッククォート ` で囲むとコード表示。'},xp:10},
+{id:'code-block',label:'CODE BLOCK',raw:'```javascript\nfunction hello() {\n  return "world";\n}\n```',
+  html:'<pre><code><span style="color:#89B4FA">function</span> <span style="color:#A6E3A1">hello</span>() {\n  <span style="color:#89B4FA">return</span> <span style="color:#F9E2AF">"world"</span>;\n}</code></pre>',
+  desc:{kr:'백틱 3개(```)로 코드 블록. 언어 이름으로 문법 강조.',en:'Triple backticks create code blocks with syntax highlighting.',cn:'三个反引号创建代码块，加语言名称语法高亮。',jp:'バッククォート3つでコードブロック。言語名で構文ハイライト。'},xp:15},
+{id:'link',label:'LINK',
+  raw:{kr:'[구글](https://google.com)',en:'[Google](https://google.com)',cn:'[谷歌](https://google.com)',jp:'[グーグル](https://google.com)'},
+  html:{kr:'<p><a href="https://google.com" target="_blank">구글</a></p>',en:'<p><a href="https://google.com" target="_blank">Google</a></p>',cn:'<p><a href="https://google.com" target="_blank">谷歌</a></p>',jp:'<p><a href="https://google.com" target="_blank">グーグル</a></p>'},
+  desc:{kr:'[텍스트](URL) 형식으로 링크를 만들어요.',en:'[text](URL) creates a clickable link.',cn:'[文字](URL) 创建链接。',jp:'[テキスト](URL) でリンク作成。'},xp:10},
+{id:'image',label:'IMAGE',
+  raw:{kr:'![풍경](https://picsum.photos/400/200)',en:'![Landscape](https://picsum.photos/400/200)',cn:'![风景](https://picsum.photos/400/200)',jp:'![風景](https://picsum.photos/400/200)'},
+  html:'<img src="https://picsum.photos/400/200" alt="image" style="border-radius:12px">',
+  desc:{kr:'링크 앞에 !를 붙이면 이미지가 표시돼요.',en:'Add ! before a link to display an image.',cn:'链接前加 ! 显示图片。',jp:'リンクの前に ! で画像表示。'},xp:10},
 {id:'hr',label:'HORIZONTAL RULE',raw:'---',html:'<hr>',
-  desc:{kr:'하이픈 3개(---)를 쓰면 구분선이 그어져요.',en:'Three hyphens --- create a horizontal divider.',cn:'三个连字符 --- 创建分割线。',jp:'ハイフン3つ --- で水平線。'},xp:10},
-{id:'table',label:'TABLE',raw:'| 이름 | 점수 |\n|------|------|\n| 민수 | 100  |\n| 지영 | 95   |',html:'<table><tr><th>이름</th><th>점수</th></tr><tr><td>민수</td><td>100</td></tr><tr><td>지영</td><td>95</td></tr></table>',
+  desc:{kr:'하이픈 3개(---)로 구분선.',en:'Three hyphens --- create a horizontal divider.',cn:'三个连字符 --- 创建分割线。',jp:'ハイフン3つ --- で水平線。'},xp:10},
+{id:'table',label:'TABLE',
+  raw:{kr:'| 이름 | 점수 |\n|------|------|\n| 민수 | 100  |\n| 지영 | 95   |',en:'| Name  | Score |\n|-------|-------|\n| Alice | 100   |\n| Bob   | 95    |',cn:'| 姓名 | 分数 |\n|------|------|\n| 小明 | 100  |\n| 小红 | 95   |',jp:'| 名前 | 点数 |\n|------|------|\n| 太郎 | 100  |\n| 花子 | 95   |'},
+  html:{kr:'<table><tr><th>이름</th><th>점수</th></tr><tr><td>민수</td><td>100</td></tr><tr><td>지영</td><td>95</td></tr></table>',en:'<table><tr><th>Name</th><th>Score</th></tr><tr><td>Alice</td><td>100</td></tr><tr><td>Bob</td><td>95</td></tr></table>',cn:'<table><tr><th>姓名</th><th>分数</th></tr><tr><td>小明</td><td>100</td></tr><tr><td>小红</td><td>95</td></tr></table>',jp:'<table><tr><th>名前</th><th>点数</th></tr><tr><td>太郎</td><td>100</td></tr><tr><td>花子</td><td>95</td></tr></table>'},
   desc:{kr:'파이프(|)와 하이픈(-)으로 표를 만들어요.',en:'Use pipes | and hyphens - to create tables.',cn:'用竖线 | 和连字符 - 创建表格。',jp:'パイプ | とハイフン - で表を作成。'},xp:20},
-{id:'task',label:'TASK LIST',raw:'- [x] 마크다운 배우기\n- [x] 투어 보기\n- [ ] 실전 활용',html:'<div><div class="task-item"><span class="task-check">☑</span> 마크다운 배우기</div><div class="task-item"><span class="task-check">☑</span> 투어 보기</div><div class="task-item"><span class="task-uncheck">☐</span> 실전 활용</div></div>',
-  desc:{kr:'- [ ]는 미완료, - [x]는 완료된 할 일 목록이에요.',en:'- [ ] for unchecked, - [x] for checked task items.',cn:'- [ ] 未完成，- [x] 已完成的任务列表。',jp:'- [ ] は未完了、- [x] は完了のタスクリスト。'},xp:15},
+{id:'task',label:'TASK LIST',
+  raw:{kr:'- [x] 마크다운 배우기\n- [x] 투어 보기\n- [ ] 실전 활용',en:'- [x] Learn Markdown\n- [x] Watch tour\n- [ ] Practice',cn:'- [x] 学习Markdown\n- [x] 看教程\n- [ ] 实际运用',jp:'- [x] Markdown学習\n- [x] ツアー視聴\n- [ ] 実践'},
+  html:{kr:'<div><div class="task-item"><span class="task-check">☑</span> 마크다운 배우기</div><div class="task-item"><span class="task-check">☑</span> 투어 보기</div><div class="task-item"><span class="task-uncheck">☐</span> 실전 활용</div></div>',en:'<div><div class="task-item"><span class="task-check">☑</span> Learn Markdown</div><div class="task-item"><span class="task-check">☑</span> Watch tour</div><div class="task-item"><span class="task-uncheck">☐</span> Practice</div></div>',cn:'<div><div class="task-item"><span class="task-check">☑</span> 学习Markdown</div><div class="task-item"><span class="task-check">☑</span> 看教程</div><div class="task-item"><span class="task-uncheck">☐</span> 实际运用</div></div>',jp:'<div><div class="task-item"><span class="task-check">☑</span> Markdown学習</div><div class="task-item"><span class="task-check">☑</span> ツアー視聴</div><div class="task-item"><span class="task-uncheck">☐</span> 実践</div></div>'},
+  desc:{kr:'- [ ]는 미완료, - [x]는 완료.',en:'- [ ] unchecked, - [x] checked.',cn:'- [ ] 未完成，- [x] 已完成。',jp:'- [ ] 未完了、- [x] 完了。'},xp:15},
 {id:'emoji',label:'EMOJI',raw:':fire: :rocket: :heart:',html:'<p><span class="emoji">🔥</span> <span class="emoji">🚀</span> <span class="emoji">❤️</span></p>',
-  desc:{kr:'콜론(:) 사이에 이모지 이름을 쓰면 이모지가 표시돼요. (GitHub 등 지원)',en:'Emoji shortcodes like :fire: work on GitHub and many platforms.',cn:'在冒号之间写表情名称就能显示表情。（GitHub等支持）',jp:'コロンの間に絵文字名を書くと表示されます。（GitHub等対応）'},xp:10},
-{id:'highlight',label:'HIGHLIGHT',raw:'==중요한 내용==을 강조',html:'<p><mark>중요한 내용</mark>을 강조</p>',
-  desc:{kr:'==로 감싸면 형광펜처럼 강조돼요. (일부 플랫폼 지원)',en:'==text== highlights like a marker. (Some platforms)',cn:'== 包裹文字像荧光笔一样高亮。（部分平台支持）',jp:'== で囲むとマーカーのようにハイライト。（一部対応）'},xp:10}
+  desc:{kr:'콜론(:) 사이에 이모지 이름 → 이모지 표시 (GitHub 등)',en:'Emoji shortcodes like :fire: work on GitHub.',cn:'冒号之间写表情名称显示表情（GitHub等）',jp:'コロンの間に絵文字名で表示（GitHub等）'},xp:10},
+{id:'highlight',label:'HIGHLIGHT',
+  raw:{kr:'==중요한 내용==을 강조',en:'==important text== highlighted',cn:'==重要内容==高亮',jp:'==重要な内容==をハイライト'},
+  html:{kr:'<p><mark>중요한 내용</mark>을 강조</p>',en:'<p><mark>important text</mark> highlighted</p>',cn:'<p><mark>重要内容</mark>高亮</p>',jp:'<p><mark>重要な内容</mark>をハイライト</p>'},
+  desc:{kr:'==로 감싸면 형광펜처럼 강조. (일부 플랫폼)',en:'==text== highlights like a marker. (Some platforms)',cn:'== 包裹像荧光笔高亮（部分平台）',jp:'== で囲むとマーカーハイライト（一部対応）'},xp:10}
 ];
 
 /* ============ STATE ============ */
@@ -312,60 +350,141 @@ function resumeCtx(){var c=ensureCtx();if(c&&c.state==='suspended')c.resume();re
 function ctx(){if(!soundOn||!audioCtx||audioCtx.state!=='running')return null;return audioCtx;}
 function pn(i){return PENTA[((i%PENTA.length)+PENTA.length)%PENTA.length];}
 
+// Reverb impulse buffer (shared)
+var reverbBuf=null;
+function makeReverb(c){
+  if(reverbBuf)return;
+  var sr=c.sampleRate,len=sr*0.6;
+  reverbBuf=c.createBuffer(2,len,sr);
+  for(var ch=0;ch<2;ch++){
+    var d=reverbBuf.getChannelData(ch);
+    for(var i=0;i<len;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.5);}
+  }
+}
+function addReverb(c,src,dry,wet){
+  var dg=c.createGain(),wg=c.createGain(),conv=c.createConvolver();
+  dg.gain.value=dry;wg.gain.value=wet;
+  makeReverb(c);conv.buffer=reverbBuf;
+  src.connect(dg);dg.connect(c.destination);
+  src.connect(conv);conv.connect(wg);wg.connect(c.destination);
+  return src;
+}
+
+// Retro mechanical keyboard — thocky keyswitch sound
 function sndType(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  var f=pn(sndStep++)*2+Math.random()*80;
-  var o=c.createOscillator(),g=c.createGain();
-  o.connect(g);g.connect(c.destination);o.type='triangle';
-  o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.5,t+.04);
-  g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);
-  o.start(t);o.stop(t+.06);
+  sndStep++;
+  // Base thock: low resonant hit
+  var thockFreq=80+Math.random()*40;
+  var o1=c.createOscillator(),g1=c.createGain();
+  o1.type='sine';o1.frequency.setValueAtTime(thockFreq,t);o1.frequency.exponentialRampToValueAtTime(thockFreq*.3,t+.06);
+  g1.gain.setValueAtTime(.18,t);g1.gain.exponentialRampToValueAtTime(.001,t+.07);
+  o1.connect(g1);g1.connect(c.destination);
+  o1.start(t);o1.stop(t+.08);
+  // Click transient: short noise burst
+  var nLen=Math.floor(c.sampleRate*.008);
+  var nb=c.createBuffer(1,nLen,c.sampleRate);
+  var nd=nb.getChannelData(0);
+  for(var i=0;i<nLen;i++)nd[i]=(Math.random()*2-1)*(.6-i/nLen*.5);
+  var ns=c.createBufferSource(),nf=c.createBiquadFilter(),ng=c.createGain();
+  ns.buffer=nb;nf.type='highpass';nf.frequency.value=2000+Math.random()*2000;
+  ng.gain.setValueAtTime(.14,t);ng.gain.exponentialRampToValueAtTime(.001,t+.015);
+  ns.connect(nf);nf.connect(ng);ng.connect(c.destination);
+  ns.start(t);
+  // Subtle melodic overtone (pentatonic, very quiet — gives it character)
+  var mf=pn(sndStep)*(sndStep%3===0?2:4);
+  var o2=c.createOscillator(),g2=c.createGain();
+  o2.type='sine';o2.frequency.setValueAtTime(mf,t);
+  g2.gain.setValueAtTime(.02,t);g2.gain.exponentialRampToValueAtTime(.001,t+.08);
+  o2.connect(g2);g2.connect(c.destination);
+  o2.start(t);o2.stop(t+.1);
 }
+
+// Render transform: magical shimmer with reverb
 function sndRender(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  // Sparkle arpeggio
-  [0,.06,.12,.18].forEach(function(off,i){
+  makeReverb(c);
+  // Ascending shimmer chord
+  [0,.07,.14,.21,.28].forEach(function(off,i){
+    var f=pn(curSlide*2+i)*(i<2?2:4);
     var o=c.createOscillator(),g=c.createGain();
-    o.connect(g);g.connect(c.destination);o.type='sine';
-    o.frequency.setValueAtTime(pn(curSlide+i)*2,t+off);
-    g.gain.setValueAtTime(.12,t+off);g.gain.exponentialRampToValueAtTime(.001,t+off+.25);
-    o.start(t+off);o.stop(t+off+.28);
+    o.type=i<3?'sine':'triangle';o.frequency.setValueAtTime(f,t+off);
+    g.gain.setValueAtTime(.1,t+off);g.gain.exponentialRampToValueAtTime(.001,t+off+.5);
+    addReverb(c,o,.3,.15);
+    o.start(t+off);o.stop(t+off+.52);
   });
+  // Breathy whoosh
+  var dur=.35;
+  var wb=c.createBuffer(1,c.sampleRate*dur,c.sampleRate);
+  var wd=wb.getChannelData(0);for(var i=0;i<wd.length;i++)wd[i]=(Math.random()*2-1);
+  var ws=c.createBufferSource(),wf=c.createBiquadFilter(),wg=c.createGain();
+  ws.buffer=wb;wf.type='bandpass';wf.frequency.setValueAtTime(800,t);wf.frequency.exponentialRampToValueAtTime(3000,t+dur*.4);wf.frequency.exponentialRampToValueAtTime(400,t+dur);wf.Q.value=1.5;
+  wg.gain.setValueAtTime(0,t);wg.gain.linearRampToValueAtTime(.08,t+dur*.15);wg.gain.exponentialRampToValueAtTime(.001,t+dur);
+  ws.connect(wf);wf.connect(wg);wg.connect(c.destination);
+  ws.start(t);ws.stop(t+dur+.01);
 }
+
+// XP coin sound — satisfying retro coin pickup
 function sndXP(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  var o=c.createOscillator(),g=c.createGain();
-  o.connect(g);g.connect(c.destination);o.type='sine';
-  o.frequency.setValueAtTime(1200,t);o.frequency.exponentialRampToValueAtTime(1800,t+.08);
-  g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.12);
-  o.start(t);o.stop(t+.14);
-}
-function sndComplete(){
-  var c=ctx();if(!c)return;var t=c.currentTime;
-  [523,659,784,1047,1319].forEach(function(f,i){
+  // Two-tone coin ding
+  [987.8,1318.5].forEach(function(f,i){
     var o=c.createOscillator(),g=c.createGain();
-    o.connect(g);g.connect(c.destination);o.type=i<3?'sine':'triangle';
-    o.frequency.setValueAtTime(f,t+i*.1);
-    g.gain.setValueAtTime(.15,t+i*.1);g.gain.exponentialRampToValueAtTime(.001,t+i*.1+.5);
-    o.start(t+i*.1);o.stop(t+i*.1+.52);
+    o.type='sine';o.frequency.setValueAtTime(f,t+i*.06);
+    g.gain.setValueAtTime(.12,t+i*.06);g.gain.exponentialRampToValueAtTime(.001,t+i*.06+.2);
+    o.connect(g);g.connect(c.destination);
+    o.start(t+i*.06);o.stop(t+i*.06+.22);
   });
 }
+
+// Completion fanfare
+function sndComplete(){
+  var c=ctx();if(!c)return;var t=c.currentTime;
+  makeReverb(c);
+  var notes=[523.3,659.3,784.0,1047,1319,1568];
+  notes.forEach(function(f,i){
+    var o=c.createOscillator(),g=c.createGain();
+    o.type=i<3?'sine':'triangle';o.frequency.setValueAtTime(f,t+i*.1);
+    g.gain.setValueAtTime(.14,t+i*.1);g.gain.exponentialRampToValueAtTime(.001,t+i*.1+.7);
+    addReverb(c,o,.4,.2);
+    o.start(t+i*.1);o.stop(t+i*.1+.72);
+  });
+}
+
+// Navigation — soft bell
 function sndNav(){
   var c=ctx();if(!c)return;var t=c.currentTime;
+  var f=pn(curSlide)*2;
   var o=c.createOscillator(),g=c.createGain();
-  o.connect(g);g.connect(c.destination);o.type='sine';
-  o.frequency.setValueAtTime(pn(curSlide),t);
-  g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.15);
-  o.start(t);o.stop(t+.18);
+  o.type='sine';o.frequency.setValueAtTime(f,t);
+  g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.25);
+  o.connect(g);g.connect(c.destination);
+  o.start(t);o.stop(t+.28);
+  // Soft harmonic
+  var o2=c.createOscillator(),g2=c.createGain();
+  o2.type='sine';o2.frequency.setValueAtTime(f*1.5,t+.02);
+  g2.gain.setValueAtTime(.04,t+.02);g2.gain.exponentialRampToValueAtTime(.001,t+.15);
+  o2.connect(g2);g2.connect(c.destination);
+  o2.start(t+.02);o2.stop(t+.18);
 }
+
+// Combo power-up
 function sndCombo(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  var o=c.createOscillator(),g=c.createGain();
-  o.connect(g);g.connect(c.destination);o.type='triangle';
   var f=pn(combo+4);
-  o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*2,t+.12);
-  g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);
+  // Rising sweep
+  var o=c.createOscillator(),g=c.createGain();
+  o.type='sawtooth';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*3,t+.15);
+  g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);
+  var filt=c.createBiquadFilter();filt.type='lowpass';filt.frequency.value=2000;
+  o.connect(filt);filt.connect(g);g.connect(c.destination);
   o.start(t);o.stop(t+.22);
+  // Sparkle
+  var o2=c.createOscillator(),g2=c.createGain();
+  o2.type='sine';o2.frequency.setValueAtTime(f*4,t+.05);
+  g2.gain.setValueAtTime(.05,t+.05);g2.gain.exponentialRampToValueAtTime(.001,t+.15);
+  o2.connect(g2);g2.connect(c.destination);
+  o2.start(t+.05);o2.stop(t+.17);
 }
 
 /* ============ PARTICLES ============ */
@@ -383,6 +502,56 @@ function initParticles(){
       pCtx.beginPath();pCtx.arc(p.x,p.y,p.s,0,Math.PI*2);pCtx.fill();
     }
     pCtx.globalAlpha=1;
+  })();
+}
+
+/* ============ ANIMATED BACKGROUND ============ */
+var bgFloats=[];
+function initBackground(){
+  var cv=document.getElementById('bg-canvas');if(!cv)return;
+  var cx=cv.getContext('2d');
+  var W,H;
+  function resize(){W=innerWidth;H=innerHeight;cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;cv.style.width=W+'px';cv.style.height=H+'px';cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);}
+  resize();addEventListener('resize',resize);
+  // Floating markdown symbols
+  var symbols=['#','##','**','*','`','```','> ','- ','1.','[  ]','|','---','~~','==',':)','![','- [x]'];
+  for(var i=0;i<35;i++){
+    bgFloats.push({
+      x:Math.random()*2000,y:Math.random()*1200,
+      vx:(Math.random()-.5)*.3,vy:-.1-Math.random()*.25,
+      text:symbols[Math.floor(Math.random()*symbols.length)],
+      size:10+Math.random()*14,alpha:.03+Math.random()*.04,
+      phase:Math.random()*Math.PI*2
+    });
+  }
+  var time=0;
+  (function draw(){
+    requestAnimationFrame(draw);time+=.005;
+    cx.clearRect(0,0,W,H);
+    // Aurora gradient orbs
+    var orbs=[
+      {x:W*.3+Math.sin(time*.7)*W*.15,y:H*.3+Math.cos(time*.5)*H*.1,r:W*.25,c:'rgba(99,102,241,.04)'},
+      {x:W*.7+Math.cos(time*.6)*W*.12,y:H*.6+Math.sin(time*.4)*H*.15,r:W*.3,c:'rgba(34,211,238,.03)'},
+      {x:W*.5+Math.sin(time*.8)*W*.1,y:H*.8+Math.cos(time*.3)*H*.08,r:W*.2,c:'rgba(139,92,246,.035)'}
+    ];
+    orbs.forEach(function(o){
+      var g=cx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
+      g.addColorStop(0,o.c);g.addColorStop(1,'transparent');
+      cx.fillStyle=g;cx.fillRect(0,0,W,H);
+    });
+    // Floating symbols
+    cx.font='600 14px "JetBrains Mono",monospace';
+    bgFloats.forEach(function(f){
+      f.x+=f.vx+Math.sin(time*2+f.phase)*.15;
+      f.y+=f.vy;
+      if(f.y<-30){f.y=H+20;f.x=Math.random()*W;}
+      if(f.x<-30)f.x=W+20;if(f.x>W+30)f.x=-20;
+      cx.globalAlpha=f.alpha+Math.sin(time*3+f.phase)*.01;
+      cx.font='600 '+f.size+'px "JetBrains Mono",monospace';
+      cx.fillStyle='#818CF8';
+      cx.fillText(f.text,f.x,f.y);
+    });
+    cx.globalAlpha=1;
   })();
 }
 function burst(x,y,n,colors){
@@ -491,13 +660,13 @@ function showSlide(idx,skipAnim){
     if(ctrl.stop)return;
 
     if(skipAnim){
-      rawEl.textContent=S.raw;
+      rawEl.textContent=L(S.raw);
       setTimeout(function(){doRender(S,rawEl,renEl,descEl,tipEl,ctrl);},200);
       return;
     }
 
-    // Type raw markdown
-    typeText(rawEl,S.raw,40,ctrl,function(){
+    // Type raw markdown (language-aware)
+    typeText(rawEl,L(S.raw),40,ctrl,function(){
       if(ctrl.stop)return;
       // Pause, then render
       setTimeout(function(){
@@ -520,7 +689,7 @@ function doRender(S,rawEl,renEl,descEl,tipEl,ctrl){
   setTimeout(function(){
     if(ctrl.stop)return;
     rawEl.style.display='none';
-    renEl.innerHTML=S.html;
+    renEl.innerHTML=L(S.html);
     renEl.classList.add('show');
 
     // Description
@@ -543,9 +712,9 @@ function doRender(S,rawEl,renEl,descEl,tipEl,ctrl){
     // Reset raw for next time
     setTimeout(function(){rawEl.style.display='';rawEl.classList.remove('morphing');},100);
 
-    // Auto-advance
-    if(autoPlay&&!ctrl.stop){
-      autoTimer=setTimeout(function(){if(curSlide<SLIDES.length-1)goNext();else showComplete();},3000);
+    // Auto-advance (always, unless paused)
+    if(!ctrl.stop){
+      autoTimer=setTimeout(function(){if(curSlide<SLIDES.length-1)goNext();else showComplete();},autoPlay?2500:4000);
     }
   },450);
 }
@@ -580,7 +749,7 @@ function showComplete(){
 
 /* ============ INIT ============ */
 function init(){
-  initParticles();
+  initParticles();initBackground();
   // Detect language
   var bl=(navigator.language||'en').toLowerCase();
   var detected=bl.startsWith('ko')?'kr':bl.startsWith('zh')?'cn':bl.startsWith('ja')?'jp':'en';
@@ -670,7 +839,7 @@ function init(){
   // Tip click → copy raw
   document.getElementById('slide-tip').addEventListener('click',function(){
     var S=SLIDES[curSlide];if(!S)return;
-    navigator.clipboard.writeText(S.raw).then(function(){
+    navigator.clipboard.writeText(L(S.raw)).then(function(){
       toast('📋',lang==='kr'?'복사됨!':lang==='cn'?'已复制!':lang==='jp'?'コピー!':'Copied!');
     });
   });
