@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Markdown Tour — 마크다운 시각 투어</title>
+<meta name="description" content="마크다운 문법을 타이핑과 렌더링 애니메이션으로 배우는 인터랙티브 투어. Interactive visual tour of Markdown syntax.">
+<meta property="og:title" content="Markdown Tour — 마크다운 시각 투어">
+<meta property="og:description" content="마크다운 문법을 하나씩 타이핑하고, 눈앞에서 렌더링되는 모습을 보세요.">
+<meta property="og:url" content="https://leaf-kit.github.io/markdown/tour/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@leafeditor">
+<link rel="canonical" href="https://leaf-kit.github.io/markdown/tour/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B0F1A;--bg2:#141929;--bg3:#1C2237;--text:#E8ECF4;--text2:#8892A8;--text3:#5A6478;--accent:#818CF8;--accent2:#6366F1;--green:#34D399;--amber:#FBBF24;--red:#F87171;--pink:#F472B6;--cyan:#22D3EE;--mono:'JetBrains Mono',monospace;--sans:'Noto Sans KR','Noto Sans JP','Noto Sans SC',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+/* Intro */
+.intro{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+.intro.hide{opacity:0;visibility:hidden;pointer-events:none}
+.intro-card{text-align:center;max-width:520px;padding:40px 28px;animation:fadeUp .7s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.intro-icon{font-size:4rem;margin-bottom:16px;display:block}
+.intro-title{font:900 2.2rem var(--sans);background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.intro-desc{font:400 1rem var(--sans);color:var(--text2);line-height:1.7;margin-bottom:28px}
+.lang-btns{display:flex;gap:8px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
+.lang-btn{padding:10px 22px;border:2px solid var(--bg3);background:transparent;color:var(--text2);border-radius:12px;font:700 .9rem var(--sans);cursor:pointer;transition:all .2s}
+.lang-btn:hover{border-color:var(--accent);color:var(--accent)}
+.lang-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.start-btn{display:inline-flex;align-items:center;gap:10px;padding:18px 44px;background:linear-gradient(135deg,var(--accent2),#7C3AED);color:#fff;border:none;border-radius:16px;font:800 1.15rem var(--sans);cursor:pointer;transition:all .25s;box-shadow:0 6px 28px rgba(99,102,241,.35)}
+.start-btn:hover{transform:translateY(-3px);box-shadow:0 10px 36px rgba(99,102,241,.45)}
+.intro-footer{margin-top:20px;font:500 .78rem var(--mono);color:var(--text3)}
+.intro-footer a{color:var(--accent);text-decoration:none}
+
+/* Top Bar */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(11,15,26,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06)}
+.tb-left,.tb-right{display:flex;align-items:center;gap:8px}
+.tb-btn{width:36px;height:36px;border:1px solid rgba(255,255,255,.1);background:transparent;border-radius:9px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .2s;text-decoration:none}
+.tb-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tb-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.tb-label{font:700 .72rem var(--mono);color:var(--text2)}
+
+/* Progress */
+.progress{position:fixed;top:48px;left:0;right:0;height:3px;z-index:99;background:rgba(255,255,255,.05)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));transition:width .5s cubic-bezier(.4,0,.2,1);width:0}
+
+/* XP Bar */
+.xp-bar{display:flex;align-items:center;gap:8px}
+.xp-level{font:800 .72rem var(--mono);color:var(--amber);background:rgba(251,191,36,.12);padding:3px 10px;border-radius:7px}
+.xp-count{font:700 .72rem var(--mono);color:var(--green);min-width:60px}
+.xp-count.pop{animation:xpPop .3s ease}
+@keyframes xpPop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+.combo-badge{font:800 .7rem var(--mono);color:var(--pink);background:rgba(244,114,182,.12);padding:3px 9px;border-radius:7px;opacity:0;transition:opacity .3s,transform .3s;transform:scale(.7)}
+.combo-badge.show{opacity:1;transform:scale(1)}
+
+/* Main Stage */
+.stage{position:fixed;top:51px;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;overflow:hidden}
+
+/* Slide content */
+.slide{width:100%;max-width:900px;text-align:center;opacity:0;transform:translateY(30px);transition:opacity .5s,transform .5s}
+.slide.active{opacity:1;transform:translateY(0)}
+
+.slide-label{font:700 .82rem var(--mono);color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.slide-title{font:900 1.6rem var(--sans);color:var(--text);margin-bottom:32px}
+
+/* Raw markdown display */
+.raw-area{background:var(--bg2);border:2px solid rgba(255,255,255,.08);border-radius:18px;padding:36px 40px;font:600 1.8rem/1.6 var(--mono);color:var(--green);text-align:left;min-height:120px;position:relative;overflow:hidden;transition:all .6s cubic-bezier(.4,0,.2,1);white-space:pre-wrap;word-break:break-word}
+.raw-area .cursor{display:inline-block;width:3px;height:1.2em;background:var(--green);vertical-align:text-bottom;animation:cursorBlink .8s step-end infinite}
+@keyframes cursorBlink{50%{opacity:0}}
+
+/* Rendered result */
+.render-area{background:var(--bg2);border:2px solid rgba(129,140,248,.2);border-radius:18px;padding:36px 40px;text-align:left;min-height:120px;opacity:0;transform:scale(.95);transition:all .5s cubic-bezier(.4,0,.2,1)}
+.render-area.show{opacity:1;transform:scale(1)}
+/* Rendered content styling */
+.render-area h1{font:900 2.4rem var(--sans);margin:0}
+.render-area h2{font:900 1.8rem var(--sans);margin:0;border-bottom:2px solid rgba(255,255,255,.1);padding-bottom:8px}
+.render-area h3{font:800 1.4rem var(--sans);margin:0}
+.render-area h4{font:700 1.1rem var(--sans);margin:0}
+.render-area p{font-size:1.15rem;line-height:1.7;margin:4px 0}
+.render-area strong{color:var(--accent);font-weight:800}
+.render-area em{color:var(--cyan);font-style:italic}
+.render-area del{color:var(--text3);text-decoration:line-through}
+.render-area code{font-family:var(--mono);background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;font-size:.95em;color:var(--pink)}
+.render-area pre{background:#1E293B;padding:20px 24px;border-radius:12px;overflow-x:auto;margin:4px 0}
+.render-area pre code{background:none;padding:0;color:#E2E8F0;font-size:1rem;line-height:1.6}
+.render-area blockquote{border-left:4px solid var(--accent);padding:12px 20px;background:rgba(99,102,241,.06);border-radius:0 12px 12px 0;margin:4px 0;font-style:italic;color:var(--text2)}
+.render-area ul,.render-area ol{padding-left:24px;margin:4px 0;font-size:1.1rem;line-height:1.8}
+.render-area li{margin:4px 0}
+.render-area a{color:var(--accent);text-decoration:underline}
+.render-area hr{border:none;border-top:2px solid rgba(255,255,255,.1);margin:16px 0}
+.render-area table{width:100%;border-collapse:collapse;font-size:1rem}
+.render-area th{background:rgba(99,102,241,.12);font-weight:700;text-align:left;padding:10px 16px;border:1px solid rgba(255,255,255,.08)}
+.render-area td{padding:10px 16px;border:1px solid rgba(255,255,255,.08)}
+.render-area .task-item{list-style:none;margin:6px 0;font-size:1.1rem}
+.render-area .task-check{color:var(--green);margin-right:6px}
+.render-area .task-uncheck{color:var(--text3);margin-right:6px}
+.render-area img{max-width:100%;border-radius:12px;margin:4px 0}
+.render-area .emoji{font-size:2rem}
+.render-area mark{background:rgba(251,191,36,.25);color:var(--amber);padding:2px 6px;border-radius:4px}
+
+/* Description */
+.slide-desc{font:400 1rem var(--sans);color:var(--text2);margin-top:20px;line-height:1.6;opacity:0;transform:translateY(10px);transition:all .4s .2s}
+.slide-desc.show{opacity:1;transform:translateY(0)}
+
+/* Tip badge */
+.slide-tip{display:inline-block;font:600 .82rem var(--sans);color:var(--amber);background:rgba(251,191,36,.1);padding:6px 14px;border-radius:10px;margin-top:12px;cursor:pointer;opacity:0;transition:all .3s .4s}
+.slide-tip.show{opacity:1}
+.slide-tip:hover{background:rgba(251,191,36,.18)}
+
+/* Transform animation */
+.raw-area.morphing{animation:morphOut .4s ease forwards}
+@keyframes morphOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.05);filter:blur(8px)}}
+
+/* Nav arrows */
+.nav-arrows{position:fixed;bottom:28px;left:0;right:0;display:flex;justify-content:center;gap:16px;z-index:50}
+.nav-btn{width:52px;height:52px;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);border-radius:50%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .2s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.08)}
+.nav-btn:disabled{opacity:.2;cursor:default}
+.nav-dots{display:flex;gap:6px;align-items:center}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.12);transition:all .3s;cursor:pointer}
+.nav-dot.active{background:var(--accent);width:24px;border-radius:4px}
+.nav-dot.done{background:var(--green)}
+
+/* Particle canvas */
+#particle-cv{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* Completion screen */
+.complete{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:32px}
+.complete.show{display:flex}
+.complete-icon{font-size:5rem;animation:completeBounce .6s ease}
+@keyframes completeBounce{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.complete-title{font:900 2rem var(--sans);background:linear-gradient(135deg,var(--accent),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.complete-stats{font:500 1rem var(--sans);color:var(--text2);line-height:1.8}
+.complete-btns{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+.complete-btn{padding:12px 28px;border:2px solid var(--accent);background:transparent;color:var(--accent);border-radius:12px;font:700 .9rem var(--sans);cursor:pointer;transition:all .2s;text-decoration:none}
+.complete-btn:hover{background:var(--accent);color:#fff}
+.complete-btn.primary{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+
+/* Toast */
+.toast-container{position:fixed;bottom:90px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:toastIn .4s cubic-bezier(.34,1.56,.64,1) forwards;font:600 .85rem var(--sans);color:var(--text)}
+.toast.out{animation:toastOut .3s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(60px)}}
+.toast-icon{font-size:1.4rem}
+
+@media(max-width:680px){
+  .intro-title{font-size:1.6rem}
+  .intro-desc{font-size:.88rem}
+  .start-btn{padding:14px 32px;font-size:1rem}
+  .raw-area{font-size:1.1rem;padding:20px 22px;border-radius:14px}
+  .render-area{padding:20px 22px;border-radius:14px}
+  .render-area h1{font-size:1.8rem}
+  .render-area h2{font-size:1.4rem}
+  .slide-title{font-size:1.2rem}
+  .nav-btn{width:44px;height:44px;font-size:1rem}
+  .stage{padding:24px 16px}
+  .lang-btns{gap:6px}
+  .lang-btn{padding:8px 14px;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Intro -->
+<div class="intro" id="intro">
+  <div class="intro-card">
+    <span class="intro-icon">M↓</span>
+    <h1 class="intro-title" id="intro-title">Markdown Tour</h1>
+    <p class="intro-desc" id="intro-desc">마크다운 문법을 타이핑하고, 렌더링되는 모습을 직접 보세요.</p>
+    <div class="lang-btns" id="lang-btns">
+      <button class="lang-btn" data-l="kr">한국어</button>
+      <button class="lang-btn" data-l="en">English</button>
+      <button class="lang-btn" data-l="cn">中文</button>
+      <button class="lang-btn" data-l="jp">日本語</button>
+    </div>
+    <button class="start-btn" id="start-btn">
+      <span>▶</span>
+      <span id="start-label">사운드와 함께 시작</span>
+    </button>
+    <div class="intro-footer"><a href="https://x.com/leafeditor" target="_blank">@leafeditor</a></div>
+  </div>
+</div>
+
+<!-- Top Bar -->
+<header class="topbar" id="topbar">
+  <div class="tb-left">
+    <button class="tb-btn" id="btn-restart" title="Restart">↻</button>
+    <a class="tb-btn" href="/markdown/" title="Markdown Manual">M</a>
+    <span class="tb-label" id="slide-counter">1 / 18</span>
+  </div>
+  <div class="tb-right">
+    <div class="xp-bar">
+      <span class="combo-badge" id="combo-badge"></span>
+      <span class="xp-level" id="xp-level">Lv.1</span>
+      <span class="xp-count" id="xp-count">0 XP</span>
+    </div>
+    <button class="tb-btn active" id="btn-sound" title="Sound ON"><span id="sound-icon">ON</span></button>
+    <button class="tb-btn" id="btn-auto" title="Auto-play">▶</button>
+  </div>
+</header>
+
+<div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+
+<!-- Stage -->
+<div class="stage" id="stage">
+  <div class="slide" id="slide">
+    <div class="slide-label" id="slide-label"></div>
+    <div class="slide-title" id="slide-title"></div>
+    <div class="raw-area" id="raw-area"><span class="cursor"></span></div>
+    <div class="render-area" id="render-area"></div>
+    <div class="slide-desc" id="slide-desc"></div>
+    <div class="slide-tip" id="slide-tip"></div>
+  </div>
+</div>
+
+<!-- Nav -->
+<div class="nav-arrows" id="nav-arrows">
+  <button class="nav-btn" id="btn-prev" disabled>←</button>
+  <div class="nav-dots" id="nav-dots"></div>
+  <button class="nav-btn" id="btn-next">→</button>
+</div>
+
+<!-- Completion -->
+<div class="complete" id="complete">
+  <div class="complete-icon">🎉</div>
+  <div class="complete-title" id="complete-title">마크다운 마스터!</div>
+  <div class="complete-stats" id="complete-stats"></div>
+  <div class="complete-btns">
+    <button class="complete-btn primary" id="btn-replay">다시 보기</button>
+    <a class="complete-btn" href="/markdown/">마크다운 매뉴얼</a>
+    <a class="complete-btn" href="https://x.com/intent/tweet?text=마크다운+투어+완료!+%40leafeditor&url=https://leaf-kit.github.io/markdown/tour/" target="_blank">공유하기</a>
+  </div>
+</div>
+
+<!-- Particles -->
+<canvas id="particle-cv"></canvas>
+
+<!-- Toasts -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+(function(){'use strict';
+
+/* ============ TRANSLATIONS ============ */
+var UI={
+kr:{start:'사운드와 함께 시작',desc:'마크다운 문법을 타이핑하고, 렌더링되는 모습을 직접 보세요.',complete:'마크다운 마스터!',replay:'다시 보기',stats:'총 {xp} XP 획득 · 최고 {combo}x 콤보',lvNames:['입문자','초보','중급','고급','마스터'],toast_level:'레벨 업!',toast_combo:'콤보!',toast_half:'절반 완료!',toast_done:'투어 완료!'},
+en:{start:'Start with Sound',desc:'Watch Markdown syntax being typed, then rendered before your eyes.',complete:'Markdown Master!',replay:'Replay',stats:'Total {xp} XP · Best {combo}x combo',lvNames:['Beginner','Novice','Intermediate','Advanced','Master'],toast_level:'Level Up!',toast_combo:'Combo!',toast_half:'Halfway!',toast_done:'Tour Complete!'},
+cn:{start:'带声音开始',desc:'看着 Markdown 语法被输入，然后在您眼前渲染。',complete:'Markdown 大师!',replay:'重新播放',stats:'共获得 {xp} XP · 最高 {combo}x 连击',lvNames:['入门','初级','中级','高级','大师'],toast_level:'升级!',toast_combo:'连击!',toast_half:'完成一半!',toast_done:'完成!'},
+jp:{start:'サウンドで開始',desc:'Markdown構文が入力され、レンダリングされる様子をご覧ください。',complete:'Markdownマスター!',replay:'もう一度',stats:'合計 {xp} XP · 最高 {combo}x コンボ',lvNames:['入門','初心者','中級','上級','マスター'],toast_level:'レベルアップ!',toast_combo:'コンボ!',toast_half:'半分完了!',toast_done:'完了!'}
+};
+
+/* ============ SLIDES DATA ============ */
+var SLIDES=[
+{id:'heading',label:'HEADINGS',raw:'# Hello, Markdown!',html:'<h1>Hello, Markdown!</h1>',
+  desc:{kr:'# 뒤에 공백 하나, 그러면 제목이 됩니다. #은 1~6개까지 쓸 수 있어요.',en:'A # followed by a space creates a heading. Use 1-6 # symbols for different sizes.',cn:'# 后面加一个空格就能创建标题。可以使用 1-6 个 # 号。',jp:'# の後にスペースを入れると見出しになります。1〜6個まで使えます。'},
+  tip:{kr:'## 중제목 ### 소제목 ... ###### 가장 작은 제목',en:'## Medium ### Small ... ###### Smallest',cn:'## 中标题 ### 小标题',jp:'## 中見出し ### 小見出し'},xp:10},
+{id:'heading-levels',label:'HEADING LEVELS',raw:'## Second\n### Third\n#### Fourth',html:'<h2>Second</h2><h3>Third</h3><h4>Fourth</h4>',
+  desc:{kr:'#이 많을수록 작아져요. 글의 구조를 잡을 때 사용합니다.',en:'More #s = smaller heading. Use them to structure your document.',cn:'# 越多标题越小，用来组织文档结构。',jp:'# が多いほど小さい見出し。文書の構造化に使います。'},xp:10},
+{id:'bold',label:'BOLD',raw:'**굵은 글씨**',html:'<p><strong>굵은 글씨</strong></p>',
+  desc:{kr:'별표 2개(**)로 감싸면 굵게! 중요한 단어를 강조할 때 써요.',en:'Wrap text in ** to make it bold! Great for emphasis.',cn:'用 ** 包裹文字就能加粗！用来强调重要内容。',jp:'** で囲むと太字に！重要な部分を強調するときに。'},
+  tip:{kr:'__밑줄 2개__로도 됩니다',en:'__double underscores__ also work',cn:'__双下划线__也可以',jp:'__アンダースコア2つ__でもOK'},xp:10},
+{id:'italic',label:'ITALIC',raw:'*기울임꼴*',html:'<p><em>기울임꼴</em></p>',
+  desc:{kr:'별표 1개(*)로 감싸면 이탤릭체가 됩니다.',en:'Wrap text in single * for italics.',cn:'用单个 * 包裹文字就能变成斜体。',jp:'* 1つで囲むとイタリック体に。'},xp:10},
+{id:'bold-italic',label:'BOLD + ITALIC',raw:'***굵고 기울어진 글씨***',html:'<p><strong><em>굵고 기울어진 글씨</em></strong></p>',
+  desc:{kr:'별표 3개(***)면 굵으면서 기울어져요. 최강 강조!',en:'Triple *** = bold AND italic. Maximum emphasis!',cn:'三个 *** = 粗体加斜体。最强调！',jp:'*** 3つ = 太字＋イタリック。最強の強調！'},xp:15},
+{id:'strikethrough',label:'STRIKETHROUGH',raw:'~~취소선~~',html:'<p><del>취소선</del></p>',
+  desc:{kr:'물결 2개(~~)로 감싸면 취소선이 그어져요.',en:'Wrap in ~~ for strikethrough text.',cn:'用 ~~ 包裹就能加删除线。',jp:'~~ で囲むと取り消し線に。'},xp:10},
+{id:'blockquote',label:'BLOCKQUOTE',raw:'> 누군가 말했다.\n> 마크다운은 쉽다.',html:'<blockquote>누군가 말했다.<br>마크다운은 쉽다.</blockquote>',
+  desc:{kr:'> 기호로 인용문을 만들어요. 다른 사람의 말을 인용할 때 유용해요.',en:'> creates a blockquote. Perfect for citing someone.',cn:'> 创建引用块，适合引用他人的话。',jp:'> で引用ブロックを作ります。'},xp:10},
+{id:'ul',label:'UNORDERED LIST',raw:'- 사과\n- 바나나\n- 체리',html:'<ul><li>사과</li><li>바나나</li><li>체리</li></ul>',
+  desc:{kr:'- 또는 * 뒤에 공백을 넣으면 순서 없는 목록이 돼요.',en:'- or * followed by a space creates bullet lists.',cn:'- 或 * 后加空格就能创建无序列表。',jp:'- か * の後にスペースで箇条書きに。'},xp:10},
+{id:'ol',label:'ORDERED LIST',raw:'1. 첫 번째\n2. 두 번째\n3. 세 번째',html:'<ol><li>첫 번째</li><li>두 번째</li><li>세 번째</li></ol>',
+  desc:{kr:'숫자 뒤에 점(.)과 공백을 넣으면 순서 있는 목록이 됩니다.',en:'Numbers followed by a dot create ordered lists.',cn:'数字加点号创建有序列表。',jp:'数字とピリオドで番号付きリストに。'},xp:10},
+{id:'code-inline',label:'INLINE CODE',raw:'`console.log("hi")`를 실행하세요',html:'<p><code>console.log("hi")</code>를 실행하세요</p>',
+  desc:{kr:'백틱(`)으로 감싸면 코드처럼 표시돼요.',en:'Wrap in backticks ` for inline code.',cn:'用反引号 ` 包裹就能显示为代码。',jp:'バッククォート ` で囲むとコード表示に。'},xp:10},
+{id:'code-block',label:'CODE BLOCK',raw:'```javascript\nfunction hello() {\n  return "world";\n}\n```',html:'<pre><code><span style="color:#89B4FA">function</span> <span style="color:#A6E3A1">hello</span>() {\n  <span style="color:#89B4FA">return</span> <span style="color:#F9E2AF">"world"</span>;\n}</code></pre>',
+  desc:{kr:'백틱 3개(```)로 코드 블록을 만들어요. 언어 이름을 쓰면 문법 강조도 됩니다.',en:'Triple backticks create code blocks. Add the language name for syntax highlighting.',cn:'三个反引号创建代码块。加语言名称可以语法高亮。',jp:'バッククォート3つでコードブロック。言語名で構文ハイライト。'},xp:15},
+{id:'link',label:'LINK',raw:'[구글](https://google.com)',html:'<p><a href="https://google.com" target="_blank">구글</a></p>',
+  desc:{kr:'[보여줄 텍스트](URL) 형식으로 링크를 만들어요.',en:'[display text](URL) creates a clickable link.',cn:'[显示文字](URL) 创建链接。',jp:'[表示テキスト](URL) でリンクを作成。'},xp:10},
+{id:'image',label:'IMAGE',raw:'![풍경](https://picsum.photos/400/200)',html:'<img src="https://picsum.photos/400/200" alt="풍경" style="border-radius:12px">',
+  desc:{kr:'링크 앞에 !를 붙이면 이미지가 표시돼요.',en:'Add ! before a link to display an image.',cn:'在链接前加 ! 就能显示图片。',jp:'リンクの前に ! を付けると画像表示。'},xp:10},
+{id:'hr',label:'HORIZONTAL RULE',raw:'---',html:'<hr>',
+  desc:{kr:'하이픈 3개(---)를 쓰면 구분선이 그어져요.',en:'Three hyphens --- create a horizontal divider.',cn:'三个连字符 --- 创建分割线。',jp:'ハイフン3つ --- で水平線。'},xp:10},
+{id:'table',label:'TABLE',raw:'| 이름 | 점수 |\n|------|------|\n| 민수 | 100  |\n| 지영 | 95   |',html:'<table><tr><th>이름</th><th>점수</th></tr><tr><td>민수</td><td>100</td></tr><tr><td>지영</td><td>95</td></tr></table>',
+  desc:{kr:'파이프(|)와 하이픈(-)으로 표를 만들어요.',en:'Use pipes | and hyphens - to create tables.',cn:'用竖线 | 和连字符 - 创建表格。',jp:'パイプ | とハイフン - で表を作成。'},xp:20},
+{id:'task',label:'TASK LIST',raw:'- [x] 마크다운 배우기\n- [x] 투어 보기\n- [ ] 실전 활용',html:'<div><div class="task-item"><span class="task-check">☑</span> 마크다운 배우기</div><div class="task-item"><span class="task-check">☑</span> 투어 보기</div><div class="task-item"><span class="task-uncheck">☐</span> 실전 활용</div></div>',
+  desc:{kr:'- [ ]는 미완료, - [x]는 완료된 할 일 목록이에요.',en:'- [ ] for unchecked, - [x] for checked task items.',cn:'- [ ] 未完成，- [x] 已完成的任务列表。',jp:'- [ ] は未完了、- [x] は完了のタスクリスト。'},xp:15},
+{id:'emoji',label:'EMOJI',raw:':fire: :rocket: :heart:',html:'<p><span class="emoji">🔥</span> <span class="emoji">🚀</span> <span class="emoji">❤️</span></p>',
+  desc:{kr:'콜론(:) 사이에 이모지 이름을 쓰면 이모지가 표시돼요. (GitHub 등 지원)',en:'Emoji shortcodes like :fire: work on GitHub and many platforms.',cn:'在冒号之间写表情名称就能显示表情。（GitHub等支持）',jp:'コロンの間に絵文字名を書くと表示されます。（GitHub等対応）'},xp:10},
+{id:'highlight',label:'HIGHLIGHT',raw:'==중요한 내용==을 강조',html:'<p><mark>중요한 내용</mark>을 강조</p>',
+  desc:{kr:'==로 감싸면 형광펜처럼 강조돼요. (일부 플랫폼 지원)',en:'==text== highlights like a marker. (Some platforms)',cn:'== 包裹文字像荧光笔一样高亮。（部分平台支持）',jp:'== で囲むとマーカーのようにハイライト。（一部対応）'},xp:10}
+];
+
+/* ============ STATE ============ */
+var lang='kr',curSlide=0,xp=0,maxCombo=0,combo=0,comboTimer=null;
+var soundOn=true,audioCtx=null,autoPlay=false,autoTimer=null;
+var typing=false,animAbort=null;
+var PENTA=[261.6,293.7,329.6,392.0,440.0,523.3,587.3,659.3,784.0,880.0];
+var sndStep=0;
+var particles=[];
+
+/* ============ SOUND ============ */
+function ensureCtx(){
+  if(!audioCtx)try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){soundOn=false;}
+  return audioCtx;
+}
+function resumeCtx(){var c=ensureCtx();if(c&&c.state==='suspended')c.resume();return c;}
+function ctx(){if(!soundOn||!audioCtx||audioCtx.state!=='running')return null;return audioCtx;}
+function pn(i){return PENTA[((i%PENTA.length)+PENTA.length)%PENTA.length];}
+
+function sndType(){
+  var c=ctx();if(!c)return;var t=c.currentTime;
+  var f=pn(sndStep++)*2+Math.random()*80;
+  var o=c.createOscillator(),g=c.createGain();
+  o.connect(g);g.connect(c.destination);o.type='triangle';
+  o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.5,t+.04);
+  g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);
+  o.start(t);o.stop(t+.06);
+}
+function sndRender(){
+  var c=ctx();if(!c)return;var t=c.currentTime;
+  // Sparkle arpeggio
+  [0,.06,.12,.18].forEach(function(off,i){
+    var o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.type='sine';
+    o.frequency.setValueAtTime(pn(curSlide+i)*2,t+off);
+    g.gain.setValueAtTime(.12,t+off);g.gain.exponentialRampToValueAtTime(.001,t+off+.25);
+    o.start(t+off);o.stop(t+off+.28);
+  });
+}
+function sndXP(){
+  var c=ctx();if(!c)return;var t=c.currentTime;
+  var o=c.createOscillator(),g=c.createGain();
+  o.connect(g);g.connect(c.destination);o.type='sine';
+  o.frequency.setValueAtTime(1200,t);o.frequency.exponentialRampToValueAtTime(1800,t+.08);
+  g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.12);
+  o.start(t);o.stop(t+.14);
+}
+function sndComplete(){
+  var c=ctx();if(!c)return;var t=c.currentTime;
+  [523,659,784,1047,1319].forEach(function(f,i){
+    var o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.type=i<3?'sine':'triangle';
+    o.frequency.setValueAtTime(f,t+i*.1);
+    g.gain.setValueAtTime(.15,t+i*.1);g.gain.exponentialRampToValueAtTime(.001,t+i*.1+.5);
+    o.start(t+i*.1);o.stop(t+i*.1+.52);
+  });
+}
+function sndNav(){
+  var c=ctx();if(!c)return;var t=c.currentTime;
+  var o=c.createOscillator(),g=c.createGain();
+  o.connect(g);g.connect(c.destination);o.type='sine';
+  o.frequency.setValueAtTime(pn(curSlide),t);
+  g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.15);
+  o.start(t);o.stop(t+.18);
+}
+function sndCombo(){
+  var c=ctx();if(!c)return;var t=c.currentTime;
+  var o=c.createOscillator(),g=c.createGain();
+  o.connect(g);g.connect(c.destination);o.type='triangle';
+  var f=pn(combo+4);
+  o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*2,t+.12);
+  g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);
+  o.start(t);o.stop(t+.22);
+}
+
+/* ============ PARTICLES ============ */
+var pCv,pCtx;
+function initParticles(){
+  pCv=document.getElementById('particle-cv');pCtx=pCv.getContext('2d');
+  function resize(){pCv.width=innerWidth*devicePixelRatio;pCv.height=innerHeight*devicePixelRatio;pCv.style.width=innerWidth+'px';pCv.style.height=innerHeight+'px';pCtx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);}
+  resize();addEventListener('resize',resize);
+  (function loop(){requestAnimationFrame(loop);
+    pCtx.clearRect(0,0,innerWidth,innerHeight);
+    for(var i=particles.length-1;i>=0;i--){
+      var p=particles[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.life-=.018;
+      if(p.life<=0){particles.splice(i,1);continue;}
+      pCtx.globalAlpha=p.life;pCtx.fillStyle=p.c;
+      pCtx.beginPath();pCtx.arc(p.x,p.y,p.s,0,Math.PI*2);pCtx.fill();
+    }
+    pCtx.globalAlpha=1;
+  })();
+}
+function burst(x,y,n,colors){
+  for(var i=0;i<n;i++){
+    var a=Math.random()*Math.PI*2,sp=2+Math.random()*5;
+    particles.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-3,s:2+Math.random()*4,life:1,c:colors[Math.floor(Math.random()*colors.length)]});
+  }
+}
+
+/* ============ TOAST ============ */
+function toast(icon,text){
+  var c=document.getElementById('toast-container');
+  var el=document.createElement('div');el.className='toast';
+  el.innerHTML='<span class="toast-icon">'+icon+'</span><span>'+text+'</span>';
+  c.appendChild(el);
+  setTimeout(function(){el.classList.add('out');setTimeout(function(){el.remove();},400);},2500);
+}
+
+/* ============ XP & LEVEL ============ */
+function addXP(amount){
+  xp+=amount;
+  var el=document.getElementById('xp-count');
+  el.textContent=xp+' XP';el.classList.remove('pop');
+  void el.offsetWidth;el.classList.add('pop');
+  sndXP();
+  // Level
+  var lv=xp<30?0:xp<70?1:xp<120?2:xp<180?3:4;
+  var t=UI[lang];
+  var lvEl=document.getElementById('xp-level');
+  var newLvText='Lv.'+(lv+1)+' '+t.lvNames[lv];
+  if(lvEl.textContent!==newLvText){
+    lvEl.textContent=newLvText;
+    if(lv>0)toast('⬆️',t.toast_level+' '+t.lvNames[lv]);
+  }
+}
+
+function addCombo(){
+  combo++;if(combo>maxCombo)maxCombo=combo;
+  clearTimeout(comboTimer);
+  comboTimer=setTimeout(function(){combo=0;document.getElementById('combo-badge').classList.remove('show');},8000);
+  if(combo>=2){
+    var el=document.getElementById('combo-badge');
+    el.textContent=combo+'x';el.classList.add('show');
+    sndCombo();
+    if(combo===3)toast('🔥',UI[lang].toast_combo+' 3x');
+    if(combo===5)toast('💥',UI[lang].toast_combo+' 5x!');
+  }
+}
+
+/* ============ TYPING ANIMATION ============ */
+function typeText(el,text,speed,ctrl,cb){
+  el.innerHTML='';typing=true;
+  var i=0,cursor=document.createElement('span');cursor.className='cursor';
+  el.appendChild(cursor);
+  (function go(){
+    if(ctrl.stop){typing=false;return;}
+    if(i<text.length){
+      var ch=text[i];
+      if(ch==='\n'){el.insertBefore(document.createElement('br'),cursor);}
+      else{el.insertBefore(document.createTextNode(ch),cursor);}
+      if(ch!==' '&&ch!=='\n'&&i%2===0)sndType();
+      i++;
+      var delay=ch==='\n'?speed*3:speed;
+      setTimeout(go,delay);
+    }else{typing=false;if(cb)cb();}
+  })();
+}
+
+/* ============ SHOW SLIDE ============ */
+function showSlide(idx,skipAnim){
+  if(animAbort)animAbort.stop=true;
+  var ctrl={stop:false};animAbort=ctrl;
+  curSlide=idx;
+  var S=SLIDES[idx],t=UI[lang];
+
+  // Update UI
+  document.getElementById('slide-counter').textContent=(idx+1)+' / '+SLIDES.length;
+  document.getElementById('progress-fill').style.width=((idx+1)/SLIDES.length*100)+'%';
+  document.getElementById('btn-prev').disabled=(idx===0);
+  document.querySelectorAll('.nav-dot').forEach(function(d,i){
+    d.classList.toggle('active',i===idx);
+    d.classList.toggle('done',i<idx);
+  });
+
+  var slide=document.getElementById('slide');
+  var rawEl=document.getElementById('raw-area');
+  var renEl=document.getElementById('render-area');
+  var descEl=document.getElementById('slide-desc');
+  var tipEl=document.getElementById('slide-tip');
+  var labelEl=document.getElementById('slide-label');
+  var titleEl=document.getElementById('slide-title');
+
+  // Reset
+  slide.classList.remove('active');
+  renEl.classList.remove('show');renEl.innerHTML='';
+  descEl.classList.remove('show');descEl.textContent='';
+  tipEl.classList.remove('show');tipEl.textContent='';
+  rawEl.classList.remove('morphing');rawEl.innerHTML='';
+
+  labelEl.textContent=S.label;
+  var slideDescs={kr:'문법 ',en:'Syntax ',cn:'语法 ',jp:'構文 '};
+  titleEl.textContent=(slideDescs[lang]||'')+(idx+1);
+
+  setTimeout(function(){
+    slide.classList.add('active');
+    if(ctrl.stop)return;
+
+    if(skipAnim){
+      rawEl.textContent=S.raw;
+      setTimeout(function(){doRender(S,rawEl,renEl,descEl,tipEl,ctrl);},200);
+      return;
+    }
+
+    // Type raw markdown
+    typeText(rawEl,S.raw,40,ctrl,function(){
+      if(ctrl.stop)return;
+      // Pause, then render
+      setTimeout(function(){
+        if(ctrl.stop)return;
+        doRender(S,rawEl,renEl,descEl,tipEl,ctrl);
+      },600);
+    });
+  },100);
+}
+
+function doRender(S,rawEl,renEl,descEl,tipEl,ctrl){
+  // Morph out raw
+  rawEl.classList.add('morphing');
+  sndRender();
+
+  // Burst particles at center
+  var rect=rawEl.getBoundingClientRect();
+  burst(rect.left+rect.width/2,rect.top+rect.height/2,30,['#818CF8','#34D399','#FBBF24','#F472B6','#22D3EE']);
+
+  setTimeout(function(){
+    if(ctrl.stop)return;
+    rawEl.style.display='none';
+    renEl.innerHTML=S.html;
+    renEl.classList.add('show');
+
+    // Description
+    descEl.textContent=S.desc[lang]||S.desc.en;
+    descEl.classList.add('show');
+
+    // Tip
+    if(S.tip){
+      tipEl.textContent='💡 '+(S.tip[lang]||S.tip.en);
+      tipEl.classList.add('show');
+    }
+
+    // XP & combo
+    addXP(S.xp||10);
+    addCombo();
+
+    // Half-way toast
+    if(curSlide===Math.floor(SLIDES.length/2)){toast('🎯',UI[lang].toast_half);}
+
+    // Reset raw for next time
+    setTimeout(function(){rawEl.style.display='';rawEl.classList.remove('morphing');},100);
+
+    // Auto-advance
+    if(autoPlay&&!ctrl.stop){
+      autoTimer=setTimeout(function(){if(curSlide<SLIDES.length-1)goNext();else showComplete();},3000);
+    }
+  },450);
+}
+
+function goNext(){
+  if(curSlide>=SLIDES.length-1){showComplete();return;}
+  sndNav();showSlide(curSlide+1);
+}
+function goPrev(){
+  if(curSlide<=0)return;
+  sndNav();showSlide(curSlide-1);
+}
+
+/* ============ COMPLETION ============ */
+function showComplete(){
+  clearTimeout(autoTimer);autoPlay=false;
+  document.getElementById('btn-auto').classList.remove('active');
+  var t=UI[lang];
+  document.getElementById('complete-title').textContent=t.complete;
+  document.getElementById('complete-stats').textContent=t.stats.replace('{xp}',xp).replace('{combo}',maxCombo);
+  document.getElementById('btn-replay').textContent=t.replay;
+  document.getElementById('complete').classList.add('show');
+  sndComplete();
+  toast('🏆',t.toast_done);
+  // Big burst
+  setTimeout(function(){
+    for(var i=0;i<5;i++){
+      setTimeout(function(){burst(Math.random()*innerWidth,Math.random()*innerHeight*.6,40,['#818CF8','#34D399','#FBBF24','#F87171','#F472B6','#22D3EE']);},i*200);
+    }
+  },300);
+}
+
+/* ============ INIT ============ */
+function init(){
+  initParticles();
+  // Detect language
+  var bl=(navigator.language||'en').toLowerCase();
+  var detected=bl.startsWith('ko')?'kr':bl.startsWith('zh')?'cn':bl.startsWith('ja')?'jp':'en';
+  var stored=localStorage.getItem('md-tour-lang');
+  lang=stored||detected;
+  applyIntroLang();
+
+  // Lang buttons
+  document.querySelectorAll('.lang-btn').forEach(function(btn){
+    btn.classList.toggle('active',btn.dataset.l===lang);
+    btn.addEventListener('click',function(){
+      lang=this.dataset.l;
+      document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.dataset.l===lang);});
+      applyIntroLang();
+    });
+  });
+
+  // Build nav dots
+  var dotsEl=document.getElementById('nav-dots');
+  SLIDES.forEach(function(_,i){
+    var d=document.createElement('div');d.className='nav-dot'+(i===0?' active':'');
+    d.addEventListener('click',function(){if(!typing){sndNav();showSlide(i);}});
+    dotsEl.appendChild(d);
+  });
+
+  // Sound
+  ensureCtx();
+  var stored2=localStorage.getItem('md-tour-sound');
+  if(stored2==='off'){soundOn=false;document.getElementById('btn-sound').classList.remove('active');document.getElementById('sound-icon').textContent='x';}
+  document.getElementById('btn-sound').addEventListener('click',function(){
+    resumeCtx();soundOn=!soundOn;
+    this.classList.toggle('active',soundOn);
+    document.getElementById('sound-icon').textContent=soundOn?'ON':'x';
+    localStorage.setItem('md-tour-sound',soundOn?'on':'off');
+  });
+
+  // Resume audio on gestures
+  ['click','touchstart','keydown'].forEach(function(e){
+    document.addEventListener(e,function(){resumeCtx();},{once:true});
+  });
+
+  // Start button
+  document.getElementById('start-btn').addEventListener('click',function(){
+    resumeCtx();
+    localStorage.setItem('md-tour-lang',lang);
+    document.getElementById('intro').classList.add('hide');
+    showSlide(0);
+  });
+
+  // Nav
+  document.getElementById('btn-next').addEventListener('click',function(){if(!typing)goNext();});
+  document.getElementById('btn-prev').addEventListener('click',function(){if(!typing)goPrev();});
+
+  // Keyboard
+  document.addEventListener('keydown',function(e){
+    if(document.getElementById('intro').classList.contains('hide')){
+      if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();if(!typing)goNext();}
+      if(e.key==='ArrowLeft'){e.preventDefault();if(!typing)goPrev();}
+    }
+  });
+
+  // Auto-play
+  document.getElementById('btn-auto').addEventListener('click',function(){
+    autoPlay=!autoPlay;this.classList.toggle('active',autoPlay);
+    if(autoPlay&&!typing){
+      autoTimer=setTimeout(function(){if(curSlide<SLIDES.length-1)goNext();else showComplete();},2000);
+    }else{clearTimeout(autoTimer);}
+  });
+
+  // Restart
+  document.getElementById('btn-restart').addEventListener('click',function(){
+    clearTimeout(autoTimer);autoPlay=false;
+    document.getElementById('btn-auto').classList.remove('active');
+    document.getElementById('complete').classList.remove('show');
+    xp=0;combo=0;maxCombo=0;sndStep=0;
+    document.getElementById('xp-count').textContent='0 XP';
+    document.getElementById('xp-level').textContent='Lv.1 '+UI[lang].lvNames[0];
+    document.getElementById('combo-badge').classList.remove('show');
+    showSlide(0);
+  });
+
+  // Replay from complete
+  document.getElementById('btn-replay').addEventListener('click',function(){
+    document.getElementById('btn-restart').click();
+  });
+
+  // Tip click → copy raw
+  document.getElementById('slide-tip').addEventListener('click',function(){
+    var S=SLIDES[curSlide];if(!S)return;
+    navigator.clipboard.writeText(S.raw).then(function(){
+      toast('📋',lang==='kr'?'복사됨!':lang==='cn'?'已复制!':lang==='jp'?'コピー!':'Copied!');
+    });
+  });
+}
+
+function applyIntroLang(){
+  var t=UI[lang];
+  document.getElementById('intro-desc').textContent=t.desc;
+  document.getElementById('start-label').textContent=t.start;
+}
+
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body>
+</html>
