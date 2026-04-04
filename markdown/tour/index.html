@@ -359,78 +359,103 @@ function resumeCtx(){var c=ensureCtx();if(c&&c.state==='suspended')c.resume();re
 function ctx(){if(!soundOn||!audioCtx||audioCtx.state!=='running')return null;return audioCtx;}
 function pn(i){return PENTA[((i%PENTA.length)+PENTA.length)%PENTA.length];}
 
-/* ---- Sound Design: NO oscillators = NO beeps ----
-   All sounds are shaped noise buffers (clicks, pops, whooshes).
-   This is how Notion, Linear, iOS, and game UIs do it.
-   Zero tonal/pitched content = impossible to sound like beep. */
-
+/* ---- Sound v1.3: Noise-only, natural UI feedback ---- */
 var noiseBuf=null;
 function getNoise(c){
   if(noiseBuf)return noiseBuf;
-  noiseBuf=c.createBuffer(1,c.sampleRate,c.sampleRate);
+  noiseBuf=c.createBuffer(1,c.sampleRate*2,c.sampleRate);
   var d=noiseBuf.getChannelData(0);
   for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   return noiseBuf;
 }
 
-function noisePop(c,freq,q,vol,dur,t){
-  var s=c.createBufferSource();s.buffer=getNoise(c);
-  var bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=freq;bp.Q.value=q;
-  var g=c.createGain();
-  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  s.connect(bp);bp.connect(g);g.connect(c.destination);
-  s.start(t);s.stop(t+dur+.01);
-}
-
-// Typing: soft click like MacBook key or Notion toggle
+// Typing: soft wooden "tok" — like tapping a desk with a pencil
+// Low frequency (800Hz), wide band (Q=0.8), very short (8ms), quiet
 function sndType(){
-  var c=ctx();if(!c)return;sndStep++;
-  noisePop(c,2500+Math.random()*1000,3,.06,.012,c.currentTime);
+  var c=ctx();if(!c)return;sndStep++;var t=c.currentTime;
+  var s=c.createBufferSource();s.buffer=getNoise(c);
+  var lp=c.createBiquadFilter();lp.type='lowpass';
+  lp.frequency.value=600+Math.random()*400;lp.Q.value=.5;
+  var g=c.createGain();
+  g.gain.setValueAtTime(.03,t);g.gain.exponentialRampToValueAtTime(.0001,t+.008);
+  s.connect(lp);lp.connect(g);g.connect(c.destination);
+  s.start(t);s.stop(t+.015);
 }
 
-// Render: soft whoosh like page turning
+// Render: gentle breeze — very low, slow sweep
 function sndRender(){
   var c=ctx();if(!c)return;var t=c.currentTime;
   var s=c.createBufferSource();s.buffer=getNoise(c);
-  var bp=c.createBiquadFilter();bp.type='bandpass';
-  bp.frequency.setValueAtTime(200,t);
-  bp.frequency.linearRampToValueAtTime(800,t+.15);
-  bp.frequency.linearRampToValueAtTime(200,t+.3);
-  bp.Q.value=1;
+  var lp=c.createBiquadFilter();lp.type='lowpass';
+  lp.frequency.setValueAtTime(100,t);
+  lp.frequency.linearRampToValueAtTime(500,t+.2);
+  lp.frequency.linearRampToValueAtTime(100,t+.4);
+  lp.Q.value=.3;
   var g=c.createGain();
   g.gain.setValueAtTime(0,t);
-  g.gain.linearRampToValueAtTime(.06,t+.08);
-  g.gain.exponentialRampToValueAtTime(.0001,t+.3);
-  s.connect(bp);bp.connect(g);g.connect(c.destination);
-  s.start(t);s.stop(t+.32);
+  g.gain.linearRampToValueAtTime(.04,t+.1);
+  g.gain.exponentialRampToValueAtTime(.0001,t+.4);
+  s.connect(lp);lp.connect(g);g.connect(c.destination);
+  s.start(t);s.stop(t+.42);
 }
 
-// XP: two quick pops like bubble popping
+// XP: game bonus "plop" — downward frequency sweep (satisfying drop)
 function sndXP(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  noisePop(c,1800,5,.05,.02,t);
-  noisePop(c,2400,5,.04,.02,t+.06);
+  var s=c.createBufferSource();s.buffer=getNoise(c);
+  var bp=c.createBiquadFilter();bp.type='bandpass';
+  // Start at mid, sweep down quickly = "plop" not "beep"
+  bp.frequency.setValueAtTime(1200,t);
+  bp.frequency.exponentialRampToValueAtTime(200,t+.04);
+  bp.Q.value=1.5;
+  var g=c.createGain();
+  g.gain.setValueAtTime(.04,t);g.gain.exponentialRampToValueAtTime(.0001,t+.06);
+  s.connect(bp);bp.connect(g);g.connect(c.destination);
+  s.start(t);s.stop(t+.08);
 }
 
-// Completion: gentle rain of soft pops
+// Completion: 4 gentle plops cascading down — like rain on a leaf
 function sndComplete(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  for(var i=0;i<6;i++){
-    noisePop(c,1500+i*300,3,.03,.025,t+i*.08);
+  for(var i=0;i<4;i++){
+    (function(idx){
+      var s=c.createBufferSource();s.buffer=getNoise(c);
+      var bp=c.createBiquadFilter();bp.type='bandpass';
+      bp.frequency.setValueAtTime(800-idx*100,t+idx*.12);
+      bp.frequency.exponentialRampToValueAtTime(150,t+idx*.12+.05);
+      bp.Q.value=1;
+      var g=c.createGain();
+      g.gain.setValueAtTime(.03,t+idx*.12);g.gain.exponentialRampToValueAtTime(.0001,t+idx*.12+.08);
+      s.connect(bp);bp.connect(g);g.connect(c.destination);
+      s.start(t+idx*.12);s.stop(t+idx*.12+.1);
+    })(i);
   }
 }
 
-// Navigation: single soft thud
+// Navigation: soft low tap
 function sndNav(){
-  var c=ctx();if(!c)return;
-  noisePop(c,400,2,.05,.03,c.currentTime);
+  var c=ctx();if(!c)return;var t=c.currentTime;
+  var s=c.createBufferSource();s.buffer=getNoise(c);
+  var lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;lp.Q.value=.3;
+  var g=c.createGain();
+  g.gain.setValueAtTime(.03,t);g.gain.exponentialRampToValueAtTime(.0001,t+.015);
+  s.connect(lp);lp.connect(g);g.connect(c.destination);
+  s.start(t);s.stop(t+.025);
 }
 
-// Combo: quick double pop
+// Combo: double plop
 function sndCombo(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  noisePop(c,1200,4,.04,.015,t);
-  noisePop(c,2000,4,.03,.015,t+.04);
+  [0,.05].forEach(function(off){
+    var s=c.createBufferSource();s.buffer=getNoise(c);
+    var bp=c.createBiquadFilter();bp.type='bandpass';
+    bp.frequency.setValueAtTime(900,t+off);bp.frequency.exponentialRampToValueAtTime(200,t+off+.03);
+    bp.Q.value=1;
+    var g=c.createGain();
+    g.gain.setValueAtTime(.025,t+off);g.gain.exponentialRampToValueAtTime(.0001,t+off+.05);
+    s.connect(bp);bp.connect(g);g.connect(c.destination);
+    s.start(t+off);s.stop(t+off+.07);
+  });
 }
 
 
@@ -559,7 +584,7 @@ function typeText(el,text,speed,ctrl,cb){
       var ch=text[i];
       if(ch==='\n'){el.insertBefore(document.createElement('br'),cursor);}
       else{el.insertBefore(document.createTextNode(ch),cursor);}
-      if(ch!==' '&&ch!=='\n'&&i%2===0)sndType();
+      if(ch!==' '&&ch!=='\n'&&i%3===0)sndType();
       i++;
       var delay=ch==='\n'?speed*3:speed;
       setTimeout(go,delay);
