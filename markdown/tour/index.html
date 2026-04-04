@@ -62,7 +62,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 .combo-badge.show{opacity:1;transform:scale(1)}
 
 /* Main Stage */
-.stage{position:fixed;top:51px;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;overflow:hidden}
+.stage{position:fixed;top:51px;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 32px;overflow-y:auto}
 
 /* Slide content */
 .slide{width:100%;max-width:900px;text-align:center;opacity:0;transform:translateY(30px);transition:opacity .5s,transform .5s}
@@ -72,12 +72,18 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 .slide-title{font:900 1.6rem var(--sans);color:var(--text);margin-bottom:32px}
 
 /* Raw markdown display */
-.raw-area{background:var(--bg2);border:2px solid rgba(255,255,255,.08);border-radius:18px;padding:36px 40px;font:600 1.8rem/1.6 var(--mono);color:var(--green);text-align:left;min-height:120px;position:relative;overflow:hidden;transition:all .6s cubic-bezier(.4,0,.2,1);white-space:pre-wrap;word-break:break-word}
+.raw-area{background:var(--bg2);border:2px solid rgba(255,255,255,.08);border-radius:18px;padding:36px 40px;font:600 1.8rem/1.6 var(--mono);color:var(--green);text-align:left;min-height:80px;position:relative;overflow:hidden;transition:all .4s ease;white-space:pre-wrap;word-break:break-word}
+.raw-area::before{content:'Markdown';position:absolute;top:8px;right:14px;font:700 .65rem var(--mono);color:var(--text3);letter-spacing:.05em;text-transform:uppercase}
 .raw-area .cursor{display:inline-block;width:3px;height:1.2em;background:var(--green);vertical-align:text-bottom;animation:cursorBlink .8s step-end infinite}
 @keyframes cursorBlink{50%{opacity:0}}
 
+/* Arrow between raw and render */
+.arrow-indicator{text-align:center;font-size:1.4rem;color:var(--accent);margin:10px 0;opacity:0;transition:opacity .3s}
+.arrow-indicator.show{opacity:.6}
+
 /* Rendered result */
-.render-area{background:var(--bg2);border:2px solid rgba(129,140,248,.2);border-radius:18px;padding:36px 40px;text-align:left;min-height:120px;opacity:0;transform:scale(.95);transition:all .5s cubic-bezier(.4,0,.2,1)}
+.render-area{background:var(--bg2);border:2px solid rgba(129,140,248,.2);border-radius:18px;padding:36px 40px;text-align:left;min-height:80px;opacity:0;transform:scale(.95);transition:all .5s cubic-bezier(.4,0,.2,1);position:relative}
+.render-area::before{content:'Rendered';position:absolute;top:8px;right:14px;font:700 .65rem var(--mono);color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
 .render-area.show{opacity:1;transform:scale(1)}
 /* Rendered content styling */
 .render-area h1{font:900 2.4rem var(--sans);margin:0}
@@ -115,9 +121,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 .slide-tip.show{opacity:1}
 .slide-tip:hover{background:rgba(251,191,36,.18)}
 
-/* Transform animation */
-.raw-area.morphing{animation:morphOut .4s ease forwards}
-@keyframes morphOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.05);filter:blur(8px)}}
+/* Transform animation — raw shrinks but stays visible */
+.raw-area.morphing{}
 
 /* Nav arrows */
 .nav-arrows{position:fixed;bottom:28px;left:0;right:0;display:flex;justify-content:center;gap:16px;z-index:50}
@@ -219,6 +224,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
     <div class="slide-label" id="slide-label"></div>
     <div class="slide-title" id="slide-title"></div>
     <div class="raw-area" id="raw-area"><span class="cursor"></span></div>
+    <div class="arrow-indicator" id="arrow-indicator">↓</div>
     <div class="render-area" id="render-area"></div>
     <div class="slide-desc" id="slide-desc"></div>
     <div class="slide-tip" id="slide-tip"></div>
@@ -650,6 +656,8 @@ function showSlide(idx,skipAnim){
   descEl.classList.remove('show');descEl.textContent='';
   tipEl.classList.remove('show');tipEl.textContent='';
   rawEl.classList.remove('morphing');rawEl.innerHTML='';
+  rawEl.style.fontSize='';rawEl.style.padding='';rawEl.style.display='';
+  document.getElementById('arrow-indicator').classList.remove('show');
 
   labelEl.textContent=S.label;
   var slideDescs={kr:'문법 ',en:'Syntax ',cn:'语法 ',jp:'構文 '};
@@ -678,17 +686,19 @@ function showSlide(idx,skipAnim){
 }
 
 function doRender(S,rawEl,renEl,descEl,tipEl,ctrl){
-  // Morph out raw
-  rawEl.classList.add('morphing');
+  // Keep raw visible — show render below it
   sndRender();
 
-  // Burst particles at center
+  // Burst particles between raw and render area
   var rect=rawEl.getBoundingClientRect();
-  burst(rect.left+rect.width/2,rect.top+rect.height/2,30,['#818CF8','#34D399','#FBBF24','#F472B6','#22D3EE']);
+  burst(rect.left+rect.width/2,rect.bottom+20,30,['#818CF8','#34D399','#FBBF24','#F472B6','#22D3EE']);
+
+  // Shrink raw slightly to make room, show arrow
+  rawEl.style.fontSize='1.2rem';rawEl.style.padding='20px 24px';
+  document.getElementById('arrow-indicator').classList.add('show');
 
   setTimeout(function(){
     if(ctrl.stop)return;
-    rawEl.style.display='none';
     renEl.innerHTML=L(S.html);
     renEl.classList.add('show');
 
@@ -709,8 +719,7 @@ function doRender(S,rawEl,renEl,descEl,tipEl,ctrl){
     // Half-way toast
     if(curSlide===Math.floor(SLIDES.length/2)){toast('🎯',UI[lang].toast_half);}
 
-    // Reset raw for next time
-    setTimeout(function(){rawEl.style.display='';rawEl.classList.remove('morphing');},100);
+    // Raw stays visible — no reset needed
 
     // Auto-advance (always, unless paused)
     if(!ctrl.stop){
