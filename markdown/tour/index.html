@@ -196,7 +196,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
       <span>▶</span>
       <span id="start-label">사운드와 함께 시작</span>
     </button>
-    <div class="intro-footer"><a href="https://x.com/leafeditor" target="_blank">@leafeditor</a> · v1.3.0 · 2026-04-04</div>
+    <div class="intro-footer"><a href="https://x.com/leafeditor" target="_blank">@leafeditor</a> · v2.0.0 · 2026-04-04</div>
   </div>
 </div>
 
@@ -274,73 +274,120 @@ jp:{start:'サウンドで開始',desc:'韓国の国家AI戦略によるMarkdown
 // Helper: if val is object {kr,en,cn,jp}, pick lang; else return as-is
 function L(val){return(typeof val==='object'&&val!==null&&!Array.isArray(val))?(val[lang]||val.en):val;}
 
-var SLIDES=[
+var STAGES=[
+// ===== STAGE 1: 기초 (10 slides) =====
+{name:{kr:'Stage 1 — 기초 문법',en:'Stage 1 — Basics',cn:'Stage 1 — 基础语法',jp:'Stage 1 — 基本構文'},slides:[
 {id:'heading',label:'HEADINGS',raw:'# Hello, Markdown!',html:'<h1>Hello, Markdown!</h1>',
-  desc:{kr:'# 뒤에 공백 하나, 그러면 제목이 됩니다. #은 1~6개까지 쓸 수 있어요.',en:'A # followed by a space creates a heading. Use 1-6 # symbols.',cn:'# 后面加一个空格就能创建标题。可以使用 1-6 个 #。',jp:'# の後にスペースを入れると見出しに。1〜6個まで使えます。'},
-  tip:{kr:'## 중제목 ### 소제목 ... ###### 가장 작은 제목',en:'## Medium ### Small ... ###### Smallest',cn:'## 中标题 ### 小标题',jp:'## 中見出し ### 小見出し'},xp:10},
+  desc:{kr:'# 뒤에 공백 하나, 그러면 제목이 됩니다.',en:'A # followed by a space creates a heading.',cn:'# 后面加空格就能创建标题。',jp:'# の後にスペースで見出しに。'},xp:10},
 {id:'heading-levels',label:'HEADING LEVELS',raw:'## Second\n### Third\n#### Fourth',html:'<h2>Second</h2><h3>Third</h3><h4>Fourth</h4>',
-  desc:{kr:'#이 많을수록 작아져요. 글의 구조를 잡을 때 사용합니다.',en:'More #s = smaller heading. Use them to structure your document.',cn:'# 越多标题越小，用来组织文档结构。',jp:'# が多いほど小さい見出し。文書の構造化に使います。'},xp:10},
+  desc:{kr:'#이 많을수록 작아져요.',en:'More #s = smaller heading.',cn:'# 越多标题越小。',jp:'# が多いほど小さい見出し。'},xp:10},
+{id:'paragraph',label:'PARAGRAPH',
+  raw:{kr:'첫 번째 문단.\n\n두 번째 문단.',en:'First paragraph.\n\nSecond paragraph.',cn:'第一段。\n\n第二段。',jp:'最初の段落。\n\n2番目の段落。'},
+  html:{kr:'<p>첫 번째 문단.</p><p>두 번째 문단.</p>',en:'<p>First paragraph.</p><p>Second paragraph.</p>',cn:'<p>第一段。</p><p>第二段。</p>',jp:'<p>最初の段落。</p><p>2番目の段落。</p>'},
+  desc:{kr:'빈 줄 하나로 문단을 나눠요.',en:'A blank line separates paragraphs.',cn:'空行分隔段落。',jp:'空行で段落を分けます。'},xp:10},
 {id:'bold',label:'BOLD',
   raw:{kr:'**굵은 글씨**',en:'**bold text**',cn:'**粗体文字**',jp:'**太字テキスト**'},
   html:{kr:'<p><strong>굵은 글씨</strong></p>',en:'<p><strong>bold text</strong></p>',cn:'<p><strong>粗体文字</strong></p>',jp:'<p><strong>太字テキスト</strong></p>'},
-  desc:{kr:'별표 2개(**)로 감싸면 굵게!',en:'Wrap text in ** to make it bold!',cn:'用 ** 包裹文字就能加粗！',jp:'** で囲むと太字に！'},
-  tip:{kr:'__밑줄 2개__로도 됩니다',en:'__double underscores__ also work',cn:'__双下划线__也可以',jp:'__アンダースコア2つ__でもOK'},xp:10},
+  desc:{kr:'별표 2개(**)로 감싸면 굵게!',en:'Wrap in ** to make it bold!',cn:'用 ** 包裹就能加粗！',jp:'** で囲むと太字に！'},xp:10},
 {id:'italic',label:'ITALIC',
   raw:{kr:'*기울임꼴*',en:'*italic text*',cn:'*斜体文字*',jp:'*イタリック*'},
   html:{kr:'<p><em>기울임꼴</em></p>',en:'<p><em>italic text</em></p>',cn:'<p><em>斜体文字</em></p>',jp:'<p><em>イタリック</em></p>'},
-  desc:{kr:'별표 1개(*)로 감싸면 이탤릭체가 됩니다.',en:'Wrap text in single * for italics.',cn:'用单个 * 包裹就能变成斜体。',jp:'* 1つで囲むとイタリック体に。'},xp:10},
-{id:'bold-italic',label:'BOLD + ITALIC',
-  raw:{kr:'***굵고 기울어진 글씨***',en:'***bold and italic***',cn:'***粗斜体***',jp:'***太字イタリック***'},
-  html:{kr:'<p><strong><em>굵고 기울어진 글씨</em></strong></p>',en:'<p><strong><em>bold and italic</em></strong></p>',cn:'<p><strong><em>粗斜体</em></strong></p>',jp:'<p><strong><em>太字イタリック</em></strong></p>'},
-  desc:{kr:'별표 3개(***)면 굵으면서 기울어져요. 최강 강조!',en:'Triple *** = bold AND italic. Maximum emphasis!',cn:'三个 *** = 粗体加斜体。最强调！',jp:'*** 3つ = 太字＋イタリック。最強！'},xp:15},
+  desc:{kr:'별표 1개(*)로 감싸면 이탤릭.',en:'Wrap in single * for italics.',cn:'用单个 * 变成斜体。',jp:'* 1つでイタリック。'},xp:10},
 {id:'strikethrough',label:'STRIKETHROUGH',
   raw:{kr:'~~취소선~~',en:'~~strikethrough~~',cn:'~~删除线~~',jp:'~~取り消し線~~'},
   html:{kr:'<p><del>취소선</del></p>',en:'<p><del>strikethrough</del></p>',cn:'<p><del>删除线</del></p>',jp:'<p><del>取り消し線</del></p>'},
-  desc:{kr:'물결 2개(~~)로 감싸면 취소선이 그어져요.',en:'Wrap in ~~ for strikethrough text.',cn:'用 ~~ 包裹就能加删除线。',jp:'~~ で囲むと取り消し線に。'},xp:10},
-{id:'blockquote',label:'BLOCKQUOTE',
-  raw:{kr:'> 누군가 말했다.\n> 마크다운은 쉽다.',en:'> Someone said:\n> Markdown is easy.',cn:'> 有人说过：\n> Markdown很简单。',jp:'> 誰かが言った：\n> Markdownは簡単だ。'},
-  html:{kr:'<blockquote>누군가 말했다.<br>마크다운은 쉽다.</blockquote>',en:'<blockquote>Someone said:<br>Markdown is easy.</blockquote>',cn:'<blockquote>有人说过：<br>Markdown很简单。</blockquote>',jp:'<blockquote>誰かが言った：<br>Markdownは簡単だ。</blockquote>'},
-  desc:{kr:'> 기호로 인용문을 만들어요.',en:'> creates a blockquote.',cn:'> 创建引用块。',jp:'> で引用ブロックを作ります。'},xp:10},
+  desc:{kr:'물결 2개(~~)로 취소선.',en:'Wrap in ~~ for strikethrough.',cn:'用 ~~ 加删除线。',jp:'~~ で取り消し線。'},xp:10},
 {id:'ul',label:'UNORDERED LIST',
   raw:{kr:'- 사과\n- 바나나\n- 체리',en:'- Apple\n- Banana\n- Cherry',cn:'- 苹果\n- 香蕉\n- 樱桃',jp:'- りんご\n- バナナ\n- さくらんぼ'},
   html:{kr:'<ul><li>사과</li><li>바나나</li><li>체리</li></ul>',en:'<ul><li>Apple</li><li>Banana</li><li>Cherry</li></ul>',cn:'<ul><li>苹果</li><li>香蕉</li><li>樱桃</li></ul>',jp:'<ul><li>りんご</li><li>バナナ</li><li>さくらんぼ</li></ul>'},
-  desc:{kr:'- 또는 * 뒤에 공백을 넣으면 목록이 돼요.',en:'- or * followed by a space creates bullet lists.',cn:'- 或 * 后加空格创建无序列表。',jp:'- か * の後にスペースで箇条書きに。'},xp:10},
+  desc:{kr:'- 뒤에 공백으로 목록.',en:'- followed by a space for lists.',cn:'- 后加空格创建列表。',jp:'- の後にスペースでリスト。'},xp:10},
 {id:'ol',label:'ORDERED LIST',
   raw:{kr:'1. 첫 번째\n2. 두 번째\n3. 세 번째',en:'1. First\n2. Second\n3. Third',cn:'1. 第一\n2. 第二\n3. 第三',jp:'1. 一番目\n2. 二番目\n3. 三番目'},
   html:{kr:'<ol><li>첫 번째</li><li>두 번째</li><li>세 번째</li></ol>',en:'<ol><li>First</li><li>Second</li><li>Third</li></ol>',cn:'<ol><li>第一</li><li>第二</li><li>第三</li></ol>',jp:'<ol><li>一番目</li><li>二番目</li><li>三番目</li></ol>'},
-  desc:{kr:'숫자 뒤에 점(.)과 공백을 넣으면 순서 있는 목록.',en:'Numbers followed by a dot create ordered lists.',cn:'数字加点号创建有序列表。',jp:'数字とピリオドで番号付きリストに。'},xp:10},
-{id:'code-inline',label:'INLINE CODE',
-  raw:{kr:'`console.log("hi")`를 실행',en:'Run `console.log("hi")`',cn:'运行 `console.log("hi")`',jp:'`console.log("hi")`を実行'},
-  html:{kr:'<p><code>console.log("hi")</code>를 실행</p>',en:'<p>Run <code>console.log("hi")</code></p>',cn:'<p>运行 <code>console.log("hi")</code></p>',jp:'<p><code>console.log("hi")</code>を実行</p>'},
-  desc:{kr:'백틱(`)으로 감싸면 코드처럼 표시돼요.',en:'Wrap in backticks ` for inline code.',cn:'用反引号 ` 包裹显示为代码。',jp:'バッククォート ` で囲むとコード表示。'},xp:10},
-{id:'code-block',label:'CODE BLOCK',raw:'```javascript\nfunction hello() {\n  return "world";\n}\n```',
-  html:'<pre><code><span style="color:#89B4FA">function</span> <span style="color:#A6E3A1">hello</span>() {\n  <span style="color:#89B4FA">return</span> <span style="color:#F9E2AF">"world"</span>;\n}</code></pre>',
-  desc:{kr:'백틱 3개(```)로 코드 블록. 언어 이름으로 문법 강조.',en:'Triple backticks create code blocks with syntax highlighting.',cn:'三个反引号创建代码块，加语言名称语法高亮。',jp:'バッククォート3つでコードブロック。言語名で構文ハイライト。'},xp:15},
+  desc:{kr:'숫자+점으로 순서 목록.',en:'Numbers with dots for ordered lists.',cn:'数字加点号创建有序列表。',jp:'数字とピリオドで番号付きリスト。'},xp:10},
 {id:'link',label:'LINK',
   raw:{kr:'[구글](https://google.com)',en:'[Google](https://google.com)',cn:'[谷歌](https://google.com)',jp:'[グーグル](https://google.com)'},
   html:{kr:'<p><a href="https://google.com" target="_blank">구글</a></p>',en:'<p><a href="https://google.com" target="_blank">Google</a></p>',cn:'<p><a href="https://google.com" target="_blank">谷歌</a></p>',jp:'<p><a href="https://google.com" target="_blank">グーグル</a></p>'},
-  desc:{kr:'[텍스트](URL) 형식으로 링크를 만들어요.',en:'[text](URL) creates a clickable link.',cn:'[文字](URL) 创建链接。',jp:'[テキスト](URL) でリンク作成。'},xp:10},
+  desc:{kr:'[텍스트](URL)로 링크.',en:'[text](URL) creates a link.',cn:'[文字](URL) 创建链接。',jp:'[テキスト](URL) でリンク。'},xp:10},
+{id:'hr',label:'HORIZONTAL RULE',raw:'---',html:'<hr>',
+  desc:{kr:'하이픈 3개(---)로 구분선.',en:'Three hyphens --- for a divider.',cn:'三个连字符 --- 分割线。',jp:'ハイフン3つで水平線。'},xp:10}
+]},
+// ===== STAGE 2: 중급 (10 slides) =====
+{name:{kr:'Stage 2 — 중급 문법',en:'Stage 2 — Intermediate',cn:'Stage 2 — 中级语法',jp:'Stage 2 — 中級構文'},slides:[
+{id:'bold-italic',label:'BOLD + ITALIC',
+  raw:{kr:'***굵고 기울어진***',en:'***bold and italic***',cn:'***粗斜体***',jp:'***太字イタリック***'},
+  html:{kr:'<p><strong><em>굵고 기울어진</em></strong></p>',en:'<p><strong><em>bold and italic</em></strong></p>',cn:'<p><strong><em>粗斜体</em></strong></p>',jp:'<p><strong><em>太字イタリック</em></strong></p>'},
+  desc:{kr:'별표 3개(***)로 최강 강조!',en:'Triple *** for maximum emphasis!',cn:'三个 *** 最强调！',jp:'*** 3つで最強の強調！'},xp:15},
+{id:'blockquote',label:'BLOCKQUOTE',
+  raw:{kr:'> 누군가 말했다.\n> 마크다운은 쉽다.',en:'> Someone said:\n> Markdown is easy.',cn:'> 有人说过：\n> Markdown很简单。',jp:'> 誰かが言った：\n> Markdownは簡単だ。'},
+  html:{kr:'<blockquote>누군가 말했다.<br>마크다운은 쉽다.</blockquote>',en:'<blockquote>Someone said:<br>Markdown is easy.</blockquote>',cn:'<blockquote>有人说过：<br>Markdown很简单。</blockquote>',jp:'<blockquote>誰かが言った：<br>Markdownは簡単だ。</blockquote>'},
+  desc:{kr:'> 기호로 인용문.',en:'> for blockquotes.',cn:'> 创建引用块。',jp:'> で引用ブロック。'},xp:10},
+{id:'code-inline',label:'INLINE CODE',
+  raw:{kr:'`console.log("hi")`를 실행',en:'Run `console.log("hi")`',cn:'运行 `console.log("hi")`',jp:'`console.log("hi")`を実行'},
+  html:{kr:'<p><code>console.log("hi")</code>를 실행</p>',en:'<p>Run <code>console.log("hi")</code></p>',cn:'<p>运行 <code>console.log("hi")</code></p>',jp:'<p><code>console.log("hi")</code>を実行</p>'},
+  desc:{kr:'백틱(`)으로 코드 표시.',en:'Backticks ` for inline code.',cn:'反引号 ` 显示代码。',jp:'バッククォートでコード表示。'},xp:10},
+{id:'code-block',label:'CODE BLOCK',raw:'```javascript\nfunction hello() {\n  return "world";\n}\n```',
+  html:'<pre><code><span style="color:#89B4FA">function</span> <span style="color:#A6E3A1">hello</span>() {\n  <span style="color:#89B4FA">return</span> <span style="color:#F9E2AF">"world"</span>;\n}</code></pre>',
+  desc:{kr:'백틱 3개로 코드 블록 + 문법 강조.',en:'Triple backticks for code blocks.',cn:'三个反引号创建代码块。',jp:'バッククォート3つでコードブロック。'},xp:15},
 {id:'image',label:'IMAGE',
   raw:{kr:'![풍경](https://picsum.photos/400/200)',en:'![Landscape](https://picsum.photos/400/200)',cn:'![风景](https://picsum.photos/400/200)',jp:'![風景](https://picsum.photos/400/200)'},
   html:'<img src="https://picsum.photos/400/200" alt="image" style="border-radius:12px">',
-  desc:{kr:'링크 앞에 !를 붙이면 이미지가 표시돼요.',en:'Add ! before a link to display an image.',cn:'链接前加 ! 显示图片。',jp:'リンクの前に ! で画像表示。'},xp:10},
-{id:'hr',label:'HORIZONTAL RULE',raw:'---',html:'<hr>',
-  desc:{kr:'하이픈 3개(---)로 구분선.',en:'Three hyphens --- create a horizontal divider.',cn:'三个连字符 --- 创建分割线。',jp:'ハイフン3つ --- で水平線。'},xp:10},
+  desc:{kr:'링크 앞에 !로 이미지.',en:'Add ! before link for images.',cn:'链接前加 ! 显示图片。',jp:'リンク前に ! で画像。'},xp:10},
 {id:'table',label:'TABLE',
   raw:{kr:'| 이름 | 점수 |\n|------|------|\n| 민수 | 100  |\n| 지영 | 95   |',en:'| Name  | Score |\n|-------|-------|\n| Alice | 100   |\n| Bob   | 95    |',cn:'| 姓名 | 分数 |\n|------|------|\n| 小明 | 100  |\n| 小红 | 95   |',jp:'| 名前 | 点数 |\n|------|------|\n| 太郎 | 100  |\n| 花子 | 95   |'},
   html:{kr:'<table><tr><th>이름</th><th>점수</th></tr><tr><td>민수</td><td>100</td></tr><tr><td>지영</td><td>95</td></tr></table>',en:'<table><tr><th>Name</th><th>Score</th></tr><tr><td>Alice</td><td>100</td></tr><tr><td>Bob</td><td>95</td></tr></table>',cn:'<table><tr><th>姓名</th><th>分数</th></tr><tr><td>小明</td><td>100</td></tr><tr><td>小红</td><td>95</td></tr></table>',jp:'<table><tr><th>名前</th><th>点数</th></tr><tr><td>太郎</td><td>100</td></tr><tr><td>花子</td><td>95</td></tr></table>'},
-  desc:{kr:'파이프(|)와 하이픈(-)으로 표를 만들어요.',en:'Use pipes | and hyphens - to create tables.',cn:'用竖线 | 和连字符 - 创建表格。',jp:'パイプ | とハイフン - で表を作成。'},xp:20},
+  desc:{kr:'파이프(|)와 하이픈(-)으로 표.',en:'Pipes | and hyphens - for tables.',cn:'竖线和连字符创建表格。',jp:'パイプとハイフンで表。'},xp:20},
 {id:'task',label:'TASK LIST',
   raw:{kr:'- [x] 마크다운 배우기\n- [x] 투어 보기\n- [ ] 실전 활용',en:'- [x] Learn Markdown\n- [x] Watch tour\n- [ ] Practice',cn:'- [x] 学习Markdown\n- [x] 看教程\n- [ ] 实际运用',jp:'- [x] Markdown学習\n- [x] ツアー視聴\n- [ ] 実践'},
   html:{kr:'<div><div class="task-item"><span class="task-check">☑</span> 마크다운 배우기</div><div class="task-item"><span class="task-check">☑</span> 투어 보기</div><div class="task-item"><span class="task-uncheck">☐</span> 실전 활용</div></div>',en:'<div><div class="task-item"><span class="task-check">☑</span> Learn Markdown</div><div class="task-item"><span class="task-check">☑</span> Watch tour</div><div class="task-item"><span class="task-uncheck">☐</span> Practice</div></div>',cn:'<div><div class="task-item"><span class="task-check">☑</span> 学习Markdown</div><div class="task-item"><span class="task-check">☑</span> 看教程</div><div class="task-item"><span class="task-uncheck">☐</span> 实际运用</div></div>',jp:'<div><div class="task-item"><span class="task-check">☑</span> Markdown学習</div><div class="task-item"><span class="task-check">☑</span> ツアー視聴</div><div class="task-item"><span class="task-uncheck">☐</span> 実践</div></div>'},
-  desc:{kr:'- [ ]는 미완료, - [x]는 완료.',en:'- [ ] unchecked, - [x] checked.',cn:'- [ ] 未完成，- [x] 已完成。',jp:'- [ ] 未完了、- [x] 完了。'},xp:15},
+  desc:{kr:'- [ ] 미완료, - [x] 완료.',en:'- [ ] unchecked, - [x] checked.',cn:'- [ ] 未完成，- [x] 已完成。',jp:'- [ ] 未完了、- [x] 完了。'},xp:15},
 {id:'emoji',label:'EMOJI',raw:':fire: :rocket: :heart:',html:'<p><span class="emoji">🔥</span> <span class="emoji">🚀</span> <span class="emoji">❤️</span></p>',
-  desc:{kr:'콜론(:) 사이에 이모지 이름 → 이모지 표시 (GitHub 등)',en:'Emoji shortcodes like :fire: work on GitHub.',cn:'冒号之间写表情名称显示表情（GitHub等）',jp:'コロンの間に絵文字名で表示（GitHub等）'},xp:10},
+  desc:{kr:'콜론 사이에 이모지 이름 (GitHub 등)',en:'Emoji shortcodes on GitHub.',cn:'冒号间写表情名称（GitHub等）',jp:'コロンの間に絵文字名（GitHub等）'},xp:10},
+{id:'nested-list',label:'NESTED LIST',
+  raw:{kr:'- 과일\n  - 사과\n  - 바나나\n- 채소\n  - 당근',en:'- Fruits\n  - Apple\n  - Banana\n- Veggies\n  - Carrot',cn:'- 水果\n  - 苹果\n  - 香蕉\n- 蔬菜\n  - 胡萝卜',jp:'- 果物\n  - りんご\n  - バナナ\n- 野菜\n  - にんじん'},
+  html:{kr:'<ul><li>과일<ul><li>사과</li><li>바나나</li></ul></li><li>채소<ul><li>당근</li></ul></li></ul>',en:'<ul><li>Fruits<ul><li>Apple</li><li>Banana</li></ul></li><li>Veggies<ul><li>Carrot</li></ul></li></ul>',cn:'<ul><li>水果<ul><li>苹果</li><li>香蕉</li></ul></li><li>蔬菜<ul><li>胡萝卜</li></ul></li></ul>',jp:'<ul><li>果物<ul><li>りんご</li><li>バナナ</li></ul></li><li>野菜<ul><li>にんじん</li></ul></li></ul>'},
+  desc:{kr:'들여쓰기(2칸)로 중첩 목록.',en:'Indent 2 spaces for nested lists.',cn:'缩进2格创建嵌套列表。',jp:'2スペースのインデントで入れ子リスト。'},xp:15},
 {id:'highlight',label:'HIGHLIGHT',
   raw:{kr:'==중요한 내용==을 강조',en:'==important text== highlighted',cn:'==重要内容==高亮',jp:'==重要な内容==をハイライト'},
   html:{kr:'<p><mark>중요한 내용</mark>을 강조</p>',en:'<p><mark>important text</mark> highlighted</p>',cn:'<p><mark>重要内容</mark>高亮</p>',jp:'<p><mark>重要な内容</mark>をハイライト</p>'},
-  desc:{kr:'==로 감싸면 형광펜처럼 강조. (일부 플랫폼)',en:'==text== highlights like a marker. (Some platforms)',cn:'== 包裹像荧光笔高亮（部分平台）',jp:'== で囲むとマーカーハイライト（一部対応）'},xp:10}
+  desc:{kr:'==로 형광펜 강조 (일부 플랫폼).',en:'== for marker highlight (some platforms).',cn:'== 荧光笔高亮（部分平台）。',jp:'== でマーカーハイライト（一部対応）。'},xp:10}
+]},
+// ===== STAGE 3: 고급 (10 slides) =====
+{name:{kr:'Stage 3 — 고급 문법',en:'Stage 3 — Advanced',cn:'Stage 3 — 高级语法',jp:'Stage 3 — 上級構文'},slides:[
+{id:'footnote',label:'FOOTNOTE',
+  raw:{kr:'각주를 달아보자[^1]\n\n[^1]: 이것이 각주입니다.',en:'Add a footnote[^1]\n\n[^1]: This is the footnote.',cn:'添加脚注[^1]\n\n[^1]: 这是脚注。',jp:'脚注を付けよう[^1]\n\n[^1]: これが脚注です。'},
+  html:{kr:'<p>각주를 달아보자<sup><a href="#">1</a></sup></p><hr style="margin:8px 0"><p style="font-size:.85rem;color:var(--text2)">1. 이것이 각주입니다.</p>',en:'<p>Add a footnote<sup><a href="#">1</a></sup></p><hr style="margin:8px 0"><p style="font-size:.85rem;color:var(--text2)">1. This is the footnote.</p>',cn:'<p>添加脚注<sup><a href="#">1</a></sup></p><hr style="margin:8px 0"><p style="font-size:.85rem;color:var(--text2)">1. 这是脚注。</p>',jp:'<p>脚注を付けよう<sup><a href="#">1</a></sup></p><hr style="margin:8px 0"><p style="font-size:.85rem;color:var(--text2)">1. これが脚注です。</p>'},
+  desc:{kr:'[^1]로 각주 참조, 아래에 [^1]: 내용.',en:'[^1] for reference, [^1]: for content.',cn:'[^1] 引用，[^1]: 内容。',jp:'[^1] で参照、[^1]: で内容。'},xp:20},
+{id:'def-list',label:'DEFINITION LIST',
+  raw:{kr:'마크다운\n: 경량 마크업 언어',en:'Markdown\n: A lightweight markup language',cn:'Markdown\n: 轻量级标记语言',jp:'Markdown\n: 軽量マークアップ言語'},
+  html:{kr:'<dl><dt style="font-weight:700">마크다운</dt><dd style="margin-left:20px;color:var(--text2)">경량 마크업 언어</dd></dl>',en:'<dl><dt style="font-weight:700">Markdown</dt><dd style="margin-left:20px;color:var(--text2)">A lightweight markup language</dd></dl>',cn:'<dl><dt style="font-weight:700">Markdown</dt><dd style="margin-left:20px;color:var(--text2)">轻量级标记语言</dd></dl>',jp:'<dl><dt style="font-weight:700">Markdown</dt><dd style="margin-left:20px;color:var(--text2)">軽量マークアップ言語</dd></dl>'},
+  desc:{kr:'용어 아래 : 로 정의 목록.',en:'Term followed by : for definition.',cn:'术语下方 : 定义列表。',jp:'用語の下に : で定義リスト。'},xp:15},
+{id:'sub-sup',label:'SUB / SUPERSCRIPT',raw:'H~2~O and X^2^',html:'<p>H<sub>2</sub>O and X<sup>2</sup></p>',
+  desc:{kr:'~아래첨자~, ^위첨자^ (일부 플랫폼).',en:'~subscript~, ^superscript^ (some platforms).',cn:'~下标~, ^上标^（部分平台）。',jp:'~下付き~, ^上付き^（一部対応）。'},xp:15},
+{id:'table-align',label:'TABLE ALIGNMENT',raw:'| Left | Center | Right |\n|:-----|:------:|------:|\n| A    |   B    |     C |',
+  html:'<table><tr><th style="text-align:left">Left</th><th style="text-align:center">Center</th><th style="text-align:right">Right</th></tr><tr><td style="text-align:left">A</td><td style="text-align:center">B</td><td style="text-align:right">C</td></tr></table>',
+  desc:{kr:':---(좌), :---:(가운데), ---:(우) 정렬.',en:':--- left, :---: center, ---: right.',cn:':--- 左对齐, :---: 居中, ---: 右对齐。',jp:':--- 左, :---: 中央, ---: 右揃え。'},xp:20},
+{id:'escape',label:'ESCAPE',raw:'\\*이건 굵게 안 됩니다\\*',html:'<p>*이건 굵게 안 됩니다*</p>',
+  desc:{kr:'백슬래시(\\)로 특수문자 그대로 표시.',en:'Backslash \\ escapes special characters.',cn:'反斜杠 \\ 转义特殊字符。',jp:'バックスラッシュ \\ でエスケープ。'},xp:15},
+{id:'auto-link',label:'AUTO LINK',raw:'https://github.com\nuser@email.com',html:'<p><a href="https://github.com" target="_blank">https://github.com</a><br><a href="mailto:user@email.com">user@email.com</a></p>',
+  desc:{kr:'URL과 이메일은 자동으로 링크.',en:'URLs and emails auto-link.',cn:'URL和邮箱自动变成链接。',jp:'URLとメールは自動リンク。'},xp:10},
+{id:'line-break',label:'LINE BREAK',
+  raw:{kr:'첫 줄  \n둘째 줄',en:'First line  \nSecond line',cn:'第一行  \n第二行',jp:'1行目  \n2行目'},
+  html:{kr:'<p>첫 줄<br>둘째 줄</p>',en:'<p>First line<br>Second line</p>',cn:'<p>第一行<br>第二行</p>',jp:'<p>1行目<br>2行目</p>'},
+  desc:{kr:'줄 끝에 공백 2개로 줄바꿈.',en:'Two spaces at end for line break.',cn:'行末两个空格换行。',jp:'行末に2つのスペースで改行。'},xp:10},
+{id:'abbr',label:'ABBREVIATION',raw:'*[HTML]: Hyper Text Markup Language\n\nHTML is great.',html:'<p><abbr title="Hyper Text Markup Language" style="text-decoration:underline dotted;cursor:help">HTML</abbr> is great.</p>',
+  desc:{kr:'*[약어]: 풀네임 으로 마우스 오버 설명.',en:'*[ABBR]: Full name for hover tooltips.',cn:'*[缩写]: 全名，悬停显示。',jp:'*[略語]: フルネームでホバー表示。'},xp:15},
+{id:'details',label:'DETAILS / TOGGLE',raw:'<details>\n<summary>Click me</summary>\nHidden content here.\n</details>',html:'<details style="border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px"><summary style="cursor:pointer;font-weight:700">Click me</summary><p style="margin-top:8px">Hidden content here.</p></details>',
+  desc:{kr:'<details>로 접기/펼치기 토글.',en:'<details> for collapsible sections.',cn:'<details> 创建折叠内容。',jp:'<details> で折りたたみセクション。'},xp:20},
+{id:'math',label:'MATH (LaTeX)',raw:'$$E = mc^2$$',html:'<p style="font:italic 2rem serif;text-align:center;padding:16px">E = mc<sup>2</sup></p>',
+  desc:{kr:'$$로 수식 블록 (KaTeX/MathJax).',en:'$$ for math blocks (KaTeX/MathJax).',cn:'$$ 数学公式块（KaTeX/MathJax）。',jp:'$$ で数式ブロック（KaTeX/MathJax）。'},xp:20}
+]}
 ];
+
+// Flatten for current stage
+var SLIDES=[];var curStage=0;
+function loadStage(idx){curStage=idx;SLIDES=STAGES[idx].slides;}
+loadStage(0);
 
 /* ============ STATE ============ */
 var lang='kr',curSlide=0,xp=0,maxCombo=0,combo=0,comboTimer=null;
@@ -359,22 +406,21 @@ function resumeCtx(){var c=ensureCtx();if(c&&c.state==='suspended')c.resume();re
 function ctx(){if(!soundOn||!audioCtx||audioCtx.state!=='running')return null;return audioCtx;}
 function pn(i){return PENTA[((i%PENTA.length)+PENTA.length)%PENTA.length];}
 
-/* ---- Sound v1.4: Audible + Pleasant ----
-   Noise-based but with enough volume and duration to actually hear.
-   Bandpass at mid frequencies (1k-3k) for clarity without shrillness. */
-var noiseBuf=null;
-function getNoise(c){
-  if(noiseBuf)return noiseBuf;
-  noiseBuf=c.createBuffer(1,c.sampleRate*2,c.sampleRate);
-  var d=noiseBuf.getChannelData(0);
-  for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;
-  return noiseBuf;
+/* ---- Sound v2.0: Reliable + Pleasant ----
+   Each sound creates a fresh short noise buffer to avoid
+   concurrent playback issues with shared buffers. */
+function freshNoise(c,dur){
+  var len=Math.ceil(c.sampleRate*dur);
+  var buf=c.createBuffer(1,len,c.sampleRate);
+  var d=buf.getChannelData(0);
+  for(var i=0;i<len;i++)d[i]=Math.random()*2-1;
+  return buf;
 }
 
 // Typing: keyboard click — crisp but not harsh
 function sndType(){
   var c=ctx();if(!c)return;sndStep++;var t=c.currentTime;
-  var s=c.createBufferSource();s.buffer=getNoise(c);
+  var s=c.createBufferSource();s.buffer=freshNoise(c,.1);
   var bp=c.createBiquadFilter();bp.type='bandpass';
   bp.frequency.value=1200+Math.random()*600;bp.Q.value=0.8;
   var g=c.createGain();
@@ -386,7 +432,7 @@ function sndType(){
 // Render: whoosh sweep — page turning
 function sndRender(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  var s=c.createBufferSource();s.buffer=getNoise(c);
+  var s=c.createBufferSource();s.buffer=freshNoise(c,.5);
   var bp=c.createBiquadFilter();bp.type='bandpass';
   bp.frequency.setValueAtTime(300,t);
   bp.frequency.linearRampToValueAtTime(1500,t+.15);
@@ -403,7 +449,7 @@ function sndRender(){
 // XP: game coin — quick downward sweep plop
 function sndXP(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  var s=c.createBufferSource();s.buffer=getNoise(c);
+  var s=c.createBufferSource();s.buffer=freshNoise(c,.1);
   var bp=c.createBiquadFilter();bp.type='bandpass';
   bp.frequency.setValueAtTime(2500,t);
   bp.frequency.exponentialRampToValueAtTime(400,t+.06);
@@ -414,28 +460,39 @@ function sndXP(){
   s.start(t);s.stop(t+.12);
 }
 
-// Completion: cascading plops — satisfying finish
+// Completion: ascending pops + big final drop
 function sndComplete(){
   var c=ctx();if(!c)return;var t=c.currentTime;
+  // 5 ascending pops building excitement
   for(var i=0;i<5;i++){
     (function(idx){
-      var s=c.createBufferSource();s.buffer=getNoise(c);
+      var s=c.createBufferSource();s.buffer=freshNoise(c,.1);
       var bp=c.createBiquadFilter();bp.type='bandpass';
-      bp.frequency.setValueAtTime(2000+idx*200,t+idx*.1);
-      bp.frequency.exponentialRampToValueAtTime(300,t+idx*.1+.06);
-      bp.Q.value=1.5;
+      bp.frequency.setValueAtTime(1000+idx*300,t+idx*.08);
+      bp.frequency.exponentialRampToValueAtTime(300+idx*50,t+idx*.08+.08);
+      bp.Q.value=1.2;
       var g=c.createGain();
-      g.gain.setValueAtTime(.1,t+idx*.1);g.gain.exponentialRampToValueAtTime(.001,t+idx*.1+.1);
+      g.gain.setValueAtTime(.08+idx*.01,t+idx*.08);g.gain.exponentialRampToValueAtTime(.001,t+idx*.08+.12);
       s.connect(bp);bp.connect(g);g.connect(c.destination);
-      s.start(t+idx*.1);s.stop(t+idx*.1+.12);
+      s.start(t+idx*.08);s.stop(t+idx*.08+.14);
     })(i);
   }
+  // Big satisfying final drop
+  var s2=c.createBufferSource();s2.buffer=freshNoise(c,.3);
+  var bp2=c.createBiquadFilter();bp2.type='bandpass';
+  bp2.frequency.setValueAtTime(3000,t+.5);
+  bp2.frequency.exponentialRampToValueAtTime(200,t+.65);
+  bp2.Q.value=1.8;
+  var g2=c.createGain();
+  g2.gain.setValueAtTime(.15,t+.5);g2.gain.exponentialRampToValueAtTime(.001,t+.75);
+  s2.connect(bp2);bp2.connect(g2);g2.connect(c.destination);
+  s2.start(t+.5);s2.stop(t+.77);
 }
 
 // Navigation: soft tap
 function sndNav(){
   var c=ctx();if(!c)return;var t=c.currentTime;
-  var s=c.createBufferSource();s.buffer=getNoise(c);
+  var s=c.createBufferSource();s.buffer=freshNoise(c,.1);
   var bp=c.createBiquadFilter();bp.type='bandpass';
   bp.frequency.value=800;bp.Q.value=0.6;
   var g=c.createGain();
@@ -448,7 +505,7 @@ function sndNav(){
 function sndCombo(){
   var c=ctx();if(!c)return;var t=c.currentTime;
   [0,.06].forEach(function(off){
-    var s=c.createBufferSource();s.buffer=getNoise(c);
+    var s=c.createBufferSource();s.buffer=freshNoise(c,.1);
     var bp=c.createBiquadFilter();bp.type='bandpass';
     bp.frequency.setValueAtTime(1800,t+off);
     bp.frequency.exponentialRampToValueAtTime(400,t+off+.05);
@@ -602,7 +659,7 @@ function showSlide(idx,skipAnim){
   var S=SLIDES[idx],t=UI[lang];
 
   // Update UI
-  document.getElementById('slide-counter').textContent=(idx+1)+' / '+SLIDES.length;
+  document.getElementById('slide-counter').textContent='S'+(curStage+1)+' '+(idx+1)+'/'+SLIDES.length;
   document.getElementById('progress-fill').style.width=((idx+1)/SLIDES.length*100)+'%';
   document.getElementById('btn-prev').disabled=(idx===0);
   document.querySelectorAll('.nav-dot').forEach(function(d,i){
@@ -685,7 +742,7 @@ function doRender(S,rawEl,renEl,descEl,tipEl,ctrl){
     addCombo();
 
     // Half-way toast
-    if(curSlide===Math.floor(SLIDES.length/2)){toast('🎯',UI[lang].toast_half);}
+    if(curSlide===Math.floor(SLIDES.length/2)-1){toast('🎯',UI[lang].toast_half);}
 
     // Raw stays visible — no reset needed
 
@@ -705,23 +762,59 @@ function goPrev(){
   sndNav();showSlide(curSlide-1);
 }
 
-/* ============ COMPLETION ============ */
+/* ============ COMPLETION / STAGE TRANSITION ============ */
 function showComplete(){
   clearTimeout(autoTimer);autoPlay=false;
   document.getElementById('btn-auto').classList.remove('active');
   var t=UI[lang];
-  document.getElementById('complete-title').textContent=t.complete;
-  document.getElementById('complete-stats').textContent=t.stats.replace('{xp}',xp).replace('{combo}',maxCombo);
-  document.getElementById('btn-replay').textContent=t.replay;
+  var hasNext=curStage<STAGES.length-1;
+  var stageNames={kr:['기초','중급','고급'],en:['Basics','Intermediate','Advanced'],cn:['基础','中级','高级'],jp:['基本','中級','上級']};
+  var names=stageNames[lang]||stageNames.en;
+
+  if(hasNext){
+    // Stage clear — ask to continue
+    var nextName=names[curStage+1]||'';
+    document.getElementById('complete-title').textContent='Stage '+(curStage+1)+' Clear!';
+    document.getElementById('complete-stats').textContent=t.stats.replace('{xp}',xp).replace('{combo}',maxCombo);
+    document.getElementById('btn-replay').textContent=t.replay;
+    // Show next stage button
+    var nextBtn=document.getElementById('btn-next-stage');
+    if(!nextBtn){
+      nextBtn=document.createElement('button');nextBtn.id='btn-next-stage';nextBtn.className='complete-btn primary';
+      document.getElementById('btn-replay').parentElement.insertBefore(nextBtn,document.getElementById('btn-replay'));
+    }
+    var nextLabels={kr:'Stage '+(curStage+2)+' 도전 ('+nextName+')',en:'Stage '+(curStage+2)+' ('+nextName+')',cn:'Stage '+(curStage+2)+' 挑战 ('+nextName+')',jp:'Stage '+(curStage+2)+' 挑戦 ('+nextName+')'};
+    nextBtn.textContent=nextLabels[lang]||nextLabels.en;
+    nextBtn.style.display='';
+    nextBtn.onclick=function(){
+      document.getElementById('complete').classList.remove('show');
+      loadStage(curStage+1);rebuildDots();curSlide=0;showSlide(0);
+      toast('🚀','Stage '+(curStage+1)+' — '+names[curStage]);
+    };
+  } else {
+    // All stages done
+    document.getElementById('complete-title').textContent=t.complete;
+    document.getElementById('complete-stats').textContent=t.stats.replace('{xp}',xp).replace('{combo}',maxCombo)+' · 3 Stages';
+    document.getElementById('btn-replay').textContent=t.replay;
+    var nb=document.getElementById('btn-next-stage');if(nb)nb.style.display='none';
+  }
   document.getElementById('complete').classList.add('show');
   sndComplete();
-  toast('🏆',t.toast_done);
-  // Big burst
+  toast(hasNext?'⭐':'🏆',hasNext?'Stage '+(curStage+1)+' Clear!':t.toast_done);
   setTimeout(function(){
     for(var i=0;i<5;i++){
       setTimeout(function(){burst(Math.random()*innerWidth,Math.random()*innerHeight*.6,40,['#818CF8','#34D399','#FBBF24','#F87171','#F472B6','#22D3EE']);},i*200);
     }
   },300);
+}
+
+function rebuildDots(){
+  var dotsEl=document.getElementById('nav-dots');dotsEl.innerHTML='';
+  SLIDES.forEach(function(_,i){
+    var d=document.createElement('div');d.className='nav-dot'+(i===0?' active':'');
+    d.addEventListener('click',function(){if(!typing){sndNav();showSlide(i);}});
+    dotsEl.appendChild(d);
+  });
 }
 
 /* ============ INIT ============ */
