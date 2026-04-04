@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Markdown Tour — 마크다운 시각 투어</title>
-<meta name="description" content="마크다운 문법을 타이핑과 렌더링 애니메이션으로 배우는 인터랙티브 투어. Interactive visual tour of Markdown syntax.">
-<meta property="og:title" content="Markdown Tour — 마크다운 시각 투어">
-<meta property="og:description" content="마크다운 문법을 하나씩 타이핑하고, 눈앞에서 렌더링되는 모습을 보세요.">
+<title>Markdown Tour — 국민 마크다운 학습 투어</title>
+<meta name="description" content="국가AI전략위원회의 공공문서 마크다운 전환을 지지하며, 국민 누구나 마크다운을 이해하고 활용할 수 있도록 만든 인터랙티브 학습 투어입니다.">
+<meta property="og:title" content="Markdown Tour — 국민 마크다운 학습 투어">
+<meta property="og:description" content="국가AI전략위 공공문서 마크다운 전환 지지. 보기만 해도 마크다운을 이해할 수 있는 시각 투어.">
 <meta property="og:url" content="https://leaf-kit.github.io/markdown/tour/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@leafeditor">
@@ -27,6 +27,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 .intro-card{text-align:center;max-width:520px;padding:40px 28px;animation:fadeUp .7s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 .intro-icon{font-size:4rem;margin-bottom:16px;display:block}
+.intro-badge{display:inline-block;font:700 .72rem var(--sans);color:#0047A0;background:rgba(0,71,160,.08);border:1px solid rgba(0,71,160,.2);padding:4px 14px;border-radius:20px;margin-bottom:12px;letter-spacing:.02em}
 .intro-title{font:900 2.2rem var(--sans);background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
 .intro-desc{font:400 1rem var(--sans);color:var(--text2);line-height:1.7;margin-bottom:28px}
 .lang-btns{display:flex;gap:8px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
@@ -182,6 +183,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 <div class="intro" id="intro">
   <div class="intro-card">
     <span class="intro-icon">M↓</span>
+    <div class="intro-badge" id="intro-badge">국가AI전략위 공공문서 마크다운 전환 지지</div>
     <h1 class="intro-title" id="intro-title">Markdown Tour</h1>
     <p class="intro-desc" id="intro-desc">마크다운 문법이 타이핑되는 과정을 보고, 렌더링 결과를 비교하며 자연스럽게 익히세요.</p>
     <div class="lang-btns" id="lang-btns">
@@ -246,6 +248,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
   <div class="complete-btns">
     <button class="complete-btn primary" id="btn-replay">다시 보기</button>
     <a class="complete-btn" href="/markdown/">마크다운 매뉴얼</a>
+    <a class="complete-btn" href="/markdown/ai-strategy/">국가AI전략위</a>
     <a class="complete-btn" href="https://x.com/intent/tweet?text=마크다운+투어+완료!+%40leafeditor&url=https://leaf-kit.github.io/markdown/tour/" target="_blank">공유하기</a>
   </div>
 </div>
@@ -261,10 +264,10 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 
 /* ============ TRANSLATIONS ============ */
 var UI={
-kr:{start:'사운드와 함께 시작',desc:'마크다운 문법이 타이핑되는 과정을 보고, 렌더링 결과를 비교하며 자연스럽게 익히세요.',complete:'마크다운 마스터!',replay:'다시 보기',stats:'총 {xp} XP 획득 · 최고 {combo}x 콤보',lvNames:['입문자','초보','중급','고급','마스터'],toast_level:'레벨 업!',toast_combo:'콤보!',toast_half:'절반 완료!',toast_done:'투어 완료!'},
-en:{start:'Start with Sound',desc:'Watch Markdown being typed and see it rendered in real time. Learn by watching, not by doing.',complete:'Markdown Master!',replay:'Replay',stats:'Total {xp} XP · Best {combo}x combo',lvNames:['Beginner','Novice','Intermediate','Advanced','Master'],toast_level:'Level Up!',toast_combo:'Combo!',toast_half:'Halfway!',toast_done:'Tour Complete!'},
-cn:{start:'带声音开始',desc:'观看 Markdown 语法的输入过程，对比渲染效果，轻松学习。',complete:'Markdown 大师!',replay:'重新播放',stats:'共获得 {xp} XP · 最高 {combo}x 连击',lvNames:['入门','初级','中级','高级','大师'],toast_level:'升级!',toast_combo:'连击!',toast_half:'完成一半!',toast_done:'完成!'},
-jp:{start:'サウンドで開始',desc:'Markdownの入力過程を見て、レンダリング結果と比較しながら自然に学べます。',complete:'Markdownマスター!',replay:'もう一度',stats:'合計 {xp} XP · 最高 {combo}x コンボ',lvNames:['入門','初心者','中級','上級','マスター'],toast_level:'レベルアップ!',toast_combo:'コンボ!',toast_half:'半分完了!',toast_done:'完了!'}
+kr:{start:'사운드와 함께 시작',desc:'국가AI전략위의 공공문서 마크다운 전환을 지지합니다. 타이핑 과정과 렌더링 결과를 비교하며 누구나 쉽게 익히세요.',complete:'마크다운 마스터!',replay:'다시 보기',stats:'총 {xp} XP 획득 · 최고 {combo}x 콤보',lvNames:['입문자','초보','중급','고급','마스터'],toast_level:'레벨 업!',toast_combo:'콤보!',toast_half:'절반 완료!',toast_done:'투어 완료!'},
+en:{start:'Start with Sound',desc:'Supporting Korea\'s national AI strategy for Markdown adoption. Watch syntax typed and rendered — learn naturally.',complete:'Markdown Master!',replay:'Replay',stats:'Total {xp} XP · Best {combo}x combo',lvNames:['Beginner','Novice','Intermediate','Advanced','Master'],toast_level:'Level Up!',toast_combo:'Combo!',toast_half:'Halfway!',toast_done:'Tour Complete!'},
+cn:{start:'带声音开始',desc:'支持韩国国家AI战略的Markdown文档转换。观看语法输入与渲染，轻松学习。',complete:'Markdown 大师!',replay:'重新播放',stats:'共获得 {xp} XP · 最高 {combo}x 连击',lvNames:['入门','初级','中级','高级','大师'],toast_level:'升级!',toast_combo:'连击!',toast_half:'完成一半!',toast_done:'完成!'},
+jp:{start:'サウンドで開始',desc:'韓国の国家AI戦略によるMarkdown導入を支持。入力とレンダリングを比較して自然に学べます。',complete:'Markdownマスター!',replay:'もう一度',stats:'合計 {xp} XP · 最高 {combo}x コンボ',lvNames:['入門','初心者','中級','上級','マスター'],toast_level:'レベルアップ!',toast_combo:'コンボ!',toast_half:'半分完了!',toast_done:'完了!'}
 };
 
 /* ============ SLIDES DATA ============ */
@@ -415,16 +418,17 @@ function sndXP(){
   });
 }
 
-// Completion: soft ascending chord with reverb
+// Completion: very gentle music box melody with long reverb
 function sndComplete(){
   var c=ctx();if(!c)return;var t=c.currentTime;
   makeReverb(c);
+  // C major arpeggio, very soft, music-box feel
   [523.3,659.3,784.0,1047].forEach(function(f,i){
     var o=c.createOscillator(),g=c.createGain();
-    o.type='sine';o.frequency.setValueAtTime(f,t+i*.12);
-    g.gain.setValueAtTime(.06,t+i*.12);g.gain.exponentialRampToValueAtTime(.001,t+i*.12+.6);
-    addReverb(c,o,.3,.15);
-    o.start(t+i*.12);o.stop(t+i*.12+.62);
+    o.type='sine';o.frequency.setValueAtTime(f,t+i*.15);
+    g.gain.setValueAtTime(.035,t+i*.15);g.gain.exponentialRampToValueAtTime(.001,t+i*.15+.8);
+    addReverb(c,o,.25,.2);
+    o.start(t+i*.15);o.stop(t+i*.15+.82);
   });
 }
 
@@ -815,6 +819,8 @@ function applyIntroLang(){
   var t=UI[lang];
   document.getElementById('intro-desc').textContent=t.desc;
   document.getElementById('start-label').textContent=t.start;
+  var badges={kr:'국가AI전략위 공공문서 마크다운 전환 지지',en:'Supporting Korea National AI Strategy — Markdown Adoption',cn:'支持韩国国家AI战略 — Markdown文档转换',jp:'韓国国家AI戦略 — Markdown導入支持'};
+  document.getElementById('intro-badge').textContent=badges[lang]||badges.en;
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
