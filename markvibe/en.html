@@ -1083,18 +1083,97 @@
 
     <h3>Harness in MarkVibe Coding</h3>
     <p>
-      MarkVibe Coding embraces harness engineering with one key difference:
-      <strong>both harness configuration and results are managed in Markdown</strong>.
+      MarkVibe Coding embraces harness engineering with key differences.
     </p>
 
+    <div class="callout warning">
+      <div class="callout-icon">&#x26A0;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>The harness is NOT a pre-defined fixture</strong>
+        In conventional harness engineering, teams design and lock down the harness upfront.
+        In MarkVibe Coding, the harness is different.
+        It is <strong>autonomously built by the agent</strong>,
+        <strong>managed and controlled by the human</strong> through Markdown,
+        and <strong>continuously stabilized and improved</strong> through iterative feedback cycles.
+        The harness is a living thing.
+      </div>
+    </div>
+
+    <h4>Harness Lifecycle — Build, Manage, Stabilize</h4>
+    <p>
+      In MarkVibe Coding, the harness has a three-phase lifecycle:
+    </p>
+
+    <div class="workflow">
+      <div class="workflow-step" data-step="1">
+        <h4>Build — The agent creates it</h4>
+        <p>
+          The human does not write the harness.
+          Write "include tests" in the Seed TODO, and the agent analyzes the project's stack and structure
+          to build linter configs, test frameworks, and architecture validation rules on its own.
+          The initial shape of the harness is determined by the agent's judgment.
+        </p>
+      </div>
+      <div class="workflow-step" data-step="2">
+        <h4>Manage — Controlled through Markdown</h4>
+        <p>
+          Harness results are reported in the Markdown document.
+          The human reviews the harness state through the document,
+          and writes follow-up requests in the same file if gaps are found.
+          Instructions like "Layer 3 coverage is too low, add edge case tests"
+          progressively strengthen the harness.
+          Since the harness configuration itself is managed in Markdown,
+          the human can control the harness without reading code.
+        </p>
+      </div>
+      <div class="workflow-step" data-step="3">
+        <h4>Stabilize — Improved through iteration</h4>
+        <p>
+          The harness is not built once and forgotten.
+          As the project evolves, the harness evolves with it.
+          New features expand the tests, architecture changes update fitness rules,
+          discovered bugs add regression tests.
+          All of this happens within the request-result cycle of the Markdown document.
+          The harness is a <strong>cumulative asset</strong> that grows stronger with use.
+        </p>
+      </div>
+    </div>
+
     <div class="code-block">
-      <div class="code-header"><span>login.md — harness results accumulated</span></div>
+      <div class="code-header"><span>login.md — harness evolving over time</span></div>
       <div class="code-body">
-<pre><span class="keyword">## Result — 2026-04-05 14:30</span>
+<pre><span class="keyword">## Seed TODO</span>
+<span class="property">- Feature:</span> <span class="string">OAuth 2.0 login</span>
+<span class="property">- Tests:</span> <span class="string">include</span>
+
+<span class="keyword">## Result — 2026-04-05 14:30</span>
 <span class="property">- Harness L1:</span> <span class="string">ESLint 0 errors, Prettier applied</span>
 <span class="property">- Harness L2:</span> <span class="string">Dependency layer violations: 0</span>
 <span class="property">- Harness L3:</span> <span class="string">12/12 tests passing</span>
-<span class="property">- Status:</span> <span class="value">Complete</span></pre>
+<span class="property">- Status:</span> <span class="value">Complete</span>
+
+<span class="keyword">## Follow-up — 2026-04-06 09:00</span>
+<span class="comment"># Human controls the harness</span>
+<span class="property">- Harness improvement:</span> <span class="string">add token expiration scenario tests</span>
+<span class="property">- Harness improvement:</span> <span class="string">add concurrent login limit verification</span>
+
+<span class="keyword">## Result — 2026-04-06 10:20</span>
+<span class="property">- Harness L3:</span> <span class="string">18/18 tests passing</span> <span class="comment">(+6 new)</span>
+<span class="property">- Added tests:</span> <span class="string">token expiry, refresh, concurrent sessions, invalid token, CSRF, rate limit</span>
+<span class="property">- Status:</span> <span class="value">Complete — harness strengthened</span></pre>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">&#x1F501;</div>
+      <div class="callout-body">
+        <strong>Harness ≠ Static config file</strong>
+        Traditional CI/CD pipelines are configured once and rarely change.
+        The MarkVibe harness is different.
+        It is updated alongside every request-result cycle.
+        The human instructs via Markdown — "make this stricter" or "remove this unnecessary check" —
+        and the agent reflects it immediately.
+        The harness is a <strong>dynamic quality assurance system</strong> that grows with the project.
       </div>
     </div>
 
@@ -1105,6 +1184,8 @@
         The harness makes MarkVibe's core premise possible: "the human doesn't need to review code."
         As OpenAI's experiment proved, 3 engineers produced 1 million lines with 0 human-written code —
         because the harness automatically guaranteed quality.
+        MarkVibe adds one more thing — by managing the harness itself through Markdown,
+        <strong>even humans who don't know code can control and improve the harness</strong>.
       </div>
     </div>
   </section>
