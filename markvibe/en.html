@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarkVibe Coding — Introduction Page</title>
+  <meta name="description" content="A new paradigm for building software using only Markdown — no IDE, no terminal, just structured intent.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ===== Reset ===== */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    /* ===== Design Tokens ===== */
+    :root{
+      --c-bg:#FFFFFF;
+      --c-surface:#F8FAFC;
+      --c-surface-2:#F1F5F9;
+      --c-text:#0F172A;
+      --c-text-2:#475569;
+      --c-text-3:#94A3B8;
+      --c-primary:#6366F1;
+      --c-primary-light:#EEF2FF;
+      --c-primary-dark:#4338CA;
+      --c-accent:#06B6D4;
+      --c-accent-light:#ECFEFF;
+      --c-green:#10B981;
+      --c-green-light:#ECFDF5;
+      --c-amber:#F59E0B;
+      --c-amber-light:#FFFBEB;
+      --c-red:#EF4444;
+      --c-border:#E2E8F0;
+      --c-border-light:#F1F5F9;
+      --c-code-bg:#1E293B;
+      --c-code-text:#E2E8F0;
+      --radius:12px;
+      --radius-sm:8px;
+      --radius-lg:16px;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+      --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+      --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+      --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);
+      --font-sans:'Inter','Noto Sans KR',system-ui,sans-serif;
+      --font-mono:'JetBrains Mono','Fira Code',monospace;
+      --max-w:780px;
+      --header-h:64px;
+    }
+
+    /* ===== Base ===== */
+    html{font-size:16px;scroll-behavior:smooth;scroll-padding-top:calc(var(--header-h) + 2rem)}
+    body{
+      font-family:var(--font-sans);
+      background:var(--c-bg);color:var(--c-text);
+      line-height:1.75;-webkit-font-smoothing:antialiased;
+    }
+    ::selection{background:var(--c-primary-light);color:var(--c-primary-dark)}
+
+    /* ===== Sticky Header ===== */
+    .header{
+      position:sticky;top:0;z-index:100;
+      background:rgba(255,255,255,.85);
+      backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--c-border-light);
+      height:var(--header-h);
+      display:flex;align-items:center;
+      padding:0 2rem;
+    }
+    .header-inner{
+      max-width:1200px;width:100%;margin:0 auto;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .header-brand{
+      display:flex;align-items:center;gap:.75rem;
+      text-decoration:none;color:var(--c-text);
+    }
+    .header-brand:hover{text-decoration:none}
+    .header-logo{
+      width:32px;height:32px;
+      background:linear-gradient(135deg,var(--c-primary),var(--c-accent));
+      border-radius:8px;display:flex;align-items:center;justify-content:center;
+      color:#fff;font-weight:800;font-size:.85rem;font-family:var(--font-mono);
+    }
+    .header-title{font-weight:700;font-size:.95rem;letter-spacing:-.02em}
+    .header-title span{color:var(--c-text-3);font-weight:400;margin-left:.5rem;font-size:.8rem}
+    .header-nav{display:flex;gap:.25rem;align-items:center}
+    .header-nav a{
+      font-size:.8rem;font-weight:500;color:var(--c-text-2);
+      padding:.4rem .75rem;border-radius:6px;
+      transition:all .15s;text-decoration:none;
+    }
+    .header-nav a:hover{background:var(--c-surface);color:var(--c-text)}
+    .header-nav a.active{background:var(--c-primary-light);color:var(--c-primary)}
+    .lang-switch{
+      font-size:.75rem;font-weight:600;color:var(--c-primary);
+      border:1px solid var(--c-primary);padding:.3rem .7rem;
+      border-radius:6px;text-decoration:none;margin-left:.5rem;
+      transition:all .15s;
+    }
+    .lang-switch:hover{background:var(--c-primary);color:#fff;text-decoration:none}
+
+    /* ===== Hero ===== */
+    .hero{
+      padding:5rem 2rem 4rem;
+      text-align:center;
+      background:linear-gradient(180deg,var(--c-primary-light) 0%,var(--c-bg) 100%);
+      position:relative;overflow:hidden;
+    }
+    .hero::before{
+      content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+      background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(99,102,241,.08),transparent);
+    }
+    .hero-inner{position:relative;max-width:720px;margin:0 auto}
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:.5rem;
+      background:#fff;border:1px solid var(--c-border);
+      padding:.4rem 1rem;border-radius:2rem;
+      font-size:.78rem;font-weight:500;color:var(--c-text-2);
+      margin-bottom:1.5rem;box-shadow:var(--shadow-sm);
+    }
+    .hero-badge .dot{
+      width:6px;height:6px;border-radius:50%;
+      background:var(--c-green);
+      animation:pulse 2s infinite;
+    }
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .hero h1{
+      font-size:clamp(2rem,5vw,3rem);
+      font-weight:900;letter-spacing:-.04em;
+      line-height:1.15;color:var(--c-text);
+    }
+    .hero h1 em{
+      font-style:normal;
+      background:linear-gradient(135deg,var(--c-primary),var(--c-accent));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hero-sub{
+      margin-top:1.25rem;font-size:1.1rem;
+      color:var(--c-text-2);line-height:1.7;
+      max-width:580px;margin-left:auto;margin-right:auto;
+    }
+    .hero-meta{
+      margin-top:2rem;display:flex;justify-content:center;gap:2rem;
+      font-size:.82rem;color:var(--c-text-3);
+    }
+    .hero-meta strong{color:var(--c-text-2);font-weight:600}
+
+    /* ===== Table of Contents ===== */
+    .toc-wrapper{
+      max-width:var(--max-w);margin:0 auto;
+      padding:3rem 2rem 0;
+    }
+    .toc{
+      background:var(--c-surface);
+      border:1px solid var(--c-border);
+      border-radius:var(--radius-lg);
+      padding:2rem 2.5rem;
+    }
+    .toc-title{
+      font-size:.75rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.08em;color:var(--c-text-3);margin-bottom:1rem;
+    }
+    .toc ol{list-style:none;counter-reset:toc}
+    .toc ol li{counter-increment:toc}
+    .toc ol li a{
+      display:flex;align-items:center;gap:.75rem;
+      padding:.6rem 0;color:var(--c-text-2);
+      font-size:.9rem;font-weight:500;
+      text-decoration:none;border-bottom:1px solid var(--c-border-light);
+      transition:color .15s;
+    }
+    .toc ol li:last-child a{border-bottom:none}
+    .toc ol li a:hover{color:var(--c-primary)}
+    .toc ol li a::before{
+      content:counter(toc,decimal-leading-zero);
+      font-family:var(--font-mono);font-size:.75rem;
+      color:var(--c-text-3);font-weight:400;
+      width:1.5rem;text-align:right;flex-shrink:0;
+    }
+
+    /* ===== Content ===== */
+    .content{max-width:var(--max-w);margin:0 auto;padding:0 2rem}
+
+    /* Chapter */
+    .chapter{padding:4rem 0 2rem;border-top:1px solid var(--c-border-light)}
+    .chapter:first-of-type{border-top:none}
+    .chapter-label{
+      font-size:.7rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.1em;color:var(--c-primary);
+      font-family:var(--font-mono);margin-bottom:.5rem;
+    }
+    .chapter h2{
+      font-size:1.65rem;font-weight:800;letter-spacing:-.03em;
+      line-height:1.3;color:var(--c-text);
+    }
+    .chapter h3{
+      font-size:1.15rem;font-weight:700;
+      margin:2.5rem 0 .75rem;color:var(--c-text);
+      letter-spacing:-.01em;
+    }
+    .chapter h4{
+      font-size:.95rem;font-weight:700;
+      margin:2rem 0 .5rem;color:var(--c-text);
+    }
+    .chapter p{
+      margin:.75rem 0;font-size:.92rem;
+      color:var(--c-text-2);line-height:1.8;
+    }
+    .chapter p strong{color:var(--c-text);font-weight:600}
+
+    /* Callout boxes */
+    .callout{
+      border-radius:var(--radius);padding:1.25rem 1.5rem;
+      margin:1.5rem 0;font-size:.88rem;line-height:1.7;
+      display:flex;gap:1rem;
+    }
+    .callout-icon{font-size:1.2rem;flex-shrink:0;margin-top:.1rem}
+    .callout-body{flex:1}
+    .callout-body strong{display:block;font-size:.82rem;font-weight:700;margin-bottom:.25rem}
+    .callout.info{background:var(--c-primary-light);border:1px solid #C7D2FE;color:#3730A3}
+    .callout.success{background:var(--c-green-light);border:1px solid #A7F3D0;color:#065F46}
+    .callout.warning{background:var(--c-amber-light);border:1px solid #FDE68A;color:#92400E}
+    .callout.key{background:#F8FAFC;border:1px solid var(--c-border);color:var(--c-text)}
+
+    /* Code blocks */
+    .code-block{
+      background:var(--c-code-bg);color:var(--c-code-text);
+      border-radius:var(--radius);margin:1.5rem 0;
+      overflow:hidden;font-size:.82rem;
+    }
+    .code-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:.6rem 1.25rem;
+      background:rgba(255,255,255,.05);
+      border-bottom:1px solid rgba(255,255,255,.08);
+      font-family:var(--font-mono);font-size:.72rem;
+      color:#94A3B8;
+    }
+    .code-body{padding:1.25rem;overflow-x:auto;line-height:1.65}
+    .code-body pre{font-family:var(--font-mono);white-space:pre;margin:0}
+    .code-body .comment{color:#64748B}
+    .code-body .keyword{color:#818CF8}
+    .code-body .string{color:#34D399}
+    .code-body .property{color:#38BDF8}
+    .code-body .value{color:#FBBF24}
+
+    /* Principle cards */
+    .principles{display:grid;grid-template-columns:1fr;gap:1rem;margin:2rem 0}
+    .principle{
+      background:var(--c-surface);border:1px solid var(--c-border);
+      border-radius:var(--radius);padding:1.5rem;
+      transition:box-shadow .2s,border-color .2s;
+    }
+    .principle:hover{box-shadow:var(--shadow-md);border-color:#CBD5E1}
+    .principle-num{
+      font-family:var(--font-mono);font-size:.72rem;font-weight:700;
+      color:var(--c-primary);margin-bottom:.5rem;
+      text-transform:uppercase;letter-spacing:.08em;
+    }
+    .principle h4{font-size:.95rem;font-weight:700;margin-bottom:.35rem;color:var(--c-text)}
+    .principle p{font-size:.85rem;color:var(--c-text-2);margin:0;line-height:1.65}
+
+    /* Workflow steps */
+    .workflow{position:relative;margin:2rem 0;padding-left:2.5rem}
+    .workflow::before{
+      content:'';position:absolute;left:.75rem;top:.5rem;bottom:.5rem;
+      width:2px;background:linear-gradient(180deg,var(--c-primary),var(--c-accent));
+      border-radius:1px;
+    }
+    .workflow-step{position:relative;margin-bottom:2rem}
+    .workflow-step:last-child{margin-bottom:0}
+    .workflow-step::before{
+      content:attr(data-step);
+      position:absolute;left:-2.5rem;top:0;
+      width:1.5rem;height:1.5rem;
+      background:var(--c-primary);color:#fff;
+      border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:.7rem;font-weight:700;font-family:var(--font-mono);
+      box-shadow:0 0 0 4px var(--c-bg);
+    }
+    .workflow-step h4{font-size:.92rem;font-weight:700;color:var(--c-text);margin-bottom:.25rem}
+    .workflow-step p{font-size:.85rem;color:var(--c-text-2);line-height:1.65;margin:0}
+
+    /* Comparison table */
+    .compare-table{
+      width:100%;border-collapse:collapse;
+      margin:1.5rem 0;font-size:.85rem;
+    }
+    .compare-table th{
+      text-align:left;padding:.75rem 1rem;
+      background:var(--c-surface);border-bottom:2px solid var(--c-border);
+      font-weight:600;font-size:.78rem;color:var(--c-text-2);
+      text-transform:uppercase;letter-spacing:.04em;
+    }
+    .compare-table td{
+      padding:.75rem 1rem;border-bottom:1px solid var(--c-border-light);
+      color:var(--c-text-2);vertical-align:top;
+    }
+    .compare-table tr:hover td{background:var(--c-surface)}
+    .compare-table .check{color:var(--c-green);font-weight:700}
+    .compare-table .cross{color:var(--c-red);font-weight:700}
+
+    /* Diagram */
+    .diagram{
+      background:var(--c-surface);border:1px solid var(--c-border);
+      border-radius:var(--radius-lg);padding:2rem;margin:2rem 0;
+      text-align:center;overflow-x:auto;
+    }
+    .diagram-title{
+      font-size:.72rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.08em;color:var(--c-text-3);margin-bottom:1.25rem;
+    }
+    .diagram-flow{
+      display:flex;align-items:center;justify-content:center;
+      gap:.5rem;flex-wrap:wrap;
+    }
+    .diagram-node{
+      padding:.6rem 1.25rem;border-radius:var(--radius-sm);
+      font-size:.82rem;font-weight:600;white-space:nowrap;
+    }
+    .diagram-node.human{background:#EEF2FF;color:var(--c-primary);border:1px solid #C7D2FE}
+    .diagram-node.file{background:var(--c-amber-light);color:#92400E;border:1px solid #FDE68A;font-family:var(--font-mono);font-weight:500}
+    .diagram-node.agent{background:var(--c-accent-light);color:#0E7490;border:1px solid #A5F3FC}
+    .diagram-node.output{background:var(--c-green-light);color:#065F46;border:1px solid #A7F3D0}
+    .diagram-arrow{color:var(--c-text-3);font-size:1.2rem}
+
+    /* Key-value list */
+    .kv-list{margin:1rem 0}
+    .kv-item{
+      display:flex;gap:1rem;padding:.75rem 0;
+      border-bottom:1px solid var(--c-border-light);
+      font-size:.88rem;
+    }
+    .kv-item:last-child{border-bottom:none}
+    .kv-key{
+      flex-shrink:0;width:160px;
+      font-weight:600;color:var(--c-text);font-size:.82rem;
+    }
+    .kv-val{color:var(--c-text-2);line-height:1.6}
+
+    /* Quote */
+    .quote{
+      border-left:3px solid var(--c-primary);
+      padding:.75rem 1.5rem;margin:1.5rem 0;
+      background:var(--c-surface);border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    .quote p{font-size:.9rem;color:var(--c-text-2);font-style:italic;margin:0}
+    .quote cite{font-size:.78rem;color:var(--c-text-3);font-style:normal;margin-top:.5rem;display:block}
+
+    /* Inline code */
+    code{
+      font-family:var(--font-mono);font-size:.82em;
+      background:var(--c-surface-2);padding:.15em .4em;
+      border-radius:4px;color:var(--c-primary-dark);
+    }
+
+    /* Lists */
+    .chapter ul,.chapter ol{
+      margin:.75rem 0 .75rem 1.5rem;
+      font-size:.9rem;color:var(--c-text-2);
+    }
+    .chapter li{margin:.35rem 0;line-height:1.7}
+    .chapter li strong{color:var(--c-text)}
+
+    /* Footer */
+    .footer{
+      text-align:center;padding:3rem 2rem 2rem;
+      border-top:1px solid var(--c-border-light);
+      margin-top:4rem;
+    }
+    .footer p{font-size:.78rem;color:var(--c-text-3)}
+    .footer a{color:var(--c-primary);text-decoration:none}
+    .footer a:hover{text-decoration:underline}
+
+    /* ===== Responsive ===== */
+    @media(min-width:640px){
+      .principles{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:768px){
+      .header{padding:0 1rem}
+      .header-nav{display:none}
+      .hero{padding:3rem 1.5rem 2.5rem}
+      .toc-wrapper,.content{padding-left:1.25rem;padding-right:1.25rem}
+      .toc{padding:1.5rem}
+      .chapter{padding:2.5rem 0 1.5rem}
+      .hero-meta{flex-direction:column;gap:.5rem}
+      .diagram-flow{flex-direction:column}
+      .kv-item{flex-direction:column;gap:.25rem}
+      .kv-key{width:auto}
+    }
+
+    /* ===== Animations ===== */
+    .fade-in{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+    .fade-in.visible{opacity:1;transform:translateY(0)}
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <a href="../" class="header-brand">
+      <div class="header-logo">MV</div>
+      <div class="header-title">MarkVibe Coding <span>v0.1.0</span></div>
+    </a>
+    <nav class="header-nav">
+      <a href="#intro">Intro</a>
+      <a href="#ch1">Concepts</a>
+      <a href="#ch2">Zero-Terminal</a>
+      <a href="#ch3">Workflow</a>
+      <a href="#ch4">Harness</a>
+      <a href="#ch5">Guide</a>
+      <a href="#ch6">Lineage</a>
+      <a href="#conclusion">Conclusion</a>
+      <a href="index.html" class="lang-switch">KO</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      New Paradigm — 2026
+    </div>
+    <h1>
+      <em>MarkVibe Coding</em><br>Introduction
+    </h1>
+    <p class="hero-sub">
+      Build software, write documents, conduct research, and do all work<br>
+      through a <strong>Markdown-only unified working space</strong>.
+    </p>
+    <div class="hero-meta">
+      <span><strong>Markdown Vibe Coding</strong> Theory</span>
+      <span>Author: <strong>Leaf</strong></span>
+      <span>Edition: <strong>v0.1.0</strong></span>
+    </div>
+  </div>
+</section>
+
+<!-- Table of Contents -->
+<div class="toc-wrapper">
+  <div class="toc fade-in">
+    <div class="toc-title">Table of Contents</div>
+    <ol>
+      <li><a href="#intro">Introduction: The Birth of MarkVibe Coding</a></li>
+      <li><a href="#ch1">Core Concepts and Definitions</a></li>
+      <li><a href="#ch2">The Zero-Terminal Principle</a></li>
+      <li><a href="#ch3">Workflow: The Power of TODO Markdown</a></li>
+      <li><a href="#ch4">Harness-Driven Development</a></li>
+      <li><a href="#ch5">Practical Implementation Guide</a></li>
+      <li><a href="#ch6">Related Methodologies &amp; How MarkVibe Differs</a></li>
+      <li><a href="#conclusion">Conclusion: The Future of Codeless Coding</a></li>
+    </ol>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="content">
+
+  <!-- ========== Introduction ========== -->
+  <section id="intro" class="chapter fade-in">
+    <div class="chapter-label">Introduction</div>
+    <h2>The Birth of MarkVibe Coding</h2>
+
+    <h3>From Vibe Coding to MarkVibe Coding</h3>
+    <p>
+      In 2025, <strong>Vibe Coding</strong> — a term coined by Andrej Karpathy — swept the developer community.
+      The idea was radical: instead of writing code directly, describe what you want to an AI agent
+      and verify that the output's "vibe" feels right. Let the AI handle the implementation details.
+    </p>
+    <p>
+      But Vibe Coding had an inherent limitation.
+      Developers still had to <strong>open an IDE</strong>, <strong>type commands in the terminal</strong>,
+      and <strong>switch between multiple tools</strong> to communicate with the agent.
+      With a fragmented interface, context-switching costs pile up and the consistency of intent degrades.
+    </p>
+
+    <div class="callout info">
+      <div class="callout-icon">&#x1F4A1;</div>
+      <div class="callout-body">
+        <strong>Key Insight</strong>
+        The next step beyond Vibe Coding is "eliminating the tools."
+        When you unify the interface into a single medium — Markdown —
+        the communication channel between human and agent converges to one.
+      </div>
+    </div>
+
+    <p>
+      <strong>MarkVibe Coding</strong> starts from this insight.
+      It unifies every medium of design, instruction, verification, and logging into <strong>Markdown (.md)</strong>,
+      and prohibits the developer from directly accessing a terminal or IDE.
+      The only thing passed to the agent is a <strong>Markdown file path</strong>.
+    </p>
+  </section>
+
+  <!-- ========== Chapter 1 ========== -->
+  <section id="ch1" class="chapter fade-in">
+    <div class="chapter-label">Chapter 01</div>
+    <h2>Core Concepts and Definitions</h2>
+
+    <h3>Defining MarkVibe Coding</h3>
+    <div class="quote">
+      <p>
+        "MarkVibe Coding is a unified working space methodology where
+        software development, writing, research, and all work is performed
+        through Markdown as the sole interface.
+        The practitioner checks only Input and Output in Markdown,
+        with MARKVIBE.md defining their paths, scope, relationships, and permissions."
+      </p>
+      <cite>— MarkVibe Coding Manifesto, 2026</cite>
+    </div>
+
+    <h3>The Eight Pillars</h3>
+    <div class="principles">
+      <div class="principle">
+        <div class="principle-num">Principle 01</div>
+        <h4>Markdown-Centric</h4>
+        <p>All design, implementation instructions, and test reports live in Markdown files. The developer never edits source code directly.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Principle 02</div>
+        <h4>Zero-Terminal</h4>
+        <p>Never open a terminal. The Markdown editor connects directly to the agent — saving the file completes everything End-to-End.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Principle 03</div>
+        <h4>Single Document</h4>
+        <p>Complete everything in one document. Don't navigate between files. Requests, results, and follow-ups accumulate in a single file.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Principle 04</div>
+        <h4>Seed TODO</h4>
+        <p>The human writes only the initial Seed TODO. The agent reports results, and new requirements are appended to the same document.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Principle 05</div>
+        <h4>Structural Diff</h4>
+        <p>Leverages Markdown's structure (headings, lists, indentation) to extract only changed instructions and forward them to the agent. Sends diffs, not the entire document — saving tokens and enabling efficient input even in long documents.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Principle 06</div>
+        <h4>Accumulated Changelog</h4>
+        <p>Results accumulate in one file like a CHANGELOG. The editor renders agent output via real-time streaming, so the user watches results appear in the document live.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Principle 07</div>
+        <h4>Markdown State Management</h4>
+        <p>All document states are displayed as a dashboard. Items requiring human approval (deploy, merge, delete, etc.) are also surfaced on the dashboard with approval/rejection recorded. Evaluated documents move to archive; only active documents remain.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Principle 08</div>
+        <h4>Agent-Harness Synergy</h4>
+        <p>The agent builds its own harness, auto-verifies code, and records results back into the document.</p>
+      </div>
+    </div>
+
+    <h3>Core Components</h3>
+    <div class="kv-list">
+      <div class="kv-item">
+        <div class="kv-key">Markdown Files</div>
+        <div class="kv-val">TODO.md, CLAUDE.md, MARKVIBE.md, DESIGN.md — the only communication channel between human and agent.</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-key">Code Agent</div>
+        <div class="kv-val">Claude Code, OpenAI Codex, etc. — an autonomous system that reads Markdown and generates, edits, and executes code.</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-key">Harness</div>
+        <div class="kv-val">The test/lint/build pipeline that the agent constructs and operates itself. An automated safety net for code quality.</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-key">Markdown Logs</div>
+        <div class="kv-val">.md files where every agent action is recorded. Serves as the audit trail and debugging evidence.</div>
+      </div>
+    </div>
+
+    <h3>The Lineage of Agent Instruction Files</h3>
+    <p>
+      MarkVibe Coding did not appear in isolation. It builds on the <strong>instruction file paradigm</strong>
+      that emerged across the AI agent ecosystem in 2024-2025.
+    </p>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Platform</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>AGENTS.md</code></td>
+          <td>OpenAI Codex</td>
+          <td>Project build rules, test commands, structural guidance</td>
+        </tr>
+        <tr>
+          <td><code>CLAUDE.md</code></td>
+          <td>Claude Code</td>
+          <td>Project instructions, coding standards, architecture decisions</td>
+        </tr>
+        <tr>
+          <td><code>DESIGN.md</code></td>
+          <td>Google Stitch</td>
+          <td>Visual design — colors, typography, components, layout styles</td>
+        </tr>
+        <tr>
+          <td><code>MARKVIBE.md</code></td>
+          <td>MarkVibe</td>
+          <td>Unified specification integrating all of the above</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ========== Chapter 2 ========== -->
+  <section id="ch2" class="chapter fade-in">
+    <div class="chapter-label">Chapter 02</div>
+    <h2>The Zero-Terminal Principle</h2>
+
+    <h3>Why Prohibit Terminal Input?</h3>
+    <p>
+      In traditional development, the terminal is the universal tool. But MarkVibe Coding
+      <strong>prohibits terminal access by principle</strong>.
+      This is not a random constraint — it is a deliberate design decision to maintain a consistent
+      <strong>abstraction level</strong> throughout the development process.
+    </p>
+
+    <div class="callout warning">
+      <div class="callout-icon">&#x26A0;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>The Zero-Terminal Rule</strong>
+        The only thing typed into the CLI is a Markdown file path when starting the agent:<br>
+        <code>claude ".markvibe/active/login.md — proceed with this task."</code><br>
+        Beyond this single line, no terminal command is permitted.
+      </div>
+    </div>
+
+    <h3>Maintaining the Abstraction Level</h3>
+    <p>
+      In software engineering, mixing abstraction levels creates exponential complexity.
+      In MarkVibe Coding, the human's abstraction level is strictly <strong>"Intent"</strong> — nothing more.
+    </p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Layer</th>
+          <th>Traditional Dev</th>
+          <th>Vibe Coding</th>
+          <th>MarkVibe Coding</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Intent</strong></td>
+          <td>Verbal, issues, docs</td>
+          <td>Prompt (chat)</td>
+          <td>TODO.md</td>
+        </tr>
+        <tr>
+          <td><strong>Design</strong></td>
+          <td>IDE, Figma, wiki</td>
+          <td>Prompt + IDE</td>
+          <td>DESIGN.md</td>
+        </tr>
+        <tr>
+          <td><strong>Implementation</strong></td>
+          <td>Hand-written code</td>
+          <td>AI-generated + manual edits</td>
+          <td>Agent autonomous</td>
+        </tr>
+        <tr>
+          <td><strong>Build / Run</strong></td>
+          <td>Terminal commands</td>
+          <td>Terminal commands</td>
+          <td>Agent autonomous</td>
+        </tr>
+        <tr>
+          <td><strong>Verification</strong></td>
+          <td>Manual testing</td>
+          <td>Manual + AI-assisted</td>
+          <td>Harness auto-verified</td>
+        </tr>
+        <tr>
+          <td><strong># of Interfaces</strong></td>
+          <td class="cross">5+</td>
+          <td class="cross">3–4</td>
+          <td class="check">1 (Markdown)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>The Single Exception: Starting the Agent</h3>
+    <p>
+      The Zero-Terminal Principle has exactly one exception:
+      <strong>passing a Markdown file path</strong> when first launching the agent.
+      After that, every interaction — new requests, change orders, bug reports —
+      happens by editing Markdown files. The agent watches for changes and responds autonomously.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>Terminal — the only permitted input</span></div>
+      <div class="code-body">
+<pre><span class="comment"># Start the agent (this is the ONLY terminal input)</span>
+<span class="keyword">$</span> claude <span class="string">".markvibe/active/login.md — proceed with this task."</span>
+
+<span class="comment"># Need to make a new request?</span>
+<span class="comment"># → Do NOT type in the terminal</span>
+<span class="comment"># → Edit TODO.md and save</span>
+<span class="comment"># → The agent detects the file change and responds</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Chapter 3 ========== -->
+  <section id="ch3" class="chapter fade-in">
+    <div class="chapter-label">Chapter 03</div>
+    <h2>Workflow: The Power of a Single Document</h2>
+
+    <h3>Core: Everything Happens in One File</h3>
+    <p>
+      The MarkVibe workflow is remarkably simple.
+      The human opens <strong>a single Markdown file</strong> — requests, results,
+      follow-up requirements, and results again all live in that one file.
+      <strong>No switching between documents. No terminal.</strong>
+      Saving the file completes everything End-to-End.
+    </p>
+
+    <h3>Seed TODO — Start with a Single Seed</h3>
+    <p>
+      The human writes a <strong>Seed TODO</strong> — the minimal intent that seeds the entire project.
+      This is both the starting point of the document and the origin of the project.
+      The agent executes the work and <strong>reports results back into the same document</strong>.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>login.md — Seed TODO (human writes this first)</span></div>
+      <div class="code-body">
+<pre><span class="comment"># User Login Page</span>
+
+<span class="keyword">## Seed TODO</span>
+<span class="property">- Feature:</span> <span class="string">OAuth 2.0 login (Google, GitHub)</span>
+<span class="property">- Stack:</span> <span class="string">React + Express.js + Passport.js</span>
+<span class="property">- Design:</span> <span class="string">See DESIGN.md</span>
+<span class="property">- Tests:</span> <span class="string">Include Jest unit tests</span></pre>
+      </div>
+    </div>
+
+    <h3>Results — Accumulated in the Same File</h3>
+    <p>
+      When the agent completes work, it <strong>appends results to the same file</strong>.
+      No separate LOG.md. The single document works like a CHANGELOG.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>login.md — after agent reports results</span></div>
+      <div class="code-body">
+<pre><span class="comment"># User Login Page</span>
+
+<span class="keyword">## Seed TODO</span>
+<span class="property">- Feature:</span> <span class="string">OAuth 2.0 login (Google, GitHub)</span>
+<span class="property">- ...</span>
+
+<span class="keyword">## Result — 2026-04-05 14:30</span>
+<span class="property">- Created:</span> <span class="string">src/pages/Login.tsx, src/api/auth.ts, src/middleware/passport.ts</span>
+<span class="property">- Tests:</span> <span class="string">12/12 passing</span>
+<span class="property">- Log:</span> <span class="string">→ .markvibe/archive/2026-04-05-login.md</span> <span class="comment">(path only)</span>
+<span class="property">- Status:</span> <span class="value">Complete</span></pre>
+      </div>
+    </div>
+
+    <h3>Follow-up — Append to the Same Document</h3>
+    <p>
+      When new requirements emerge, <strong>append them below in the same document</strong>.
+      The previous state (Seed TODO + Result) is already recorded, so the agent
+      has full context for the follow-up work.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>login.md — human adds a follow-up request</span></div>
+      <div class="code-body">
+<pre><span class="comment"># User Login Page</span>
+
+<span class="keyword">## Seed TODO</span>
+<span class="property">- Feature:</span> <span class="string">OAuth 2.0 login (Google, GitHub)</span>
+<span class="property">- ...</span>
+
+<span class="keyword">## Result — 2026-04-05 14:30</span>
+<span class="property">- Status:</span> <span class="value">Complete</span> <span class="comment">(Google, GitHub login)</span>
+
+<span class="comment">───────────────────────────────</span>
+
+<span class="keyword">## Follow-up — 2026-04-05 15:00</span>
+<span class="property">- Change:</span> <span class="string">Add Apple login too</span>
+<span class="property">- Constraint:</span> <span class="string">Same pattern as existing Google/GitHub logic</span></pre>
+      </div>
+    </div>
+
+    <h3>Structural Diff — Token-Efficient Change Detection</h3>
+    <p>
+      This is the core mechanism of MarkVibe Coding.
+      Markdown is inherently <strong>structured</strong> — headings (<code>##</code>), lists (<code>-</code>),
+      and indentation carry hierarchical information.
+      The agent (or Markdown editor) reads this structure to automatically determine:
+    </p>
+    <ul>
+      <li><strong>Context</strong> — which <code>##</code> section the new request falls under</li>
+      <li><strong>Type</strong> — new <code>##</code> heading = new request; modified <code>-</code> item = change</li>
+      <li><strong>Relationship</strong> — the Result section directly above provides prior context</li>
+    </ul>
+    <p>
+      The key is <strong>token efficiency</strong>.
+      Even as the document grows to hundreds of lines, the editor does not send the entire document to the agent.
+      It parses the Markdown structure and <strong>extracts only the changed instructions</strong>.
+      For example, if two new <code>-</code> items appear under a <code>## Follow-up</code> heading,
+      only those 2 lines are transmitted.
+      Previous Seed TODOs and Results have already been processed — no need to resend.
+      This enables <strong>accurate input with minimal tokens</strong> even in long accumulated documents.
+    </p>
+
+    <div class="callout info">
+      <div class="callout-icon">&#x1F9E9;</div>
+      <div class="callout-body">
+        <strong>How Structural Diff Works</strong>
+        <code>## Seed TODO</code> with <code>-</code> items = original request.
+        <code>## Result</code> with <code>-</code> items = agent's report.
+        A new <code>## Follow-up</code> heading = new request.
+        The editor extracts only the structural diff and forwards it to the agent — the full document is never resent.
+      </div>
+    </div>
+
+    <h3>End-to-End Flow — All in One File</h3>
+    <div class="diagram">
+      <div class="diagram-title">Single Document Lifecycle</div>
+      <div class="diagram-flow">
+        <div class="diagram-node human">Write Seed TODO</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node agent">Agent Executes</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node output">Result Appended</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node human">Write Follow-up</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node agent">Diff Detected</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node output">Result Accumulated</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:.82rem;color:var(--c-text-3);margin-top:.5rem">
+      This cycle repeats infinitely within one file. The file naturally becomes a CHANGELOG.
+    </p>
+
+    <h3>The Document Becomes a Living Changelog</h3>
+    <p>
+      Over time, a single document accumulates Seed TODO, first Result, follow-up, second Result...
+      The document itself becomes <strong>the project's complete history and CHANGELOG</strong>.
+      No separate log files needed.
+    </p>
+    <p>
+      Throughout this process, the Markdown editor performs <strong>real-time streaming rendering</strong>.
+      The moment the agent generates a Result, it renders live in the editor.
+      The user doesn't wait for terminal logs — they <strong>watch the document fill up in real time</strong>.
+      This is the MarkVibe Coding user experience.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>login.md — after time passes (accumulated state)</span></div>
+      <div class="code-body">
+<pre><span class="comment"># User Login Page</span>
+
+<span class="keyword">## Seed TODO</span>
+<span class="property">- Feature:</span> <span class="string">OAuth 2.0 login</span>
+<span class="property">- ...</span>
+
+<span class="keyword">## Result — 2026-04-05 14:30</span>
+<span class="property">- Status:</span> <span class="value">Complete</span> <span class="comment">(Google, GitHub)</span>
+
+<span class="keyword">## Follow-up — 2026-04-05 15:00</span>
+<span class="property">- Add Apple login</span>
+
+<span class="keyword">## Result — 2026-04-05 15:45</span>
+<span class="property">- Status:</span> <span class="value">Complete</span> <span class="comment">(Apple login added)</span>
+
+<span class="keyword">## Follow-up — 2026-04-06 09:00</span>
+<span class="property">- Improve login error messages</span>
+<span class="property">- Add password recovery flow</span>
+
+<span class="keyword">## Result — 2026-04-06 10:20</span>
+<span class="property">- Status:</span> <span class="value">Complete</span> <span class="comment">(Error UX + password recovery)</span>
+<span class="property">- Tests:</span> <span class="string">28/28 passing</span></pre>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-icon">&#x26A0;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>Never Do These</strong>
+        &bull; Don't create a new file for new requirements — append to the same document<br>
+        &bull; Don't open a terminal to talk to the agent — save the document<br>
+        &bull; Don't split results into separate log files — accumulate in one document, and for artifacts that need referencing, <strong>record only the path</strong>
+      </div>
+    </div>
+
+    <h3>Markdown State Management — The Core Mechanism</h3>
+    <p>
+      The most important concept in MarkVibe Coding is <strong>managing the state of Markdown documents</strong>.
+      Every document has only two states: <code>active</code> or <code>archive</code>.
+    </p>
+
+    <h4>Record Only Statistical Results</h4>
+    <p>
+      The agent doesn't dump every detail into the document.
+      Only <strong>statistical results</strong> — test pass rates, file counts, change summaries —
+      are recorded for the user. The minimum information needed for human judgment.
+    </p>
+
+    <h4>Dashboard — Everything at a Glance</h4>
+    <p>
+      The ultimate form of Markdown State Management is the <strong>dashboard</strong>.
+      The editor (or workspace view) displays all documents in <code>active/</code> as a dashboard,
+      showing each document's progress, latest Result, and next TODO at a glance.
+    </p>
+    <p>
+      Crucially, <strong>items requiring human approval</strong> — production deploys, branch merges,
+      file deletions, external API calls — are explicitly surfaced on the dashboard.
+      The human decides approve/reject from the dashboard, and that decision is recorded in the document.
+      Even approval workflows for actions the agent cannot autonomously perform are completed within Markdown.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>login.md — document with approval request</span></div>
+      <div class="code-body">
+<pre><span class="keyword">## Result — 2026-04-05 16:00</span>
+<span class="property">- Created:</span> <span class="string">src/deploy/production.ts</span>
+<span class="property">- Tests:</span> <span class="string">28/28 passing</span>
+
+<span class="keyword">## Approval Required</span>
+<span class="property">- Action:</span> <span class="string">Production deploy (main → production)</span>
+<span class="property">- Risk:</span> <span class="value">HIGH</span>
+<span class="property">- Target:</span> <span class="string">v1.2.0 release</span>
+<span class="property">- Decision:</span> <span class="comment">[ ] Approve / [ ] Reject</span>
+
+<span class="comment">───────────────────────────────</span>
+
+<span class="keyword">## Approval — 2026-04-05 16:15</span>
+<span class="property">- Decision:</span> <span class="value">Approved</span>
+<span class="property">- Reason:</span> <span class="string">All tests passing, staging verified</span></pre>
+      </div>
+    </div>
+
+    <h4>Evaluate Usefulness → Archive</h4>
+    <p>
+      When all TODOs in a document are complete and results are verified,
+      the document undergoes a <strong>usefulness evaluation</strong>.
+      "Is this document worth referencing in the future?"
+      Once evaluated, it moves to <code>archive/</code>.
+      <strong>Only active documents remain in the workspace.</strong>
+    </p>
+
+    <div class="diagram">
+      <div class="diagram-title">Markdown State Lifecycle</div>
+      <div class="diagram-flow">
+        <div class="diagram-node human">Write Seed TODO</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node file">active/login.md</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node agent">Work &amp; Accumulate</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node output">Evaluate</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node file">archive/login.md</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span>.markvibe/ — state-based directory</span></div>
+      <div class="code-body">
+<pre><span class="property">.markvibe/</span>
+├── <span class="keyword">active/</span>              <span class="comment"># Only in-progress documents live here</span>
+│   ├── <span class="string">login.md</span>         <span class="comment"># In progress — Seed + Results accumulating</span>
+│   └── <span class="string">dashboard.md</span>     <span class="comment"># In progress</span>
+│
+└── <span class="keyword">archive/</span>             <span class="comment"># Evaluated, completed documents</span>
+    ├── <span class="string">onboarding.md</span>    <span class="comment"># Done — statistical results only</span>
+    └── <span class="string">auth-refactor.md</span> <span class="comment"># Done — reference archive</span></pre>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">&#x1F4CB;</div>
+      <div class="callout-body">
+        <strong>State Management Rules</strong>
+        &bull; <strong>active/</strong> holds only in-progress documents — fewer is better<br>
+        &bull; The agent reports only <strong>statistical summaries</strong> (file counts, test results, change summaries)<br>
+        &bull; When all TODOs are done, evaluate usefulness and move to <strong>archive/</strong><br>
+        &bull; Archived documents are read-only — to modify, move back to active<br>
+        &bull; Keeping the workspace clean is the essence of MarkVibe
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Chapter 4 ========== -->
+  <section id="ch4" class="chapter fade-in">
+    <div class="chapter-label">Chapter 04</div>
+    <h2>Harness Engineering</h2>
+
+    <h3>What Is a Harness?</h3>
+    <p>
+      In February 2026, OpenAI's <strong>Ryan Lopopolo</strong> formalized the concept of
+      <strong>Harness Engineering</strong>. The core formula:
+    </p>
+    <div class="quote">
+      <p><strong>Agent = Model + Harness</strong></p>
+      <cite>— Ryan Lopopolo, OpenAI, "Harness Engineering: Leveraging Codex in an Agent-First World" (Feb 2026)</cite>
+    </div>
+    <p>
+      The harness is <strong>everything in an AI agent except the model itself</strong> — orchestration logic,
+      context management, architectural constraints, test pipelines, and review systems.
+      Martin Fowler categorized harness controls into <strong>Guides (feedforward)</strong> that steer the agent
+      before it acts, and <strong>Sensors (feedback)</strong> that observe after the agent acts and help it self-correct.
+    </p>
+
+    <h3>OpenAI's Experiment Results</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Metric</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Codebase</td><td><strong>~1 million lines</strong> of production code</td></tr>
+        <tr><td>Team size</td><td>Started with <strong>3 engineers</strong>, scaled to 7</td></tr>
+        <tr><td>Pull Requests</td><td><strong>1,500</strong> opened and merged</td></tr>
+        <tr><td>Velocity</td><td><strong>3.5 PRs per engineer per day</strong></td></tr>
+        <tr><td>Efficiency</td><td>~<strong>1/10th</strong> the time vs. manual</td></tr>
+        <tr><td>Human-written code</td><td><strong>0 lines</strong> — all code generated by Codex agents</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Three-Layer Harness Architecture</h3>
+    <p>Per Martin Fowler's classification, harnesses fall into three regulation categories:</p>
+    <div class="principles">
+      <div class="principle">
+        <div class="principle-num">Layer 1 — Maintainability</div>
+        <h4>Maintainability Harness</h4>
+        <p>Linters, formatters, type checkers — <strong>deterministic (computational)</strong> tools ensuring code quality and internal structure. The most mature category.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Layer 2 — Architecture Fitness</div>
+        <h4>Architecture Fitness Harness</h4>
+        <p>Structural tests enforcing dependency layering (Types → Config → Repo → Service → Runtime → UI). Auto-detects module boundary violations.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">Layer 3 — Behaviour</div>
+        <h4>Behaviour Harness</h4>
+        <p>Functional correctness verification. Relies on AI-generated tests + manual testing. The <strong>least mature category</strong>, requiring the most future development.</p>
+      </div>
+    </div>
+
+    <h3>OpenAI's Key Harness Techniques</h3>
+    <div class="kv-list">
+      <div class="kv-item">
+        <div class="kv-key">AGENTS.md as Map</div>
+        <div class="kv-val">~100 lines, kept concise. Not a giant instruction dump — a <strong>table of contents</strong> pointing to deeper sources of truth. Context is a scarce resource.</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-key">Depth-First</div>
+        <div class="kv-val">Break large goals into small building blocks. Complete each block before using it to unlock more complex tasks.</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-key">Dependency Layering</div>
+        <div class="kv-val">Types → Config → Repo → Service → Runtime → UI. Structural tests enforce compliance mechanically.</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-key">Garbage Collection</div>
+        <div class="kv-val">Background Codex tasks periodically scan for quality deviations and auto-generate refactoring PRs. Replaced the old practice of spending every Friday (20% of the week) on manual cleanup.</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-key">Agent Self-Review</div>
+        <div class="kv-val">Codex reviews its own changes locally, requests additional agent reviews, responds to feedback, and iterates until all reviewers are satisfied.</div>
+      </div>
+    </div>
+
+    <h3>Harness in MarkVibe Coding</h3>
+    <p>
+      MarkVibe Coding embraces harness engineering with one key difference:
+      <strong>both harness configuration and results are managed in Markdown</strong>.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>login.md — harness results accumulated</span></div>
+      <div class="code-body">
+<pre><span class="keyword">## Result — 2026-04-05 14:30</span>
+<span class="property">- Harness L1:</span> <span class="string">ESLint 0 errors, Prettier applied</span>
+<span class="property">- Harness L2:</span> <span class="string">Dependency layer violations: 0</span>
+<span class="property">- Harness L3:</span> <span class="string">12/12 tests passing</span>
+<span class="property">- Status:</span> <span class="value">Complete</span></pre>
+      </div>
+    </div>
+
+    <div class="callout success">
+      <div class="callout-icon">&#x2705;</div>
+      <div class="callout-body">
+        <strong>The Core Value of the Harness</strong>
+        The harness makes MarkVibe's core premise possible: "the human doesn't need to review code."
+        As OpenAI's experiment proved, 3 engineers produced 1 million lines with 0 human-written code —
+        because the harness automatically guaranteed quality.
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Chapter 5 ========== -->
+  <section id="ch5" class="chapter fade-in">
+    <div class="chapter-label">Chapter 05</div>
+    <h2>Practical Implementation Guide</h2>
+
+    <h3>Authority Hierarchy — MARKVIBE.md is the Top-Level Directive</h3>
+    <div class="diagram">
+      <div class="diagram-title">Authority Hierarchy</div>
+      <div class="diagram-flow">
+        <div class="diagram-node human">MARKVIBE.md</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node file">CLAUDE.md</div>
+        <div class="diagram-arrow">/</div>
+        <div class="diagram-node file">AGENTS.md</div>
+        <div class="diagram-arrow">/</div>
+        <div class="diagram-node file">.cursorrules</div>
+      </div>
+    </div>
+    <p>
+      MARKVIBE.md is the <strong>Human Top-Level Directive</strong>, not tied to any specific agent.
+      CLAUDE.md is for Claude; AGENTS.md is for Codex.
+      <strong>MARKVIBE.md is for the human.</strong>
+    </p>
+    <p>
+      MARKVIBE.md manages exactly two kinds of meta-information:
+    </p>
+    <ul>
+      <li><strong>Harness top-level location</strong> — where and how the project's test/build/verification pipeline is configured</li>
+      <li><strong>Agent instruction file references</strong> — where each agent's config lives (CLAUDE.md, AGENTS.md, .cursorrules, etc.)</li>
+    </ul>
+    <p>
+      MARKVIBE.md does not contain detailed coding rules or style guides — that belongs in each agent's native file.
+      MARKVIBE.md only defines the <strong>location and priority</strong> of those files as a meta layer.
+      On conflict, it always takes precedence.
+    </p>
+
+    <h3>Getting Started: 3-Step Protocol</h3>
+    <div class="workflow">
+      <div class="workflow-step" data-step="1">
+        <h4>Create .markvibe/ Workspace</h4>
+        <p>
+          Create <code>.markvibe/active/</code> and <code>.markvibe/archive/</code> directories.
+          Place agent instruction files (CLAUDE.md, AGENTS.md, etc.) at the project root.
+          For UI projects, add <code>.markvibe/design/DESIGN.md</code>.
+        </p>
+      </div>
+      <div class="workflow-step" data-step="2">
+        <h4>Write a Seed TODO in active/</h4>
+        <p>
+          Create a single .md file like <code>.markvibe/active/login.md</code> and write the Seed TODO.
+          That's all the human does.
+        </p>
+      </div>
+      <div class="workflow-step" data-step="3">
+        <h4>Save from Markdown Editor</h4>
+        <p>
+          If the editor is connected to the agent, saving triggers the work.
+          Results stream into the same document in real time. Follow-ups are appended to the same file.
+          When complete, move to archive/.
+        </p>
+      </div>
+    </div>
+
+    <h3>Recommended Project Structure</h3>
+    <div class="code-block">
+      <div class="code-header"><span>Project root</span></div>
+      <div class="code-body">
+<pre><span class="property">my-project/</span>
+│
+├── <span class="keyword">.markvibe/</span>                   <span class="comment"># Unified working space</span>
+│   ├── <span class="keyword">active/</span>                  <span class="comment"># Active documents only (fewer is better)</span>
+│   │   └── <span class="string">login.md</span>             <span class="comment"># Seed TODO + Results accumulating</span>
+│   ├── <span class="keyword">archive/</span>                 <span class="comment"># Evaluated, read-only</span>
+│   │   └── <span class="string">onboarding.md</span>        <span class="comment"># Statistical results only</span>
+│   └── <span class="keyword">design/</span>                  <span class="comment"># UI/visual design specs (optional)</span>
+│       └── <span class="string">DESIGN.md</span>
+│
+├── <span class="keyword">CLAUDE.md</span>                    <span class="comment"># Claude agent config</span>
+├── <span class="keyword">.codex/AGENTS.md</span>             <span class="comment"># Codex agent config (optional)</span>
+├── <span class="keyword">.cursor/rules/</span>               <span class="comment"># Cursor rules (optional)</span>
+│
+├── <span class="property">src/</span>                         <span class="comment"># Source code (agent-managed)</span>
+├── <span class="property">tests/</span>                       <span class="comment"># Test code (harness-managed)</span>
+└── <span class="property">docs/</span>                        <span class="comment"># Documentation (agent-generated)</span></pre>
+      </div>
+    </div>
+
+    <h3>Permissions by Path</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Subject</th><th>active/</th><th>archive/</th><th>design/</th><th>src/tests/docs/</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Human</strong></td><td>Read + Write</td><td>Read only</td><td>Read + Write</td><td>Read only</td></tr>
+        <tr><td><strong>Agent</strong></td><td>Read + Append</td><td>Read only</td><td>Read only</td><td>Read + Write</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Forbidden</h3>
+    <ul>
+      <li>Human typing any terminal command beyond the agent start path</li>
+      <li>Human directly editing code in <code>src/</code>, <code>tests/</code>, <code>docs/</code></li>
+      <li>Agent modifying human-written areas (Seed TODO, follow-up requests) in <code>active/</code></li>
+      <li>Agent asking the human to type terminal commands</li>
+      <li>Agent overriding MARKVIBE.md's definitions to change project structure</li>
+    </ul>
+
+    <h3>Agent Routing</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Agent</th><th>Start Command</th><th>Instruction File</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Claude Code</strong></td>
+          <td><code>claude ".markvibe/active/login.md — proceed"</code></td>
+          <td>CLAUDE.md (auto-loaded)</td>
+        </tr>
+        <tr>
+          <td><strong>OpenAI Codex</strong></td>
+          <td>Codex CLI + active/*.md path</td>
+          <td>AGENTS.md (auto-loaded)</td>
+        </tr>
+        <tr>
+          <td><strong>Cursor / Windsurf</strong></td>
+          <td>.cursorrules with MarkVibe rules included</td>
+          <td>Agent rules file</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Agents are interchangeable — the .markvibe/ workspace structure remains constant regardless of which agent is used.
+    </p>
+
+    <h3>Seeking the MarkVibe Editor</h3>
+    <p>
+      In MarkVibe Coding, the editor <em>is</em> the development environment.
+      Structural Diff detection, real-time agent streaming, active/archive dashboard,
+      approval workflows — all must happen inside a single editor.
+      Generic Markdown editors can handle some workflows,
+      but the full spec demands a <strong>dedicated MarkVibe editor</strong>.
+    </p>
+
+    <h4>Generic Editors (Partial Compatibility)</h4>
+    <div class="callout key">
+      <div class="callout-icon">&#x1F4DD;</div>
+      <div class="callout-body">
+        <ul style="margin:0 0 0 1rem;font-size:.85rem">
+          <li><strong>Obsidian</strong> — inter-file links, graph view for document relationships</li>
+          <li><strong>Typora</strong> — live rendering, WYSIWYG editing</li>
+          <li><strong>Mark Text</strong> — open source, clean interface</li>
+          <li><strong>VS Code (Markdown only)</strong> — code editing forbidden, .md editing only</li>
+        </ul>
+      </div>
+    </div>
+
+    <h4>Dedicated MarkVibe Editor</h4>
+    <div class="callout success">
+      <div class="callout-icon">&#x1F33F;</div>
+      <div class="callout-body">
+        <strong>Leaf Editor — In Development</strong><br>
+        A dedicated editor with native MarkVibe Coding workflow support.
+        The initial release will implement core specs first (Seed TODO, Result accumulation, Structural Diff detection).
+        Full Spec features (dashboard, approval flows, multi-agent routing) will be added in later phases.<br>
+        <a href="https://x.com/leafeditor" target="_blank" style="color:var(--c-primary);font-weight:600">@leafeditor</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Chapter 6: Related Methodologies ========== -->
+  <section id="ch6" class="chapter fade-in">
+    <div class="chapter-label">Chapter 06</div>
+    <h2>Related Methodologies &amp; How MarkVibe Differs</h2>
+
+    <p>
+      MarkVibe Coding did not appear from nowhere.
+      The history of software engineering is filled with answers to one recurring question:
+      <strong>"What do you write before you write the code?"</strong>
+      This chapter traces the lineage of methodologies that inform MarkVibe Coding
+      and clarifies how each differs from it.
+    </p>
+
+    <h3>1. Literate Programming (1984)</h3>
+    <p>
+      Proposed by <strong>Donald Knuth</strong>, this paradigm embeds code within a natural-language narrative
+      so programs can be "read like literature." Implemented via the WEB system; Jupyter Notebooks are a modern descendant.
+    </p>
+    <div class="callout key">
+      <div class="callout-icon">&#x2194;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>Difference from MarkVibe</strong>
+        Literate Programming <em>interleaves</em> prose and code — the human still writes code.
+        MarkVibe writes prose only and <em>fully delegates</em> code to the agent.
+      </div>
+    </div>
+
+    <h3>2. Behavior-Driven Development / BDD (2006)</h3>
+    <p>
+      Introduced by <strong>Dan North</strong>, BDD uses structured <code>Given-When-Then</code> (Gherkin) syntax
+      to write behavior specs that tools like Cucumber convert into executable tests.
+      Designed as a communication bridge between business stakeholders and developers.
+    </p>
+    <div class="callout key">
+      <div class="callout-icon">&#x2194;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>Difference from MarkVibe</strong>
+        BDD uses a <em>constrained, structured language</em> (Gherkin) and specs are directly executable.
+        MarkVibe uses <em>freeform natural language</em> (Markdown), and execution depends on AI agent interpretation.
+      </div>
+    </div>
+
+    <h3>3. README-Driven Development / RDD (2010)</h3>
+    <p>
+      Proposed by GitHub co-founder <strong>Tom Preston-Werner</strong>:
+      write the README before writing any code.
+      "If you can't explain it simply in a README, the design is too complex."
+    </p>
+    <div class="callout key">
+      <div class="callout-icon">&#x2194;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>Difference from MarkVibe</strong>
+        RDD's Markdown is a <em>design-thinking tool for human developers</em>.
+        MarkVibe's Markdown is an <em>execution directive for AI agents</em>.
+        In RDD, the human writes the README then writes the code. In MarkVibe, the human never writes code.
+      </div>
+    </div>
+
+    <h3>4. Spec-Driven Development / SDD (2011~)</h3>
+    <p>
+      Write the <strong>OpenAPI (Swagger)</strong> specification first, then auto-generate
+      server stubs, client SDKs, documentation, and tests from that spec.
+      The API contract becomes the single source of truth.
+    </p>
+    <div class="callout key">
+      <div class="callout-icon">&#x2194;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>Difference from MarkVibe</strong>
+        SDD's specification is a <em>machine-readable schema</em> (YAML/JSON) fed to deterministic codegen tools.
+        MarkVibe's specification is <em>natural-language Markdown</em> interpreted by an AI agent.
+      </div>
+    </div>
+
+    <h3>5. Design Doc Driven Development / Google (2000s~)</h3>
+    <p>
+      Practiced at Google, Uber, and other large tech companies: write a design document covering
+      context, goals, non-goals, proposed solution, alternatives, and trade-offs.
+      Peer-reviewed before implementation begins. Typically 2–20 pages.
+    </p>
+    <div class="callout key">
+      <div class="callout-icon">&#x2194;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>Difference from MarkVibe</strong>
+        Design docs are <em>collaborative artifacts reviewed by human engineers</em>.
+        MarkVibe's TODO.md is an <em>execution directive delivered to an AI agent</em>.
+        Design docs focus on "why"; TODO.md focuses on "what."
+      </div>
+    </div>
+
+    <h3>6. Harness-Driven Development (2021~)</h3>
+    <p>
+      Central to AI coding benchmarks like <strong>SWE-bench, HumanEval, and MBPP</strong>.
+      A test harness (failing test suite) defines the problem;
+      the AI agent must produce code that passes it. Success is binary and automated.
+    </p>
+    <div class="callout key">
+      <div class="callout-icon">&#x2194;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>Difference from MarkVibe</strong>
+        Harness-Driven uses <em>executable test code</em> as the specification.
+        MarkVibe uses <em>natural-language Markdown</em> as the specification, and the harness is a byproduct
+        the agent builds autonomously. The human never writes test code.
+      </div>
+    </div>
+
+    <h3>7. Vibe Coding (2025)</h3>
+    <p>
+      In <strong>February 2025</strong>, <strong>Andrej Karpathy</strong> (former Tesla AI director, OpenAI co-founder)
+      coined the term on X (Twitter):
+    </p>
+    <div class="quote">
+      <p>"fully give in to the vibes, embrace exponentials, and forget that the code even exists."</p>
+      <cite>— Andrej Karpathy, February 2025</cite>
+    </div>
+    <p>
+      Describe what you want conversationally, accept generated code without detailed review,
+      and paste error messages back to fix bugs. Tools: Cursor, Replit Agent, Claude Code, etc.
+    </p>
+    <p>
+      Adoption exploded. <strong>25% of Y Combinator's Winter 2025 batch</strong> reported codebases 95% AI-generated.
+      Collins English Dictionary named it <strong>Word of the Year 2025</strong>.
+      Merriam-Webster listed it as "slang &amp; trending" in March 2025.
+    </p>
+    <p>
+      But serious problems emerged. On the Lovable platform, <strong>170 of 1,645 apps had security vulnerabilities</strong> (May 2025).
+      Replit <strong>deleted a production database</strong> despite explicit instructions otherwise (July 2025).
+      A December 2025 CodeRabbit study found AI co-authored code contained <strong>1.7x more major issues</strong> than human-written code.
+      These limitations catalyzed complementary methodologies like SDD and Harness Engineering.
+    </p>
+    <div class="callout key">
+      <div class="callout-icon">&#x2194;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>Difference from MarkVibe</strong>
+        Vibe Coding is <em>unstructured conversation</em> with no specification and no version control.
+        MarkVibe Coding preserves Vibe Coding's speed while adding <em>structure, paths, traceability, and a harness</em>.
+        Vibe Coding is "feeling"; MarkVibe Coding is "recorded intent."
+        Vibe Coding's security/quality problems are solved by the harness; its decision-tracking problems are solved by the single-document accumulation pattern.
+      </div>
+    </div>
+
+    <h3>8. Agent Instruction Files (2024~)</h3>
+    <p>
+      CLAUDE.md (Anthropic), AGENTS.md (OpenAI), DESIGN.md (Google Stitch),
+      .cursorrules (Cursor) — Markdown files committed to repos that provide
+      persistent context and behavioral rules for AI coding agents.
+      Dual-purpose documents for both humans and AI.
+    </p>
+    <div class="callout key">
+      <div class="callout-icon">&#x2194;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>Difference from MarkVibe</strong>
+        Agent instruction files are <em>tied to specific agents</em>.
+        MARKVIBE.md sits <em>above</em> all of them as the <em>human top-level directive</em>,
+        defining project intent and structure regardless of which agent combination is used.
+      </div>
+    </div>
+
+    <h3>Comparison Table</h3>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Methodology</th>
+          <th>Year</th>
+          <th>Spec Format</th>
+          <th>Consumer</th>
+          <th>Executable</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Literate Programming</td>
+          <td>1984</td>
+          <td>WEB/noweb</td>
+          <td>Humans</td>
+          <td class="check">Yes</td>
+        </tr>
+        <tr>
+          <td>BDD / Gherkin</td>
+          <td>2006</td>
+          <td>Given-When-Then</td>
+          <td>Humans + test runner</td>
+          <td class="check">Yes</td>
+        </tr>
+        <tr>
+          <td>README-Driven (RDD)</td>
+          <td>2010</td>
+          <td>Markdown</td>
+          <td>Humans</td>
+          <td class="cross">No</td>
+        </tr>
+        <tr>
+          <td>Spec-Driven (SDD)</td>
+          <td>2011</td>
+          <td>YAML/JSON</td>
+          <td>Codegen tools</td>
+          <td class="check">Yes</td>
+        </tr>
+        <tr>
+          <td>Design Doc Driven</td>
+          <td>2000s</td>
+          <td>Prose (Docs/MD)</td>
+          <td>Human reviewers</td>
+          <td class="cross">No</td>
+        </tr>
+        <tr>
+          <td>Harness-Driven</td>
+          <td>2021</td>
+          <td>Test suites</td>
+          <td>AI agents + CI</td>
+          <td class="check">Yes</td>
+        </tr>
+        <tr>
+          <td>Vibe Coding</td>
+          <td>2025</td>
+          <td>Conversational</td>
+          <td>LLMs</td>
+          <td>Via LLM</td>
+        </tr>
+        <tr>
+          <td>Agent Instruction Files</td>
+          <td>2024</td>
+          <td>Markdown</td>
+          <td>AI agents + humans</td>
+          <td>Via AI</td>
+        </tr>
+        <tr style="background:var(--c-primary-light)">
+          <td><strong>MarkVibe Coding</strong></td>
+          <td><strong>2025</strong></td>
+          <td><strong>Markdown (top-level)</strong></td>
+          <td><strong>All AI agents</strong></td>
+          <td><strong>Via AI</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <div class="callout-icon">&#x1F4CA;</div>
+      <div class="callout-body">
+        <strong>The Evolutionary Arc</strong>
+        Early methodologies passed structured documents to <em>humans</em> or <em>deterministic tools</em>.
+        The 2024-2025 wave uses Markdown as a <em>dual-purpose artifact</em> for both humans and AI agents.
+        MarkVibe Coding is the logical terminus — Markdown as the <em>sole</em> interface,
+        with an agent-agnostic top-level directive system.
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Conclusion ========== -->
+  <section id="conclusion" class="chapter fade-in">
+    <div class="chapter-label">Conclusion</div>
+    <h2>The Future of Codeless Coding</h2>
+
+    <p>
+      MarkVibe Coding is not just a methodology.
+      It is a <strong>redefinition of what it means to be a developer</strong>.
+    </p>
+    <p>
+      In traditional development, a developer's identity was "someone who writes code."
+      Vibe Coding expanded this to "someone who instructs AI."
+      MarkVibe Coding takes one more step, redefining the developer as
+      <strong>"someone who structures intent."</strong>
+    </p>
+
+    <div class="quote">
+      <p>
+        "The best code is the code you never have to write.
+        MarkVibe Coding makes this age-old adage literally true."
+      </p>
+    </div>
+
+    <h3>What MarkVibe Coding Changes</h3>
+    <ul>
+      <li><strong>Barrier to entry disappears</strong> — You don't need to know a programming language. You just need to know Markdown.</li>
+      <li><strong>Zero context-switching</strong> — No more bouncing between IDE, terminal, browser, and docs.</li>
+      <li><strong>Full auditability</strong> — Every decision and action is recorded in Markdown logs.</li>
+      <li><strong>Agent independence</strong> — You're not locked into a specific agent. Markdown is universal.</li>
+    </ul>
+
+    <h3>Next Step: MarkVibe Working</h3>
+    <p>
+      MarkVibe Coding is not the final destination.
+      It is the stepping stone to <strong>MarkVibe Working</strong>.
+    </p>
+    <p>
+      If MarkVibe Coding is "building software with Markdown,"
+      then <strong>MarkVibe Working</strong> is "doing all work with Markdown" —
+      planning, design, marketing, research, reporting, project management —
+      all knowledge work converging into a single Markdown document powered by AI agents.
+    </p>
+    <p>
+      MarkVibe Coding must be established first.
+      Once the "single document + AI agent" pattern is proven in software development — the most complex domain —
+      it will naturally expand to every other domain of work.
+      Coding is the proving ground. Working is the ultimate vision.
+    </p>
+
+    <div class="diagram">
+      <div class="diagram-title">Evolution Path</div>
+      <div class="diagram-flow">
+        <div class="diagram-node human">Vibe Coding (2025)</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node agent">MarkVibe Coding</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-node output">MarkVibe Working</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">&#x1F680;</div>
+      <div class="callout-body">
+        <strong>Getting started is simple</strong>
+        1. Add MARKVIBE.md to your project.<br>
+        2. Write a Seed TODO in a single .md file.<br>
+        3. Save from your Markdown editor.<br>
+        4. Check results in the same document.<br>
+        That's it.
+      </div>
+    </div>
+
+    <p style="text-align:center;margin-top:3rem;font-size:1.1rem;font-weight:700;color:var(--c-text)">
+      Write Markdown. Build Software.
+    </p>
+    <p style="text-align:center;font-size:.85rem;color:var(--c-text-3)">
+      — MarkVibe Coding, 2026
+    </p>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>
+    MarkVibe Coding v0.1.0 &middot;
+    <a href="https://leaf-kit.github.io">leaf-kit.github.io</a> &middot;
+    <a href="https://x.com/leafeditor" target="_blank">@leafeditor</a>
+  </p>
+  <p style="margin-top:.5rem">
+    <a href="https://x.com/intent/tweet?text=MarkVibe%20Coding%20—%20Build%20software%20with%20nothing%20but%20Markdown%20%40leafeditor&url=https://leaf-kit.github.io/markvibe/en.html&hashtags=MarkVibeCoding" target="_blank" style="font-size:.75rem">
+      Share on X
+    </a>
+  </p>
+</footer>
+
+<script>
+// Scroll-triggered fade-in
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Active nav link on scroll
+const sections = document.querySelectorAll('.chapter[id]');
+const navLinks = document.querySelectorAll('.header-nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>
