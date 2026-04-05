@@ -1308,36 +1308,68 @@
       Agents are interchangeable — the .markvibe/ workspace structure remains constant regardless of which agent is used.
     </p>
 
-    <h3>마크바이브 에디터를 찾는다</h3>
+    <h3>마크바이브 에디터 — 두 가지 모드</h3>
     <p>
-      마크 바이브 코딩은 에디터가 곧 개발 환경이다.
-      Structural Diff 감지, 에이전트 실시간 스트리밍 렌더링, active/archive 상태 대시보드,
-      승인 플로우 — 이 모든 것을 하나의 에디터 안에서 처리해야 한다.
-      기존의 범용 마크다운 에디터로도 일부 워크플로우를 수행할 수 있지만,
-      마크 바이브의 전체 스펙을 지원하는 <strong>전용 에디터</strong>가 필요하다.
+      마크 바이브 코딩은 에디터가 곧 작업 환경이다.
+      사용자의 목적에 따라 <strong>두 가지 모드</strong>로 구분된다:
     </p>
 
-    <h4>범용 에디터 (부분 호환)</h4>
+    <h4>일반 모드 (General Mode) — 지식 관리</h4>
+    <p>
+      마크다운으로 노트, 자료 조사, 보고서, 프로젝트 관리를 수행하는 모드이다.
+      코딩 없이 <strong>문서 기반 업무</strong>에 집중한다.
+      Seed TODO와 Result 누적, active/archive 상태 관리 등
+      마크 바이브의 기본 워크플로우를 지원한다.
+      프로그래밍 지식이 없는 사용자도 마크다운만 알면 사용할 수 있다.
+    </p>
+
+    <h4>전문가 모드 (Expert Mode) — 코딩 및 심화 작업</h4>
+    <p>
+      소프트웨어 개발, 하네스 엔지니어링, 멀티 에이전트 라우팅 등
+      <strong>전문적인 개발 워크플로우</strong>를 처리하는 모드이다.
+      Structural Diff 감지, 에이전트 실시간 스트리밍 렌더링,
+      승인 플로우, 대시보드 등 마크 바이브의 Full Spec을 지원한다.
+    </p>
+
+    <div class="callout info">
+      <div class="callout-icon">&#x1F504;</div>
+      <div class="callout-body">
+        <strong>모드 선택 기준</strong>
+        단순 지식 관리·문서 업무라면 <strong>일반 모드</strong>,
+        코딩·배포·하네스 구성 등 전문 작업이라면 <strong>전문가 모드</strong>.
+        하나의 에디터에서 목적에 따라 전환한다.
+      </div>
+    </div>
+
+    <h4>호환 에디터 — Leaf Editor 외에도 가능하다</h4>
+    <p>
+      마크 바이브 코딩은 <strong>특정 에디터에 종속되지 않는다.</strong>
+      마크다운이 표준이므로, 마크 바이브 워크플로우를 지원하는 에디터라면 무엇이든 사용할 수 있다.
+      기존의 범용 마크다운 에디터로도 일부 워크플로우를 수행할 수 있으며,
+      플러그인이나 커뮤니티 확장을 통해 마크 바이브 호환성을 확보할 수 있다.
+    </p>
     <div class="callout key">
       <div class="callout-icon">&#x1F4DD;</div>
       <div class="callout-body">
         <ul style="margin:0 0 0 1rem;font-size:.85rem">
-          <li><strong>Obsidian</strong> — 파일 간 링크, 그래프 뷰로 문서 관계 시각화</li>
-          <li><strong>Typora</strong> — 실시간 렌더링, WYSIWYG 편집</li>
+          <li><strong>Obsidian</strong> — 파일 간 링크, 그래프 뷰로 문서 관계 시각화. 플러그인 생태계를 통해 active/archive 상태 관리, 에이전트 연동 등 마크 바이브 워크플로우 확장 가능</li>
+          <li><strong>Typora</strong> — 실시간 렌더링, WYSIWYG 편집. 일반 모드 지식 관리에 적합</li>
           <li><strong>Mark Text</strong> — 오픈소스, 깔끔한 인터페이스</li>
-          <li><strong>VS Code (마크다운 전용)</strong> — 코드 편집은 금지하되, .md 편집만 허용</li>
+          <li><strong>VS Code (마크다운 전용)</strong> — 코드 편집은 금지하되, .md 편집만 허용. 확장 기능으로 에이전트 연동 가능</li>
         </ul>
       </div>
     </div>
 
-    <h4>마크바이브 전용 에디터</h4>
+    <h4>Leaf Editor — 마크바이브 네이티브 에디터</h4>
     <div class="callout success">
       <div class="callout-icon">&#x1F33F;</div>
       <div class="callout-body">
         <strong>Leaf Editor — 개발 중</strong><br>
         마크 바이브 코딩 워크플로우를 네이티브로 지원하는 전용 에디터.
-        초기 버전에서는 마크바이브의 기본 스펙(Seed TODO, Result 누적, Structural Diff 감지)을 우선 구현하며,
-        Full Spec(대시보드, 승인 플로우, 멀티 에이전트 라우팅)은 이후 단계적으로 추가될 예정이다.<br>
+        <strong>일반 모드</strong>와 <strong>전문가 모드</strong>를 모두 내장하며,
+        목적에 따라 자유롭게 전환할 수 있다.
+        초기 버전에서는 일반 모드(지식 관리)와 마크바이브 기본 스펙(Seed TODO, Result 누적, Structural Diff 감지)을 우선 구현하며,
+        전문가 모드의 Full Spec(대시보드, 승인 플로우, 멀티 에이전트 라우팅)은 이후 단계적으로 추가될 예정이다.<br>
         <a href="https://x.com/leafeditor" target="_blank" style="color:var(--c-primary);font-weight:600">@leafeditor</a>
       </div>
     </div>

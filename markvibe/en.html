@@ -1243,36 +1243,67 @@
       Agents are interchangeable — the .markvibe/ workspace structure remains constant regardless of which agent is used.
     </p>
 
-    <h3>Seeking the MarkVibe Editor</h3>
+    <h3>MarkVibe Editor — Two Modes</h3>
     <p>
-      In MarkVibe Coding, the editor <em>is</em> the development environment.
-      Structural Diff detection, real-time agent streaming, active/archive dashboard,
-      approval workflows — all must happen inside a single editor.
-      Generic Markdown editors can handle some workflows,
-      but the full spec demands a <strong>dedicated MarkVibe editor</strong>.
+      In MarkVibe Coding, the editor <em>is</em> the workspace.
+      Depending on the user's purpose, the editor operates in <strong>two modes</strong>:
     </p>
 
-    <h4>Generic Editors (Partial Compatibility)</h4>
+    <h4>General Mode — Knowledge Management</h4>
+    <p>
+      A mode for notes, research, reports, and project management — all through Markdown.
+      Focuses on <strong>document-based work</strong> without coding.
+      Supports MarkVibe's basic workflow: Seed TODO, Result accumulation, active/archive state management.
+      Accessible to users with no programming background — just Markdown.
+    </p>
+
+    <h4>Expert Mode — Coding &amp; Advanced Work</h4>
+    <p>
+      A mode for software development, harness engineering, multi-agent routing,
+      and other <strong>professional development workflows</strong>.
+      Supports the full MarkVibe spec: Structural Diff detection, real-time agent streaming,
+      approval workflows, and dashboards.
+    </p>
+
+    <div class="callout info">
+      <div class="callout-icon">&#x1F504;</div>
+      <div class="callout-body">
+        <strong>Mode Selection</strong>
+        Simple knowledge management or document work? <strong>General Mode</strong>.
+        Coding, deployment, harness configuration? <strong>Expert Mode</strong>.
+        Switch freely based on purpose within a single editor.
+      </div>
+    </div>
+
+    <h4>Compatible Editors — Not Just Leaf</h4>
+    <p>
+      MarkVibe Coding is <strong>not locked to any specific editor.</strong>
+      Since Markdown is the standard, any editor that supports the MarkVibe workflow can be used.
+      Generic Markdown editors can handle some workflows,
+      and plugins or community extensions can add MarkVibe compatibility.
+    </p>
     <div class="callout key">
       <div class="callout-icon">&#x1F4DD;</div>
       <div class="callout-body">
         <ul style="margin:0 0 0 1rem;font-size:.85rem">
-          <li><strong>Obsidian</strong> — inter-file links, graph view for document relationships</li>
-          <li><strong>Typora</strong> — live rendering, WYSIWYG editing</li>
+          <li><strong>Obsidian</strong> — inter-file links, graph view for document relationships. Its plugin ecosystem enables active/archive state management and agent integration for MarkVibe workflows</li>
+          <li><strong>Typora</strong> — live rendering, WYSIWYG editing. Well suited for General Mode knowledge management</li>
           <li><strong>Mark Text</strong> — open source, clean interface</li>
-          <li><strong>VS Code (Markdown only)</strong> — code editing forbidden, .md editing only</li>
+          <li><strong>VS Code (Markdown only)</strong> — code editing forbidden, .md editing only. Extensions can enable agent integration</li>
         </ul>
       </div>
     </div>
 
-    <h4>Dedicated MarkVibe Editor</h4>
+    <h4>Leaf Editor — Native MarkVibe Editor</h4>
     <div class="callout success">
       <div class="callout-icon">&#x1F33F;</div>
       <div class="callout-body">
         <strong>Leaf Editor — In Development</strong><br>
         A dedicated editor with native MarkVibe Coding workflow support.
-        The initial release will implement core specs first (Seed TODO, Result accumulation, Structural Diff detection).
-        Full Spec features (dashboard, approval flows, multi-agent routing) will be added in later phases.<br>
+        Ships with both <strong>General Mode</strong> and <strong>Expert Mode</strong> built in,
+        freely switchable based on purpose.
+        The initial release focuses on General Mode (knowledge management) and core specs (Seed TODO, Result accumulation, Structural Diff detection).
+        Expert Mode Full Spec (dashboard, approval flows, multi-agent routing) will be added in later phases.<br>
         <a href="https://x.com/leafeditor" target="_blank" style="color:var(--c-primary);font-weight:600">@leafeditor</a>
       </div>
     </div>
