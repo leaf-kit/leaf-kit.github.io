@@ -1308,9 +1308,43 @@
       Agents are interchangeable — the .markvibe/ workspace structure remains constant regardless of which agent is used.
     </p>
 
-    <h3>마크바이브 에디터 — 두 가지 모드</h3>
+    <h3>마크바이브 에디터 — 설계 철학</h3>
     <p>
-      마크 바이브 코딩은 에디터가 곧 작업 환경이다.
+      마크다운은 단순하다. 누구나 읽을 수 있고, 어디서든 열 수 있다.
+      마크 바이브 코딩을 위한 에디터도 이 원칙을 그대로 따른다.
+      에디터의 핵심은 <strong>인간 친화적인 인터페이스</strong>를 기초로 하여,
+      마크다운이 <strong>지식의 정리 수단</strong>이 되고,
+      그 자체로 <strong>일의 마침</strong>이 되는 방식을 실현하는 것이다.
+    </p>
+    <p>
+      마크다운이 단순한 철학인 것처럼, 마크 바이브 에디터도 <strong>단순한 형태</strong>로 개발하되
+      에이전트들과 함께 동작하는 것을 지원한다.
+    </p>
+
+    <h4>느슨한 연결 — 에이전트를 가두지 않는다</h4>
+    <p>
+      마크 바이브 에디터의 핵심 설계 원칙은 <strong>느슨한 연결(Loose Coupling)</strong>이다.
+      Claude Code, Codex CLI 등 에이전트의 CLI 인터페이스와 <strong>느슨하게 연결</strong>할 뿐,
+      에이전트를 에디터 안에 가두는 방식이 아니다.
+      에이전트는 독립적으로 동작하는 외부 프로세스이고,
+      에디터는 마크다운 파일이라는 매체를 통해 에이전트와 소통한다.
+      에이전트가 바뀌어도 에디터는 그대로이고, 에디터가 바뀌어도 에이전트는 그대로이다.
+    </p>
+
+    <div class="callout warning">
+      <div class="callout-icon">&#x26A0;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>VS Code의 한계</strong>
+        VS Code는 마크다운 편집을 지원하지만, 마크 바이브 워크플로우를 구현하려면
+        Structural Diff 감지, 상태 관리, 에이전트 연동, 대시보드 등을 위한
+        <strong>지나치게 복잡한 플러그인 조합</strong>이 필요하다.
+        본래 코드 편집기인 VS Code 위에 마크 바이브의 문서 중심 워크플로우를 얹는 것은
+        도구의 본질과 맞지 않는다. 일반 사용자에게는 특히 진입 장벽이 높다.
+      </div>
+    </div>
+
+    <h4>두 가지 모드</h4>
+    <p>
       사용자의 목적에 따라 <strong>두 가지 모드</strong>로 구분된다:
     </p>
 
@@ -1345,17 +1379,16 @@
     <p>
       마크 바이브 코딩은 <strong>특정 에디터에 종속되지 않는다.</strong>
       마크다운이 표준이므로, 마크 바이브 워크플로우를 지원하는 에디터라면 무엇이든 사용할 수 있다.
-      기존의 범용 마크다운 에디터로도 일부 워크플로우를 수행할 수 있으며,
-      플러그인이나 커뮤니티 확장을 통해 마크 바이브 호환성을 확보할 수 있다.
+      Obsidian 같은 기존 에디터도 플러그인이나 커뮤니티 확장을 통해
+      마크 바이브 호환성을 확보할 수 있다.
     </p>
     <div class="callout key">
       <div class="callout-icon">&#x1F4DD;</div>
       <div class="callout-body">
         <ul style="margin:0 0 0 1rem;font-size:.85rem">
-          <li><strong>Obsidian</strong> — 파일 간 링크, 그래프 뷰로 문서 관계 시각화. 플러그인 생태계를 통해 active/archive 상태 관리, 에이전트 연동 등 마크 바이브 워크플로우 확장 가능</li>
+          <li><strong>Obsidian</strong> — 파일 간 링크, 그래프 뷰로 문서 관계 시각화. 플러그인 생태계를 통해 active/archive 상태 관리, 에이전트 연동 등 마크 바이브 워크플로우 확장 가능. 일반 모드 지식 관리에 강점</li>
           <li><strong>Typora</strong> — 실시간 렌더링, WYSIWYG 편집. 일반 모드 지식 관리에 적합</li>
-          <li><strong>Mark Text</strong> — 오픈소스, 깔끔한 인터페이스</li>
-          <li><strong>VS Code (마크다운 전용)</strong> — 코드 편집은 금지하되, .md 편집만 허용. 확장 기능으로 에이전트 연동 가능</li>
+          <li><strong>Mark Text</strong> — 오픈소스, 깔끔한 인터페이스 (개발 비활성 상태이나 기존 버전 사용 가능)</li>
         </ul>
       </div>
     </div>
@@ -1368,6 +1401,9 @@
         마크 바이브 코딩 워크플로우를 네이티브로 지원하는 전용 에디터.
         <strong>일반 모드</strong>와 <strong>전문가 모드</strong>를 모두 내장하며,
         목적에 따라 자유롭게 전환할 수 있다.
+        에이전트를 에디터 안에 가두지 않고, Claude Code 등 외부 CLI와
+        <strong>느슨하게 연결</strong>하여 함께 동작한다.
+        에디터는 단순하고, 에이전트는 독립적이며, 마크다운이 둘을 잇는다.
         초기 버전에서는 일반 모드(지식 관리)와 마크바이브 기본 스펙(Seed TODO, Result 누적, Structural Diff 감지)을 우선 구현하며,
         전문가 모드의 Full Spec(대시보드, 승인 플로우, 멀티 에이전트 라우팅)은 이후 단계적으로 추가될 예정이다.<br>
         <a href="https://x.com/leafeditor" target="_blank" style="color:var(--c-primary);font-weight:600">@leafeditor</a>

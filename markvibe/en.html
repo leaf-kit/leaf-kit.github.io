@@ -1243,10 +1243,45 @@
       Agents are interchangeable — the .markvibe/ workspace structure remains constant regardless of which agent is used.
     </p>
 
-    <h3>MarkVibe Editor — Two Modes</h3>
+    <h3>MarkVibe Editor — Design Philosophy</h3>
     <p>
-      In MarkVibe Coding, the editor <em>is</em> the workspace.
-      Depending on the user's purpose, the editor operates in <strong>two modes</strong>:
+      Markdown is simple. Anyone can read it, anywhere.
+      The MarkVibe editor follows this same principle.
+      At its core, the editor provides a <strong>human-friendly interface</strong> where
+      Markdown becomes <strong>the medium for organizing knowledge</strong>,
+      and the act of writing it <strong>completes the work itself</strong>.
+    </p>
+    <p>
+      Just as Markdown embodies a philosophy of simplicity,
+      the MarkVibe editor is built in a <strong>simple, minimal form</strong> —
+      yet designed to work alongside agents.
+    </p>
+
+    <h4>Loose Coupling — Agents Are Not Caged</h4>
+    <p>
+      The core design principle of the MarkVibe editor is <strong>loose coupling</strong>.
+      It connects <strong>loosely</strong> to agent CLI interfaces like Claude Code or Codex CLI —
+      it does not trap agents inside the editor.
+      Agents run as independent external processes;
+      the editor communicates with them through the Markdown file as a medium.
+      Swap the agent, the editor stays the same. Swap the editor, the agent stays the same.
+    </p>
+
+    <div class="callout warning">
+      <div class="callout-icon">&#x26A0;&#xFE0F;</div>
+      <div class="callout-body">
+        <strong>The VS Code Limitation</strong>
+        VS Code supports Markdown editing, but implementing the MarkVibe workflow requires
+        an <strong>excessively complex combination of plugins</strong> for
+        Structural Diff detection, state management, agent integration, and dashboards.
+        Layering a document-centric workflow on top of what is fundamentally a code editor
+        goes against the tool's nature. The barrier to entry is especially high for general users.
+      </div>
+    </div>
+
+    <h4>Two Modes</h4>
+    <p>
+      The editor operates in <strong>two modes</strong> based on purpose:
     </p>
 
     <h4>General Mode — Knowledge Management</h4>
@@ -1279,17 +1314,16 @@
     <p>
       MarkVibe Coding is <strong>not locked to any specific editor.</strong>
       Since Markdown is the standard, any editor that supports the MarkVibe workflow can be used.
-      Generic Markdown editors can handle some workflows,
-      and plugins or community extensions can add MarkVibe compatibility.
+      Editors like Obsidian can extend MarkVibe compatibility
+      through plugins and community extensions.
     </p>
     <div class="callout key">
       <div class="callout-icon">&#x1F4DD;</div>
       <div class="callout-body">
         <ul style="margin:0 0 0 1rem;font-size:.85rem">
-          <li><strong>Obsidian</strong> — inter-file links, graph view for document relationships. Its plugin ecosystem enables active/archive state management and agent integration for MarkVibe workflows</li>
+          <li><strong>Obsidian</strong> — inter-file links, graph view for document relationships. Its plugin ecosystem enables active/archive state management and agent integration for MarkVibe workflows. Strong for General Mode knowledge management</li>
           <li><strong>Typora</strong> — live rendering, WYSIWYG editing. Well suited for General Mode knowledge management</li>
-          <li><strong>Mark Text</strong> — open source, clean interface</li>
-          <li><strong>VS Code (Markdown only)</strong> — code editing forbidden, .md editing only. Extensions can enable agent integration</li>
+          <li><strong>Mark Text</strong> — open source, clean interface (development inactive, but existing version usable)</li>
         </ul>
       </div>
     </div>
@@ -1302,6 +1336,10 @@
         A dedicated editor with native MarkVibe Coding workflow support.
         Ships with both <strong>General Mode</strong> and <strong>Expert Mode</strong> built in,
         freely switchable based on purpose.
+        Agents are not caged inside the editor — it connects <strong>loosely</strong>
+        to external CLIs like Claude Code, letting agents run independently
+        while Markdown bridges the two.
+        The editor is simple, the agents are independent, and Markdown connects them.
         The initial release focuses on General Mode (knowledge management) and core specs (Seed TODO, Result accumulation, Structural Diff detection).
         Expert Mode Full Spec (dashboard, approval flows, multi-agent routing) will be added in later phases.<br>
         <a href="https://x.com/leafeditor" target="_blank" style="color:var(--c-primary);font-weight:600">@leafeditor</a>
