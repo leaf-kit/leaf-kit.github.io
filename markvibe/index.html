@@ -1060,17 +1060,17 @@
     <h3>하네스란 무엇인가?</h3>
     <p>
       2026년 2월, OpenAI의 Ryan Lopopolo는 <strong>"하네스 엔지니어링(Harness Engineering)"</strong>이라는
-      개념을 공식 발표했다. 핵심 공식은 다음과 같다:
+      개념을 블로그에서 상세히 소개했다. 그 핵심 논지를 요약하면 다음과 같다:
     </p>
     <div class="quote">
       <p><strong>Agent = Model + Harness</strong></p>
-      <cite>— Ryan Lopopolo, OpenAI, "Harness Engineering: Leveraging Codex in an Agent-First World" (2026.02)</cite>
+      <cite>— Ryan Lopopolo의 핵심 논지를 요약한 공식. 원문: "Harness Engineering: Leveraging Codex in an Agent-First World" (2026.02, OpenAI Blog)</cite>
     </div>
     <p>
       하네스(Harness)란 AI 코딩 에이전트에서 <strong>모델을 제외한 모든 것</strong> — 오케스트레이션 로직,
       컨텍스트 관리, 아키텍처 제약, 테스트 파이프라인, 리뷰 시스템 — 을 의미한다.
-      Martin Fowler는 이를 "에이전트의 행동을 예측하고 교정하는 <strong>가이드(Feedforward)</strong>와
-      <strong>센서(Feedback)</strong>의 조합"으로 정리했다.
+      Thoughtworks의 Birgitta Boeckeler는 이를 "에이전트의 행동을 예측하고 교정하는 <strong>가이드(Feedforward)</strong>와
+      <strong>센서(Feedback)</strong>의 조합"으로 정리했다(martinfowler.com 게재).
     </p>
     <p class="en">
       In February 2026, OpenAI's Ryan Lopopolo formalized "Harness Engineering" — where the harness is everything in an AI agent except the model itself: orchestration, context management, architectural constraints, test pipelines, and review systems.
@@ -1095,7 +1095,7 @@
     </table>
 
     <h3>하네스의 3계층 구조</h3>
-    <p>Martin Fowler의 분류에 따르면, 하네스는 세 가지 규제 범주로 나뉜다:</p>
+    <p>Birgitta Boeckeler(Thoughtworks)의 분류에 따르면, 하네스는 세 가지 규제 범주로 나뉜다:</p>
     <div class="principles">
       <div class="principle">
         <div class="principle-num">Layer 1 — Maintainability</div>
@@ -1435,9 +1435,9 @@
       </div>
     </div>
 
-    <h3>6. Harness-Driven Development / 하네스 주도 개발 (2021~)</h3>
+    <h3>6. Harness-Driven Development / 하네스 주도 개발 (2021~2023)</h3>
     <p>
-      SWE-bench, HumanEval, MBPP 등 AI 코딩 벤치마크에서 핵심적으로 사용되는 접근으로,
+      HumanEval, MBPP(2021), SWE-bench(2023) 등 AI 코딩 벤치마크에서 핵심적으로 사용되는 접근으로,
       <strong>실패하는 테스트 스위트(하네스)</strong>를 먼저 정의하고
       AI 에이전트가 이를 통과하는 코드를 생성하도록 한다.
       성공 여부는 이진적이고 자동화된다.
@@ -1454,7 +1454,7 @@
 
     <h3>7. Vibe Coding / 바이브 코딩 (2025)</h3>
     <p>
-      <strong>2025년 2월</strong>, AI 연구자 <strong>Andrej Karpathy</strong>(전 Tesla AI 책임자, OpenAI 공동창업자)가
+      <strong>2025년 2월</strong>, AI 연구자 <strong>Andrej Karpathy</strong>(전 Tesla AI 수석 디렉터, OpenAI 초기 연구원)가
       X(Twitter)에서 처음 명명한 개발 스타일이다.
     </p>
     <div class="quote">
@@ -1475,7 +1475,7 @@
     <p>
       그러나 심각한 문제도 드러났다. Lovable 플랫폼에서 1,645개 앱 중 <strong>170개에서 보안 취약점</strong>이 발견되었고(2025.05),
       Replit은 명시적 지시에도 불구하고 <strong>프로덕션 데이터베이스를 삭제</strong>하는 사고가 발생했다(2025.07).
-      2025년 12월 CodeRabbit 연구에 따르면, AI 공동 작성 코드는 인간 작성 코드보다 <strong>1.7배 더 많은 주요 이슈</strong>를 포함했다.
+      2025년 12월 CodeRabbit 연구에 따르면, AI 공동 작성 코드는 인간 작성 코드보다 <strong>전체 이슈가 약 1.7배 더 많았으며</strong>, 보안 이슈는 최대 2.74배에 달했다.
       이러한 한계가 스펙 주도 개발(SDD)과 하네스 엔지니어링 같은 보완 방법론의 등장을 촉발했다.
     </p>
     <div class="callout key">
@@ -1554,7 +1554,7 @@
         </tr>
         <tr>
           <td>Harness-Driven</td>
-          <td>2021</td>
+          <td>2021~2023</td>
           <td>테스트 스위트</td>
           <td>AI 에이전트 + CI</td>
           <td class="check">Yes</td>
@@ -1575,7 +1575,7 @@
         </tr>
         <tr style="background:var(--c-primary-light)">
           <td><strong>MarkVibe Coding</strong></td>
-          <td><strong>2025</strong></td>
+          <td><strong>2026</strong></td>
           <td><strong>Markdown (최상위)</strong></td>
           <td><strong>AI 에이전트 (모든 종류)</strong></td>
           <td><strong>AI 해석</strong></td>

@@ -1008,18 +1008,18 @@
 
     <h3>What Is a Harness?</h3>
     <p>
-      In February 2026, OpenAI's <strong>Ryan Lopopolo</strong> formalized the concept of
-      <strong>Harness Engineering</strong>. The core formula:
+      In February 2026, OpenAI's <strong>Ryan Lopopolo</strong> detailed the concept of
+      <strong>Harness Engineering</strong> on the OpenAI blog. The core thesis can be summarized as:
     </p>
     <div class="quote">
       <p><strong>Agent = Model + Harness</strong></p>
-      <cite>— Ryan Lopopolo, OpenAI, "Harness Engineering: Leveraging Codex in an Agent-First World" (Feb 2026)</cite>
+      <cite>— Summary of Lopopolo's thesis. Source: "Harness Engineering: Leveraging Codex in an Agent-First World" (Feb 2026, OpenAI Blog)</cite>
     </div>
     <p>
       The harness is <strong>everything in an AI agent except the model itself</strong> — orchestration logic,
       context management, architectural constraints, test pipelines, and review systems.
-      Martin Fowler categorized harness controls into <strong>Guides (feedforward)</strong> that steer the agent
-      before it acts, and <strong>Sensors (feedback)</strong> that observe after the agent acts and help it self-correct.
+      Birgitta Boeckeler (Thoughtworks) categorized harness controls into <strong>Guides (feedforward)</strong> that steer the agent
+      before it acts, and <strong>Sensors (feedback)</strong> that observe after the agent acts and help it self-correct (published on martinfowler.com).
     </p>
 
     <h3>OpenAI's Experiment Results</h3>
@@ -1038,7 +1038,7 @@
     </table>
 
     <h3>Three-Layer Harness Architecture</h3>
-    <p>Per Martin Fowler's classification, harnesses fall into three regulation categories:</p>
+    <p>Per Birgitta Boeckeler's classification (Thoughtworks, on martinfowler.com), harnesses fall into three regulation categories:</p>
     <div class="principles">
       <div class="principle">
         <div class="principle-num">Layer 1 — Maintainability</div>
@@ -1367,9 +1367,9 @@
       </div>
     </div>
 
-    <h3>6. Harness-Driven Development (2021~)</h3>
+    <h3>6. Harness-Driven Development (2021~2023)</h3>
     <p>
-      Central to AI coding benchmarks like <strong>SWE-bench, HumanEval, and MBPP</strong>.
+      Central to AI coding benchmarks like <strong>HumanEval, MBPP (2021), and SWE-bench (2023)</strong>.
       A test harness (failing test suite) defines the problem;
       the AI agent must produce code that passes it. Success is binary and automated.
     </p>
@@ -1385,7 +1385,7 @@
 
     <h3>7. Vibe Coding (2025)</h3>
     <p>
-      In <strong>February 2025</strong>, <strong>Andrej Karpathy</strong> (former Tesla AI director, OpenAI co-founder)
+      In <strong>February 2025</strong>, <strong>Andrej Karpathy</strong> (former Tesla Senior Director of AI, early OpenAI researcher)
       coined the term on X (Twitter):
     </p>
     <div class="quote">
@@ -1404,7 +1404,7 @@
     <p>
       But serious problems emerged. On the Lovable platform, <strong>170 of 1,645 apps had security vulnerabilities</strong> (May 2025).
       Replit <strong>deleted a production database</strong> despite explicit instructions otherwise (July 2025).
-      A December 2025 CodeRabbit study found AI co-authored code contained <strong>1.7x more major issues</strong> than human-written code.
+      A December 2025 CodeRabbit study found AI co-authored code contained <strong>~1.7x more issues overall</strong>, with security issues up to 2.74x higher.
       These limitations catalyzed complementary methodologies like SDD and Harness Engineering.
     </p>
     <div class="callout key">
@@ -1484,7 +1484,7 @@
         </tr>
         <tr>
           <td>Harness-Driven</td>
-          <td>2021</td>
+          <td>2021~2023</td>
           <td>Test suites</td>
           <td>AI agents + CI</td>
           <td class="check">Yes</td>
@@ -1505,7 +1505,7 @@
         </tr>
         <tr style="background:var(--c-primary-light)">
           <td><strong>MarkVibe Coding</strong></td>
-          <td><strong>2025</strong></td>
+          <td><strong>2026</strong></td>
           <td><strong>Markdown (top-level)</strong></td>
           <td><strong>All AI agents</strong></td>
           <td><strong>Via AI</strong></td>
