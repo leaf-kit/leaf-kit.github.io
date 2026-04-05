@@ -424,7 +424,7 @@
       <a href="#ch1">핵심 개념</a>
       <a href="#ch2">제로-터미널</a>
       <a href="#ch3">워크플로우</a>
-      <a href="#ch4">하네스</a>
+      <a href="#ch4">하네스 엔지니어링</a>
       <a href="#ch5">실무 가이드</a>
       <a href="#ch6">유사 방법론</a>
       <a href="#conclusion">결론</a>
@@ -464,7 +464,7 @@
       <li><a href="#ch1">핵심 개념과 정의 <span class="toc-label">Core Concepts</span></a></li>
       <li><a href="#ch2">제로-터미널 원칙 <span class="toc-label">Zero-Terminal Principle</span></a></li>
       <li><a href="#ch3">워크플로우 — TODO 마크다운의 힘 <span class="toc-label">Workflow</span></a></li>
-      <li><a href="#ch4">하네스 주도 개발 <span class="toc-label">Harness-Driven Dev</span></a></li>
+      <li><a href="#ch4">하네스 엔지니어링 <span class="toc-label">Harness Engineering</span></a></li>
       <li><a href="#ch5">실무 적용 가이드 <span class="toc-label">Practical Guide</span></a></li>
       <li><a href="#ch6">유사 방법론과의 비교 <span class="toc-label">Related Methodologies</span></a></li>
       <li><a href="#conclusion">결론: 코딩 없는 코딩의 미래 <span class="toc-label">Conclusion</span></a></li>
@@ -1203,109 +1203,6 @@
       그것은 각 에이전트의 고유 지침 파일의 영역이다.
       MARKVIBE.md는 그 파일들의 <strong>위치와 우선순위만 정의</strong>하는 메타 레이어이며,
       충돌 시 항상 우선한다.
-    </p>
-
-    <h3>시작하기: 3단계 프로토콜</h3>
-    <div class="workflow">
-      <div class="workflow-step" data-step="1">
-        <h4>프로젝트에 .markvibe/ 워크스페이스 생성</h4>
-        <p>
-          <code>.markvibe/active/</code>와 <code>.markvibe/archive/</code> 디렉터리를 만든다.
-          프로젝트 루트에 에이전트별 지침 파일(CLAUDE.md, AGENTS.md 등)을 배치한다.
-          UI가 있다면 <code>.markvibe/design/DESIGN.md</code>도 추가한다.
-        </p>
-      </div>
-      <div class="workflow-step" data-step="2">
-        <h4>active/에 Seed TODO 작성</h4>
-        <p>
-          <code>.markvibe/active/login.md</code> 처럼 하나의 .md 파일을 생성하고 Seed TODO를 작성한다.
-          이것이 인간이 하는 전부이다.
-        </p>
-      </div>
-      <div class="workflow-step" data-step="3">
-        <h4>마크다운 에디터에서 저장</h4>
-        <p>
-          에디터가 에이전트에 연결되어 있다면 저장만으로 작업이 시작된다.
-          결과는 같은 문서에 실시간 스트리밍 렌더링된다. 추가 요청도 같은 문서에 이어 적는다.
-          완료되면 archive/로 이동한다.
-        </p>
-      </div>
-    </div>
-
-    <h3>권장 디렉터리 구조</h3>
-    <div class="code-block">
-      <div class="code-header"><span>프로젝트 루트</span></div>
-      <div class="code-body">
-<pre><span class="property">my-project/</span>
-│
-├── <span class="keyword">.markvibe/</span>                   <span class="comment"># 통합 워킹 스페이스</span>
-│   ├── <span class="keyword">active/</span>                  <span class="comment"># 현재 활성 문서만 (적을수록 좋다)</span>
-│   │   └── <span class="string">login.md</span>             <span class="comment"># Seed TODO + Result 누적 중</span>
-│   ├── <span class="keyword">archive/</span>                 <span class="comment"># 평가 완료 (읽기 전용)</span>
-│   │   └── <span class="string">onboarding.md</span>        <span class="comment"># 통계 결과만 남음</span>
-│   └── <span class="keyword">design/</span>                  <span class="comment"># UI/화면 디자인 (선택)</span>
-│       └── <span class="string">DESIGN.md</span>
-│
-├── <span class="keyword">CLAUDE.md</span>                    <span class="comment"># Claude 에이전트 설정</span>
-├── <span class="keyword">.codex/AGENTS.md</span>             <span class="comment"># Codex 에이전트 설정 (선택)</span>
-├── <span class="keyword">.cursor/rules/</span>               <span class="comment"># Cursor 규칙 (선택)</span>
-│
-├── <span class="property">src/</span>                         <span class="comment"># 소스 코드 (에이전트 관리)</span>
-├── <span class="property">tests/</span>                       <span class="comment"># 테스트 코드 (하네스 관리)</span>
-└── <span class="property">docs/</span>                        <span class="comment"># 문서 (에이전트 생성)</span></pre>
-      </div>
-    </div>
-
-    <h3>경로별 권한</h3>
-    <table class="compare-table">
-      <thead>
-        <tr><th>대상</th><th>active/</th><th>archive/</th><th>design/</th><th>src/tests/docs/</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><strong>인간</strong></td><td>Read + Write</td><td>Read only</td><td>Read + Write</td><td>Read only</td></tr>
-        <tr><td><strong>에이전트</strong></td><td>Read + Append</td><td>Read only</td><td>Read only</td><td>Read + Write</td></tr>
-      </tbody>
-    </table>
-
-    <h3>금지사항</h3>
-    <ul>
-      <li>인간이 터미널에 에이전트 시작 경로 외의 명령어를 입력하는 것</li>
-      <li>인간이 <code>src/</code>, <code>tests/</code>, <code>docs/</code> 안의 코드를 직접 편집하는 것</li>
-      <li>에이전트가 <code>active/</code>의 인간 작성 영역(Seed TODO, 추가 요청)을 수정·삭제하는 것</li>
-      <li>에이전트가 인간에게 터미널 입력을 요청하는 것</li>
-      <li>에이전트가 MARKVIBE.md의 정의를 무시하고 프로젝트 구조를 변경하는 것</li>
-    </ul>
-
-    <h3>에이전트별 설정</h3>
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th>에이전트</th>
-          <th>시작 방법</th>
-          <th>지침 파일</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Claude Code</strong></td>
-          <td><code>claude ".markvibe/active/login.md를 참고해서 작업하세요"</code></td>
-          <td>CLAUDE.md (자동 로드)</td>
-        </tr>
-        <tr>
-          <td><strong>OpenAI Codex</strong></td>
-          <td>Codex CLI에 active/*.md 경로 전달</td>
-          <td>AGENTS.md (자동 로드)</td>
-        </tr>
-        <tr>
-          <td><strong>Cursor / Windsurf</strong></td>
-          <td>.cursorrules 또는 .windsurfrules에 규칙 포함</td>
-          <td>에이전트 규칙 파일</td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="en">
-      Each agent has its own instruction file. MARKVIBE.md sits above all of them as the human top-level directive.
-      Agents are interchangeable — the .markvibe/ workspace structure remains constant regardless of which agent is used.
     </p>
 
     <h3>마크바이브 에디터 — 설계 철학</h3>

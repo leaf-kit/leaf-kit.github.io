@@ -408,7 +408,7 @@
       <a href="#ch1">Concepts</a>
       <a href="#ch2">Zero-Terminal</a>
       <a href="#ch3">Workflow</a>
-      <a href="#ch4">Harness</a>
+      <a href="#ch4">Harness Engineering</a>
       <a href="#ch5">Guide</a>
       <a href="#ch6">Lineage</a>
       <a href="#conclusion">Conclusion</a>
@@ -448,7 +448,7 @@
       <li><a href="#ch1">Core Concepts and Definitions</a></li>
       <li><a href="#ch2">The Zero-Terminal Principle</a></li>
       <li><a href="#ch3">Workflow: The Power of TODO Markdown</a></li>
-      <li><a href="#ch4">Harness-Driven Development</a></li>
+      <li><a href="#ch4">Harness Engineering</a></li>
       <li><a href="#ch5">Practical Implementation Guide</a></li>
       <li><a href="#ch6">Related Methodologies &amp; How MarkVibe Differs</a></li>
       <li><a href="#conclusion">Conclusion: The Future of Codeless Coding</a></li>
@@ -1143,104 +1143,6 @@
       MARKVIBE.md does not contain detailed coding rules or style guides — that belongs in each agent's native file.
       MARKVIBE.md only defines the <strong>location and priority</strong> of those files as a meta layer.
       On conflict, it always takes precedence.
-    </p>
-
-    <h3>Getting Started: 3-Step Protocol</h3>
-    <div class="workflow">
-      <div class="workflow-step" data-step="1">
-        <h4>Create .markvibe/ Workspace</h4>
-        <p>
-          Create <code>.markvibe/active/</code> and <code>.markvibe/archive/</code> directories.
-          Place agent instruction files (CLAUDE.md, AGENTS.md, etc.) at the project root.
-          For UI projects, add <code>.markvibe/design/DESIGN.md</code>.
-        </p>
-      </div>
-      <div class="workflow-step" data-step="2">
-        <h4>Write a Seed TODO in active/</h4>
-        <p>
-          Create a single .md file like <code>.markvibe/active/login.md</code> and write the Seed TODO.
-          That's all the human does.
-        </p>
-      </div>
-      <div class="workflow-step" data-step="3">
-        <h4>Save from Markdown Editor</h4>
-        <p>
-          If the editor is connected to the agent, saving triggers the work.
-          Results stream into the same document in real time. Follow-ups are appended to the same file.
-          When complete, move to archive/.
-        </p>
-      </div>
-    </div>
-
-    <h3>Recommended Project Structure</h3>
-    <div class="code-block">
-      <div class="code-header"><span>Project root</span></div>
-      <div class="code-body">
-<pre><span class="property">my-project/</span>
-│
-├── <span class="keyword">.markvibe/</span>                   <span class="comment"># Unified working space</span>
-│   ├── <span class="keyword">active/</span>                  <span class="comment"># Active documents only (fewer is better)</span>
-│   │   └── <span class="string">login.md</span>             <span class="comment"># Seed TODO + Results accumulating</span>
-│   ├── <span class="keyword">archive/</span>                 <span class="comment"># Evaluated, read-only</span>
-│   │   └── <span class="string">onboarding.md</span>        <span class="comment"># Statistical results only</span>
-│   └── <span class="keyword">design/</span>                  <span class="comment"># UI/visual design specs (optional)</span>
-│       └── <span class="string">DESIGN.md</span>
-│
-├── <span class="keyword">CLAUDE.md</span>                    <span class="comment"># Claude agent config</span>
-├── <span class="keyword">.codex/AGENTS.md</span>             <span class="comment"># Codex agent config (optional)</span>
-├── <span class="keyword">.cursor/rules/</span>               <span class="comment"># Cursor rules (optional)</span>
-│
-├── <span class="property">src/</span>                         <span class="comment"># Source code (agent-managed)</span>
-├── <span class="property">tests/</span>                       <span class="comment"># Test code (harness-managed)</span>
-└── <span class="property">docs/</span>                        <span class="comment"># Documentation (agent-generated)</span></pre>
-      </div>
-    </div>
-
-    <h3>Permissions by Path</h3>
-    <table class="compare-table">
-      <thead>
-        <tr><th>Subject</th><th>active/</th><th>archive/</th><th>design/</th><th>src/tests/docs/</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><strong>Human</strong></td><td>Read + Write</td><td>Read only</td><td>Read + Write</td><td>Read only</td></tr>
-        <tr><td><strong>Agent</strong></td><td>Read + Append</td><td>Read only</td><td>Read only</td><td>Read + Write</td></tr>
-      </tbody>
-    </table>
-
-    <h3>Forbidden</h3>
-    <ul>
-      <li>Human typing any terminal command beyond the agent start path</li>
-      <li>Human directly editing code in <code>src/</code>, <code>tests/</code>, <code>docs/</code></li>
-      <li>Agent modifying human-written areas (Seed TODO, follow-up requests) in <code>active/</code></li>
-      <li>Agent asking the human to type terminal commands</li>
-      <li>Agent overriding MARKVIBE.md's definitions to change project structure</li>
-    </ul>
-
-    <h3>Agent Routing</h3>
-    <table class="compare-table">
-      <thead>
-        <tr><th>Agent</th><th>Start Command</th><th>Instruction File</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Claude Code</strong></td>
-          <td><code>claude ".markvibe/active/login.md — proceed"</code></td>
-          <td>CLAUDE.md (auto-loaded)</td>
-        </tr>
-        <tr>
-          <td><strong>OpenAI Codex</strong></td>
-          <td>Codex CLI + active/*.md path</td>
-          <td>AGENTS.md (auto-loaded)</td>
-        </tr>
-        <tr>
-          <td><strong>Cursor / Windsurf</strong></td>
-          <td>.cursorrules with MarkVibe rules included</td>
-          <td>Agent rules file</td>
-        </tr>
-      </tbody>
-    </table>
-    <p>
-      Agents are interchangeable — the .markvibe/ workspace structure remains constant regardless of which agent is used.
     </p>
 
     <h3>MarkVibe Editor — Design Philosophy</h3>
