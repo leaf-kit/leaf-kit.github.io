@@ -1652,13 +1652,13 @@ function tweetResult(){
   const q=getQuote();const hook=getShareHook(t3[0][0]);
   const label=LANG==='ko'?'2026 AI 파워 랭킹':LANG==='zh'?'2026 AI 实力排行':LANG==='ja'?'2026 AIパワーランキング':'2026 AI Power Rankings';
   const play=LANG==='ko'?'플레이':LANG==='zh'?'开始游戏':LANG==='ja'?'プレイ':'Play';
-  const text=encodeURIComponent(`🎮 AI WARS\n\n🏆 ${label}:\n👑 ${CO_FLAG[t3[0][0]]||''} ${t3[0][0]}: ${t3[0][1].p}\n🥈 ${CO_FLAG[t3[1][0]]||''} ${t3[1][0]}: ${t3[1][1].p}\n🥉 ${CO_FLAG[t3[2][0]]||''} ${t3[2][0]}: ${t3[2][1].p}\n\n${hook}\n\n💬 "${q.q}" — ${q.a}\n\n▶ ${play}: http://leaf-kit.github.io/aiwars.game\n#AIWars`);
+  const text=encodeURIComponent(`🎮 AI WARS\n\n🏆 ${label}:\n👑 ${CO_FLAG[t3[0][0]]||''} ${t3[0][0]}: ${t3[0][1].p}\n🥈 ${CO_FLAG[t3[1][0]]||''} ${t3[1][0]}: ${t3[1][1].p}\n🥉 ${CO_FLAG[t3[2][0]]||''} ${t3[2][0]}: ${t3[2][1].p}\n\n${hook}\n\n💬 "${q.q}" — ${q.a}\n\n▶ ${play}: http://leaf-kit.github.io/aiwars\n#AIWars`);
   window.open(`https://x.com/intent/tweet?text=${text}&via=leafeditor`,'_blank');
 }
 function shareResult(){
   updCo();const s=Object.entries(G.companies).filter(([,v])=>v.p>0).sort((a,b)=>b[1].p-a[1].p);const t3=s.slice(0,3);
   const q=getQuote();const hook=getShareHook(t3[0][0]);
-  const txt=`🎮 AI WARS\n👑${CO_FLAG[t3[0][0]]||''} ${t3[0][0]}:${t3[0][1].p} 🥈${CO_FLAG[t3[1][0]]||''} ${t3[1][0]}:${t3[1][1].p} 🥉${CO_FLAG[t3[2][0]]||''} ${t3[2][0]}:${t3[2][1].p}\n\n${hook}\n💬 "${q.q}" — ${q.a}\n\n▶ http://leaf-kit.github.io/aiwars.game`;
+  const txt=`🎮 AI WARS\n👑${CO_FLAG[t3[0][0]]||''} ${t3[0][0]}:${t3[0][1].p} 🥈${CO_FLAG[t3[1][0]]||''} ${t3[1][0]}:${t3[1][1].p} 🥉${CO_FLAG[t3[2][0]]||''} ${t3[2][0]}:${t3[2][1].p}\n\n${hook}\n💬 "${q.q}" — ${q.a}\n\n▶ http://leaf-kit.github.io/aiwars`;
   navigator.clipboard.writeText(txt).then(()=>alert('Copied!')).catch(()=>prompt('Copy:',txt));
 }
 function restartGame(){document.getElementById('finalScreen').style.display='none';startGame()}
