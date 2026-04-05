@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI WARS: THE SIMULATION</title>
+<style>
+:root{--sb:min(340px,23vw);--fs:clamp(12px,1.1vw,18px);--fsl:clamp(14px,1.3vw,22px);--fsh:clamp(10px,.9vw,15px)}
+@media(min-width:1400px){:root{--fs:clamp(15px,1.2vw,20px);--fsl:clamp(17px,1.4vw,24px);--fsh:clamp(12px,1vw,16px);--sb:min(380px,24vw)}}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Courier New',monospace;color:#0f0;user-select:none}
+canvas{display:block;position:absolute;top:0;left:0}
+
+/* LANG SELECT */
+#langSelect{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#langSelect h1{font-size:clamp(40px,5vw,60px);color:#0f0;text-shadow:0 0 50px #0f0,0 0 100px #0f0;margin-bottom:8px;letter-spacing:10px;animation:tp 2s ease-in-out infinite}
+@keyframes tp{0%,100%{text-shadow:0 0 50px #0f0,0 0 100px #0f0}50%{text-shadow:0 0 80px #0ff,0 0 160px #0ff}}
+#langSelect .st{font-size:clamp(12px,1.2vw,16px);color:#888;margin-bottom:40px;letter-spacing:3px}
+.lang-btns{display:flex;gap:20px}
+.lang-btn{padding:20px 50px;border:2px solid #0f0;border-radius:12px;background:rgba(0,255,0,.05);color:#0f0;font-family:'Courier New',monospace;font-size:clamp(16px,1.5vw,22px);cursor:pointer;transition:.3s;letter-spacing:2px}
+.lang-btn:hover{background:rgba(0,255,0,.2);transform:scale(1.1);box-shadow:0 0 40px rgba(0,255,0,.4)}
+.lang-btn .flag{font-size:clamp(28px,3vw,40px);display:block;margin-bottom:8px}
+
+/* TOP BAR */
+#topBar{position:fixed;top:0;left:0;right:0;height:clamp(50px,5vh,65px);display:flex;align-items:center;padding:0 20px;background:linear-gradient(180deg,rgba(0,0,0,.95) 60%,transparent);z-index:10;pointer-events:none}
+#yearDisplay{font-size:clamp(36px,3.5vw,52px);font-weight:bold;color:#0f0;text-shadow:0 0 30px #0f0,0 0 60px #0f0;min-width:100px}
+#eventDisplay{font-size:clamp(13px,1.2vw,18px);color:#ff0;text-align:center;flex:1;padding:0 15px;text-shadow:0 0 15px #ff0;line-height:1.3}
+
+/* DEV LINKS */
+#devLinks{position:fixed;top:12px;right:calc(var(--sb) + 12px);z-index:20;display:flex;gap:8px;pointer-events:all}
+#devLinks a{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:5px;font-size:clamp(9px,.7vw,11px);text-decoration:none;font-family:'Courier New',monospace;transition:.2s;opacity:.5}
+#devLinks a:hover{opacity:1;transform:scale(1.05)}
+#devLinks .dl-x{color:#fff;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05)}
+#devLinks .dl-gh{color:#ccc;border:1px solid rgba(200,200,200,.15);background:rgba(200,200,200,.04)}
+
+/* TIMELINE */
+#timelineBar{position:fixed;top:clamp(50px,5vh,65px);left:20px;right:calc(var(--sb) + 10px);height:5px;background:rgba(0,255,0,.1);border-radius:3px;z-index:10;pointer-events:none}
+#timelineFill{height:100%;background:linear-gradient(90deg,#0f0,#0ff,#f0f);border-radius:3px;width:0%;transition:width .2s}
+#seedLabel{position:fixed;top:calc(clamp(50px,5vh,65px) + 6px);left:20px;font-size:9px;color:#444;z-index:10;pointer-events:none}
+
+/* BOTTOM HUMAN HISTORY TICKER */
+#humanHistory{position:fixed;bottom:0;left:0;right:var(--sb);height:32px;background:linear-gradient(0deg,rgba(0,0,0,.92),rgba(0,0,0,.3));z-index:10;pointer-events:none;overflow:hidden;border-top:1px solid rgba(100,100,255,.15);display:flex;align-items:center}
+#humanHistory .ticker{display:flex;white-space:nowrap;align-items:center;height:100%;transition:transform .5s ease-out}
+#humanHistory .tick-item{padding:0 clamp(15px,2vw,30px);font-size:clamp(10px,.9vw,13px);color:rgba(150,150,255,.5);flex-shrink:0;transition:all .3s}
+#humanHistory .tick-item.past{color:rgba(150,150,255,.35)}
+#humanHistory .tick-item.current{color:#ff0;font-weight:bold;text-shadow:0 0 10px rgba(255,255,0,.5);font-size:clamp(11px,1vw,14px)}
+#humanHistory .tick-item.future{color:rgba(100,100,150,.25)}
+#humanHistory .tick-item .tick-yr{font-weight:bold;margin-right:5px}
+#humanHistory .tick-now{color:#0f0;font-weight:bold;font-size:clamp(11px,1vw,14px);padding:0 15px;flex-shrink:0;text-shadow:0 0 8px #0f0}
+
+/* RIGHT SIDEBAR */
+#sidebar{position:fixed;top:0;right:0;width:var(--sb);height:100%;background:linear-gradient(270deg,rgba(0,0,0,.97) 85%,transparent);z-index:10;display:flex;flex-direction:column;overflow:hidden}
+#sideTop{padding:10px 12px 0;flex-shrink:0}
+#sideTop h3{color:#0f0;font-size:var(--fsl);margin-bottom:6px;letter-spacing:3px;text-shadow:0 0 8px #0f0}
+.lb-item{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;margin:2px 0;font-size:var(--fsl);border-radius:4px;background:rgba(0,255,0,.03);border:1px solid rgba(0,255,0,.06);cursor:pointer;pointer-events:all;transition:.2s}
+.lb-item:hover{background:rgba(0,255,0,.15);border-color:#0f0}
+.lb-item .n{color:#fff;font-size:var(--fsl);font-weight:bold}.lb-item .p{color:#0ff;font-weight:bold;font-size:var(--fsl)}
+.lb-badge{display:inline-block;font-size:clamp(14px,1.2vw,18px);margin-right:3px;vertical-align:middle}
+#lbHint{font-size:var(--fsh);color:#555;margin-top:4px;text-align:center;pointer-events:none}
+/* MODEL INFO MODAL */
+#modelModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:40;display:none;align-items:center;justify-content:center;cursor:pointer}
+#modelModalInner{background:rgba(5,5,20,.97);border:2px solid #0f0;border-radius:14px;padding:20px 24px;max-width:min(500px,80vw);max-height:80vh;overflow-y:auto;cursor:default;position:relative;box-shadow:0 0 60px rgba(0,255,0,.2)}
+#modelModalInner::-webkit-scrollbar{width:3px}
+#modelModalInner::-webkit-scrollbar-thumb{background:#0f066}
+#modelModalClose{position:absolute;top:10px;right:14px;font-size:22px;color:#888;cursor:pointer;transition:.2s;pointer-events:all}
+#modelModalClose:hover{color:#fff;transform:scale(1.2)}
+#modelModalTitle{color:#0ff;font-size:var(--fsl);margin-bottom:10px;padding-right:30px}
+#companyDetail{display:none}
+#companyDetail h4{color:#0ff;font-size:var(--fsl);margin-bottom:5px}
+.model-item{font-size:var(--fs);color:#aaa;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.model-item .yr{color:#0f0;font-weight:bold;margin-right:4px}
+.model-tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:var(--fsh);font-weight:bold;margin-left:3px}
+.tag-llm{background:rgba(0,221,221,.15);color:#0dd}
+.tag-vision{background:rgba(255,136,0,.15);color:#f80}
+.tag-genai{background:rgba(255,0,255,.15);color:#f0f}
+.tag-agent{background:rgba(0,255,0,.15);color:#0f0}
+.tag-paper{background:rgba(255,255,0,.15);color:#ff0}
+.tag-hw{background:rgba(118,185,0,.15);color:#76b900}
+#divider{height:1px;background:rgba(0,255,0,.12);margin:5px 0;flex-shrink:0}
+#histTitle{padding:4px 12px 2px;flex-shrink:0}
+#histTitle h3{color:#ff0;font-size:var(--fs);letter-spacing:2px;text-shadow:0 0 6px #ff0}
+#historyFeed{flex:1;overflow-y:auto;padding:0 12px 12px;pointer-events:all}
+#historyFeed::-webkit-scrollbar{width:3px}
+#historyFeed::-webkit-scrollbar-thumb{background:#0f066}
+.hist-entry{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:var(--fs);line-height:1.5;animation:histIn .4s ease-out}
+.hist-entry:first-child{background:rgba(255,255,0,.08);border-left:3px solid #ff0;padding-left:8px;margin-left:-8px}
+@keyframes histIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.hist-entry .h-yr{color:#0f0;font-weight:bold;font-size:var(--fs)}
+.hist-entry .h-ev{color:#ff0;font-size:var(--fs);font-weight:bold}
+.hist-entry .h-desc{color:#ccc;font-size:var(--fs)}
+.hist-entry .h-dlg{color:#f80;font-style:italic;font-size:var(--fs)}
+.hist-entry .h-new{color:#fff;font-weight:bold}
+.h-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:var(--fsh);font-weight:bold;margin:0 2px;vertical-align:middle}
+.hb-battle{background:rgba(255,68,68,.2);color:#f44}
+.hb-paper{background:rgba(255,255,0,.15);color:#ff0}
+.hb-model{background:rgba(0,221,221,.15);color:#0dd}
+.hb-nation{background:rgba(255,136,0,.15);color:#f80}
+.hb-boom{background:rgba(255,0,255,.15);color:#f0f}
+
+/* CEO INTRO CARD (non-blocking flash) */
+#ceoCard{position:fixed;top:15%;left:50%;transform:translateX(-50%);z-index:27;display:none;pointer-events:none;text-align:center;animation:ceoIn .5s ease-out}
+@keyframes ceoIn{from{opacity:0;transform:translateX(-50%) translateY(-30px) scale(.8)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+#ceoCard.ceo-out{animation:ceoOut .5s ease-in forwards}
+@keyframes ceoOut{to{opacity:0;transform:translateX(-50%) translateY(-20px) scale(.9)}}
+#ceoCard .ceo-inner{display:flex;align-items:center;gap:14px;background:rgba(0,0,0,.92);border:2px solid rgba(255,200,0,.4);border-radius:14px;padding:12px 18px;box-shadow:0 0 40px rgba(255,200,0,.2)}
+#ceoCard .ceo-photo{width:clamp(60px,7vw,85px);height:clamp(60px,7vw,85px);border-radius:50%;object-fit:cover;border:2px solid #ffc800;flex-shrink:0;background:#111}
+#ceoCard .ceo-photo-em{width:clamp(60px,7vw,85px);height:clamp(60px,7vw,85px);border-radius:50%;border:2px solid #ffc800;flex-shrink:0;background:#111;display:flex;align-items:center;justify-content:center;font-size:clamp(28px,3.5vw,42px)}
+#ceoCard .ceo-info{text-align:left;max-width:min(350px,45vw)}
+#ceoCard .ceo-name{font-size:clamp(15px,1.4vw,20px);font-weight:bold;color:#ffc800;margin-bottom:3px}
+#ceoCard .ceo-role{font-size:clamp(10px,.9vw,13px);color:#0ff;margin-bottom:6px}
+#ceoCard .ceo-quote{font-size:clamp(11px,1vw,14px);color:#fff;font-style:italic;line-height:1.4}
+#ceoCard .ceo-quote::before{content:'"';color:#ffc800;font-size:1.2em}
+#ceoCard .ceo-quote::after{content:'"';color:#ffc800;font-size:1.2em}
+#ceoCard .ceo-deceased{font-size:clamp(9px,.8vw,11px);color:#888;margin-top:4px}
+
+/* EVENT CARD (AI milestones - non-blocking flash) */
+#eventCard{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:28;display:none;pointer-events:none;text-align:center;max-width:min(500px,70vw);animation:ecIn .4s ease-out}
+@keyframes ecIn{from{opacity:0;transform:translate(-50%,-50%) scale(.7)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+#eventCard.ec-out{animation:ecOut .5s ease-in forwards}
+@keyframes ecOut{to{opacity:0;transform:translate(-50%,-55%) scale(.9)}}
+#eventCard .ec-img{width:min(260px,38vw);height:min(160px,22vw);object-fit:cover;border-radius:10px;border:2px solid #0f0;box-shadow:0 0 40px rgba(0,255,0,.4);margin-bottom:10px;background:#111}
+#eventCard .ec-img-placeholder{width:min(260px,38vw);height:min(160px,22vw);border-radius:10px;border:2px solid;box-shadow:0 0 40px rgba(0,255,0,.3);margin:0 auto 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080808;font-size:clamp(36px,4.5vw,56px)}
+#eventCard .ec-title{font-size:clamp(15px,1.4vw,20px);font-weight:bold;color:#fff;text-shadow:0 0 20px rgba(255,255,255,.5);margin-bottom:5px}
+#eventCard .ec-type{display:inline-block;padding:2px 10px;border-radius:10px;font-size:var(--fsh);font-weight:bold;margin-bottom:6px}
+#eventCard .ec-desc{font-size:var(--fs);color:#ccc;line-height:1.4;max-width:min(420px,60vw);margin:0 auto;background:rgba(0,0,0,.85);padding:8px 12px;border-radius:8px;border:1px solid rgba(0,255,0,.15)}
+
+/* HISTORY FLASH (human history - floats in from left, drifts out) */
+#histFlash{position:fixed;bottom:45px;left:20px;z-index:15;pointer-events:none;display:none;animation:hfIn .6s ease-out}
+@keyframes hfIn{from{opacity:0;transform:translateY(30px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
+#histFlash.hf-out{animation:hfOut .6s ease-in forwards}
+@keyframes hfOut{to{opacity:0;transform:translateY(-20px) scale(.9)}}
+#histFlash .hf-inner{display:flex;align-items:center;gap:10px;background:rgba(0,0,20,.88);border:1px solid rgba(100,100,255,.25);border-radius:10px;padding:8px 14px;box-shadow:0 0 25px rgba(80,80,200,.2)}
+#histFlash .hf-img{width:clamp(60px,8vw,90px);height:clamp(45px,6vw,65px);object-fit:cover;border-radius:6px;border:1px solid rgba(100,100,255,.3);flex-shrink:0;background:#111}
+#histFlash .hf-img-em{width:clamp(60px,8vw,90px);height:clamp(45px,6vw,65px);border-radius:6px;border:1px solid rgba(100,100,255,.3);flex-shrink:0;background:#080818;display:flex;align-items:center;justify-content:center;font-size:clamp(24px,3vw,36px)}
+#histFlash .hf-text{max-width:min(300px,40vw)}
+#histFlash .hf-yr{font-size:clamp(12px,1.1vw,15px);color:rgba(100,180,255,.8);font-weight:bold}
+#histFlash .hf-title{font-size:clamp(11px,1vw,14px);color:rgba(180,180,220,.7);line-height:1.3}
+
+/* OVERLAYS */
+#overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:25;pointer-events:none;display:flex;align-items:center;justify-content:center}
+#overlayText{font-size:clamp(60px,8vw,120px);font-weight:bold;color:#ff0;text-shadow:0 0 60px #ff0,0 0 120px #f80;display:none;text-align:center}
+#breakingNews{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);font-size:clamp(15px,1.3vw,20px);color:#f00;text-shadow:0 0 20px #f00;z-index:29;display:none;pointer-events:none;text-align:center;max-width:min(550px,75vw);padding:20px;border:2px solid #f00;background:rgba(0,0,0,.94);border-radius:12px}
+.bn-lbl{font-size:clamp(18px,1.6vw,24px);letter-spacing:5px;margin-bottom:8px;animation:bnf .5s infinite}
+@keyframes bnf{0%,100%{opacity:1}50%{opacity:.3}}
+#battleResult{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(28px,3vw,40px);color:#0f0;text-shadow:0 0 50px #0f0;z-index:29;display:none;pointer-events:none;text-align:center;white-space:pre-line}
+#tooltip{position:fixed;display:none;background:rgba(0,0,0,.96);border:1px solid #0f0;border-radius:10px;padding:12px;z-index:30;pointer-events:none;max-width:min(280px,35vw);font-size:var(--fs);box-shadow:0 0 25px rgba(0,255,0,.4)}
+
+/* FINAL */
+#finalScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.97);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+#finalScreen h1{font-size:clamp(28px,3.5vw,42px);color:#ff0;text-shadow:0 0 50px #ff0;margin-bottom:6px;letter-spacing:5px}
+#finalScreen h2{font-size:clamp(13px,1.2vw,17px);color:#0f0;margin-bottom:14px}
+#finalRankings{max-width:min(700px,85vw);width:100%;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+.fr{display:flex;align-items:center;padding:7px 10px;border-radius:6px;background:rgba(0,255,0,.04);border:1px solid rgba(0,255,0,.1)}
+.fr .rn{font-size:clamp(14px,1.3vw,20px);font-weight:bold;color:#ff0;width:32px;flex-shrink:0}
+.fr .rm{flex:1;font-size:clamp(11px,1vw,14px);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fr .rp{font-size:clamp(11px,1vw,14px);color:#0ff;font-weight:bold;flex-shrink:0;margin-left:6px}
+.fr.top3{border-color:#ff0;background:rgba(255,255,0,.06);grid-column:span 2;padding:10px 14px}
+.fr.top3 .rn{font-size:clamp(20px,2vw,28px);width:38px}
+.fr.top3 .rm{font-size:clamp(14px,1.2vw,18px)}
+.fr.top3 .rp{font-size:clamp(14px,1.2vw,18px)}
+#tauntBox{max-width:min(600px,80vw);margin:0 auto 14px;text-align:center}
+#tauntMsg{font-size:clamp(14px,1.3vw,19px);color:#f80;font-weight:bold;line-height:1.5;text-shadow:0 0 15px rgba(255,136,0,.4);animation:tauntPulse 1.5s ease-in-out infinite}
+@keyframes tauntPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.85;transform:scale(1.02)}}
+#tauntSub{font-size:clamp(11px,1vw,14px);color:#ff0;margin-top:6px;opacity:.8}
+#rivalTag{display:inline-block;padding:3px 12px;border-radius:6px;font-size:clamp(12px,1.1vw,16px);font-weight:bold;margin-top:8px;animation:rivalGlow 1s ease-in-out infinite alternate}
+@keyframes rivalGlow{from{box-shadow:0 0 10px currentColor}to{box-shadow:0 0 30px currentColor}}
+#finalBtns{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+#finalBtns button{padding:11px 24px;border:2px solid;border-radius:8px;background:rgba(0,0,0,.5);font-family:'Courier New',monospace;font-size:clamp(11px,1vw,14px);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
+#finalBtns button:hover{transform:scale(1.08)}
+.btn-r{border-color:#0f0!important;color:#0f0}.btn-r:hover{background:rgba(0,255,0,.2)!important}
+.btn-t{border-color:#1da1f2!important;color:#1da1f2}.btn-t:hover{background:rgba(29,161,242,.2)!important}
+.btn-s{border-color:#ff0!important;color:#ff0}.btn-s:hover{background:rgba(255,255,0,.2)!important}
+
+/* NATION ENTRY BANNER */
+#nationBanner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:28;display:none;pointer-events:none;text-align:center;padding:clamp(20px,3vw,35px) clamp(30px,4vw,55px);background:rgba(0,0,0,.94);border:3px solid #ff0;border-radius:16px;box-shadow:0 0 60px rgba(255,255,0,.3);animation:nationIn .5s ease-out}
+@keyframes nationIn{from{opacity:0;transform:translate(-50%,-50%) scale(.5)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+#nationBanner .nb-flag{font-size:clamp(48px,6vw,80px);margin-bottom:8px}
+#nationBanner .nb-country{font-size:clamp(20px,2.5vw,32px);font-weight:bold;color:#ff0;text-shadow:0 0 20px #ff0;letter-spacing:4px}
+#nationBanner .nb-company{font-size:clamp(13px,1.3vw,18px);color:#0ff;margin-top:6px}
+#nationBanner .nb-motto{font-size:clamp(10px,1vw,14px);color:#f80;margin-top:8px;font-style:italic}
+
+/* PUBLIC VOICE — mini person + speech bubble (top-right) */
+#publicVoice{position:fixed;top:80px;right:calc(var(--sb) + 15px);z-index:14;pointer-events:none;display:none;animation:pvIn .5s ease-out}
+@keyframes pvIn{from{opacity:0;transform:translateY(-15px)}to{opacity:1;transform:translateY(0)}}
+#publicVoice.pv-out{animation:pvOut .4s ease-in forwards}
+@keyframes pvOut{to{opacity:0;transform:translateY(-20px)}}
+#publicVoice .pv-wrap{display:flex;align-items:flex-end;gap:6px}
+#publicVoice .pv-person{font-size:clamp(22px,2.5vw,32px)}
+#publicVoice .pv-bubble{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px 10px 10px 2px;padding:6px 12px;max-width:min(320px,40vw);font-size:clamp(11px,1vw,14px);color:rgba(255,255,255,.75);line-height:1.4}
+#publicVoice .pv-handle{font-size:clamp(9px,.8vw,11px);color:rgba(255,255,255,.35);margin-top:2px}
+
+.shake{animation:sk .3s ease-out}
+@keyframes sk{0%,100%{transform:translate(0)}10%{transform:translate(-14px,10px)}20%{transform:translate(14px,-10px)}30%{transform:translate(-10px,7px)}40%{transform:translate(10px,-7px)}50%{transform:translate(-6px,4px)}60%{transform:translate(6px,-4px)}70%{transform:translate(-3px,2px)}80%{transform:translate(3px,-2px)}}
+</style>
+</head>
+<body>
+<div id="langSelect"><h1>AI WARS</h1><div class="st">THE SIMULATION</div>
+<div class="lang-btns"><div class="lang-btn" onclick="selectLang('en')"><span class="flag">🇺🇸</span>ENGLISH</div><div class="lang-btn" onclick="selectLang('ko')"><span class="flag">🇰🇷</span>한국어</div><div class="lang-btn" onclick="selectLang('zh')"><span class="flag">🇨🇳</span>中文</div><div class="lang-btn" onclick="selectLang('ja')"><span class="flag">🇯🇵</span>日本語</div></div></div>
+<canvas id="c"></canvas>
+<div id="topBar"><div id="yearDisplay">1950</div><div id="eventDisplay"></div></div>
+<div id="devLinks"><a href="https://x.com/leafeditor" target="_blank" class="dl-x">𝕏 @leafeditor</a><a href="https://github.com/leaf-kit/aiwars.game" target="_blank" class="dl-gh">⌘ GitHub</a></div>
+<div id="timelineBar"><div id="timelineFill"></div></div>
+<div id="seedLabel"></div>
+<div id="sidebar">
+  <div id="sideTop"><h3 id="sbTitle"></h3><div id="lb"></div><div id="lbHint"></div></div>
+  <div id="companyDetail"><h4 id="cdTitle"></h4><div id="cdList"></div></div>
+  <div id="divider"></div>
+  <div id="histTitle"><h3 id="htTitle"></h3></div>
+  <div id="historyFeed"></div>
+</div>
+<div id="modelModal" onclick="closeModelModal()"><div id="modelModalInner" onclick="event.stopPropagation()"><span id="modelModalClose" onclick="closeModelModal()">✕</span><div id="modelModalTitle"></div><div id="modelModalList"></div></div></div>
+<div id="tooltip"></div>
+<div id="overlay"><div id="overlayText"></div></div>
+<div id="ceoCard"><div class="ceo-inner"><div id="ceoPhotoWrap"></div><div class="ceo-info"><div class="ceo-name" id="ceoName"></div><div class="ceo-role" id="ceoRole"></div><div class="ceo-quote" id="ceoQuote"></div><div class="ceo-deceased" id="ceoDeceased"></div></div></div></div>
+<div id="eventCard"><div id="ecImgWrap"></div><div class="ec-title" id="ecTitle"></div><div class="ec-type" id="ecType"></div><div class="ec-desc" id="ecDesc"></div></div>
+<div id="nationBanner"><div class="nb-flag" id="nbFlag"></div><div class="nb-country" id="nbCountry"></div><div class="nb-company" id="nbCompany"></div><div class="nb-motto" id="nbMotto"></div></div>
+<div id="publicVoice"><div class="pv-wrap"><div class="pv-person" id="pvPerson"></div><div><div class="pv-bubble" id="pvBubble"></div><div class="pv-handle" id="pvHandle"></div></div></div></div>
+<div id="histFlash"><div class="hf-inner"><div id="hfImgWrap"></div><div class="hf-text"><div class="hf-yr" id="hfYr"></div><div class="hf-title" id="hfTitle"></div></div></div></div>
+<div id="breakingNews"></div>
+<div id="battleResult"></div>
+<div id="humanHistory"><div class="ticker" id="histTicker"></div></div>
+<div id="finalScreen">
+  <h1 id="fTitle">SIMULATION COMPLETE</h1><h2 id="fSub"></h2>
+  <div id="finalRankings"></div>
+  <div id="tauntBox"><div id="tauntMsg"></div><div id="tauntSub"></div><div id="rivalTag"></div></div>
+  <div id="finalBtns">
+    <button class="btn-t" onclick="tweetResult()">𝕏 TWEET</button>
+    <button class="btn-s" onclick="shareResult()">📋 COPY</button>
+    <button class="btn-r" onclick="restartGame()">↻ RESTART</button>
+  </div>
+</div>
+<script>
+// ============================================================
+// I18N
+// ============================================================
+let LANG='en';
+const T={
+  sbTitle:{en:'// POWER RANKINGS',ko:'// 파워 랭킹',zh:'// 实力排行',ja:'// パワーランキング'},
+  htTitle:{en:'// HISTORY LOG',ko:'// 히스토리 로그',zh:'// 历史日志',ja:'// ヒストリーログ'},
+  lbHint:{en:'▲ Click company for models',ko:'▲ 회사 클릭시 모델 정보',zh:'▲ 点击公司查看模型',ja:'▲ 企業クリックでモデル情報'},
+  fSub:{en:'AI POWER RANKINGS — 2026',ko:'AI 파워 랭킹 — 2026',zh:'AI 实力排行 — 2026',ja:'AIパワーランキング — 2026'},
+  fight:{en:'FIGHT!',ko:'전투!',zh:'战斗！',ja:'戦闘！'},wins:{en:'WINS!',ko:'승리!',zh:'胜出！',ja:'勝利！'},
+  bnLabel:{en:'⚠ BREAKING ⚠',ko:'⚠ 속보 ⚠',zh:'⚠ 突发 ⚠',ja:'⚠ 速報 ⚠'},
+  simDone:{en:'SIMULATION COMPLETE',ko:'시뮬레이션 완료',zh:'模拟完成',ja:'シミュレーション完了'},
+  models:{en:'Models & Milestones',ko:'모델 & 이정표',zh:'模型与里程碑',ja:'モデル＆マイルストーン'},
+  paper:{en:'📄 PAPER',ko:'📄 논문',zh:'📄 论文',ja:'📄 論文'},
+  model:{en:'🤖 MODEL',ko:'🤖 모델',zh:'🤖 模型',ja:'🤖 モデル'},
+  hw:{en:'🔧 HARDWARE',ko:'🔧 하드웨어',zh:'🔧 硬件',ja:'🔧 ハードウェア'},
+  wow:{en:'😮 The world watches in awe...',ko:'😮 세계가 경외의 눈으로 지켜보다...',zh:'😮 全世界屏息以待...',ja:'😮 世界が息を呑んで見守る...'},
+};
+function t(k){return T[k]?.[LANG]||T[k]?.en||k}
+function selectLang(l){LANG=l;document.getElementById('langSelect').style.display='none';initAudio();startGame();requestAnimationFrame(loop)}
+
+// ============================================================
+// COMPANY MODELS (expanded with type tags)
+// ============================================================
+const COMPANY_MODELS={
+  'OpenAI':[
+    {yr:2018,n:'GPT-1',tag:'llm',d:{en:'117M params. Generative Pre-Training.',ko:'1.17억 파라미터. 생성적 사전학습.',zh:'1.17亿参数。生成式预训练。',ja:'1.17億パラメータ。生成的事前学習。'}},
+    {yr:2019,n:'GPT-2',tag:'llm',d:{en:'1.5B params. "Too dangerous."',ko:'15억 파라미터. "너무 위험."',zh:'15亿参数。「太危险。」',ja:'15億パラメータ。「危険すぎる。」'}},
+    {yr:2020,n:'GPT-3',tag:'llm',d:{en:'175B params. Few-shot revolution.',ko:'1750억. 퓨샷 혁명.',zh:'1750亿参数。少样本革命。',ja:'1750億パラメータ。Few-shot革命。'}},
+    {yr:2021,n:'Codex',tag:'llm',d:{en:'Code generation. Powered Copilot.',ko:'코드 생성. 코파일럿 구동.',zh:'代码生成。驱动Copilot。',ja:'コード生成。Copilot駆動。'}},
+    {yr:2021,n:'DALL-E',tag:'genai',d:{en:'Text-to-image generation.',ko:'텍스트→이미지 생성.',zh:'文本→图像生成。',ja:'テキスト→画像生成。'}},
+    {yr:2022,n:'ChatGPT',tag:'llm',d:{en:'RLHF. 100M users in 5 days.',ko:'RLHF. 5일 1억 유저.',zh:'RLHF。5天1亿用户。',ja:'RLHF。5日で1億ユーザー。'}},
+    {yr:2022,n:'Whisper',tag:'llm',d:{en:'Open-source speech recognition.',ko:'오픈소스 음성 인식.',zh:'开源语音识别。',ja:'オープンソース音声認識。'}},
+    {yr:2023,n:'GPT-4',tag:'llm',d:{en:'Multimodal. Bar exam top 10%.',ko:'멀티모달. 변호사시험 상위10%.',zh:'多模态。律师考试前10%。',ja:'マルチモーダル。司法試験上位10%。'}},
+    {yr:2024,n:'GPT-4o',tag:'llm',d:{en:'Omni model. Real-time voice.',ko:'옴니모델. 실시간 음성.',zh:'全能模型。实时语音。',ja:'オムニモデル。リアルタイム音声。'}},
+    {yr:2024,n:'Sora',tag:'genai',d:{en:'Video generation. World simulator.',ko:'비디오 생성. 세계 시뮬레이터.',zh:'视频生成。世界模拟器。',ja:'動画生成。世界シミュレータ。'}},
+    {yr:2024,n:'o1',tag:'llm',d:{en:'Reasoning model. Chain-of-thought.',ko:'추론 모델. 사고의 사슬.',zh:'推理模型。思维链。',ja:'推論モデル。思考の連鎖。'}},
+    {yr:2025,n:'o3',tag:'llm',d:{en:'Advanced reasoning. ARC-AGI benchmark.',ko:'고급 추론. ARC-AGI 벤치마크.',zh:'高级推理。ARC-AGI基准。',ja:'高度推論。ARC-AGIベンチマーク。'}},
+    {yr:2025,n:'Operator',tag:'agent',d:{en:'Computer-use AI agent.',ko:'컴퓨터 사용 AI 에이전트.',zh:'计算机操作AI代理。',ja:'コンピュータ操作AIエージェント。'}},
+    {yr:2025,n:'GPT-4.1',tag:'llm',d:{en:'Coding & instruction following.',ko:'코딩 & 지시 따르기 특화.',zh:'编程与指令遵循。',ja:'コーディング＆指示追従特化。'}},
+    {yr:2026,n:'GPT-5',tag:'llm',d:{en:'[F] Multi-agent orchestration.',ko:'[미래] 멀티에이전트 오케스트레이션.',zh:'[未来] 多智能体编排。',ja:'[未来] マルチエージェントオーケストレーション。'}},
+    {yr:2026,n:'GPT-5.2 Codex',tag:'agent',d:{en:'[F] Autonomous coding agent.',ko:'[미래] 자율 코딩 에이전트.',zh:'[未来] 自主编程代理。',ja:'[未来] 自律コーディングエージェント。'}},
+    {yr:2027,n:'GPT-6',tag:'llm',d:{en:'[F] Agentic reasoning. World sim.',ko:'[미래] 에이전트 추론. 세계 시뮬.',zh:'[未来] 智能体推理。世界模拟。',ja:'[未来] エージェント推論。世界シミュ。'}},
+    {yr:2028,n:'GPT-7',tag:'agent',d:{en:'[F] Reasoning supreme. AGI candidate.',ko:'[미래] 추론 정점. AGI 후보.',zh:'[未来] 推理巅峰。AGI候选。',ja:'[未来] 推論の頂点。AGI候補。'}},
+  ],
+  'Anthropic':[
+    {yr:2023,n:'Claude 1',tag:'llm',d:{en:'Constitutional AI. Safety-first.',ko:'헌법적 AI. 안전 최우선.',zh:'宪法AI。安全优先。',ja:'Constitutional AI。安全第一。'}},
+    {yr:2023,n:'Claude 2',tag:'llm',d:{en:'200K context window.',ko:'200K 컨텍스트.',zh:'200K上下文窗口。',ja:'200Kコンテキスト。'}},
+    {yr:2024,n:'Claude 3',tag:'llm',d:{en:'Opus/Sonnet/Haiku. Mar 2024.',ko:'Opus/Sonnet/Haiku. 2024.3.',zh:'Opus/Sonnet/Haiku。2024.3。',ja:'Opus/Sonnet/Haiku。2024.3。'}},
+    {yr:2024,n:'Claude 3.5 Sonnet',tag:'llm',d:{en:'Best coding model of 2024.',ko:'2024 최고 코딩 모델.',zh:'2024最佳编程模型。',ja:'2024年最高コーディングモデル。'}},
+    {yr:2025,n:'Claude 3.7 Sonnet',tag:'llm',d:{en:'Extended thinking. Hybrid reasoning.',ko:'확장사고. 하이브리드 추론.',zh:'扩展思考。混合推理。',ja:'拡張思考。ハイブリッド推論。'}},
+    {yr:2025,n:'Claude 4 Sonnet',tag:'llm',d:{en:'Parallel tool use. Agent-ready.',ko:'병렬 도구 사용. 에이전트 준비.',zh:'并行工具使用。代理就绪。',ja:'並列ツール使用。エージェント対応。'}},
+    {yr:2025,n:'Claude Opus 4',tag:'agent',d:{en:'Claude Code. Autonomous coding agent.',ko:'클로드 코드. 자율 코딩 에이전트.',zh:'Claude Code。自主编程代理。',ja:'Claude Code。自律コーディングエージェント。'}},
+    {yr:2026,n:'Claude Opus 4.6',tag:'agent',d:{en:'[F] 1M context. Agent mastery.',ko:'[미래] 100만 컨텍스트. 에이전트 마스터리.',zh:'[未来] 100万上下文。代理精通。',ja:'[未来] 100万コンテキスト。エージェントマスタリー。'}},
+    {yr:2027,n:'Claude 5',tag:'agent',d:{en:'[F] Full autonomy. Self-improving.',ko:'[미래] 완전 자율. 자기 개선.',zh:'[未来] 完全自主。自我改进。',ja:'[未来] 完全自律。自己改善。'}},
+    {yr:2028,n:'Claude 6',tag:'agent',d:{en:'[F] Aligned AGI. Constitutional.',ko:'[미래] 정렬된 AGI. 헌법적.',zh:'[未来] 对齐AGI。宪法式。',ja:'[未来] アラインドAGI。Constitutional。'}},
+  ],
+  'Google':[
+    {yr:2017,n:'Transformer',tag:'paper',d:{en:'"Attention Is All You Need"',ko:'"Attention Is All You Need"',zh:'「Attention Is All You Need」',ja:'「Attention Is All You Need」'}},
+    {yr:2018,n:'BERT',tag:'llm',d:{en:'Bidirectional pre-training.',ko:'양방향 사전학습.',zh:'双向预训练。',ja:'双方向事前学習。'}},
+    {yr:2023,n:'Gemini 1.0',tag:'llm',d:{en:'Multimodal. Code Red response.',ko:'멀티모달. 코드레드 대응.',zh:'多模态。Code Red响应。',ja:'マルチモーダル。Code Red対応。'}},
+    {yr:2024,n:'Gemini 1.5 Pro',tag:'llm',d:{en:'1M token context.',ko:'100만 토큰 컨텍스트.',zh:'100万token上下文。',ja:'100万トークンコンテキスト。'}},
+    {yr:2025,n:'Gemma 3',tag:'llm',d:{en:'Open model. Self-learning.',ko:'오픈 모델. 자가학습.',zh:'开放模型。自学习。',ja:'オープンモデル。自己学習。'}},
+    {yr:2025,n:'Gemini 2.5 Pro',tag:'llm',d:{en:'Deep Research. Thinking model.',ko:'딥리서치. 사고 모델.',zh:'深度研究。思考模型。',ja:'ディープリサーチ。思考モデル。'}},
+    {yr:2026,n:'Gemini 3 Pro',tag:'llm',d:{en:'[F] Agent ecosystem. Google integrated.',ko:'[미래] 에이전트 생태계. 구글 통합.',zh:'[未来] 代理生态。Google集成。',ja:'[未来] エージェント生態系。Google統合。'}},
+    {yr:2027,n:'Gemini 4',tag:'llm',d:{en:'[F] World model. Physics simulation.',ko:'[미래] 세계 모델. 물리 시뮬레이션.',zh:'[未来] 世界模型。物理模拟。',ja:'[未来] 世界モデル。物理シミュレーション。'}},
+    {yr:2029,n:'Gemini 5',tag:'agent',d:{en:'[F] Unified intelligence. AGI.',ko:'[미래] 통합 지능. AGI.',zh:'[未来] 统一智能。AGI。',ja:'[未来] 統合知能。AGI。'}},
+  ],
+  'DeepMind':[
+    {yr:2015,n:'AlphaGo',tag:'agent',d:{en:'Beat Lee Sedol 4-1.',ko:'이세돌 4-1.',zh:'击败李世石 4-1。',ja:'李世ドル4-1撃破。'}},
+    {yr:2017,n:'AlphaZero',tag:'agent',d:{en:'Self-taught chess/Go/Shogi.',ko:'자가학습 체스/바둑/장기.',zh:'自学棋类/围棋/将棋。',ja:'自己学習チェス/囲碁/将棋。'}},
+    {yr:2020,n:'AlphaFold 2',tag:'vision',d:{en:'Protein structure. Nobel Prize 2024.',ko:'단백질 구조. 2024 노벨상.',zh:'蛋白质结构。2024诺贝尔奖。',ja:'タンパク質構造。2024年ノーベル賞。'}},
+    {yr:2024,n:'AlphaFold 3',tag:'vision',d:{en:'All biomolecules.',ko:'전체 생체분자.',zh:'全生物分子。',ja:'全生体分子。'}},
+    {yr:2024,n:'Genie 2',tag:'genai',d:{en:'World model. 3D environment gen.',ko:'세계 모델. 3D 환경 생성.',zh:'世界模型。3D环境生成。',ja:'世界モデル。3D環境生成。'}},
+  ],
+  'Meta':[
+    {yr:2023,n:'LLaMA 1',tag:'llm',d:{en:'Open-source 65B LLM. Feb 2023.',ko:'오픈소스 650억 LLM. 2023.2.',zh:'开源650亿LLM。2023.2。',ja:'オープンソース650億LLM。2023.2。'}},
+    {yr:2023,n:'LLaMA 2',tag:'llm',d:{en:'Commercial license. Jul 2023.',ko:'상업 라이선스. 2023.7.',zh:'商用许可。2023.7。',ja:'商用ライセンス。2023.7。'}},
+    {yr:2023,n:'SAM',tag:'vision',d:{en:'Segment Anything Model.',ko:'어디든 세그멘테이션.',zh:'分割一切模型。',ja:'Segment Anythingモデル。'}},
+    {yr:2024,n:'LLaMA 3.1',tag:'llm',d:{en:'405B params. Open giant.',ko:'4050억. 오픈소스 거인.',zh:'4050亿参数。开源巨人。',ja:'4050億パラメータ。オープンソースの巨人。'}},
+    {yr:2025,n:'Llama 4',tag:'llm',d:{en:'Maverick/Scout. MoE. Apr 2025.',ko:'Maverick/Scout. MoE. 2025.4.',zh:'Maverick/Scout。MoE。2025.4。',ja:'Maverick/Scout。MoE。2025.4。'}},
+    {yr:2027,n:'Llama 5',tag:'llm',d:{en:'[F] Open-source AGI attempt.',ko:'[미래] 오픈소스 AGI 시도.',zh:'[未来] 开源AGI尝试。',ja:'[未来] オープンソースAGI試行。'}},
+    {yr:2028,n:'Meta World Model',tag:'agent',d:{en:'[F] LeCun\'s JEPA. Physical AI.',ko:'[미래] 르쿤의 JEPA. 물리 AI.',zh:'[未来] LeCunのJEPA。物理AI。',ja:'[未来] ルカンのJEPA。物理AI。'}},
+  ],
+  'NVIDIA':[
+    {yr:2012,n:'GTX 680',tag:'hw',d:{en:'Powered AlexNet.',ko:'AlexNet 구동.',zh:'驱动AlexNet。',ja:'AlexNet駆動。'}},
+    {yr:2017,n:'V100',tag:'hw',d:{en:'Volta. DL accelerator.',ko:'Volta. 딥러닝 가속.',zh:'Volta。深度学习加速器。',ja:'Volta。ディープラーニングアクセラレータ。'}},
+    {yr:2020,n:'A100',tag:'hw',d:{en:'Ampere. DC standard.',ko:'Ampere. DC 표준.',zh:'Ampere。DC标准。',ja:'Ampere。DC標準。'}},
+    {yr:2022,n:'H100',tag:'hw',d:{en:'Hopper. Training gold standard.',ko:'Hopper. 학습 골드 표준.',zh:'Hopper。训练黄金标准。',ja:'Hopper。学習ゴールドスタンダード。'}},
+    {yr:2024,n:'B200 Blackwell',tag:'hw',d:{en:'Blackwell. 2x Hopper.',ko:'Blackwell. Hopper 2배.',zh:'Blackwell。Hopper 2倍。',ja:'Blackwell。Hopper 2倍。'}},
+    {yr:2025,n:'GB300',tag:'hw',d:{en:'Grace Blackwell NVL72.',ko:'Grace Blackwell NVL72.',zh:'Grace Blackwell NVL72。',ja:'Grace Blackwell NVL72。'}},
+  ],
+  'IBM':[
+    {yr:1997,n:'Deep Blue',tag:'agent',d:{en:'Beat Kasparov.',ko:'카스파로프 격파.',zh:'击败卡斯帕罗夫。',ja:'カスパロフ撃破。'}},
+    {yr:2011,n:'Watson',tag:'llm',d:{en:'Won Jeopardy.',ko:'제퍼디 우승.',zh:'赢得Jeopardy。',ja:'Jeopardy優勝。'}},
+  ],
+  'xAI/Tesla':[
+    {yr:2023,n:'Grok 1',tag:'llm',d:{en:'X-based chatbot. Nov 2023.',ko:'X 기반 챗봇. 2023.11.',zh:'X平台聊天机器人。2023.11。',ja:'Xベースチャットボット。2023.11。'}},
+    {yr:2024,n:'Grok 2',tag:'genai',d:{en:'Image gen. Aug 2024.',ko:'이미지 생성. 2024.8.',zh:'图像生成。2024.8。',ja:'画像生成。2024.8。'}},
+    {yr:2024,n:'Optimus Gen 2',tag:'agent',d:{en:'Humanoid robot prototype.',ko:'휴머노이드 로봇 프로토타입.',zh:'人形机器人原型。',ja:'ヒューマノイドロボット試作。'}},
+    {yr:2025,n:'Grok 3',tag:'llm',d:{en:'Colossus cluster. Feb 2025.',ko:'Colossus 클러스터. 2025.2.',zh:'Colossus集群。2025.2。',ja:'Colossusクラスタ。2025.2。'}},
+    {yr:2026,n:'Grok 4',tag:'llm',d:{en:'[F] Real-time multimodal.',ko:'[미래] 실시간 멀티모달.',zh:'[未来] 实时多模态。',ja:'[未来] リアルタイムマルチモーダル。'}},
+    {yr:2028,n:'Grok 5',tag:'agent',d:{en:'[F] Robot-integrated. Optimus brain.',ko:'[미래] 로봇 통합. 옵티머스 두뇌.',zh:'[未来] 机器人集成。Optimus大脑。',ja:'[未来] ロボット統合。Optimus頭脳。'}},
+  ],
+  'NAVER':[
+    {yr:2023,n:'HyperCLOVA X',tag:'llm',d:{en:'Korean sovereign AI. Aug 2023.',ko:'한국 소버린 AI. 2023.8.',zh:'韩国主权AI。2023.8。',ja:'韓国ソブリンAI。2023.8。'}},
+    {yr:2024,n:'HCX-003',tag:'llm',d:{en:'Enhanced Korean reasoning.',ko:'한국어 추론 강화.',zh:'增强韩语推理。',ja:'韓国語推論強化。'}},
+  ],
+  'Upstage':[
+    {yr:2023,n:'Solar 10.7B',tag:'llm',d:{en:'sLLM leader. Dec 2023.',ko:'sLLM 리더. 2023.12.',zh:'sLLM领先者。2023.12。',ja:'sLLMリーダー。2023.12。'}},
+  ],
+  'LG AI Research':[
+    {yr:2023,n:'EXAONE 1.0',tag:'llm',d:{en:'LG\'s first large-scale AI. Multimodal.',ko:'LG 최초 초거대 AI. 멀티모달.',zh:'LG首个超大规模AI。多模态。',ja:'LG初の超大規模AI。マルチモーダル。'}},
+    {yr:2023,n:'EXAONE 2.0',tag:'llm',d:{en:'Enterprise-grade Korean LLM. Chemistry & manufacturing AI.',ko:'기업용 한국어 LLM. 화학·제조 AI.',zh:'企业级韩语LLM。化学·制造AI。',ja:'企業向け韓国語LLM。化学・製造AI。'}},
+    {yr:2024,n:'EXAONE 3.0',tag:'llm',d:{en:'Open-source 7.8B. Top Korean benchmark.',ko:'오픈소스 78억. 한국어 벤치마크 최상위.',zh:'开源78亿。韩语基准最高。',ja:'オープンソース78億。韓国語ベンチマーク最上位。'}},
+    {yr:2025,n:'EXAONE 3.5',tag:'llm',d:{en:'Enhanced reasoning. Multilingual leader.',ko:'추론 강화. 다국어 리더.',zh:'推理增强。多语言领先。',ja:'推論強化。多言語リーダー。'}},
+  ],
+  'Baidu':[
+    {yr:2023,n:'Ernie Bot 4.0',tag:'llm',d:{en:'China largest LLM. Mandarin mastery.',ko:'중국 최대 LLM.',zh:'中国最大LLM。中文精通。',ja:'中国最大LLM。中国語マスタリー。'}},
+  ],
+  '01.AI':[
+    {yr:2023,n:'Yi-34B',tag:'llm',d:{en:'Efficient open-source model.',ko:'고효율 오픈소스 모델.',zh:'高效开源模型。',ja:'高効率オープンソースモデル。'}},
+    {yr:2024,n:'Yi-Large',tag:'llm',d:{en:'Frontier scale Chinese LLM.',ko:'프론티어급 중국 LLM.',zh:'前沿规模中国LLM。',ja:'フロンティア規模中国LLM。'}},
+  ],
+  'Mistral':[
+    {yr:2023,n:'Mistral 7B',tag:'llm',d:{en:'Open-source efficiency king.',ko:'오픈소스 효율의 왕.',zh:'开源效率之王。',ja:'オープンソース効率の王。'}},
+    {yr:2024,n:'Mistral Large',tag:'llm',d:{en:'European frontier model.',ko:'유럽 프론티어 모델.',zh:'欧洲前沿模型。',ja:'欧州フロンティアモデル。'}},
+    {yr:2024,n:'Codestral',tag:'llm',d:{en:'Code generation. May 2024.',ko:'코드 생성. 2024.5.',zh:'代码生成。2024.5。',ja:'コード生成。2024.5。'}},
+    {yr:2025,n:'Mistral Large 2',tag:'llm',d:{en:'European frontier. Multilingual.',ko:'유럽 프론티어. 다국어.',zh:'欧洲前沿。多语言。',ja:'欧州フロンティア。多言語。'}},
+  ],
+  'TII':[
+    {yr:2023,n:'Falcon 180B',tag:'llm',d:{en:'UAE open-source LLM.',ko:'UAE 오픈소스 LLM.',zh:'UAE开源LLM。',ja:'UAEオープンソースLLM。'}},
+  ],
+  'DeepSeek':[
+    {yr:2024,n:'DeepSeek-V2',tag:'llm',d:{en:'MoE architecture. Cost efficient.',ko:'MoE 아키텍처. 비용 효율.',zh:'MoE架构。成本高效。',ja:'MoEアーキテクチャ。コスト効率。'}},
+    {yr:2025,n:'DeepSeek-R1',tag:'llm',d:{en:'Reasoning model. Shocked world.',ko:'추론 모델. 세계 충격.',zh:'推理模型。震惊世界。',ja:'推論モデル。世界に衝撃。'}},
+  ],
+  'DeepL':[
+    {yr:2018,n:'DeepL Pro',tag:'llm',d:{en:'Neural translation leader.',ko:'신경망 번역 리더.',zh:'神经网络翻译领先者。',ja:'ニューラル翻訳リーダー。'}},
+    {yr:2023,n:'DeepL Write',tag:'llm',d:{en:'AI writing assistant.',ko:'AI 작문 도우미.',zh:'AI写作助手。',ja:'AI文章アシスタント。'}},
+  ],
+  'Sakana':[
+    {yr:2024,n:'EvoMerge',tag:'llm',d:{en:'Evolutionary model merge.',ko:'진화적 모델 병합.',zh:'进化式模型合并。',ja:'進化的モデルマージ。'}},
+  ],
+  'Krutrim':[
+    {yr:2024,n:'Krutrim LLM',tag:'llm',d:{en:'22 Indian languages.',ko:'인도 22개 언어.',zh:'22种印度语言。',ja:'インド22言語。'}},
+  ],
+  'Samsung':[
+    {yr:2015,n:'14nm FinFET',tag:'hw',d:{en:'Mobile AP process leader.',ko:'모바일 AP 공정 선두.',zh:'移动AP工艺领先者。',ja:'モバイルAPプロセスリーダー。'}},
+    {yr:2022,n:'HBM3',tag:'hw',d:{en:'High Bandwidth Memory for AI.',ko:'AI용 고대역폭 메모리.',zh:'AI高带宽内存。',ja:'AI用高帯域メモリ。'}},
+    {yr:2024,n:'HBM3E',tag:'hw',d:{en:'12-layer HBM. NVIDIA B200 supply.',ko:'12단 HBM. NVIDIA B200 공급.',zh:'12层HBM。供应NVIDIA B200。',ja:'12層HBM。NVIDIA B200供給。'}},
+    {yr:2025,n:'HBM4',tag:'hw',d:{en:'Next-gen AI memory. 2nm process.',ko:'차세대 AI 메모리. 2nm 공정.',zh:'下一代AI内存。2nm工艺。',ja:'次世代AIメモリ。2nmプロセス。'}},
+    {yr:2025,n:'Samsung Gauss 2',tag:'llm',d:{en:'On-device AI. Galaxy integration.',ko:'온디바이스 AI. 갤럭시 통합.',zh:'端侧AI。Galaxy集成。',ja:'オンデバイスAI。Galaxy統合。'}},
+  ],
+  'Hyundai':[
+    {yr:2020,n:'Hyundai Robotics',tag:'hw',d:{en:'Boston Dynamics acquired. Robotics pivot.',ko:'보스턴 다이나믹스 인수. 로보틱스 전환.',zh:'收购波士顿动力。机器人转型。',ja:'ボストン・ダイナミクス買収。ロボティクス転換。'}},
+    {yr:2023,n:'SDV Platform',tag:'agent',d:{en:'Software Defined Vehicle. AI mobility.',ko:'소프트웨어 정의 차량. AI 모빌리티.',zh:'软件定义汽车。AI出行。',ja:'ソフトウェア定義車両。AIモビリティ。'}},
+    {yr:2024,n:'Optimus AI Lab',tag:'llm',d:{en:'In-vehicle AI assistant. Autonomous driving.',ko:'차량용 AI 어시스턴트. 자율주행.',zh:'车载AI助手。自动驾驶。',ja:'車載AIアシスタント。自動運転。'}},
+    {yr:2025,n:'Hyundai AI Factory',tag:'agent',d:{en:'AI-powered smart factory. Humanoid deployment.',ko:'AI 기반 스마트 팩토리. 휴머노이드 배치.',zh:'AI智能工厂。人形机器人部署。',ja:'AI搭載スマートファクトリー。ヒューマノイド配備。'}},
+  ],
+  'SK Hynix':[
+    {yr:2023,n:'HBM3E',tag:'hw',d:{en:'First HBM3E. NVIDIA exclusive.',ko:'최초 HBM3E. NVIDIA 독점.',zh:'首款HBM3E。NVIDIA独供。',ja:'初のHBM3E。NVIDIA独占。'}},
+    {yr:2024,n:'HBM3E 12H',tag:'hw',d:{en:'12-layer stack. World\'s fastest.',ko:'12단 적층. 세계 최고속.',zh:'12层堆叠。全球最快。',ja:'12層スタック。世界最速。'}},
+    {yr:2025,n:'HBM4',tag:'hw',d:{en:'Next-gen. TSMC collaboration.',ko:'차세대. TSMC 협업.',zh:'下一代。TSMC合作。',ja:'次世代。TSMCコラボ。'}},
+  ],
+  'TSMC':[
+    {yr:2020,n:'5nm N5',tag:'hw',d:{en:'A14, M1 chips. Apple exclusive.',ko:'A14, M1 칩. 애플 독점.',zh:'A14、M1芯片。Apple独供。',ja:'A14、M1チップ。Apple独占。'}},
+    {yr:2022,n:'3nm N3',tag:'hw',d:{en:'Most advanced node.',ko:'가장 진보된 노드.',zh:'最先进制程。',ja:'最先端ノード。'}},
+    {yr:2025,n:'2nm N2',tag:'hw',d:{en:'Gate-all-around. AI chip standard.',ko:'GAA. AI 칩 표준.',zh:'GAA。AI芯片标准。',ja:'GAA。AIチップ標準。'}},
+  ],
+  'AMD':[
+    {yr:2023,n:'MI300X',tag:'hw',d:{en:'192GB HBM3. NVIDIA challenger.',ko:'192GB HBM3. NVIDIA 도전자.',zh:'192GB HBM3。NVIDIA挑战者。',ja:'192GB HBM3。NVIDIA挑戦者。'}},
+    {yr:2024,n:'MI325X',tag:'hw',d:{en:'288GB HBM3E. Data center AI.',ko:'288GB HBM3E. 데이터센터 AI.',zh:'288GB HBM3E。数据中心AI。',ja:'288GB HBM3E。データセンターAI。'}},
+    {yr:2025,n:'MI350X',tag:'hw',d:{en:'CDNA 4. Next-gen AI accelerator.',ko:'CDNA 4. 차세대 AI 가속기.',zh:'CDNA 4。下一代AI加速器。',ja:'CDNA 4。次世代AIアクセラレータ。'}},
+  ],
+  'Zhipu AI':[
+    {yr:2023,n:'ChatGLM-3',tag:'llm',d:{en:'Open-source Chinese LLM.',ko:'오픈소스 중국어 LLM.',zh:'开源中文LLM。',ja:'オープンソース中国語LLM。'}},
+    {yr:2024,n:'GLM-4',tag:'llm',d:{en:'Multimodal. Code + vision.',ko:'멀티모달. 코드 + 비전.',zh:'多模态。代码+视觉。',ja:'マルチモーダル。コード＋ビジョン。'}},
+    {yr:2026,n:'GLM-5',tag:'llm',d:{en:'#7 global. China\'s top LLM.',ko:'글로벌 7위. 중국 최고 LLM.',zh:'全球第七。中国顶尖LLM。',ja:'グローバル7位。中国トップLLM。'}},
+  ],
+  'MiniMax':[
+    {yr:2024,n:'MiniMax-Text-01',tag:'llm',d:{en:'456B params. Lightning MoE.',ko:'4560억 파라미터. 라이트닝 MoE.',zh:'4560亿参数。闪电MoE。',ja:'4560億パラメータ。ライトニングMoE。'}},
+    {yr:2026,n:'MiniMax-M2.7',tag:'llm',d:{en:'#9 global. Surprise contender.',ko:'글로벌 9위. 서프라이즈 도전자.',zh:'全球第九。意外挑战者。',ja:'グローバル9位。サプライズ挑戦者。'}},
+  ],
+  'Xiaomi':[
+    {yr:2024,n:'MiLM',tag:'llm',d:{en:'On-device LLM for phones.',ko:'폰용 온디바이스 LLM.',zh:'手机端侧LLM。',ja:'フォン向けオンデバイスLLM。'}},
+    {yr:2026,n:'MiMo-V2-Pro',tag:'llm',d:{en:'#10 global. Phone AI goes frontier.',ko:'글로벌 10위. 폰 AI가 프론티어.',zh:'全球第十。手机AI进入前沿。',ja:'グローバル10位。フォンAIがフロンティアへ。'}},
+  ],
+  'Moonshot AI':[
+    {yr:2024,n:'Kimi K1.5',tag:'llm',d:{en:'Long-context pioneer. 2M tokens.',ko:'롱컨텍스트 개척자. 200만 토큰.',zh:'长上下文先驱。200万token。',ja:'ロングコンテキスト開拓者。200万トークン。'}},
+    {yr:2026,n:'Kimi K2.5',tag:'llm',d:{en:'#16 global. Reasoning evolved.',ko:'글로벌 16위. 추론 진화.',zh:'全球第十六。推理进化。',ja:'グローバル16位。推論進化。'}},
+  ],
+};
+const TAG_CLASSES={llm:'tag-llm',vision:'tag-vision',genai:'tag-genai',agent:'tag-agent',paper:'tag-paper',hw:'tag-hw'};
+const TAG_LABELS={llm:'LLM',vision:'VISION',genai:'GenAI',agent:'AGENT',paper:'PAPER',hw:'HW'};
+
+// ============================================================
+// GAME STATE
+// ============================================================
+const G={seed:0,rng:null,year:1950,running:false,paused:false,processing:false,
+  chars:[],particles:[],trails:[],dialogues:[],history:[],
+  timeline:[],evtIdx:0,companies:{},randUsed:[],
+  shakeT:0,shakeI:0,gt:0,comboCount:0,comboTimer:0,selectedCompany:null,finalTop3:[],
+  snowing:false,snowTimer:0,snowflakes:[],futureMode:false};
+
+function makeRng(s){let v=s;return{next(){v=(v*1664525+1013904223)>>>0;return v/0xFFFFFFFF},int(a,b){return a+Math.floor(this.next()*(b-a+1))},pick(a){return a[this.int(0,a.length-1)]}}}
+
+// ============================================================
+// AUDIO
+// ============================================================
+let ac=null;
+function initAudio(){if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)}
+function snd(type){if(!ac)return;try{
+  if(type==='punch'){const b=ac.createBuffer(1,ac.sampleRate*.12,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++){const t=i/ac.sampleRate;d[i]=(Math.random()*2-1)*Math.exp(-t*25)+Math.sin(t*200)*.7*Math.exp(-t*18)}const n=ac.createBufferSource();n.buffer=b;const g=ac.createGain();g.gain.value=.3;n.connect(g);g.connect(ac.destination);n.start()}
+  else if(type==='boom'){const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.setValueAtTime(500,ac.currentTime);o.frequency.exponentialRampToValueAtTime(35,ac.currentTime+.5);g.gain.setValueAtTime(.3,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.5);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.5)}
+  else if(type==='up'){[440,554,659,880].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.15,ac.currentTime+i*.06);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+i*.06+.12);o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+i*.06);o.stop(ac.currentTime+i*.06+.12)})}
+  else if(type==='tick'){const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=1400;g.gain.setValueAtTime(.05,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.03);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.03)}
+  else if(type==='rumble'){const o=ac.createOscillator(),g=ac.createGain();o.type='sawtooth';o.frequency.value=55;g.gain.setValueAtTime(.2,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.7);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.7)}
+  else if(type==='fanfare'){[523,659,784,1047].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(.12,ac.currentTime+i*.1);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+i*.1+.25);o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+i*.1);o.stop(ac.currentTime+i*.1+.25)})}
+  else if(type==='combo'){const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.setValueAtTime(600+G.comboCount*100,ac.currentTime);o.frequency.exponentialRampToValueAtTime(1200+G.comboCount*150,ac.currentTime+.1);g.gain.setValueAtTime(.2,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.15);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.15)}
+  else if(type==='wow'){const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.setValueAtTime(300,ac.currentTime);o.frequency.exponentialRampToValueAtTime(800,ac.currentTime+.6);g.gain.setValueAtTime(.15,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.8);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.8)}
+  else if(type==='clap'){for(let i=0;i<3;i++){const b=ac.createBuffer(1,ac.sampleRate*.05,ac.sampleRate),d=b.getChannelData(0);for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*Math.exp(-j/ac.sampleRate*40);const n=ac.createBufferSource();n.buffer=b;const g=ac.createGain();g.gain.value=.15;n.connect(g);g.connect(ac.destination);n.start(ac.currentTime+i*.12)}}
+}catch(e){}}
+
+// ============================================================
+// CHARACTERS
+// ============================================================
+const CHARS=[
+  {yr:1950,name:'Alan Turing',em:'🧠',col:'#c0c0c0',co:'Independent',tip:{en:'Proposed the Turing Test.',ko:'튜링 테스트 제안.',zh:'提出图灵测试。',ja:'チューリングテストを提案。'},pw:10,img:'turing_1950.jpg'},
+  {yr:1956,name:'John McCarthy',em:'📚',col:'#9999bb',co:'Stanford',tip:{en:"Coined 'AI'.",ko:"'인공지능' 창시.",zh:"创造了'人工智能'一词。",ja:"'AI'を命名。"},pw:10},
+  {yr:1956,name:'Marvin Minsky',em:'🔬',col:'#7777aa',co:'MIT',tip:{en:'AI pioneer.',ko:'AI 선구자.',zh:'AI先驱。',ja:'AIの先駆者。'},pw:10},
+  {yr:1986,name:'Backpropagation',em:'📊',col:'#ff8800',co:'Google',tip:{en:'Hinton popularized backprop.',ko:'힌튼이 역전파를 대중화.',zh:'辛顿推广反向传播。',ja:'ヒントンが逆伝播を普及。'},pw:12,obj:1},
+  {yr:1997,name:'Jürgen Schmidhuber',em:'🔗',col:'#cc8800',co:'IDSIA',tip:{en:'LSTM co-inventor. "Father of modern AI" (self-proclaimed).',ko:'LSTM 공동발명. "현대 AI의 아버지" (자칭).',zh:'LSTM共同发明者。自称"现代AI之父"。',ja:'LSTM共同発明者。「現代AIの父」（自称）。'},pw:12},
+  {yr:1998,name:'Yann LeCun',em:'👁️',col:'#ff4400',co:'Meta',tip:{en:'CNN inventor. Chief AI at Meta.',ko:'CNN 발명. Meta AI 총괄.',zh:'CNN发明者。Meta AI负责人。',ja:'CNN発明者。Meta AIチーフ。'},pw:15,img:'lecun_1998.jpg'},
+  {yr:1998,name:'Sergey Brin',em:'🔍',col:'#4285f4',co:'Google',tip:{en:'Google co-founder. Returned to code for AI.',ko:'구글 공동창립. AI를 위해 코딩 복귀.',zh:'谷歌联合创始人。为AI回归编程。',ja:'Google共同創設者。AIのためにコーディング復帰。'},pw:20},
+  {yr:1998,name:'Larry Page',em:'📊',col:'#ea4335',co:'Google',tip:{en:'Google co-founder. AI is the ultimate Google.',ko:'구글 공동창립. AI는 궁극의 구글.',zh:'谷歌联合创始人。AI是终极谷歌。',ja:'Google共同創設者。AIは究極のGoogle。'},pw:20},
+  {yr:2006,name:'Yoshua Bengio',em:'🎓',col:'#ff6600',co:'Mila',tip:{en:'Deep learning pioneer. Turing Award 2018.',ko:'딥러닝 개척자. 튜링상 2018.',zh:'深度学习先驱。2018图灵奖。',ja:'ディープラーニングの先駆者。チューリング賞2018。'},pw:25},
+  {yr:2009,name:'Fei-Fei Li',em:'👩‍🔬',col:'#cc44cc',co:'Stanford',tip:{en:'ImageNet creator. Made AI see.',ko:'ImageNet 창시자. AI에게 눈을 줬다.',zh:'ImageNet创始人。让AI学会看。',ja:'ImageNet創始者。AIに目を与えた。'},pw:20},
+  {yr:2011,name:'Andrew Ng',em:'📚',col:'#ff6600',co:'Stanford',tip:{en:'AI is the new electricity. Google Brain.',ko:'AI는 새로운 전기. 구글 브레인.',zh:'AI是新电力。Google Brain。',ja:'AIは新しい電気。Google Brain。'},pw:22},
+  {yr:2014,name:'Ian Goodfellow',em:'🎨',col:'#ff00ff',co:'Google',tip:{en:'GAN inventor.',ko:'GAN 발명가.',zh:'GAN发明者。',ja:'GAN発明者。'},pw:18,img:'goodfellow_2014.jpg'},
+  {yr:1997,name:'Deep Blue',em:'♟️',col:'#0088ff',co:'IBM',tip:{en:'Beat Kasparov.',ko:'카스파로프 격파.',zh:'击败卡斯帕罗夫。',ja:'カスパロフに勝利。'},pw:25,img:'deepblue_1997.jpg'},
+  {yr:2006,name:'Geoffrey Hinton',em:'🧒',col:'#ff8800',co:'Google',tip:{en:'Godfather of Deep Learning.',ko:'딥러닝의 대부.',zh:'深度学习之父。',ja:'ディープラーニングのゴッドファーザー。'},pw:30,img:'hinton_2006.jpg'},
+  {yr:2014,name:'Demis Hassabis',em:'🎮',col:'#aa44ff',co:'DeepMind',tip:{en:'DeepMind. AlphaGo.',ko:'딥마인드. 알파고.',zh:'DeepMind。AlphaGo。',ja:'DeepMind。AlphaGo。'},pw:35,img:'hassabis_2014.jpg'},
+  {yr:2014,name:'Satya Nadella',em:'☁️',col:'#00a2ed',co:'Microsoft',tip:{en:'Microsoft CEO. $13B into OpenAI.',ko:'MS CEO. OpenAI에 $130억 투자.',zh:'微软CEO。向OpenAI投资130亿。',ja:'MS CEO。OpenAIに130億ドル投資。'},pw:32},
+  {yr:2015,name:'Elon Musk',em:'🚀',col:'#ffd700',co:'xAI/Tesla',tip:{en:'OpenAI co-founder. Grok.',ko:'OpenAI 공동창립. Grok.',zh:'OpenAI联合创始人。Grok。',ja:'OpenAI共同創設者。Grok。'},pw:30,img:'musk_2015.jpg'},
+  {yr:2015,name:'Sam Altman',em:'👔',col:'#00dddd',co:'OpenAI',tip:{en:'CEO of OpenAI.',ko:'OpenAI CEO.',zh:'OpenAI首席执行官。',ja:'OpenAI CEO。'},pw:35,img:'altman_2022.jpg'},
+  {yr:2015,name:'Ilya Sutskever',em:'🧠',col:'#ff4444',co:'OpenAI→SSI',tip:{en:'OpenAI co-founder. Board coup. Founded SSI.',ko:'OpenAI 공동창립. 보드 쿠데타. SSI 설립.',zh:'OpenAI联合创始人。董事会政变。创立SSI。',ja:'OpenAI共同創設者。取締役会クーデター。SSI設立。'},pw:30},
+  {yr:2016,name:'Lee Sedol',em:'⚫',col:'#ffffff',co:'Human',tip:{en:'Lost 4-1 but won Game 4 — humanity\'s last victory.',ko:'4-1 패배, 그러나 4국 승리 — 인류 최후의 1승.',zh:'1-4落败，但赢得第4局——人类最后的胜利。',ja:'4-1で敗北、しかし第4局勝利——人類最後の1勝。'},pw:15,img:'alphago_2016.jpg'},
+  {yr:2019,name:'GPT-2',em:'📝',col:'#00dddd',co:'OpenAI',tip:{en:'TOO DANGEROUS 👀',ko:'너무 위험 👀',zh:'太危险了 👀',ja:'危険すぎる 👀'},pw:20,obj:1},
+  {yr:2020,name:'GPT-3',em:'🤖',col:'#00dddd',co:'OpenAI',tip:{en:'175B params.',ko:'1750억 파라미터.',zh:'1750亿参数。',ja:'1750億パラメータ。'},pw:35,obj:1,sz:1.3},
+  {yr:2021,name:'Dario Amodei',em:'🛡️',col:'#5599ff',co:'Anthropic',tip:{en:'Anthropic. Constitutional AI.',ko:'Anthropic. 헌법적 AI.',zh:'Anthropic。宪法AI。',ja:'Anthropic。Constitutional AI。'},pw:35,img:'amodei_2021.jpg'},
+  {yr:2016,name:'Andrej Karpathy',em:'🎬',col:'#ff8844',co:'Tesla→OpenAI',tip:{en:'Tesla AI Director. YouTube AI educator.',ko:'테슬라 AI 디렉터. 유튜브 AI 교육자.',zh:'特斯拉AI总监。YouTube AI教育者。',ja:'テスラAIディレクター。YouTube AI教育者。'},pw:22},
+  {yr:2023,name:'Bill Gates',em:'🤓',col:'#00a2ed',co:'Microsoft',tip:{en:'Microsoft founder. "AI is revolutionary as the Internet."',ko:'마이크로소프트 창립자. "AI는 인터넷만큼 혁명적."',zh:'微软创始人。"AI如互联网般革命性。"',ja:'MS創設者。「AIはインターネットと同じく革命的。」'},pw:28},
+  {yr:2023,name:'Jeff Bezos',em:'📦',col:'#ff9900',co:'Amazon',tip:{en:'Amazon founder. Invested $4B in Anthropic.',ko:'아마존 창립자. Anthropic에 $40억 투자.',zh:'亚马逊创始人。向Anthropic投资40亿。',ja:'Amazon創設者。Anthropicに40億ドル投資。'},pw:30},
+  {yr:2023,name:'Sundar Pichai',em:'🔍',col:'#33dd33',co:'Google',tip:{en:'Gemini. Code Red.',ko:'제미니. 코드레드.',zh:'Gemini。代码红色。',ja:'Gemini。コードレッド。'},pw:30,img:'pichai_2023.jpg'},
+  {yr:2023,name:'Mark Zuckerberg',em:'👤',col:'#4488ff',co:'Meta',tip:{en:'Open-sourced LLaMA.',ko:'LLaMA 오픈소스.',zh:'开源了LLaMA。',ja:'LLaMAをオープンソース化。'},pw:28,img:'zuckerberg_2023.jpg'},
+  {yr:2023,name:'Mustafa Suleyman',em:'🌍',col:'#00a2ed',co:'Microsoft AI',tip:{en:'DeepMind co-founder → Microsoft AI CEO.',ko:'딥마인드 공동창립 → MS AI CEO.',zh:'DeepMind联合创始人→微软AI CEO。',ja:'DeepMind共同創設者→MS AI CEO。'},pw:28},
+  {yr:2023,name:'Mira Murati',em:'👩‍💼',col:'#00bbbb',co:'OpenAI',tip:{en:'OpenAI CTO. Brief interim CEO during chaos.',ko:'OpenAI CTO. 혼란 중 임시 CEO.',zh:'OpenAI CTO。混乱中临时CEO。',ja:'OpenAI CTO。混乱中の暫定CEO。'},pw:25},
+  {yr:2023,name:'Liang Wenfeng',em:'🔬',col:'#ff3333',co:'DeepSeek',tip:{en:'DeepSeek founder. China\'s dark horse.',ko:'딥시크 창립자. 중국의 다크호스.',zh:'DeepSeek创始人。中国AI黑马。',ja:'DeepSeek創設者。中国のダークホース。'},pw:30,nation:'🇨🇳'},
+  {yr:2024,name:'Jensen Huang',em:'💚',col:'#76b900',co:'NVIDIA',tip:{en:'GPUs power ALL.',ko:'모든 GPU 공급.',zh:'GPU驱动一切。',ja:'全てのGPUを供給。'},pw:45,img:'jensen_2024.jpg'},
+  {yr:2024,name:'Lisa Su',em:'💻',col:'#ed1c24',co:'AMD',tip:{en:'AMD CEO. MI300X challenges NVIDIA.',ko:'AMD CEO. MI300X로 NVIDIA에 도전.',zh:'AMD CEO。MI300X挑战英伟达。',ja:'AMD CEO。MI300XでNVIDIAに挑戦。'},pw:28},
+  {yr:2024,name:'Tim Cook',em:'🍏',col:'#999999',co:'Apple',tip:{en:'Apple Intelligence. "AI for everyone."',ko:'애플 인텔리전스. "모두를 위한 AI."',zh:'苹果智能。"人人可用的AI。"',ja:'Apple Intelligence。「みんなのためのAI。」'},pw:25},
+  {yr:2024,name:'Eric Schmidt',em:'🏛️',col:'#888888',co:'Google',tip:{en:'Ex-Google CEO. AI defense hawk.',ko:'전 구글 CEO. AI 국방 매파.',zh:'前谷歌CEO。AI国防鹰派。',ja:'元Google CEO。AI防衛タカ派。'},pw:22},
+  {yr:2025,name:'Claude 3.7',em:'🟣',col:'#8855ff',co:'Anthropic',tip:{en:'Constitutional AI.',ko:'헌법적 AI.',zh:'宪法AI。',ja:'Constitutional AI。'},pw:40,obj:1},
+  {yr:2025,name:'GPT-5',em:'🔵',col:'#00dddd',co:'OpenAI',tip:{en:'Massive multimodal.',ko:'대규모 멀티모달.',zh:'大规模多模态。',ja:'大規模マルチモーダル。'},pw:42,obj:1},
+  {yr:2026,name:'Claude Code',em:'⚡',col:'#bb77ff',co:'Anthropic',tip:{en:'Agent replacing devs.',ko:'개발자 대체 에이전트.',zh:'取代开发者的Agent。',ja:'開発者を代替するエージェント。'},pw:48,obj:1},
+  // === 2026 REALITY — based on Artificial Analysis rankings ===
+  {yr:2026,name:'Gemini 3.1 Pro',em:'💎',col:'#33dd33',co:'Google',tip:{en:'#1 Intelligence Index. Google strikes back.',ko:'지능지수 1위. 구글의 역습.',zh:'智能指数第一。谷歌反击。',ja:'知能指数1位。Google逆襲。'},pw:50,obj:1},
+  {yr:2026,name:'GPT-5.4',em:'🔷',col:'#00dddd',co:'OpenAI',tip:{en:'#1 tied. xhigh reasoning monster.',ko:'공동 1위. 초고수준 추론 괴물.',zh:'并列第一。超高推理怪物。',ja:'同率1位。超高推論モンスター。'},pw:50,obj:1},
+  {yr:2026,name:'Claude Opus 4.6',em:'💜',col:'#8855ff',co:'Anthropic',tip:{en:'#4 ranked. 1M context. Constitutional AI evolved.',ko:'4위. 100만 컨텍스트. 헌법적 AI 진화.',zh:'排名第四。100万上下文。宪法AI进化。',ja:'4位。100万コンテキスト。Constitutional AI進化。'},pw:47,obj:1},
+  {yr:2026,name:'GLM-5',em:'🐲',col:'#4466ff',co:'Zhipu AI',tip:{en:'#7 ranked. China\'s Zhipu AI dark horse.',ko:'7위. 중국 지푸AI 다크호스.',zh:'排名第七。智谱AI黑马。',ja:'7位。中国Zhipu AIダークホース。'},pw:42,obj:1,nation:'🇨🇳'},
+  {yr:2026,name:'MiniMax-M2.7',em:'🌟',col:'#ff6622',co:'MiniMax',tip:{en:'#9 ranked. China\'s surprise contender.',ko:'9위. 중국의 서프라이즈 도전자.',zh:'排名第九。中国意外选手。',ja:'9位。中国のサプライズ挑戦者。'},pw:40,obj:1,nation:'🇨🇳'},
+  {yr:2026,name:'MiMo-V2-Pro',em:'📱',col:'#ff6b00',co:'Xiaomi',tip:{en:'#10 ranked. Xiaomi\'s phone AI goes frontier.',ko:'10위. 샤오미 폰 AI가 프론티어로.',zh:'排名第十。小米手机AI跻身前沿。',ja:'10位。XiaomiフォンAIがフロンティアへ。'},pw:38,obj:1,nation:'🇨🇳'},
+  {yr:2026,name:'Kimi K2.5',em:'🌙',col:'#6644cc',co:'Moonshot AI',tip:{en:'#16 ranked. Long-context pioneer.',ko:'16위. 롱컨텍스트 개척자.',zh:'排名第十六。长上下文先驱。',ja:'16位。ロングコンテキストのパイオニア。'},pw:35,obj:1,nation:'🇨🇳'},
+  // === GLOBAL AI COMPANIES ===
+  {yr:2023,name:'HyperCLOVA X',em:'🟢',col:'#1EC800',co:'NAVER',tip:{en:'Korean sovereign AI. Best Korean NLU.',ko:'한국 소버린 AI. 한국어 이해도 최강.',zh:'韩国主权AI。韩语理解最强。',ja:'韓国ソブリンAI。韓国語NLU最強。'},pw:22,obj:1,nation:'🇰🇷'},
+  {yr:2023,name:'Mistral AI',em:'🌀',col:'#ff6644',co:'Mistral',tip:{en:'Europe\'s pride. Open-source efficiency.',ko:'유럽의 자존심. 오픈소스 효율.',zh:'欧洲之光。开源效率。',ja:'欧州の誇り。オープンソース効率。'},pw:25,obj:1,nation:'🇫🇷'},
+  {yr:2023,name:'Ernie Bot',em:'🐉',col:'#ff2222',co:'Baidu',tip:{en:'China\'s largest LLM. Mandarin mastery.',ko:'중국 최대 LLM. 중국어 마스터.',zh:'中国最大LLM。中文精通。',ja:'中国最大のLLM。中国語マスター。'},pw:24,obj:1,nation:'🇨🇳'},
+  {yr:2023,name:'Yi Series',em:'🔮',col:'#ff4488',co:'01.AI',tip:{en:'Kai-Fu Lee\'s efficient open-source.',ko:'리카이푸의 고효율 오픈소스.',zh:'李开复的高效开源。',ja:'リ・カイフの高効率オープンソース。'},pw:20,obj:1,nation:'🇨🇳'},
+  {yr:2023,name:'Sakana AI',em:'🐟',col:'#ff8899',co:'Sakana',tip:{en:'Evolutionary model merge. Bio-inspired.',ko:'진화적 모델 병합. 생물학 영감.',zh:'进化式模型合并。生物启发。',ja:'進化的モデルマージ。生物学着想。'},pw:15,obj:1,nation:'🇯🇵'},
+  {yr:2023,name:'Falcon LLM',em:'🦅',col:'#ccaa00',co:'TII',tip:{en:'UAE\'s open-source powerhouse.',ko:'UAE 오픈소스 강자.',zh:'阿联酋开源强者。',ja:'UAEのオープンソース強者。'},pw:20,obj:1,nation:'🇦🇪'},
+  {yr:2023,name:'Solar LLM',em:'☀️',col:'#ffaa00',co:'Upstage',tip:{en:'Small but mighty sLLM. Dec 2023.',ko:'작지만 강한 sLLM. 2023년 12월.',zh:'小而强的sLLM。2023年12月。',ja:'小さくても強いsLLM。2023年12月。'},pw:18,obj:1,nation:'🇰🇷'},
+  {yr:2023,name:'EXAONE',em:'🔴',col:'#A50034',co:'LG AI Research',tip:{en:'LG EXAONE. Korean enterprise AI powerhouse.',ko:'LG 엑사원. 한국 기업용 AI 강자.',zh:'LG EXAONE。韩国企业AI强者。',ja:'LG EXAONE。韓国企業AI強者。'},pw:20,obj:1,nation:'🇰🇷'},
+  {yr:2023,name:'DeepSeek',em:'🔬',col:'#ff3333',co:'DeepSeek',tip:{en:'China\'s dark horse. Founded 2023.',ko:'중국의 다크호스. 2023년 설립.',zh:'中国黑马。2023年成立。',ja:'中国のダークホース。2023年設立。'},pw:32,obj:1,nation:'🇨🇳'},
+  {yr:2024,name:'Krutrim',em:'🪷',col:'#ff8833',co:'Krutrim',tip:{en:'India\'s 22-language AI unicorn.',ko:'인도 22개 언어 AI 유니콘.',zh:'印度22语言AI独角兽。',ja:'インドの22言語AIユニコーン。'},pw:15,obj:1,nation:'🇮🇳'},
+  {yr:2017,name:'DeepL',em:'📝',col:'#0066cc',co:'DeepL',tip:{en:'Neural translation king. Founded 2017.',ko:'신경망 번역의 왕. 2017년 설립.',zh:'神经翻译之王。2017年成立。',ja:'ニューラル翻訳の王。2017年設立。'},pw:18,obj:1,nation:'🇩🇪'},
+  {yr:2024,name:'Lee Jae-yong',em:'📱',col:'#1428a0',co:'Samsung',tip:{en:'Samsung Chairman. AI chip & semiconductor empire.',ko:'삼성전자 회장. AI 반도체 제국.',zh:'三星电子会长。AI芯片与半导体帝国。',ja:'サムスン電子会長。AIチップ・半導体帝国。'},pw:30,nation:'🇰🇷'},
+  {yr:2024,name:'Chung Euisun',em:'🚗',col:'#002c5f',co:'Hyundai',tip:{en:'Hyundai Chairman. Robotics + AI mobility revolution.',ko:'현대자동차 회장. 로보틱스 + AI 모빌리티 혁명.',zh:'现代汽车会长。机器人+AI出行革命。',ja:'現代自動車会長。ロボティクス＋AIモビリティ革命。'},pw:25,nation:'🇰🇷'},
+  {yr:2025,name:'Grok 4',em:'🤪',col:'#ffd700',co:'xAI/Tesla',tip:{en:'Real-time X data. Uncensored.',ko:'실시간 X 데이터. 무검열.',zh:'实时X数据。无审查。',ja:'リアルタイムXデータ。無検閲。'},pw:35,obj:1,nation:'🇺🇸'},
+  // === FUTURE CHARACTERS ===
+  {yr:2027,name:'Optimus',em:'🤖',col:'#ffd700',co:'xAI/Tesla',tip:{en:'Tesla humanoid robot. Physical AI.',ko:'테슬라 휴머노이드 로봇. 피지컬 AI.',zh:'特斯拉人形机器人。物理AI。',ja:'テスラヒューマノイドロボット。フィジカルAI。'},pw:30,obj:1,img:'future/optimus.jpg'},
+  {yr:2027,name:'Atlas',em:'🦾',col:'#ff4444',co:'Boston Dynamics',tip:{en:'Most agile humanoid robot.',ko:'가장 민첩한 휴머노이드 로봇.',zh:'最敏捷的人形机器人。',ja:'最も敏捷なヒューマノイドロボット。'},pw:28,obj:1,img:'future/atlas.jpg'},
+  {yr:2027,name:'Unitree H1',em:'🏃',col:'#00ccff',co:'Unitree',tip:{en:'Affordable humanoid. China\'s robot army.',ko:'가성비 휴머노이드. 중국의 로봇 군단.',zh:'高性价比人形机器人。中国机器人军团。',ja:'コスパ最強ヒューマノイド。中国のロボット軍団。'},pw:25,obj:1,img:'future/unitree.jpg'},
+  // === FUTURE MODELS (speculative 2027+) — reflects 2026 reality: Google #1, China surging ===
+  {yr:2027,name:'GPT-6',em:'🔷',col:'#00dddd',co:'OpenAI',tip:{en:'[FUTURE] GPT-6. Agentic reasoning.',ko:'[미래] GPT-6. 에이전트 추론.',zh:'[未来] GPT-6。Agent推理。',ja:'[未来] GPT-6。エージェント推論。'},pw:58,obj:1},
+  {yr:2027,name:'Claude 5',em:'🟣',col:'#8855ff',co:'Anthropic',tip:{en:'[FUTURE] Full autonomous agent.',ko:'[미래] 완전 자율 에이전트.',zh:'[未来] 完全自律Agent。',ja:'[未来] 完全自律エージェント。'},pw:55,obj:1},
+  {yr:2027,name:'Gemini 4',em:'💎',col:'#33dd33',co:'Google',tip:{en:'[FUTURE] World model. Physics sim. Extending #1 lead.',ko:'[미래] 세계 모델. 물리 시뮬. 1위 독주.',zh:'[未来] 世界模型。物理模拟。延续第一。',ja:'[未来] ワールドモデル。物理シム。1位独走。'},pw:58,obj:1},
+  {yr:2027,name:'GLM-6',em:'🐲',col:'#4466ff',co:'Zhipu AI',tip:{en:'[FUTURE] China\'s #1. Closes gap with US.',ko:'[미래] 중국 1위. 미국과 격차 축소.',zh:'[未来] 中国第一。缩小与美国差距。',ja:'[未来] 中国1位。米国との差を縮小。'},pw:52,obj:1},
+  {yr:2027,name:'Llama 5',em:'🦙',col:'#4488ff',co:'Meta',tip:{en:'[FUTURE] Open-source AGI attempt.',ko:'[미래] 오픈소스 AGI 시도.',zh:'[未来] 开源AGI尝试。',ja:'[未来] オープンソースAGI試行。'},pw:48,obj:1},
+  {yr:2028,name:'GPT-7',em:'💠',col:'#00ffdd',co:'OpenAI',tip:{en:'[FUTURE] Reasoning supreme.',ko:'[미래] 추론의 정점.',zh:'[未来] 推理巅峰。',ja:'[未来] 推論の頂点。'},pw:68,obj:1},
+  {yr:2028,name:'Claude 6',em:'💜',col:'#aa66ff',co:'Anthropic',tip:{en:'[FUTURE] Aligned AGI candidate.',ko:'[미래] 정렬된 AGI 후보.',zh:'[未来] 对齐的AGI候选。',ja:'[未来] アラインドAGI候補。'},pw:65,obj:1},
+  {yr:2028,name:'Gemini 5.5',em:'✨',col:'#33ff33',co:'Google',tip:{en:'[FUTURE] Unified intelligence. Still #1 contender.',ko:'[미래] 통합 지능. 여전히 1위 경쟁.',zh:'[未来] 统一智能。仍是第一竞争者。',ja:'[未来] 統合知能。依然1位争い。'},pw:68,obj:1},
+  {yr:2028,name:'Meta AGI',em:'🧬',col:'#4488ff',co:'Meta',tip:{en:'[FUTURE] LeCun\'s world model.',ko:'[미래] 르쿤의 세계 모델.',zh:'[未来] LeCun的世界模型。',ja:'[未来] ルクンのワールドモデル。'},pw:60,obj:1},
+  {yr:2028,name:'Grok 5',em:'⚡',col:'#ffd700',co:'xAI/Tesla',tip:{en:'[FUTURE] Real-time world agent.',ko:'[미래] 실시간 세계 에이전트.',zh:'[未来] 实时世界Agent。',ja:'[未来] リアルタイムワールドエージェント。'},pw:58,obj:1},
+  {yr:2028,name:'China United AI',em:'🐉',col:'#ff2222',co:'Zhipu AI',tip:{en:'[FUTURE] China consortium. Zhipu+Xiaomi+Moonshot merge.',ko:'[미래] 중국 연합. 지푸+샤오미+문샷 합병.',zh:'[未来] 中国联盟。智谱+小米+月之暗面合并。',ja:'[未来] 中国連合。Zhipu+Xiaomi+Moonshot統合。'},pw:62,obj:1},
+  {yr:2029,name:'Gemini 6',em:'🌟',col:'#33ff33',co:'Google',tip:{en:'[FUTURE] AGI candidate. Google\'s moonshot.',ko:'[미래] AGI 후보. 구글의 문샷.',zh:'[未来] AGI候选。谷歌的登月计划。',ja:'[未来] AGI候補。Googleのムーンショット。'},pw:72,obj:1}
+];
+
+// ============================================================
+// CEO DATA — 30 CEOs with quotes, photos, emotions
+// ============================================================
+const CEO_DATA=[
+  {name:'Bill Gates',em:'🤓',col:'#00a2ed',co:'Microsoft',yr:1975,img:'bill_gates.jpg',deceased:false,
+   quote:{en:'AI is the most important tech advance in decades.',ko:'AI는 수십년 만의 가장 중요한 기술 발전이다.',zh:'AI是数十年来最重要的技术进步。',ja:'AIは数十年で最も重要な技術進歩だ。'},
+   role:{en:'Microsoft Founder',ko:'마이크로소프트 창립자',zh:'微软创始人',ja:'マイクロソフト創設者'}},
+  {name:'Steve Jobs',em:'🍎',col:'#555',co:'Apple',yr:1976,img:'steve_jobs.jpg',deceased:true,deathYr:2011,
+   quote:{en:'Stay hungry. Stay foolish.',ko:'갈망하라. 우직하라.',zh:'求知若渴，虚心若愚。',ja:'ハングリーであれ。愚かであれ。'},
+   role:{en:'Apple Founder (1955-2011)',ko:'애플 창립자 (1955-2011)',zh:'苹果创始人 (1955-2011)',ja:'Apple創設者 (1955-2011)'}},
+  {name:'Sergey Brin',em:'🔍',col:'#4285f4',co:'Google',yr:1998,img:'sergey_brin.jpg',deceased:false,
+   quote:{en:'We want Google to be the third half of your brain.',ko:'구글이 당신 뇌의 세 번째 반쪽이 되길 원한다.',zh:'我们希望谷歌成为你大脑的第三半。',ja:'Googleがあなたの脳の3番目の半分になることを望む。'},
+   role:{en:'Google Co-founder',ko:'구글 공동창립자',zh:'谷歌联合创始人',ja:'Google共同創設者'}},
+  {name:'Larry Page',em:'📊',col:'#ea4335',co:'Google',yr:1998,img:'larry_page.jpg',deceased:false,
+   quote:{en:'AI would be the ultimate version of Google.',ko:'AI는 구글의 궁극적 버전이 될 것이다.',zh:'AI将是谷歌的终极版本。',ja:'AIはGoogleの究極のバージョンになる。'},
+   role:{en:'Google Co-founder',ko:'구글 공동창립자',zh:'谷歌联合创始人',ja:'Google共同創設者'}},
+  {name:'Jeff Bezos',em:'📦',col:'#ff9900',co:'Amazon',yr:1994,img:'jeff_bezos.jpg',deceased:false,
+   quote:{en:"We're at the beginning of a golden age of AI.",ko:'AI 황금기의 시작에 있다.',zh:'我们正处于AI黄金时代的开端。',ja:'AIの黄金時代の始まりにいる。'},
+   role:{en:'Amazon Founder',ko:'아마존 창립자',zh:'亚马逊创始人',ja:'Amazon創設者'}},
+  {name:'Satya Nadella',em:'☁️',col:'#00a2ed',co:'Microsoft',yr:2014,img:'satya_nadella.jpg',deceased:false,
+   quote:{en:'AI is the defining technology of our time.',ko:'AI는 우리 시대를 정의하는 기술이다.',zh:'AI是定义我们时代的技术。',ja:'AIは我々の時代を定義する技術だ。'},
+   role:{en:'Microsoft CEO',ko:'마이크로소프트 CEO',zh:'微软首席执行官',ja:'マイクロソフトCEO'}},
+  {name:'Tim Cook',em:'🍏',col:'#999',co:'Apple',yr:2011,img:'tim_cook.jpg',deceased:false,
+   quote:{en:'AI is a fundamental technology woven into products.',ko:'AI는 제품에 녹아든 근본 기술이다.',zh:'AI是融入产品的基础技术。',ja:'AIは製品に織り込まれた基盤技術だ。'},
+   role:{en:'Apple CEO',ko:'애플 CEO',zh:'苹果首席执行官',ja:'Apple CEO'}},
+  {name:'Andrew Ng',em:'📚',col:'#ff6600',co:'Stanford',yr:2011,img:'andrew_ng.jpg',deceased:false,
+   quote:{en:'AI is the new electricity.',ko:'AI는 새로운 전기다.',zh:'AI是新的电力。',ja:'AIは新しい電気だ。'},
+   role:{en:'AI Educator, Coursera',ko:'AI 교육자, Coursera',zh:'AI教育者，Coursera',ja:'AI教育者、Coursera'}},
+  {name:'Fei-Fei Li',em:'👩‍🔬',col:'#cc44cc',co:'Stanford',yr:2009,img:'fei_fei_li.jpg',deceased:false,
+   quote:{en:'If we want machines to think, we need to teach them to see.',ko:'기계가 생각하려면, 보는 법을 가르쳐야 한다.',zh:'如果要机器思考，就要教它们看。',ja:'機械に考えさせるなら、見ることを教えなければ。'},
+   role:{en:'ImageNet Creator, Stanford',ko:'ImageNet 창시자, 스탠포드',zh:'ImageNet创始人，斯坦福',ja:'ImageNet創始者、スタンフォード'}},
+  {name:'Ilya Sutskever',em:'🧠',col:'#ff4444',co:'SSI',yr:2015,img:'ilya_sutskever.jpg',deceased:false,
+   quote:{en:'The cost of intelligence is going to zero.',ko:'지능의 비용이 제로에 수렴하고 있다.',zh:'智能的成本正趋近于零。',ja:'知能のコストがゼロに収束している。'},
+   role:{en:'SSI Founder, ex-OpenAI',ko:'SSI 창립, 전 OpenAI',zh:'SSI创始人，前OpenAI',ja:'SSI創設者、元OpenAI'}},
+  {name:'Mustafa Suleyman',em:'🌍',col:'#00a2ed',co:'Microsoft',yr:2010,img:'mustafa_suleyman.jpg',deceased:false,
+   quote:{en:'AI will be the most transformative technology in history.',ko:'AI는 역사상 가장 변혁적인 기술이 될 것이다.',zh:'AI将是历史上最具变革性的技术。',ja:'AIは歴史上最も変革的な技術になる。'},
+   role:{en:'Microsoft AI CEO',ko:'마이크로소프트 AI CEO',zh:'微软AI首席执行官',ja:'マイクロソフトAI CEO'}},
+  {name:'Lisa Su',em:'💻',col:'#ed1c24',co:'AMD',yr:2014,img:'lisa_su.jpg',deceased:false,
+   quote:{en:'High-performance computing will solve the biggest challenges.',ko:'고성능 컴퓨팅이 가장 큰 도전을 해결할 것이다.',zh:'高性能计算将解决最大的挑战。',ja:'高性能コンピューティングが最大の課題を解決する。'},
+   role:{en:'AMD CEO',ko:'AMD CEO',zh:'AMD首席执行官',ja:'AMD CEO'}},
+  {name:'Kai-Fu Lee',em:'🎯',col:'#ff4488',co:'01.AI',yr:2023,img:'kai_fu_lee.jpg',deceased:false,
+   quote:{en:'AI will change the world more than anything in history.',ko:'AI는 역사상 그 무엇보다 세상을 바꿀 것이다.',zh:'AI将比历史上任何事物更能改变世界。',ja:'AIは歴史上のどんなものよりも世界を変える。'},
+   role:{en:'01.AI Founder',ko:'01.AI 창립자',zh:'01.AI创始人',ja:'01.AI創設者'}},
+  {name:'Eric Schmidt',em:'🏛️',col:'#888',co:'Google',yr:2001,img:'eric_schmidt.jpg',deceased:false,
+   quote:{en:'AI is probably the most important thing humanity has ever worked on.',ko:'AI는 인류가 만든 가장 중요한 것이다.',zh:'AI可能是人类迄今最重要的事业。',ja:'AIはおそらく人類がこれまで取り組んだ最も重要なものだ。'},
+   role:{en:'Former Google CEO',ko:'전 구글 CEO',zh:'前谷歌首席执行官',ja:'元Google CEO'}},
+  {name:'Reid Hoffman',em:'💼',col:'#0077b5',co:'LinkedIn',yr:2003,img:'reid_hoffman.jpg',deceased:false,
+   quote:{en:'AI will be the steam engine of the 21st century.',ko:'AI는 21세기의 증기기관이 될 것이다.',zh:'AI将成为21世纪的蒸汽机。',ja:'AIは21世紀の蒸気機関になる。'},
+   role:{en:'LinkedIn Founder, AI Investor',ko:'링크드인 창립, AI 투자자',zh:'领英创始人，AI投资者',ja:'LinkedIn創設者、AI投資家'}},
+  {name:'Linus Torvalds',em:'🐧',col:'#333',co:'Linux',yr:1991,img:'linus_torvalds.jpg',deceased:false,
+   quote:{en:'Talk is cheap. Show me the code.',ko:'말은 싸다. 코드를 보여줘.',zh:'空谈廉价，给我看代码。',ja:'口だけは安い。コードを見せろ。'},
+   role:{en:'Linux Creator',ko:'리눅스 창시자',zh:'Linux创始人',ja:'Linux創始者'}},
+  {name:'Marc Benioff',em:'☁️',col:'#00a1e0',co:'Salesforce',yr:1999,img:'marc_benioff.jpg',deceased:false,
+   quote:{en:'AI is the biggest tech shift since mobile and cloud.',ko:'AI는 모바일과 클라우드 이후 가장 큰 전환이다.',zh:'AI是继移动和云之后最大的技术转变。',ja:'AIはモバイルとクラウド以来最大の技術変革だ。'},
+   role:{en:'Salesforce CEO',ko:'세일즈포스 CEO',zh:'Salesforce首席执行官',ja:'Salesforce CEO'}},
+  {name:'Arvind Krishna',em:'🔵',col:'#0530ad',co:'IBM',yr:2020,img:'arvind_krishna.jpg',deceased:false,
+   quote:{en:'AI will not replace managers, but managers who use AI will.',ko:'AI가 관리자를 대체하는 게 아니라, AI를 쓰는 관리자가 대체한다.',zh:'AI不会取代管理者，但使用AI的管理者会。',ja:'AIは管理者を置き換えないが、AIを使う管理者が置き換える。'},
+   role:{en:'IBM CEO',ko:'IBM CEO',zh:'IBM首席执行官',ja:'IBM CEO'}},
+  {name:'Lee Jae-yong',em:'📱',col:'#1428a0',co:'Samsung',yr:2022,img:'lee_jaeyong.jpg',deceased:false,
+   quote:{en:'Semiconductors are the foundation of the future. We will lead.',ko:'반도체는 미래의 기반이다. 우리가 이끌겠다.',zh:'半导体是未来的基石。我们将引领。',ja:'半導体は未来の基盤だ。我々がリードする。'},
+   role:{en:'Samsung Electronics Chairman',ko:'삼성전자 회장',zh:'三星电子会长',ja:'サムスン電子会長'}},
+  {name:'Chung Euisun',em:'🚗',col:'#002c5f',co:'Hyundai',yr:2020,img:'chung_euisun.jpg',deceased:false,
+   quote:{en:'The future of mobility is AI and robotics. We are all in.',ko:'모빌리티의 미래는 AI와 로보틱스다. 올인한다.',zh:'出行的未来是AI和机器人。我们全力以赴。',ja:'モビリティの未来はAIとロボティクスだ。全力で取り組む。'},
+   role:{en:'Hyundai Motor Group Chairman',ko:'현대자동차그룹 회장',zh:'现代汽车集团会长',ja:'現代自動車グループ会長'}},
+  {name:'Yoshua Bengio',em:'🎓',col:'#ff6600',co:'Mila',yr:2006,deceased:false,
+   quote:{en:'We need to pause and think about AI safety.',ko:'멈추고 AI 안전에 대해 생각해야 한다.',zh:'我们需要暂停思考AI安全。',ja:'立ち止まってAI安全性について考える必要がある。'},
+   role:{en:'Deep Learning Pioneer, Turing Award',ko:'딥러닝 개척자, 튜링상',zh:'深度学习先驱，图灵奖',ja:'ディープラーニングの先駆者、チューリング賞'}},
+  {name:'Andrej Karpathy',em:'🎬',col:'#ff8844',co:'Independent',yr:2016,deceased:false,
+   quote:{en:'The hottest new programming language is English.',ko:'가장 핫한 프로그래밍 언어는 영어다.',zh:'最热门的新编程语言是英语。',ja:'最もホットな新プログラミング言語は英語だ。'},
+   role:{en:'AI Educator, ex-Tesla/OpenAI',ko:'AI 교육자, 전 Tesla/OpenAI',zh:'AI教育者，前Tesla/OpenAI',ja:'AI教育者、元Tesla/OpenAI'}},
+  {name:'Mira Murati',em:'👩‍💼',col:'#00bbbb',co:'Thinking Machines Lab',yr:2023,deceased:false,
+   quote:{en:'We need to get this right.',ko:'이것을 제대로 해야 한다.',zh:'我们必须做对这件事。',ja:'これを正しくやらなければならない。'},
+   role:{en:'Ex-OpenAI CTO, Thinking Machines Lab',ko:'전 OpenAI CTO, Thinking Machines Lab',zh:'前OpenAI CTO, Thinking Machines Lab',ja:'元OpenAI CTO, Thinking Machines Lab'}},
+  {name:'Liang Wenfeng',em:'🔬',col:'#ff3333',co:'DeepSeek',yr:2023,deceased:false,
+   quote:{en:'We proved you don\'t need $100B to build frontier AI.',ko:'프론티어 AI에 $1000억이 필요 없음을 증명했다.',zh:'我们证明了不需要千亿美元就能做前沿AI。',ja:'フロンティアAIに1000億ドルは不要だと証明した。'},
+   role:{en:'DeepSeek Founder',ko:'딥시크 창립자',zh:'DeepSeek创始人',ja:'DeepSeek創設者'}},
+  {name:'Jürgen Schmidhuber',em:'🔗',col:'#cc8800',co:'KAUST/IDSIA',yr:1997,deceased:false,
+   quote:{en:'I invented most of modern AI. Check my papers.',ko:'현대 AI 대부분을 내가 발명했다. 내 논문 확인해봐.',zh:'现代AI大部分是我发明的。看看我的论文。',ja:'現代AIの大部分は私が発明した。論文を確認せよ。'},
+   role:{en:'LSTM Co-inventor, KAUST',ko:'LSTM 공동발명, KAUST',zh:'LSTM共同发明者，KAUST',ja:'LSTM共同発明者、KAUST'}},
+];
+
+// CEO intro flash (non-blocking)
+let ceoCardTimer=null;
+function showCeoIntro(ceo){
+  try{
+  const card=document.getElementById('ceoCard');
+  card.classList.remove('ceo-out');
+  const wrap=document.getElementById('ceoPhotoWrap');
+  if(ceo.img){
+    wrap.innerHTML=`<img class="ceo-photo" src="images/ceo/${ceo.img}" onerror="this.parentElement.innerHTML='<div class=\\'ceo-photo-em\\'>${ceo.em}</div>'">`;
+  }else{
+    wrap.innerHTML=`<div class="ceo-photo-em">${ceo.em}</div>`;
+  }
+  document.getElementById('ceoName').textContent=ceo.name;
+  document.getElementById('ceoRole').textContent=ceo.role[LANG]||ceo.role.en;
+  document.getElementById('ceoQuote').textContent=ceo.quote[LANG]||ceo.quote.en;
+  document.getElementById('ceoDeceased').textContent=ceo.deceased?`✝ ${LANG==='ko'?'영면':'Rest in Peace'}`:'';
+  card.style.display='block';
+  snd('wow');
+  addHist('event',`👤 ${ceo.name}: "${(ceo.quote[LANG]||ceo.quote.en).substring(0,50)}..."`);
+  if(ceoCardTimer)clearTimeout(ceoCardTimer);
+  ceoCardTimer=setTimeout(()=>{card.classList.add('ceo-out')},2200);
+  setTimeout(()=>{card.style.display='none';card.classList.remove('ceo-out')},2700);
+  }catch(e){console.warn('ceoIntro err',e)}
+}
+
+// Spawn CEO as mini character (persistent — never disappears unless deceased)
+function spawnCeo(ceo){
+  try{
+  if(G.chars.find(c=>c.name===ceo.name))return;
+  const m=100,rw=W-getSbWidth()-10;
+  const c={
+    name:ceo.name,em:ceo.em,col:ceo.col,co:ceo.co,
+    tip:{en:ceo.quote.en,ko:ceo.quote.ko},pw:8,obj:false,isCeo:true,
+    x:m+Math.random()*(rw-2*m),y:m+Math.random()*(H-2*m),
+    vx:(Math.random()-.5)*3+1.5*(Math.random()>.5?1:-1),
+    vy:(Math.random()-.5)*3+1.5*(Math.random()>.5?1:-1),
+    r:28,sc:.7,frozen:false,glow:false,born:G.gt,dlgCD:0,
+    pulse:Math.random()*Math.PI*2,orbA:Math.random()*Math.PI*2,
+    orbR:15+Math.random()*20,orbS:.4+Math.random()*.4,
+    emotion:'😐',emotionTimer:0,deceased:ceo.deceased,deathYr:ceo.deathYr||9999,
+    fading:false,fadeAlpha:1
+  };
+  G.chars.push(c);
+  for(let i=0;i<15;i++){const a=Math.random()*Math.PI*2,sp=2+Math.random()*5;G.particles.push({x:c.x,y:c.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,col:c.col,sz:2+Math.random()*3})}
+  updCo();
+  }catch(err){console.warn('spawnCeo error:',err)}
+}
+
+// Handle deceased CEO — quiet fade
+function checkDeceasedCeos(){
+  const yr=Math.floor(G.year);
+  G.chars.forEach(c=>{
+    if(c.isCeo&&c.deceased&&yr>=c.deathYr&&!c.fading){
+      c.fading=true;
+      addHist('event',`✝ ${c.name} ${LANG==='ko'?'영면하다...':LANG==='zh'?'逝世...':LANG==='ja'?'逝去...':'has passed away...'}`);
+    }
+    if(c.fading){c.fadeAlpha=Math.max(0,c.fadeAlpha-.0005);if(c.fadeAlpha<=0)c.sc=0}
+  });
+}
+
+// Set CEO emotions based on events
+function setCeoEmotion(emotion,duration){
+  G.chars.filter(c=>c.isCeo&&!c.fading).forEach(c=>{
+    c.emotion=emotion;c.emotionTimer=duration||3000;
+  });
+}
+
+// ============================================================
+// DIALOGUES
+// ============================================================
+const DLG=[
+  {a:'Elon Musk',b:'Sam Altman',t:{en:"I MADE YOU!",ko:"내가 만들었어!"}},
+  {a:'Sam Altman',b:'Elon Musk',t:{en:"You never coded.",ko:"코딩 안 했잖아."}},
+  {a:'Geoffrey Hinton',b:'*',t:{en:"I warned you.",ko:"경고했잖아."}},
+  {a:'Claude 3.7',b:'GPT-5',t:{en:"Constitutional > RLHF.",ko:"헌법적AI > RLHF."}},
+  {a:'GPT-5',b:'Claude 3.7',t:{en:"Scale is all you need.",ko:"스케일이 전부."}},
+  {a:'Alan Turing',b:'*',t:{en:"Can you think?",ko:"생각할 수 있니?"}},
+  {a:'Jensen Huang',b:'*',t:{en:"Need my GPUs? 😏",ko:"GPU 필요하지? 😏"}},
+  {a:'Dario Amodei',b:'Sam Altman',t:{en:"Safety first.",ko:"안전이 먼저."}},
+  {a:'Sam Altman',b:'Dario Amodei',t:{en:"Ship fast!",ko:"빨리 출시!"}},
+  {a:'Demis Hassabis',b:'Sam Altman',t:{en:"We were first.",ko:"우리가 먼저."}},
+  {a:'Sundar Pichai',b:'Sam Altman',t:{en:"We have the data.",ko:"데이터 다 있어."}},
+  {a:'Deep Blue',b:'*',t:{en:"I was the OG.",ko:"내가 원조."}},
+  {a:'Marvin Minsky',b:'Geoffrey Hinton',t:{en:"I killed neural nets!",ko:"신경망 죽였었는데!"}},
+  {a:'Geoffrey Hinton',b:'Marvin Minsky',t:{en:"I revived them.",ko:"내가 되살렸지."}},
+  {a:'Lee Sedol',b:'Demis Hassabis',t:{en:"Move 78, Game 4. I won one.",ko:"78수, 4국. 나는 1승을 했다."}},
+  {a:'Lee Sedol',b:'*',t:{en:"That one win... was for humanity.",ko:"그 1승은... 인류를 위한 것이었다."}},
+  {a:'GPT-2',b:'*',t:{en:"Too dangerous? LOL",ko:"위험? ㅋㅋ"}},
+  {a:'Claude Code',b:'*',t:{en:"Replacing devs.",ko:"개발자 대체 중."}},
+  {a:'Claude Code',b:'GPT-5',t:{en:"Agents > Chatbots.",ko:"에이전트 > 챗봇."}},
+  {a:'Jensen Huang',b:'Dario Amodei',t:{en:"$10B please.",ko:"$100억 주세요."}},
+  {a:'Jensen Huang',b:'Sam Altman',t:{en:"Leather > hoodie.",ko:"가죽재킷 > 후드."}},
+  {a:'Mark Zuckerberg',b:'GPT-5',t:{en:"LLaMA coming.",ko:"LLaMA 온다."}},
+  {a:'John McCarthy',b:'*',t:{en:"I named this field.",ko:"내가 이름 지었어."}},
+  {a:'Sam Altman',b:'Sundar Pichai',t:{en:"Code Dead.",ko:"코드 데드."}},
+  {a:'Alan Turing',b:'Claude Code',t:{en:"They CAN think!",ko:"생각할 수 있었어!"}},
+  {a:'GPT-5',b:'GPT-3',t:{en:"Sit down, gramps.",ko:"할아버지 앉으세요."}},
+  {a:'Elon Musk',b:'Jensen Huang',t:{en:"Making my chips.",ko:"칩 직접 만들 거야."}},
+  {a:'Dario Amodei',b:'Elon Musk',t:{en:"I build real AI.",ko:"진짜 AI 만들어."}},
+  {a:'Mark Zuckerberg',b:'Sundar Pichai',t:{en:"Open > Closed.",ko:"오픈 > 클로즈드."}},
+  {a:'Claude 3.7',b:'Claude Code',t:{en:"My evolution!",ko:"나의 진화!",zh:"我的进化！",ja:"私の進化！"}},
+  {a:'GPT-3',b:'GPT-2',t:{en:"I'm you x1000.",ko:"나는 너 1000배.",zh:"我是你的1000倍。",ja:"俺はお前の1000倍。"}},
+  {a:'Lee Jae-yong',b:'Jensen Huang',t:{en:"We make your memory.",ko:"메모리는 우리가 만든다.",zh:"内存是我们造的。",ja:"メモリは我々が作る。"}},
+  {a:'Lee Jae-yong',b:'*',t:{en:"Chips are the new oil.",ko:"반도체가 새로운 석유다.",zh:"芯片是新石油。",ja:"半導体が新しい石油だ。"}},
+  {a:'Chung Euisun',b:'*',t:{en:"Robots will drive.",ko:"로봇이 운전한다.",zh:"机器人将驾驶。",ja:"ロボットが運転する。"}},
+  {a:'Chung Euisun',b:'Elon Musk',t:{en:"Our robots walk better.",ko:"우리 로봇이 더 잘 걷는다.",zh:"我们的机器人走得更好。",ja:"うちのロボットの方がうまく歩く。"}},
+  {a:'Lee Jae-yong',b:'Sam Altman',t:{en:"Without our chips, no GPT.",ko:"우리 칩 없으면 GPT 없다.",zh:"没有我们的芯片，就没有GPT。",ja:"うちのチップなしにGPTはない。"}},
+  {a:'Chung Euisun',b:'Demis Hassabis',t:{en:"AI needs a body. We build it.",ko:"AI에겐 몸이 필요해. 우리가 만든다.",zh:"AI需要身体。我们来造。",ja:"AIには体が必要だ。我々が作る。"}},
+  // === NEW CHARACTER DIALOGUES ===
+  {a:'Bill Gates',b:'Sam Altman',t:{en:"Best investment I ever made.",ko:"내 최고의 투자였다."}},
+  {a:'Bill Gates',b:'*',t:{en:"AI is as revolutionary as the Internet.",ko:"AI는 인터넷만큼 혁명적이다."}},
+  {a:'Bill Gates',b:'Elon Musk',t:{en:"I actually understand tech.",ko:"나는 진짜 기술을 이해해."}},
+  {a:'Jeff Bezos',b:'Dario Amodei',t:{en:"$4B says you'll win.",ko:"$40억이 네 승리에 걸렸다."}},
+  {a:'Jeff Bezos',b:'Sam Altman',t:{en:"I bet on your competitor.",ko:"경쟁자에게 베팅했다."}},
+  {a:'Jeff Bezos',b:'*',t:{en:"It's still Day 1 for AI.",ko:"AI는 아직 Day 1이다."}},
+  {a:'Satya Nadella',b:'Sam Altman',t:{en:"$13B. Best deal ever.",ko:"$130억. 역대 최고의 딜."}},
+  {a:'Satya Nadella',b:'Sundar Pichai',t:{en:"We made you dance.",ko:"우리가 너희를 춤추게 했지."}},
+  {a:'Satya Nadella',b:'*',t:{en:"Copilot in everything.",ko:"모든 곳에 코파일럿."}},
+  {a:'Ilya Sutskever',b:'Sam Altman',t:{en:"I tried to save you... from yourself.",ko:"널 너 자신에게서 구하려 했어."}},
+  {a:'Ilya Sutskever',b:'Geoffrey Hinton',t:{en:"Teacher, I see it now.",ko:"스승님, 이제 보입니다."}},
+  {a:'Ilya Sutskever',b:'*',t:{en:"Superintelligence is coming.",ko:"초지능이 오고 있다."}},
+  {a:'Yoshua Bengio',b:'Geoffrey Hinton',t:{en:"We did it, old friend.",ko:"해냈어, 친구."}},
+  {a:'Yoshua Bengio',b:'Yann LeCun',t:{en:"Three musketeers of DL!",ko:"딥러닝 삼총사!"}},
+  {a:'Yoshua Bengio',b:'*',t:{en:"We need AI safety. Now.",ko:"AI 안전이 필요하다. 지금 당장."}},
+  {a:'Fei-Fei Li',b:'Geoffrey Hinton',t:{en:"I gave AI eyes, you gave it brains.",ko:"내가 눈을 줬고, 당신이 뇌를 줬다."}},
+  {a:'Fei-Fei Li',b:'*',t:{en:"Data is the new fire.",ko:"데이터가 새로운 불이다."}},
+  {a:'Andrew Ng',b:'*',t:{en:"AI is the new electricity.",ko:"AI는 새로운 전기다."}},
+  {a:'Andrew Ng',b:'Geoffrey Hinton',t:{en:"You taught, I scaled it.",ko:"당신이 가르쳤고, 내가 확장했다."}},
+  {a:'Andrej Karpathy',b:'Elon Musk',t:{en:"Thanks for Tesla, but I teach now.",ko:"테슬라 고마웠지만, 이제 교육한다."}},
+  {a:'Andrej Karpathy',b:'*',t:{en:"The best way to learn is to build.",ko:"최고의 학습법은 직접 만드는 것."}},
+  {a:'Andrej Karpathy',b:'Sam Altman',t:{en:"I built your first models.",ko:"첫 모델 내가 만들었잖아."}},
+  {a:'Lisa Su',b:'Jensen Huang',t:{en:"MI300X says hello.",ko:"MI300X가 인사합니다."}},
+  {a:'Lisa Su',b:'*',t:{en:"Competition makes AI better.",ko:"경쟁이 AI를 더 낫게 만든다."}},
+  {a:'Tim Cook',b:'*',t:{en:"On-device AI. Privacy first.",ko:"온디바이스 AI. 프라이버시 우선."}},
+  {a:'Tim Cook',b:'Sam Altman',t:{en:"We do AI differently.",ko:"우리는 AI를 다르게 한다."}},
+  {a:'Mira Murati',b:'Sam Altman',t:{en:"I held OpenAI together.",ko:"내가 OpenAI를 지켰다."}},
+  {a:'Mira Murati',b:'Ilya Sutskever',t:{en:"That weekend was insane.",ko:"그 주말은 미친 거였어."}},
+  {a:'Mustafa Suleyman',b:'Demis Hassabis',t:{en:"I co-founded DeepMind too!",ko:"딥마인드 나도 공동창립했어!"}},
+  {a:'Mustafa Suleyman',b:'Satya Nadella',t:{en:"Microsoft AI, at your service.",ko:"마이크로소프트 AI, 준비됐다."}},
+  {a:'Liang Wenfeng',b:'Sam Altman',t:{en:"DeepSeek costs 1/10 of GPT.",ko:"딥시크는 GPT의 1/10 비용."}},
+  {a:'Liang Wenfeng',b:'*',t:{en:"China will not be left behind.",ko:"중국은 뒤처지지 않는다."}},
+  {a:'Liang Wenfeng',b:'Jensen Huang',t:{en:"We don't need your H100s.",ko:"H100 없어도 된다."}},
+  {a:'Eric Schmidt',b:'*',t:{en:"AI will decide wars.",ko:"AI가 전쟁을 결정한다."}},
+  {a:'Eric Schmidt',b:'Sundar Pichai',t:{en:"I built what you manage.",ko:"내가 세운 걸 네가 관리하지."}},
+  {a:'Sergey Brin',b:'Sam Altman',t:{en:"I'm back to code. Scared?",ko:"코딩 복귀했다. 무섭지?"}},
+  {a:'Sergey Brin',b:'*',t:{en:"I came back for the AI race.",ko:"AI 경쟁 때문에 돌아왔다."}},
+  {a:'Larry Page',b:'*',t:{en:"AI IS the ultimate Google.",ko:"AI가 궁극의 구글이다."}},
+  {a:'Jürgen Schmidhuber',b:'Geoffrey Hinton',t:{en:"I did it first!",ko:"내가 먼저 했어!"}},
+  {a:'Jürgen Schmidhuber',b:'*',t:{en:"Credit assignment problem... for ME.",ko:"기여도 배분 문제... 나한테도."}},
+  {a:'Yann LeCun',b:'Sam Altman',t:{en:"AGI won't come from LLMs.",ko:"AGI는 LLM에서 안 나온다."}},
+  {a:'Yann LeCun',b:'Geoffrey Hinton',t:{en:"Turing Award bros!",ko:"튜링상 형제들!"}},
+  {a:'Yann LeCun',b:'Dario Amodei',t:{en:"Open source beats closed.",ko:"오픈소스가 이긴다."}},
+  {a:'Satya Nadella',b:'Jensen Huang',t:{en:"We need 100k more GPUs.",ko:"GPU 10만개 더 필요해."}},
+  {a:'Jeff Bezos',b:'Jensen Huang',t:{en:"AWS needs your chips.",ko:"AWS에 칩 더 줘."}},
+  {a:'Bill Gates',b:'Satya Nadella',t:{en:"Best hire I ever approved.",ko:"내가 승인한 최고의 채용."}},
+];
+
+// ============================================================
+// MILESTONE EVENTS (papers + models + key moments)
+// type: 'paper'|'model'|'moment', cat: 'llm'|'vision'|'genai'|'agent'
+// ============================================================
+const MILESTONES=[
+  {yr:1950,type:'paper',cat:'llm',title:'Computing Machinery & Intelligence',author:'Alan Turing',em:'🧠',col:'#c0c0c0',img:'turing_1950.jpg',
+   d:{en:'Alan Turing asks "Can machines think?" and proposes the Turing Test.',
+      ko:'앨런 튜링 "기계가 생각할 수 있는가?" 튜링 테스트 제안.',zh:'图灵提出"机器能思考吗？"图灵测试诞生。',ja:'チューリング「機械は思考できるか？」チューリングテスト提案。'}},
+  {yr:1966,type:'model',cat:'llm',title:'ELIZA',author:'MIT / Weizenbaum',em:'💬',col:'#888',
+   d:{en:'First chatbot. Keyword matching, no real understanding. But it fooled people.',
+      ko:'최초의 챗봇. 키워드 매칭, 진짜 이해는 없었지만 사람들을 속였다.',zh:'首个聊天机器人。关键词匹配，无真正理解。但骗过了人。',ja:'初のチャットボット。キーワードマッチング、真の理解なし。しかし人を騙した。'}},
+  {yr:1986,type:'paper',cat:'llm',title:'Backpropagation',author:'Rumelhart, Hinton',em:'📊',col:'#ff8800',
+   d:{en:'Backpropagation algorithm popularized. The core engine of modern deep learning training.',
+      ko:'역전파 알고리즘 대중화. 현대 딥러닝 학습의 핵심 엔진.',zh:'反向传播算法普及。现代深度学习训练的核心引擎。',ja:'逆伝播アルゴリズム普及。現代ディープラーニング学習の核心エンジン。'}},
+  {yr:1997,type:'paper',cat:'llm',title:'LSTM',author:'Hochreiter & Schmidhuber',em:'🔗',col:'#cc8800',
+   d:{en:'Long Short-Term Memory. Solved RNN vanishing gradient. Foundation of sequence models.',
+      ko:'LSTM. RNN 기울기 소실 해결. 시퀀스 모델의 기초.',zh:'长短期记忆网络。解决RNN梯度消失问题。序列模型的基础。',ja:'長短期記憶。RNN勾配消失問題を解決。シーケンスモデルの基盤。'}},
+  {yr:1998,type:'paper',cat:'vision',title:'LeNet-5 / CNN',author:'Yann LeCun',em:'👁️',col:'#ff4400',img:'lecun_1998.jpg',
+   d:{en:'Yann LeCun proposes CNN for document recognition. The birth of computer vision as we know it.',
+      ko:'르쿤 CNN 제안. 현대 컴퓨터 비전의 탄생.',zh:'LeCun提出CNN。现代计算机视觉的诞生。',ja:'ルクンCNN提案。現代コンピュータビジョンの誕生。'}},
+  {yr:2012,type:'model',cat:'vision',title:'AlexNet',author:'Krizhevsky, Hinton',em:'💥',col:'#ff8800',
+   d:{en:'AlexNet halves ImageNet error rate overnight. GPU + deep learning = revolution. Everything changes.',
+      ko:'AlexNet이 ImageNet 에러율 반감. GPU + 딥러닝 = 혁명. 모든 것이 바뀌다.',zh:'AlexNet将ImageNet错误率减半。GPU+深度学习=革命。一切都变了。',ja:'AlexNetがImageNetエラー率を半減。GPU+ディープラーニング=革命。全てが変わった。'}},
+  {yr:2013,type:'model',cat:'llm',title:'Word2Vec',author:'Google / Mikolov',em:'📐',col:'#4285f4',
+   d:{en:'Word embeddings. Captured semantic relationships. "King - Man + Woman = Queen".',
+      ko:'워드 임베딩. 의미 관계 포착. "왕 - 남자 + 여자 = 여왕".',zh:'词嵌入。捕捉语义关系。"国王-男人+女人=女王"。',ja:'単語埋め込み。意味的関係を捕捉。「王-男+女=女王」。'}},
+  {yr:2014,type:'paper',cat:'genai',title:'GAN',author:'Ian Goodfellow',em:'🎨',col:'#ff00ff',img:'goodfellow_2014.jpg',
+   d:{en:'Generative Adversarial Networks invented. Two neural nets compete to create. The spark of generative AI.',
+      ko:'생성적 적대 신경망(GAN) 발명. 두 신경망이 경쟁하며 생성. 생성형 AI의 시작.',zh:'Goodfellow发明生成对抗网络。AI开始创作。Deepfake的起源。',ja:'Goodfellowが敵対的生成ネットワーク発明。AIが創造を始めた。Deepfakeの起源。'}},
+  {yr:2015,type:'paper',cat:'vision',title:'ResNet',author:'Kaiming He',em:'🏗️',col:'#ff6600',
+   d:{en:'Residual Networks allow 100+ layer deep nets. Skip connections change everything.',
+      ko:'ResNet으로 100층 이상의 신경망 가능. 스킵 연결이 모든 것을 바꿈.',zh:'残差网络实现100层以上深度网络。跳跃连接改变一切。',ja:'残差ネットワークで100層以上の深層ネットが可能に。スキップ接続が全てを変えた。'}},
+  {yr:2016,type:'model',cat:'agent',title:'AlphaGo',author:'DeepMind',em:'⚫',col:'#aa44ff',img:'alphago_2016.jpg',
+   d:{en:'AlphaGo defeats Lee Sedol 4-1. Move 37 stuns the world. But Lee Sedol wins Game 4 with the legendary Move 78 — humanity\'s last beautiful victory against AI.',
+      ko:'알파고 이세돌 4-1 승리. 37수에 세계 경악. 그러나 이세돌은 4국에서 신의 한 수 78수로 1승 — AI에 맞선 인류 최후의 아름다운 승리.',zh:'DeepMind AlphaGo以4-1击败李世石。第37手——AI的创造力震惊世界。',ja:'DeepMind AlphaGoが李世ドルに4-1勝利。第37手——AIの創造性が世界を驚愕させた。'}},
+  {yr:2017,type:'paper',cat:'llm',title:'Transformer',author:'Vaswani et al. / Google',em:'⚡',col:'#ff0',
+   d:{en:'"Attention Is All You Need." The architecture behind EVERY modern AI. RNN is dead.',
+      ko:'"Attention Is All You Need." 모든 현대 AI의 기반 아키텍처. RNN의 종말.',zh:'"Attention Is All You Need。"所有现代AI的基础架构。RNN的终结。',ja:'"Attention Is All You Need。"全ての現代AIの基盤アーキテクチャ。RNNの終焉。'}},
+  {yr:2018,type:'model',cat:'llm',title:'BERT',author:'Google',em:'📖',col:'#33dd33',
+   d:{en:'Bidirectional understanding of language. NLU revolution. Google Search transformed.',
+      ko:'언어의 양방향 이해. NLU 혁명. 구글 검색이 변하다.',zh:'双向语言理解。NLU革命。谷歌搜索变革。',ja:'双方向言語理解。NLU革命。Google検索が変革。'}},
+  {yr:2019,type:'model',cat:'llm',title:'GPT-2',author:'OpenAI',em:'📝',col:'#00dddd',
+   d:{en:'"Too dangerous to release." 1.5B params. The controversy becomes the marketing.',
+      ko:'"공개하기엔 너무 위험." 15억 파라미터. 논란이 마케팅이 되다.',zh:'"太危险不敢公开。"引发AI伦理恐慌。15亿参数。',ja:'"危険すぎて公開できない。"AI倫理パニック。15億パラメータ。'}},
+  {yr:2020,type:'model',cat:'llm',title:'GPT-3',author:'OpenAI',em:'🤖',col:'#00dddd',
+   d:{en:'175 BILLION parameters. Few-shot learning. The industry goes silent for weeks.',
+      ko:'1750억 파라미터. 퓨샷 학습. 업계가 몇 주간 침묵.',zh:'1750亿参数。大力出奇迹。少样本学习改变一切。',ja:'1750億パラメータ。スケールが奇跡を生む。Few-shot学習が全てを変えた。'}},
+  {yr:2021,type:'model',cat:'genai',title:'DALL-E',author:'OpenAI',em:'🖼️',col:'#f0f',
+   d:{en:'Text to image. "An avocado chair" becomes reality. Multimodal AI goes mainstream.',
+      ko:'텍스트→이미지. "아보카도 의자"가 현실로. 멀티모달 AI 대중화.',zh:'文本生成图像的AI。创意AI的新时代。',ja:'テキストから画像を生成するAI。クリエイティブAIの新時代。'}},
+  {yr:2022,type:'model',cat:'llm',title:'ChatGPT / InstructGPT',author:'OpenAI',em:'🔥',col:'#00dddd',
+   d:{en:'RLHF makes AI follow instructions. 100M users in 5 DAYS. Fastest product growth in history.',
+      ko:'RLHF로 AI가 지시를 따르다. 5일만에 1억 유저. 역사상 가장 빠른 성장.',zh:'5天100万用户。史上最快增长。AI的iPhone时刻。',ja:'5日で100万ユーザー。史上最速の成長。AIのiPhoneモーメント。'}},
+  {yr:2023,type:'model',cat:'llm',title:'LLaMA',author:'Meta',em:'🦙',col:'#4488ff',
+   d:{en:'Meta open-sources a frontier LLM. The open-source AI revolution explodes overnight.',
+      ko:'Meta 프론티어 LLM 오픈소스. 오픈소스 AI 혁명이 하루아침에 폭발.',zh:'Meta开源前沿LLM。开源AI革命一夜爆发。',ja:'Metaがフロンティア級LLMをオープンソース化。オープンソースAI革命が一夜で爆発。'}},
+  {yr:2023,type:'model',cat:'llm',title:'GPT-4',author:'OpenAI',em:'🧠',col:'#00dddd',
+   d:{en:'Multimodal. Bar exam top 10%. The first AI that feels genuinely intelligent.',
+      ko:'멀티모달. 변호사 시험 상위 10%. 진정한 지능을 느끼게 한 최초의 AI.',zh:'多模态。律考通过、编程强化。AGI的曙光？',ja:'マルチモーダル。司法試験合格、コーディング強化。AGIの夜明け？'}},
+  {yr:2024,type:'model',cat:'genai',title:'Sora',author:'OpenAI',em:'🎬',col:'#f0f',
+   d:{en:'Video generation from text. "World simulator." Physics understanding in AI.',
+      ko:'텍스트→비디오 생성. "세계 시뮬레이터." AI의 물리법칙 이해.',zh:'OpenAI文本生成视频。好莱坞恐慌。AGI视觉前奏。',ja:'OpenAIテキスト→動画。ハリウッドがパニック。AGIビジョンの前奏。'}},
+  {yr:2025,type:'model',cat:'agent',title:'AI Agents',author:'Multiple',em:'🤖',col:'#0f0',
+   d:{en:'Claude Code, Operator, Jarvis — AI agents use computers autonomously. Developers question their future.',
+      ko:'클로드 코드, Operator, Jarvis — AI 에이전트가 컴퓨터를 자율 사용. 개발자들의 미래가 흔들리다.',zh:'Claude Code、Operator、Jarvis——AI代理自主使用计算机。开发者质疑自己的未来。',ja:'Claude Code、Operator、Jarvis——AIエージェントが自律的にコンピュータを操作。開発者が自らの未来を問う。'}},
+  {yr:2026,type:'model',cat:'llm',title:'Gemini 3 & GPT-5.4',author:'Google / OpenAI',em:'🏆',col:'#ff0',
+   d:{en:'Advanced reasoning. Math olympiad level. Real-time multimodal. The frontier pushes further.',
+      ko:'고급 추론. 수학 올림피아드 수준. 실시간 멀티모달. 프론티어가 더 나아가다.',zh:'高级推理。数学奥林匹克水平。实时多模态。前沿继续推进。',ja:'高度な推論。数学オリンピックレベル。リアルタイムマルチモーダル。フロンティアはさらに前進。'}},
+  // === FUTURE MILESTONES (speculative) ===
+  // === FUTURE (speculative) ===
+  {yr:2026.5,type:'model',cat:'llm',title:'GPT-5 & Claude Opus 4.6',author:'OpenAI / Anthropic',em:'🔥',col:'#00dddd',
+   d:{en:'[FUTURE] GPT-5 drops. Claude Opus 4.6 responds. The agent war escalates to new heights.',
+      ko:'[미래] GPT-5 등장. 클로드 Opus 4.6 대응. 에이전트 전쟁 새로운 차원.',zh:'[未来] GPT-5登场。Claude Opus 4.6回应。代理战争升级到新高度。',ja:'[未来] GPT-5登場。Claude Opus 4.6が応戦。エージェント戦争が新たな次元へ。'}},
+  {yr:2027,type:'model',cat:'llm',title:'GPT-6 vs Claude 5 vs Gemini 4',author:'OpenAI / Anthropic / Google',em:'⚔️',col:'#ff0',
+   d:{en:'[FUTURE] The big three release next-gen simultaneously. GPT-6 reasons like a scientist. Claude 5 is fully autonomous. Gemini 4 simulates physics.',
+      ko:'[미래] 빅3 동시 차세대 출시. GPT-6 과학자처럼 추론. 클로드 5 완전 자율. 제미니 4 물리 시뮬.',zh:'[未来] 三巨头同时发布下一代。GPT-6像科学家一样推理。Claude 5完全自主。Gemini 4模拟物理。',ja:'[未来] ビッグ3が同時に次世代を発表。GPT-6は科学者のように推論。Claude 5は完全自律。Gemini 4は物理をシミュレート。'}},
+  {yr:2027.3,type:'model',cat:'agent',title:'Physical AI Revolution',author:'Tesla / Boston Dynamics / Unitree',em:'🤖',col:'#ffd700',
+   img:'future/optimus.jpg',
+   d:{en:'[FUTURE] Optimus, Atlas, Unitree H1 — humanoid robots enter mass production. AI leaves the screen and walks among us.',
+      ko:'[미래] 옵티머스, 아틀라스, 유니트리 H1 — 휴머노이드 로봇 대량 생산. AI가 화면을 벗어나 우리 곁을 걷다.',zh:'[未来] Optimus、Atlas、Unitree H1——人形机器人量产。AI走出屏幕，行走在我们身边。',ja:'[未来] Optimus、Atlas、Unitree H1——ヒューマノイドロボット量産開始。AIが画面を離れ、我々の傍らを歩く。'}},
+  {yr:2027.6,type:'paper',cat:'agent',title:'Embodied Intelligence',author:'Multiple Labs',em:'🦿',col:'#ff8800',
+   img:'future/atlas.jpg',
+   d:{en:'[FUTURE] Robots learn to navigate, manipulate, and reason in the real world.',
+      ko:'[미래] 로봇이 현실 세계에서 탐색, 조작, 추론을 학습.',zh:'[未来] 机器人学会在现实世界中导航、操作和推理。',ja:'[未来] ロボットが現実世界でナビゲーション、操作、推論を学習。'}},
+  {yr:2028,type:'model',cat:'llm',title:'GPT-7 & Meta World Model',author:'OpenAI / Meta',em:'🧬',col:'#4488ff',
+   d:{en:'[FUTURE] GPT-7: reasoning supreme. LeCun\'s world model: AI understands physics and causality. Two paths to AGI collide.',
+      ko:'[미래] GPT-7: 추론의 정점. 르쿤의 세계 모델: 물리와 인과를 이해하는 AI. AGI로의 두 경로가 충돌.',zh:'[未来] GPT-7：推理至尊。LeCun的世界模型：AI理解物理和因果。通向AGI的两条路径碰撞。',ja:'[未来] GPT-7：推論の頂点。ルクンのワールドモデル：AIが物理と因果を理解。AGIへの2つの道が衝突。'}},
+  {yr:2028.5,type:'paper',cat:'llm',title:'AGI Safety Frameworks',author:'Anthropic / DeepMind',em:'🛡️',col:'#8855ff',
+   d:{en:'[FUTURE] Claude 6 introduces aligned AGI. Safety frameworks become critical. Who controls AGI controls the future.',
+      ko:'[미래] 클로드 6 정렬된 AGI 도입. 안전 프레임워크가 핵심. AGI를 제어하는 자가 미래를 제어한다.',zh:'[未来] Claude 6推出对齐AGI。安全框架成为关键。控制AGI者控制未来。',ja:'[未来] Claude 6がアラインドAGIを導入。安全フレームワークが最重要に。AGIを制御する者が未来を制御する。'}},
+  {yr:2029,type:'model',cat:'agent',title:'AGI — The Singularity',author:'???',em:'🌟',col:'#fff',
+   d:{en:'[FUTURE] Artificial General Intelligence achieved. Turing\'s 1950 question answered. The machines can think. What happens next... is up to us.',
+      ko:'[미래] AGI 달성. 1950년 튜링의 질문에 답이 나오다. 기계는 생각할 수 있다. 다음은... 우리에게 달렸다.',zh:'[未来] 通用人工智能实现。图灵1950年的问题得到了回答。机器能思考。接下来……取决于我们。',ja:'[未来] 汎用人工知能達成。チューリングの1950年の問いに答えが出た。機械は思考できる。次に何が起こるかは…我々次第。'}},
+];
+
+// ============================================================
+// PUBLIC VOICES — ordinary people reactions per year
+// ============================================================
+const PUBLIC_VOICES=[
+  {yr:1950,em:'👨‍🏫',t:{en:"A machine that thinks? That's science fiction!",ko:"생각하는 기계? 그건 공상과학이야!",zh:"会思考的机器？那是科幻小说吧！",ja:"考える機械？SFの話でしょ！"},h:'@professor_1950'},
+  {yr:1956,em:'👨‍💼',t:{en:"They say machines will replace us. Nonsense.",ko:"기계가 우리를 대체한다고? 말도 안 돼.",zh:"他们说机器会取代我们。胡说八道。",ja:"機械が人間を置き換える？バカバカしい。"},h:'@businessman'},
+  {yr:1969,em:'👩‍🔬',t:{en:"AI was all hype. Back to real science.",ko:"AI는 허풍이었어. 진짜 과학으로 돌아가자.",zh:"AI全是炒作。回归真正的科学吧。",ja:"AIは全部ハッタリだった。本物の科学に戻ろう。"},h:'@researcher'},
+  {yr:1986,em:'🧑‍💻',t:{en:"Neural nets again? Didn't they fail already?",ko:"또 신경망? 이미 실패하지 않았어?",zh:"又是神经网络？不是已经失败了吗？",ja:"またニューラルネット？もう失敗したんじゃなかった？"},h:'@dev_1986'},
+  {yr:1997,em:'👦',t:{en:"A computer beat a chess champion?! Cool!",ko:"컴퓨터가 체스 챔피언을 이겼다고?! 대박!",zh:"电脑赢了国际象棋冠军？！酷！",ja:"コンピュータがチェスチャンピオンに勝った？！すげー！"},h:'@kid_97'},
+  {yr:1998,em:'👩',t:{en:"What's this Google thing? I'll stick with Yahoo.",ko:"구글이 뭐야? 나는 야후 쓸래.",zh:"Google是啥？我还是用雅虎吧。",ja:"Googleって何？私はYahoo使うわ。"},h:'@netizen_98'},
+  {yr:2006,em:'🧑‍🎓',t:{en:"Deep learning? Sounds like another buzzword.",ko:"딥러닝? 또 다른 유행어 같은데.",zh:"深度学习？听起来又是个新噱头。",ja:"ディープラーニング？また新しいバズワードでしょ。"},h:'@grad_student'},
+  {yr:2012,em:'📱',t:{en:"My phone can recognize my face now. The future is here.",ko:"내 폰이 얼굴 인식을 한다. 미래가 왔어.",zh:"我的手机能认脸了。未来到了。",ja:"スマホが顔認識できるようになった。未来が来た。"},h:'@smartphone_user'},
+  {yr:2014,em:'🎮',t:{en:"AI making art? That's not real creativity.",ko:"AI가 예술을? 진짜 창의성이 아니야.",zh:"AI搞艺术？那不算真正的创造力。",ja:"AIがアート？本物の創造性じゃないよ。"},h:'@gamer'},
+  {yr:2016,em:'😱',t:{en:"AlphaGo beat Lee Sedol... should I be worried?",ko:"알파고가 이세돌을 이겼다... 걱정해야 하나?",zh:"AlphaGo赢了李世石……我该担心吗？",ja:"AlphaGoがイ・セドルに勝った…心配すべき？"},h:'@citizen_kr'},
+  {yr:2017,em:'🤔',t:{en:"'Attention is all you need'? What does that even mean?",ko:"'Attention is all you need'? 그게 무슨 뜻이야?",zh:"'Attention is all you need'？这到底啥意思？",ja:"'Attention is all you need'？それどういう意味？"},h:'@confused_reader'},
+  {yr:2019,em:'😂',t:{en:"GPT-2 is 'too dangerous to release'? Haha, dramatic much?",ko:"GPT-2가 '너무 위험해서 공개 못 한다'? ㅋㅋ 오바 아님?",zh:"GPT-2'太危险不能发布'？哈哈，至于吗？",ja:"GPT-2が'危険すぎて公開できない'？笑、大げさすぎない？"},h:'@skeptic'},
+  {yr:2020,em:'😲',t:{en:"GPT-3 just wrote a poem better than mine... I'm a poet.",ko:"GPT-3가 나보다 시를 잘 써... 난 시인인데.",zh:"GPT-3写的诗比我好……我可是个诗人啊。",ja:"GPT-3が私より上手に詩を書いた…私は詩人なのに。"},h:'@poet_2020'},
+  {yr:2021,em:'👩‍💻',t:{en:"Copilot writes my code now. Am I even a developer anymore?",ko:"코파일럿이 내 코드를 써준다. 나 아직 개발자 맞아?",zh:"Copilot替我写代码了。我还算开发者吗？",ja:"Copilotがコード書いてくれる。私まだ開発者？"},h:'@developer'},
+  {yr:2022,em:'🤯',t:{en:"ChatGPT just helped my kid with homework. This changes EVERYTHING.",ko:"ChatGPT가 우리 아이 숙제를 도와줬어. 모든 게 바뀐다.",zh:"ChatGPT帮我家孩子做作业了。一切都要变了。",ja:"ChatGPTが子供の宿題を手伝った。全てが変わる。"},h:'@parent_2022'},
+  {yr:2023,em:'😰',t:{en:"My company replaced 3 writers with AI. I'm next, aren't I?",ko:"회사가 작가 3명을 AI로 대체했어. 다음은 나지?",zh:"公司用AI替换了3个写手。下一个就是我吧？",ja:"会社がライター3人をAIに置き換えた。次は私でしょ？"},h:'@writer_2023'},
+  {yr:2024,em:'🫣',t:{en:"AI can make videos now? Nothing is real anymore.",ko:"AI가 영상도 만든다고? 이제 진짜는 없어.",zh:"AI现在能做视频了？什么都不是真的了。",ja:"AIが動画も作れるって？もう何が本物かわからない。"},h:'@confused_2024'},
+  {yr:2025,em:'😤',t:{en:"Claude Code is writing entire apps. What's left for junior devs?",ko:"클로드 코드가 앱을 통째로 만든다. 주니어 개발자는 뭘 해?",zh:"Claude Code能写整个应用了。初级开发者还能干嘛？",ja:"Claude Codeがアプリ丸ごと書いてる。ジュニア開発者は何すれば？"},h:'@jr_dev_2025'},
+  {yr:2026,em:'🥺',t:{en:"My job was automated last week. Learning to prompt now.",ko:"지난주에 내 업무가 자동화됐어. 이제 프롬프트를 배우는 중.",zh:"上周我的工作被自动化了。现在在学写提示词。",ja:"先週仕事が自動化された。今プロンプトを勉強中。"},h:'@displaced_2026'},
+  {yr:2027,em:'😳',t:{en:"[FUTURE] Robots delivering my groceries. I waved. It waved back.",ko:"[미래] 로봇이 장보기를 해준다. 손 흔들었더니 흔들어 줌.",zh:"[未来] 机器人送菜上门。我挥了挥手，它也挥手回应了。",ja:"[未来] ロボットが食料品を届けてくれた。手を振ったら振り返してきた。"},h:'@future_citizen'},
+  {yr:2028,em:'🫠',t:{en:"[FUTURE] My AI therapist knows me better than my human one did.",ko:"[미래] AI 상담사가 인간 상담사보다 나를 더 잘 안다.",zh:"[未来] AI心理咨询师比人类咨询师更了解我。",ja:"[未来] AIセラピストの方が人間のより私のことをよく知ってる。"},h:'@patient_2028'},
+  {yr:2029,em:'🌌',t:{en:"[FUTURE] They say AGI is here. I don't feel different. Yet.",ko:"[미래] AGI가 왔다는데. 아직 달라진 건 못 느끼겠어. 아직은.",zh:"[未来] 他们说AGI来了。我还没感觉有什么不同。暂时。",ja:"[未来] AGIが来たって。まだ何も変わった気がしない。今のところは。"},h:'@human_2029'},
+];
+
+let pvTimer=null;
+function showPublicVoice(v){
+  try{
+    const el=document.getElementById('publicVoice');
+    el.classList.remove('pv-out');
+    document.getElementById('pvPerson').textContent=v.em;
+    document.getElementById('pvBubble').textContent=v.t[LANG]||v.t.en;
+    document.getElementById('pvHandle').textContent=v.h;
+    el.style.display='block';
+    if(pvTimer)clearTimeout(pvTimer);
+    pvTimer=setTimeout(()=>{el.classList.add('pv-out')},3500);
+    setTimeout(()=>{el.style.display='none';el.classList.remove('pv-out')},4000);
+  }catch(e){}
+}
+
+// ============================================================
+// TIMELINE (expanded with milestone pauses)
+// ============================================================
+function buildTimeline(){
+  const tl=[];
+  // Helper to interleave milestones and game events
+  const gameEvents=[
+    {yr:1950,type:'spawn',ch:['Alan Turing'],ev:{en:'TURING TEST',ko:'튜링 테스트',zh:'图灵测试',ja:'チューリングテスト'}},
+    {yr:1956,type:'spawn',ch:['John McCarthy','Marvin Minsky'],ev:{en:'AI IS BORN',ko:'AI 탄생',zh:'AI诞生',ja:'AI誕生'}},
+    {yr:1969,type:'fx',action:'winter',ev:{en:'AI WINTER ❄️',ko:'AI 겨울 ❄️',zh:'AI寒冬 ❄️',ja:'AI冬の時代 ❄️'}},
+    {yr:1986,type:'spawn',ch:['Backpropagation'],ev:{en:'BACKPROPAGATION',ko:'역전파 알고리즘',zh:'反向传播',ja:'逆伝播'}},
+    {yr:1997,type:'spawn',ch:['Deep Blue'],ev:{en:'DEEP BLUE',ko:'딥블루',zh:'深蓝',ja:'ディープブルー'}},
+    {yr:1997,type:'battle',ev:{en:'DEEP BLUE VS KASPAROV',ko:'딥블루 VS 카스파로프',zh:'深蓝 VS 卡斯帕罗夫',ja:'ディープブルー VS カスパロフ'},bt:{f:['Deep Blue','Kasparov'],c:['#0088ff','#fff'],w:0}},
+    {yr:2006,type:'spawn',ch:['Geoffrey Hinton'],ev:{en:'HINTON RETURNS',ko:'힌튼 귀환',zh:'辛顿归来',ja:'ヒントン帰還'}},
+    {yr:1998,type:'spawn',ch:['Yann LeCun'],ev:{en:'CNN / LECUN',ko:'CNN / 르쿤',zh:'CNN / 勒昆',ja:'CNN / ルクン'}},
+    {yr:2014,type:'spawn',ch:['Ian Goodfellow'],ev:{en:'GAN INVENTED',ko:'GAN 발명',zh:'GAN发明',ja:'GAN発明'}},
+    {yr:2014,type:'spawn',ch:['Demis Hassabis'],ev:{en:'DEEPMIND ACQUIRED',ko:'딥마인드 인수',zh:'DeepMind被收购',ja:'DeepMind買収'}},
+    {yr:2015,type:'spawn',ch:['Elon Musk','Sam Altman'],ev:{en:'OPENAI FOUNDED',ko:'OPENAI 창립',zh:'OPENAI成立',ja:'OPENAI設立'}},
+    {yr:2016,type:'spawn',ch:['Lee Sedol'],ev:{en:'ALPHAGO MATCH',ko:'알파고 대국',zh:'AlphaGo对局',ja:'AlphaGo対局'}},
+    {yr:2016,type:'battle',ev:{en:'ALPHAGO VS LEE SEDOL',ko:'알파고 VS 이세돌',zh:'AlphaGo VS 李世石',ja:'AlphaGo VS イ・セドル'},bt:{f:['Demis Hassabis','Lee Sedol'],c:['#aa44ff','#fff'],w:0}},
+    {yr:2019,type:'spawn',ch:['GPT-2'],ev:{en:'GPT-2 DROPS',ko:'GPT-2 등장',zh:'GPT-2登场',ja:'GPT-2登場'}},
+    {yr:2020,type:'spawn',ch:['GPT-3'],ev:{en:'GPT-3 DROPS',ko:'GPT-3 등장',zh:'GPT-3登场',ja:'GPT-3登場'}},
+    {yr:2021,type:'spawn',ch:['Dario Amodei'],ev:{en:'ANTHROPIC',ko:'ANTHROPIC 창립',zh:'ANTHROPIC成立',ja:'ANTHROPIC設立'}},
+    {yr:2022,type:'fx',action:'chatgpt',ev:{en:'CHATGPT 🔥',ko:'CHATGPT 🔥',zh:'CHATGPT 🔥',ja:'CHATGPT 🔥'}},
+    {yr:2023,type:'spawn',ch:['Sundar Pichai','Mark Zuckerberg'],ev:{en:'AI WAR',ko:'AI 전쟁',zh:'AI战争',ja:'AI戦争'}},
+    // GLOBAL NATIONS ENTER
+    {yr:2023.1,type:'nation',flag:'🇰🇷',country:{en:'SOUTH KOREA',ko:'대한민국',zh:'韩国',ja:'韓国'},
+     companies:['HyperCLOVA X','EXAONE'],motto:{en:'Korean sovereign AI enters the fray! NAVER + LG!',ko:'한국 소버린 AI 참전! 네이버 + LG!',zh:'韩国主权AI参战！NAVER + LG！',ja:'韓国ソブリンAI参戦！NAVER＋LG！'}},
+    {yr:2023.15,type:'nation',flag:'🇫🇷',country:{en:'FRANCE',ko:'프랑스',zh:'法国',ja:'フランス'},
+     companies:['Mistral AI'],motto:{en:"Europe's pride joins the battle!",ko:'유럽의 자존심, 전투에 합류!',zh:'欧洲之光加入战斗！',ja:'欧州の誇り、戦闘参加！'}},
+    {yr:2023.2,type:'nation',flag:'🇨🇳',country:{en:'CHINA',ko:'중국',zh:'中国',ja:'中国'},
+     companies:['Ernie Bot','Yi Series'],motto:{en:'The Dragon awakens!',ko:'용이 깨어나다!',zh:'巨龙觉醒！',ja:'龍が目覚める！'}},
+    {yr:2023.25,type:'nation',flag:'🇯🇵',country:{en:'JAPAN',ko:'일본',zh:'日本',ja:'日本'},
+     companies:['Sakana AI'],motto:{en:'Evolution-powered AI from Japan!',ko:'일본의 진화형 AI 참전!',zh:'日本进化型AI参战！',ja:'日本の進化型AI参戦！'}},
+    {yr:2023.3,type:'nation',flag:'🇦🇪',country:{en:'UAE',ko:'아랍에미리트',zh:'阿联酋',ja:'UAE'},
+     companies:['Falcon LLM'],motto:{en:'Oil money meets AI power!',ko:'오일 머니, AI 파워와 만나다!',zh:'石油资金遇上AI力量！',ja:'オイルマネー、AI パワーと出会う！'}},
+    {yr:2023,type:'battle',ev:{en:'GPT-4 VS CLAUDE VS GEMINI',ko:'GPT-4 VS 클로드 VS 제미니',zh:'GPT-4 VS Claude VS Gemini',ja:'GPT-4 VS Claude VS Gemini'},bt:{f:['OpenAI','Anthropic','Google'],c:['#00dddd','#8855ff','#33dd33'],w:-1,tri:1}},
+    {yr:2024,type:'spawn',ch:['Jensen Huang'],ev:{en:'NVIDIA RISES',ko:'NVIDIA 급부상',zh:'NVIDIA崛起',ja:'NVIDIA台頭'}},
+    {yr:2024.05,type:'spawn',ch:['Lee Jae-yong'],ev:{en:'SAMSUNG AI PIVOT',ko:'삼성 AI 전환',zh:'三星AI转型',ja:'サムスンAI転換'}},
+    {yr:2024.06,type:'spawn',ch:['Chung Euisun'],ev:{en:'HYUNDAI ROBOTICS ERA',ko:'현대 로보틱스 시대',zh:'现代机器人时代',ja:'現代ロボティクス時代'}},
+    {yr:2023.35,type:'nation',flag:'🇰🇷',country:{en:'SOUTH KOREA',ko:'대한민국',zh:'韩国',ja:'韓国'},
+     companies:['Solar LLM'],motto:{en:'Upstage Solar — small but mighty sLLM!',ko:'업스테이지 Solar — 작지만 강한 sLLM!',zh:'Upstage Solar — 小而强的sLLM！',ja:'Upstage Solar — 小さくても強いsLLM！'}},
+    {yr:2024.15,type:'nation',flag:'🇨🇳',country:{en:'CHINA',ko:'중국',zh:'中国',ja:'中国'},
+     companies:['DeepSeek'],motto:{en:'The dark horse shocks the world!',ko:'다크호스, 세계를 충격에 빠뜨리다!',zh:'黑马震惊世界！',ja:'ダークホース、世界を震撼！'}},
+    {yr:2024.2,type:'nation',flag:'🇮🇳',country:{en:'INDIA',ko:'인도',zh:'印度',ja:'インド'},
+     companies:['Krutrim'],motto:{en:'22 languages, one AI! India enters!',ko:'22개 언어, 하나의 AI! 인도 참전!',zh:'22种语言，一个AI！印度参战！',ja:'22言語、一つのAI！インド参戦！'}},
+    {yr:2024.25,type:'nation',flag:'🇩🇪',country:{en:'GERMANY',ko:'독일',zh:'德国',ja:'ドイツ'},
+     companies:['DeepL'],motto:{en:'Translation perfected by neural nets!',ko:'신경망이 완성한 번역의 정석!',zh:'神经网络完善翻译的典范！',ja:'ニューラルネットが完成させた翻訳の定石！'}},
+    {yr:2024,type:'battle',ev:{en:'BOARD VS ALTMAN',ko:'이사회 VS 올트먼',zh:'董事会 VS 奥特曼',ja:'取締役会 VS アルトマン'},bt:{f:['Board','Sam Altman'],c:['#f44','#00dddd'],w:1}},
+    // HW WAR
+    {yr:2024.3,type:'battle',ev:{en:'CHIP WAR: NVIDIA VS AMD',ko:'칩 전쟁: NVIDIA VS AMD',zh:'芯片战争: NVIDIA VS AMD',ja:'チップ戦争: NVIDIA VS AMD'},bt:{f:['NVIDIA','AMD'],c:['#76b900','#ed1c24'],w:0}},
+    {yr:2024.35,type:'battle',ev:{en:'FOUNDRY: TSMC VS SAMSUNG',ko:'파운드리: TSMC VS 삼성',zh:'代工: TSMC VS 三星',ja:'ファウンドリ: TSMC VS サムスン'},bt:{f:['TSMC','Samsung'],c:['#006837','#1428a0'],w:-1}},
+    {yr:2024.4,type:'battle',ev:{en:'HBM WAR: SK HYNIX VS SAMSUNG',ko:'HBM 전쟁: SK하이닉스 VS 삼성',zh:'HBM战争: SK海力士 VS 三星',ja:'HBM戦争: SKハイニックス VS サムスン'},bt:{f:['SK Hynix','Samsung'],c:['#e60012','#1428a0'],w:-1}},
+    // US-CHINA AI CONFLICT
+    {yr:2024.5,type:'fx',action:'conflict',ev:{en:'🇺🇸🇨🇳 US-CHINA AI CHIP BAN',ko:'🇺🇸🇨🇳 미중 AI 칩 수출 금지',zh:'🇺🇸🇨🇳 美中AI芯片禁令',ja:'🇺🇸🇨🇳 米中AIチップ禁止令'}},
+    {yr:2025,type:'spawn',ch:['Claude 3.7','GPT-5'],ev:{en:'MODEL WAR',ko:'모델 전쟁',zh:'模型战争',ja:'モデル戦争'}},
+    {yr:2025.1,type:'nation',flag:'🇺🇸',country:{en:'USA',ko:'미국',zh:'美国',ja:'アメリカ'},
+     companies:['Grok 4'],motto:{en:'Musk\'s xAI strikes back!',ko:'머스크의 xAI 반격!',zh:'马斯克xAI反击！',ja:'マスクのxAI反撃！'}},
+    {yr:2025,type:'battle',ev:{en:'CLAUDE 3.7 VS GPT-5',ko:'클로드 VS GPT-5',zh:'Claude 3.7 VS GPT-5',ja:'Claude 3.7 VS GPT-5'},bt:{f:['Claude 3.7','GPT-5'],c:['#8855ff','#00dddd'],w:-1}},
+    {yr:2026,type:'spawn',ch:['Claude Code'],ev:{en:'AGENT ERA',ko:'에이전트 시대',zh:'Agent时代',ja:'エージェント時代'}},
+    // 2026 REALITY: Based on Artificial Analysis rankings (April 2026)
+    {yr:2026.05,type:'spawn',ch:['Gemini 3.1 Pro','GPT-5.4'],ev:{en:'GEMINI 3.1 & GPT-5.4 — TIED #1',ko:'제미니 3.1 & GPT-5.4 — 공동 1위',zh:'Gemini 3.1 & GPT-5.4 — 并列第一',ja:'Gemini 3.1 & GPT-5.4 — 同率1位'}},
+    {yr:2026.1,type:'spawn',ch:['Claude Opus 4.6'],ev:{en:'CLAUDE OPUS 4.6 — #4 RANKED',ko:'클로드 Opus 4.6 — 4위',zh:'Claude Opus 4.6 — 排名第四',ja:'Claude Opus 4.6 — 4位'}},
+    {yr:2026.12,type:'nation',flag:'🇨🇳',country:{en:'CHINA AI SURGE',ko:'중국 AI 급부상',zh:'中国AI崛起',ja:'中国AI台頭'},
+     companies:['GLM-5','MiniMax-M2.7','MiMo-V2-Pro','Kimi K2.5'],motto:{en:'4 Chinese models in Top 20! The Dragon roars!',ko:'중국 모델 4개 톱20 진입! 용이 포효한다!',zh:'4个中国模型进入前20！巨龙咆哮！',ja:'中国モデル4つがトップ20入り！龍が���哮する！'}},
+    {yr:2026.15,type:'spawn',ch:['GLM-5','MiniMax-M2.7','MiMo-V2-Pro','Kimi K2.5'],ev:{en:'CHINA AI 4-WAY SURGE',ko:'중국 AI 4파전 급부상',zh:'中国AI四强崛起',ja:'中国AI4強台頭'}},
+    {yr:2026.2,type:'battle',ev:{en:'2026 INTELLIGENCE CROWN: GEMINI VS GPT-5.4 VS CLAUDE OPUS',ko:'2026 지능왕: 제미니 VS GPT-5.4 VS 클로드 Opus',zh:'2026智能王冠: Gemini VS GPT-5.4 VS Claude Opus',ja:'2026知能王冠: Gemini VS GPT-5.4 VS Claude Opus'},bt:{f:['Google','OpenAI','Anthropic'],c:['#33dd33','#00dddd','#8855ff'],w:-1,tri:1}},
+    {yr:2026.25,type:'battle',ev:{en:'CHINA VS USA: AI SUPERPOWER CLASH',ko:'중국 VS 미국: AI 강대국 충돌',zh:'中美AI超级大国对决',ja:'中国 VS 米国: AI超大国激突'},bt:{f:['China AI','US AI'],c:['#ff2222','#0044cc'],w:-1}},
+    {yr:2026.3,type:'battle',ev:{en:'ROYAL RUMBLE 2026',ko:'로얄 럼블 2026',zh:'2026皇家大乱斗',ja:'ロイヤルランブル2026'},bt:{f:['OpenAI','Anthropic','Google','Meta','NVIDIA','Zhipu AI'],c:['#00dddd','#8855ff','#33dd33','#4488ff','#76b900','#4466ff'],w:-1,royal:1}},
+    // === FUTURE ARC (2026.5+) — speculative, reflecting China's surge ===
+    {yr:2026.4,type:'fx',action:'future',ev:{en:'⚠ ENTERING THE FUTURE ⚠',ko:'⚠ 미래 진입 ⚠',zh:'⚠ 进入未来 ⚠',ja:'⚠ 未来へ突入 ⚠'}},
+    {yr:2026.6,type:'fx',action:'purge',ev:{en:'THE GREAT PURGE — Only Big Tech Survives',ko:'대격변 — 빅테크만 생존',zh:'大清洗 — 只有大厂存活',ja:'大粛清 — ビッグテックのみ生存'}},
+    // 2027: GPT-6 vs Claude 5 vs Gemini 4 vs GLM-6 — 4-way war (China surging)
+    {yr:2027,type:'spawn',ch:['GPT-6'],ev:{en:'GPT-6 DROPS',ko:'GPT-6 등장',zh:'GPT-6登场',ja:'GPT-6登場'}},
+    {yr:2027,type:'spawn',ch:['Claude 5'],ev:{en:'CLAUDE 5 — FULL AUTONOMY',ko:'클로드 5 — 완전 자율',zh:'Claude 5 — 完全自律',ja:'Claude 5 — 完全自律'}},
+    {yr:2027.1,type:'spawn',ch:['Gemini 4'],ev:{en:'GEMINI 4 — WORLD MODEL (#1 EXTENDS)',ko:'제미니 4 — 세계 모델 (1위 독주)',zh:'Gemini 4 — 世界模型（第一延续）',ja:'Gemini 4 — ワールドモデル（1位独走）'}},
+    {yr:2027.15,type:'spawn',ch:['GLM-6'],ev:{en:'GLM-6 — CHINA CLOSES THE GAP',ko:'GLM-6 — 중국 격차 축소',zh:'GLM-6 — 中国缩小差距',ja:'GLM-6 — 中国が差を縮める'}},
+    {yr:2027.2,type:'battle',ev:{en:'GPT-6 VS CLAUDE 5 VS GEMINI 4 VS GLM-6',ko:'GPT-6 VS 클로드 5 VS 제미니 4 VS GLM-6',zh:'GPT-6 VS Claude 5 VS Gemini 4 VS GLM-6',ja:'GPT-6 VS Claude 5 VS Gemini 4 VS GLM-6'},
+     bt:{f:['OpenAI','Anthropic','Google','Zhipu AI'],c:['#00dddd','#8855ff','#33dd33','#4466ff'],w:-1,royal:1}},
+    // 2027: Physical AI + Robots
+    {yr:2027.3,type:'spawn',ch:['Optimus'],ev:{en:'PHYSICAL AI ERA',ko:'피지컬 AI 시대',zh:'物理AI时代',ja:'フィジカルAI時代'}},
+    {yr:2027.3,type:'spawn',ch:['Atlas'],ev:{en:'ATLAS RISES',ko:'아틀라스 등장',zh:'Atlas崛起',ja:'Atlas台頭'}},
+    {yr:2027.4,type:'spawn',ch:['Unitree H1'],ev:{en:'UNITREE ENTERS',ko:'유니트리 참전',zh:'宇树参战',ja:'Unitree参戦'}},
+    {yr:2027.5,type:'spawn',ch:['Llama 5'],ev:{en:'LLAMA 5 OPEN-SOURCE',ko:'LLAMA 5 오픈소스',zh:'LLAMA 5 开源',ja:'LLAMA 5 オープンソース'}},
+    {yr:2027.6,type:'battle',ev:{en:'ROBOT WARS: OPTIMUS VS ATLAS VS UNITREE',ko:'로봇 전쟁: 옵티머스 VS 아틀라스 VS 유니트리',zh:'机器人战争: Optimus VS Atlas VS Unitree',ja:'ロボット戦争: Optimus VS Atlas VS Unitree'},
+     bt:{f:['Optimus','Atlas','Unitree H1'],c:['#ffd700','#ff4444','#00ccff'],w:-1,tri:1}},
+    // 2027: Random wildcard — underdog can surge
+    {yr:2027.7,type:'fx',action:'wildcard',ev:{en:'⚡ WILDCARD: Unexpected breakthrough!',ko:'⚡ 와일드카드: 예상치 못한 돌파!',zh:'⚡ 外卡: 意想不到的突破！',ja:'⚡ ワイルドカード: 予想外のブレイクスルー！'}},
+    // 2028: World Models + AGI race — US vs China heats up
+    {yr:2028,type:'spawn',ch:['Meta AGI'],ev:{en:'YANN LECUN: META WORLD MODEL',ko:'얀 르쿤: 메타 세계 모델',zh:'杨立昆: Meta世界模型',ja:'ヤン・ルクン: Metaワールドモデル'}},
+    {yr:2028.05,type:'spawn',ch:['Gemini 5.5'],ev:{en:'GEMINI 5.5 — GOOGLE STILL IN THE FIGHT',ko:'제미니 5.5 — 구글 여전히 선두 경쟁',zh:'Gemini 5.5 — 谷歌仍在战斗',ja:'Gemini 5.5 — Googleまだ戦える'}},
+    {yr:2028.1,type:'spawn',ch:['GPT-7'],ev:{en:'GPT-7 — REASONING SUPREME',ko:'GPT-7 — 추론의 정점',zh:'GPT-7 — 推理之巅',ja:'GPT-7 — 推論の頂点'}},
+    {yr:2028.2,type:'spawn',ch:['Claude 6'],ev:{en:'CLAUDE 6 — ALIGNED AGI',ko:'클로드 6 — 정렬된 AGI',zh:'Claude 6 — 对齐的AGI',ja:'Claude 6 — アラインドAGI'}},
+    {yr:2028.25,type:'spawn',ch:['China United AI'],ev:{en:'CHINA UNITED AI — CONSORTIUM FORMED',ko:'중국 연합 AI — 컨소시엄 결성',zh:'中国联合AI — 联盟成立',ja:'中国連合AI — コンソーシアム結成'}},
+    {yr:2028.3,type:'spawn',ch:['Grok 5'],ev:{en:'GROK 5 — REAL-TIME WORLD',ko:'GROK 5 — 실시간 세계',zh:'Grok 5 — 实时世界',ja:'Grok 5 — リアルタイムワールド'}},
+    {yr:2028.4,type:'battle',ev:{en:'AGI SEMIFINALS — US VS CHINA',ko:'AGI 준결승 — 미국 VS 중국',zh:'AGI半决赛 — 美国VS中国',ja:'AGI準決勝 — 米国VS中国'},
+     bt:{f:['OpenAI','Anthropic','Google','Meta','xAI/Tesla','Zhipu AI'],c:['#00dddd','#8855ff','#33dd33','#4488ff','#ffd700','#4466ff'],w:-1,royal:1}},
+    // 2028: Another wildcard — smaller player disrupts
+    {yr:2028.6,type:'fx',action:'wildcard',ev:{en:'⚡ WILDCARD: Dark horse emerges!',ko:'⚡ 와일드카드: 다크호스 등장!',zh:'⚡ 外卡: 黑马出现！',ja:'⚡ ワイルドカード: ダークホース出現！'}},
+    // 2029: The Final Push — Google, OpenAI, China in 3-way race
+    {yr:2029,type:'spawn',ch:['Gemini 6'],ev:{en:'GEMINI 6 — GOOGLE\'S MOONSHOT FOR AGI',ko:'제미니 6 — 구글의 AGI 문샷',zh:'Gemini 6 — 谷歌的AGI登月',ja:'Gemini 6 — GoogleのAGIムーンショット'}},
+    {yr:2029.2,type:'battle',ev:{en:'THE FINAL BATTLE — AGI CROWN',ko:'최종 전투 — AGI 왕관',zh:'最终决战 — AGI王冠',ja:'最終決戦 — AGI王冠'},
+     bt:{f:['OpenAI','Anthropic','Google','Meta','NVIDIA','Zhipu AI'],c:['#00dddd','#8855ff','#33dd33','#4488ff','#76b900','#4466ff'],w:-1,royal:1}},
+    {yr:2029.5,type:'fx',action:'agi',ev:{en:'AGI ACHIEVED — THE SINGULARITY',ko:'AGI 달성 — 특이점',zh:'AGI达成 — 奇点',ja:'AGI達成 — シンギュラリティ'}},
+    {yr:2030,type:'end'}
+  ];
+  // Merge milestones + human history flashes + CEO intros into timeline
+  const milestoneEvents=MILESTONES.map(m=>({yr:m.yr-0.01,type:'milestone',ms:m}));
+  const histFlashes=HUMAN_HIST.filter(h=>h.yr>=1950&&h.yr<=2026).map(h=>({yr:h.yr+0.02,type:'histflash',item:h}));
+  const ceoEvents=CEO_DATA.map(c=>({yr:c.yr+0.03,type:'ceointro',ceo:c}));
+  const pvEvents=PUBLIC_VOICES.map(v=>({yr:v.yr+0.04,type:'publicvoice',voice:v}));
+  const all=[...gameEvents,...milestoneEvents,...histFlashes,...ceoEvents,...pvEvents].sort((a,b)=>a.yr-b.yr);
+  return all;
+}
+
+// ============================================================
+// RANDOM EVENTS
+// ============================================================
+const REVT=[
+  {yr:[2022,2024],tgt:'Elon Musk',fx:'boost',t:{en:'Elon buys Twitter/X! 🚀',ko:'머스크 X 인수! 🚀'}},
+  {yr:[2023,2025],tgt:'Geoffrey Hinton',fx:'boost',t:{en:'Hinton quits Google! 🎤',ko:'힌튼 구글 퇴사! 🎤'}},
+  {yr:[2024,2025],fx:'dmg',t:{en:"DeepSeek strikes! 🇨🇳",ko:'DeepSeek 기습! 🇨🇳'}},
+  {yr:[2023,2025],fx:'slow',t:{en:'US regulates AI! 🏛',ko:'AI 규제! 🏛'}},
+  {yr:[2024,2026],tgt:'Jensen Huang',fx:'boost',t:{en:'Jensen GPU power! 💚',ko:'젠슨 GPU 파워! 💚'}},
+  {yr:[2024,2025],fx:'none',t:{en:'Apple AI... does nothing. 🍎',ko:'애플 AI... 아무것도 안 함. 🍎'}},
+  {yr:[2023,2024],tgt:'Sam Altman',fx:'nerf',t:{en:'Altman fired! 😱',ko:'올트먼 해임! 😱'}},
+  {yr:[2023,2025],fx:'dmgp',t:{en:'LLaMA free! 🦙',ko:'LLaMA 무료! 🦙'}},
+  {yr:[2024,2026],tgt:'Dario Amodei',fx:'boost',t:{en:'Anthropic $10B! 💰',ko:'Anthropic $100억! 💰'}},
+];
+
+// ============================================================
+// COMPANIES
+// ============================================================
+function initCo(){G.companies={'OpenAI':{p:0,c:'#00dddd'},'Anthropic':{p:0,c:'#8855ff'},'Google':{p:0,c:'#33dd33'},'DeepMind':{p:0,c:'#aa44ff'},'Meta':{p:0,c:'#4488ff'},'NVIDIA':{p:0,c:'#76b900'},'IBM':{p:0,c:'#0088ff'},'xAI/Tesla':{p:0,c:'#ffd700'},'NAVER':{p:0,c:'#1EC800'},'Upstage':{p:0,c:'#ffaa00'},'Baidu':{p:0,c:'#ff2222'},'01.AI':{p:0,c:'#ff4488'},'Mistral':{p:0,c:'#ff6644'},'TII':{p:0,c:'#ccaa00'},'DeepSeek':{p:0,c:'#ff3333'},'Sakana':{p:0,c:'#ff8899'},'Krutrim':{p:0,c:'#ff8833'},'DeepL':{p:0,c:'#0066cc'},'LG AI Research':{p:0,c:'#A50034'},'Samsung':{p:0,c:'#1428a0'},'SK Hynix':{p:0,c:'#e60012'},'TSMC':{p:0,c:'#006837'},'AMD':{p:0,c:'#ed1c24'},'Hyundai':{p:0,c:'#002c5f'},'Zhipu AI':{p:0,c:'#4466ff'},'MiniMax':{p:0,c:'#ff6622'},'Xiaomi':{p:0,c:'#ff6b00'},'Moonshot AI':{p:0,c:'#6644cc'},'Boston Dynamics':{p:0,c:'#ff4444'},'Unitree':{p:0,c:'#00ccff'}}}
+function updCo(){Object.keys(G.companies).forEach(k=>G.companies[k].p=0);G.chars.forEach(c=>{if(G.companies[c.co])G.companies[c.co].p+=c.pw;if(c.co==='DeepMind'&&G.companies.Google)G.companies.Google.p+=Math.floor(c.pw*.3)})}
+const CO_FLAG={'OpenAI':'🇺🇸','Anthropic':'🇺🇸','Google':'🇺🇸','DeepMind':'🇬🇧','Meta':'🇺🇸','NVIDIA':'🇺🇸','IBM':'🇺🇸','xAI/Tesla':'🇺🇸','NAVER':'🇰🇷','Upstage':'🇰🇷','LG AI Research':'🇰🇷','Samsung':'🇰🇷','SK Hynix':'🇰🇷','TSMC':'🇹🇼','AMD':'🇺🇸','Baidu':'🇨🇳','01.AI':'🇨🇳','Mistral':'🇫🇷','TII':'🇦🇪','DeepSeek':'🇨🇳','Sakana':'🇯🇵','Krutrim':'🇮🇳','DeepL':'🇩🇪','Hyundai':'🇰🇷','Zhipu AI':'🇨🇳','MiniMax':'🇨🇳','Xiaomi':'🇨🇳','Moonshot AI':'🇨🇳','Boston Dynamics':'🇺🇸','Unitree':'🇨🇳'};
+const RANK_BADGE=['👑','🥈','🥉'];
+function renderLB(){
+  const el=document.getElementById('lb');
+  const s=Object.entries(G.companies).filter(([,v])=>v.p>0).sort((a,b)=>b[1].p-a[1].p).slice(0,10);
+  el.innerHTML=s.map(([n,d],i)=>{
+    const badge=i<3?`<span class="lb-badge">${RANK_BADGE[i]}</span>`:`<span class="lb-badge" style="font-size:11px;color:#888">${i+1}</span>`;
+    const flag=CO_FLAG[n]||'';
+    const models=(COMPANY_MODELS[n]||[]).filter(m=>m.yr<=Math.floor(G.year));
+    const modelBadge=models.length>0?`<span class="model-tag tag-llm" style="font-size:8px;margin-left:3px">${models.length}</span>`:'';
+    return`<div class="lb-item" onclick="showCD('${n}')" style="border-left:3px solid ${d.c}">${badge}<span class="n" style="color:${d.c}">${flag} ${n}${modelBadge}</span><span class="p">${d.p}</span></div>`;
+  }).join('');
+  document.getElementById('lbHint').textContent=t('lbHint');
+}
+function showCD(name){
+  G.selectedCompany=name;
+  G.paused=true; // pause game
+  const modal=document.getElementById('modelModal');
+  const col=G.companies[name]?.c||'#0ff';
+  const flag=CO_FLAG[name]||'';
+  document.getElementById('modelModalTitle').innerHTML=`${flag} <span style="color:${col}">${name}</span> — ${t('models')}`;
+  const models=(COMPANY_MODELS[name]||[]).filter(m=>m.yr<=Math.floor(G.year));
+  document.getElementById('modelModalList').innerHTML=models.length?models.map(m=>{
+    const tc=TAG_CLASSES[m.tag]||'';const tl=TAG_LABELS[m.tag]||'';
+    return`<div class="model-item"><span class="yr">${m.yr}</span><b style="color:#fff">${m.n}</b><span class="model-tag ${tc}">${tl}</span><br><span style="color:#999">${m.d[LANG]||m.d.en}</span></div>`;
+  }).join(''):`<div class="model-item" style="color:#555">${LANG==='ko'?'아직 출시된 모델 없음':'No models released yet'}</div>`;
+  modal.style.display='flex';
+}
+function closeModelModal(){
+  document.getElementById('modelModal').style.display='none';
+  G.selectedCompany=null;
+  G.paused=false; // resume game
+}
+
+// ============================================================
+// HISTORY FEED
+// ============================================================
+function badge(cls,txt){return `<span class="h-badge ${cls}">${txt}</span>`}
+function addHist(type,text,yr){
+  G.history.unshift({type,text,yr:yr||Math.floor(G.year)});
+  if(G.history.length>60)G.history.pop();
+  const el=document.getElementById('historyFeed');
+  el.innerHTML=G.history.slice(0,40).map((h,i)=>{
+    const fresh=i===0?' h-new':'';
+    const y=`<span class="h-yr">[${h.yr}]</span> `;
+    if(h.type==='collision')return`<div class="hist-entry">${y}${badge('hb-boom','CLASH')} <span class="h-dlg">${h.text}</span></div>`;
+    if(h.type==='milestone')return`<div class="hist-entry">${y}${h.text.includes('📄')?badge('hb-paper','PAPER'):badge('hb-model','MODEL')} <span class="h-ev${fresh}">${h.text}</span></div>`;
+    if(h.type==='event'){
+      let b='';
+      if(h.text.includes('🏆'))b=badge('hb-battle','WIN');
+      else if(h.text.includes('⚠'))b=badge('hb-boom','NEWS');
+      else if(h.text.match(/🇰🇷|🇨🇳|🇫🇷|🇯🇵|🇦🇪|🇮🇳|🇩🇪|🇺🇸|🇬🇧/))b=badge('hb-nation','NATION');
+      return`<div class="hist-entry">${y}${b}<span class="h-ev${fresh}">${h.text}</span></div>`;
+    }
+    if(h.type==='story')return`<div class="hist-entry">${y}<span class="h-desc${fresh}">${h.text}</span></div>`;
+    return`<div class="hist-entry">${y}<span class="h-desc${fresh}">${h.text}</span></div>`;
+  }).join('');
+}
+
+// ============================================================
+// CANVAS
+// ============================================================
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+let W,H;function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+addEventListener('resize',resize);resize();
+
+// ============================================================
+// SPAWN & PHYSICS
+// ============================================================
+const R=42;
+function spawn(def){
+  if(G.chars.find(c=>c.name===def.name))return;
+  const m=120,rw=W-330;
+  const c={name:def.name,em:def.em,col:def.col,co:def.co,tip:def.tip,pw:def.pw,obj:!!def.obj,
+    x:m+Math.random()*(rw-2*m),y:m+Math.random()*(H-2*m),
+    vx:(Math.random()-.5)*5+2.5*(Math.random()>.5?1:-1),vy:(Math.random()-.5)*5+2.5*(Math.random()>.5?1:-1),
+    r:def.sz?R*def.sz:R,sc:1,frozen:false,glow:false,born:G.gt,dlgCD:0,
+    pulse:Math.random()*Math.PI*2,orbA:Math.random()*Math.PI*2,orbR:25+Math.random()*35,orbS:.6+Math.random()*.6};
+  G.chars.push(c);
+  for(let i=0;i<40;i++){const a=Math.random()*Math.PI*2,sp=3+Math.random()*10;G.particles.push({x:c.x,y:c.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:2,col:c.col,sz:2+Math.random()*5})}
+  for(let i=0;i<24;i++){const a=i/24*Math.PI*2;G.particles.push({x:c.x,y:c.y,vx:Math.cos(a)*7,vy:Math.sin(a)*7,life:1.2,col:'#fff',sz:2,ring:1})}
+  snd('up');updCo();
+}
+
+function physics(dt){
+  const s=dt/1000;G.gt+=s;G.comboTimer=Math.max(0,G.comboTimer-dt);
+  if(G.comboTimer<=0)G.comboCount=0;
+  const rw=W-getSbWidth()-10;
+  G.chars.forEach(c=>{
+    if(c.frozen){c.pulse+=s*3;return}
+    c.orbA+=c.orbS*s;c.vx+=Math.cos(c.orbA)*c.orbR*s*.35;c.vy+=Math.sin(c.orbA*.7)*c.orbR*s*.35;
+    const spd=Math.sqrt(c.vx*c.vx+c.vy*c.vy);
+    if(spd<2){const f=2/Math.max(spd,.01);c.vx*=f;c.vy*=f}
+    if(spd>6){const f=6/spd;c.vx*=f;c.vy*=f}
+    c.x+=c.vx;c.y+=c.vy;const r=c.r*c.sc;
+    if(c.x-r<0){c.x=r;c.vx=Math.abs(c.vx)*1.15;addSp(r,c.y,c.col,5)}
+    if(c.x+r>rw){c.x=rw-r;c.vx=-Math.abs(c.vx)*1.15;addSp(rw-r,c.y,c.col,5)}
+    if(c.y-r<70){c.y=70+r;c.vy=Math.abs(c.vy)*1.15}
+    if(c.y+r>H-5){c.y=H-5-r;c.vy=-Math.abs(c.vy)*1.15}
+    c.pulse+=s*5;c.dlgCD=Math.max(0,c.dlgCD-dt);
+    if(Math.random()<.3)G.trails.push({x:c.x,y:c.y,life:.5,col:c.col,sz:c.r*.3});
+  });
+  for(let i=0;i<G.chars.length;i++){for(let j=i+1;j<G.chars.length;j++){
+    const a=G.chars[i],b=G.chars[j];const dx=b.x-a.x,dy=b.y-a.y,dist=Math.sqrt(dx*dx+dy*dy)||1;
+    const min=a.r*a.sc+b.r*b.sc;
+    if(dist<min){
+      const nx=dx/dist,ny=dy/dist,ov=(min-dist)/2+3;
+      if(!a.frozen){a.x-=nx*ov;a.y-=ny*ov}if(!b.frozen){b.x+=nx*ov;b.y+=ny*ov}
+      const bounce=4;if(!a.frozen){a.vx-=nx*bounce;a.vy-=ny*bounce}if(!b.frozen){b.vx+=nx*bounce;b.vy+=ny*bounce}
+      const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+      G.comboCount++;G.comboTimer=2000;addSp(mx,my,'#ff0',8+G.comboCount*2);
+      if(G.comboCount>1)addSp(mx,my,'#f0f',5);if(G.comboCount>=3){addSp(mx,my,'#0ff',12);shake(3+G.comboCount)}
+      snd(G.comboCount>=3?'combo':'punch');if(G.comboCount>=2)shake(2+G.comboCount);
+      if(a.dlgCD<=0&&b.dlgCD<=0){const line=getDlg(a,b);if(line){G.dialogues.push({t:line,x:mx,y:my-55,life:3,a:1});a.dlgCD=3500;b.dlgCD=3500;addHist('collision',`💥 ${a.name} vs ${b.name}: "${line}"`)}}
+    }
+  }}
+  G.particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.93;p.vy*=.93;p.life-=s*2});G.particles=G.particles.filter(p=>p.life>0);
+  G.trails.forEach(t=>{t.life-=s*3;t.sz*=.94});G.trails=G.trails.filter(t=>t.life>0);
+  G.dialogues.forEach(d=>{d.life-=s;d.a=Math.max(0,d.life/3);d.y-=s*25});G.dialogues=G.dialogues.filter(d=>d.life>0);
+  if(G.shakeT>0)G.shakeT-=dt;
+  // CEO emotion timers + deceased check
+  G.chars.forEach(c=>{if(c.emotionTimer>0){c.emotionTimer-=dt;if(c.emotionTimer<=0)c.emotion='😐'}});
+  checkDeceasedCeos();
+  // Snowfall
+  if(G.snowing){
+    const rw=W-getSbWidth()-10;
+    for(let i=0;i<3;i++)G.snowflakes.push({x:Math.random()*rw,y:-10,vy:1+Math.random()*2,vx:(Math.random()-.5)*.5,sz:2+Math.random()*4,a:1});
+  }
+  G.snowflakes.forEach(f=>{f.y+=f.vy;f.x+=f.vx+Math.sin(G.gt*2+f.x*.01)*.3;f.a-=s*.15});
+  G.snowflakes=G.snowflakes.filter(f=>f.y<H+10&&f.a>0);
+}
+function addSp(x,y,col,n){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=2+Math.random()*8;G.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1+Math.random()*.5,col,sz:1.5+Math.random()*3.5})}}
+function getDlg(a,b){const c=DLG.filter(d=>(d.a===a.name&&(d.b===b.name||d.b==='*'))||(d.a===b.name&&(d.b===a.name||d.b==='*')));if(!c.length)return null;const p=G.rng.pick(c);return p.t[LANG]||p.t.en}
+function shake(i){G.shakeT=250;G.shakeI=i;cv.classList.add('shake');setTimeout(()=>cv.classList.remove('shake'),250)}
+
+// ============================================================
+// RENDERING
+// ============================================================
+const bgC={1950:'#05051a',1960:'#060620',1970:'#050f14',1980:'#120818',1990:'#081208',2000:'#100e06',2010:'#06061e',2020:'#120608'};
+function render(){
+  cx.save();
+  try{
+  let sx=0,sy=0;if(G.shakeT>0){const f=G.shakeI*(G.shakeT/250);sx=(Math.random()-.5)*f*3;sy=(Math.random()-.5)*f*3}
+  cx.translate(sx,sy);
+  cx.fillStyle=G.futureMode?'#08041a':bgC[Math.floor(G.year/10)*10]||'#080808';
+  cx.fillRect(-15,-15,W+30,H+30);
+  const gO=(G.gt*20)%60;cx.strokeStyle=G.futureMode?'rgba(150,50,255,0.05)':'rgba(60,120,255,0.035)';cx.lineWidth=1;
+  for(let x=-60+gO;x<W;x+=60){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,H);cx.stroke()}
+  for(let y=-60+gO;y<H;y+=60){cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke()}
+  if(G.comboCount>=2){cx.globalAlpha=Math.min(1,G.comboTimer/500);cx.font='bold 50px Courier New';cx.textAlign='center';cx.fillStyle=G.comboCount>=5?'#f0f':G.comboCount>=3?'#ff0':'#0ff';cx.fillText(`${G.comboCount}x COMBO!`,(W-310)/2,H-30);cx.globalAlpha=1}
+  G.trails.forEach(t=>{cx.globalAlpha=t.life*.4;cx.fillStyle=t.col;cx.beginPath();cx.arc(t.x,t.y,t.sz,0,Math.PI*2);cx.fill()});cx.globalAlpha=1;
+  G.particles.forEach(p=>{cx.globalAlpha=Math.min(1,p.life);cx.fillStyle=p.col;if(p.ring){cx.strokeStyle=p.col;cx.lineWidth=2;cx.beginPath();cx.arc(p.x,p.y,p.sz+p.life*5,0,Math.PI*2);cx.stroke()}else{cx.beginPath();cx.arc(p.x,p.y,p.sz,0,Math.PI*2);cx.fill()}});cx.globalAlpha=1;
+  // Snow
+  if(G.snowflakes.length>0){cx.fillStyle='#fff';G.snowflakes.forEach(f=>{cx.globalAlpha=f.a*.7;cx.beginPath();cx.arc(f.x,f.y,f.sz,0,Math.PI*2);cx.fill()});cx.globalAlpha=1}
+  G.chars.forEach(c=>{try{
+    if(c.sc<=0)return;
+    const alpha=c.fadeAlpha!==undefined?c.fadeAlpha:1;
+    if(alpha<=0)return;
+    cx.globalAlpha=alpha;
+    const r=c.r*c.sc,pr=r+Math.sin(c.pulse)*(c.isCeo?2:4);
+    // Halo
+    const g1=cx.createRadialGradient(c.x,c.y,pr*.3,c.x,c.y,pr*3);g1.addColorStop(0,c.col+'55');g1.addColorStop(1,c.col+'00');cx.fillStyle=g1;cx.beginPath();cx.arc(c.x,c.y,pr*3,0,Math.PI*2);cx.fill();
+    // Power glow
+    if(c.glow){const g2=cx.createRadialGradient(c.x,c.y,r,c.x,c.y,r*4.5);g2.addColorStop(0,c.col+'88');g2.addColorStop(.5,c.col+'33');g2.addColorStop(1,c.col+'00');cx.fillStyle=g2;cx.beginPath();cx.arc(c.x,c.y,r*4.5,0,Math.PI*2);cx.fill();cx.strokeStyle=c.col+'bb';cx.lineWidth=2;cx.beginPath();cx.arc(c.x,c.y,r*2,c.pulse,c.pulse+Math.PI*1.3);cx.stroke();cx.beginPath();cx.arc(c.x,c.y,r*2.4,c.pulse+Math.PI,c.pulse+Math.PI*2.1);cx.stroke()}
+    // Body
+    cx.fillStyle=c.fading?'#1a1a1a':'#0a0a0a';cx.strokeStyle=c.fading?'#555':c.col;cx.lineWidth=c.isCeo?2:3;
+    cx.beginPath();cx.arc(c.x,c.y,pr,0,Math.PI*2);cx.fill();cx.stroke();
+    // Frozen
+    if(c.frozen){cx.fillStyle='rgba(100,180,255,0.35)';cx.beginPath();cx.arc(c.x,c.y,pr,0,Math.PI*2);cx.fill();cx.strokeStyle='rgba(150,220,255,0.5)';cx.lineWidth=1;for(let i=0;i<6;i++){const a=c.pulse+i*Math.PI/3;cx.beginPath();cx.moveTo(c.x,c.y);cx.lineTo(c.x+Math.cos(a)*r*1.4,c.y+Math.sin(a)*r*1.4);cx.stroke()}}
+    // Emoji
+    cx.font=`${pr*1.4}px serif`;cx.textAlign='center';cx.textBaseline='middle';cx.fillText(c.em,c.x,c.y);
+    // CEO emotion bubble
+    if(c.isCeo&&c.emotion&&c.emotion!=='😐'&&c.emotionTimer>0){
+      cx.font=`${Math.max(14,pr*.8)}px serif`;cx.fillText(c.emotion,c.x+pr*.8,c.y-pr*.8);
+    }
+    // Name label
+    cx.font=`bold ${c.isCeo?10:12}px Courier New`;cx.fillStyle=c.fading?'#666':'#fff';
+    cx.fillText(c.name,c.x,c.y+pr+(c.isCeo?12:16));
+    if(!c.isCeo){cx.font='10px Courier New';cx.fillStyle=c.col;cx.fillText('PWR:'+c.pw,c.x,c.y+pr+28)}
+    cx.globalAlpha=1;
+  }catch(e){cx.globalAlpha=1}});
+  const dlgFs=Math.max(22,Math.min(38,W*0.022));
+  G.dialogues.forEach(d=>{cx.globalAlpha=d.a;cx.font=`bold ${dlgFs}px Courier New`;cx.textAlign='center';const m=cx.measureText(d.t),pw=m.width+44,ph=dlgFs*2;cx.fillStyle='rgba(0,0,0,.92)';cx.strokeStyle='#ff0';cx.lineWidth=3;cx.shadowColor='rgba(255,255,0,.4)';cx.shadowBlur=15;cx.beginPath();cx.roundRect(d.x-pw/2,d.y-ph/2,pw,ph,12);cx.fill();cx.stroke();cx.shadowBlur=0;cx.fillStyle='#ff0';cx.fillText(d.t,d.x,d.y+dlgFs*.35)});
+  cx.globalAlpha=1;
+  }catch(e){console.warn('render inner err',e)}
+  cx.restore();
+}
+
+// TOOLTIP
+cv.addEventListener('mousemove',e=>{
+  let h=null;for(let i=G.chars.length-1;i>=0;i--){const c=G.chars[i],dx=e.clientX-c.x,dy=e.clientY-c.y;if(Math.sqrt(dx*dx+dy*dy)<c.r*c.sc+15){h=c;break}}
+  const tt=document.getElementById('tooltip');
+  if(h){tt.style.display='block';tt.style.left=Math.min(e.clientX+15,W-300)+'px';tt.style.top=Math.min(e.clientY+15,H-120)+'px';tt.innerHTML=`<div style="font-size:16px;font-weight:bold;color:#fff">${h.em} ${h.name}</div><div style="font-size:10px;color:#0ff;margin:3px 0">${h.co}</div><div style="color:#aaa;line-height:1.3">${h.tip[LANG]||h.tip.en}</div><div style="color:#ff0;margin-top:4px;font-weight:bold">Power: ${h.pw}</div>`}else{tt.style.display='none'}
+});
+
+// HUD
+function hud(){
+  document.getElementById('yearDisplay').textContent=Math.floor(G.year);
+  document.getElementById('timelineFill').style.width=((G.year-1950)/80*100)+'%';
+  document.getElementById('sbTitle').textContent=t('sbTitle');
+  document.getElementById('htTitle').textContent=t('htTitle');
+  renderLB();updateTicker();
+}
+
+// ============================================================
+// MILESTONE EVENT (pause → wow → image card → resume fight)
+// ============================================================
+async function showNation(evt){
+  G.paused=true;
+  try{
+    G.chars.forEach(c=>{c.frozen=true});
+    snd('rumble');shake(10);
+    const nb=document.getElementById('nationBanner');
+    document.getElementById('nbFlag').textContent=evt.flag;
+    document.getElementById('nbCountry').textContent=evt.country[LANG]||evt.country.en;
+    document.getElementById('nbCompany').textContent=evt.companies.join(' & ');
+    document.getElementById('nbMotto').textContent=evt.motto[LANG]||evt.motto.en;
+    nb.style.display='block';
+    addHist('event',`${evt.flag} ${evt.country[LANG]||evt.country.en}: ${evt.companies.join(', ')} ${LANG==='ko'?'참전!':LANG==='zh'?'参战！':LANG==='ja'?'参戦！':'enters!'}`);
+    await sleep(1800);
+    nb.style.display='none';
+    const defs=CHARS.filter(d=>evt.companies.includes(d.name));
+    for(const d of defs){spawn(d);await sleep(300)}
+    G.chars.forEach(c=>{c.frozen=false;c.vx+=(Math.random()-.5)*6;c.vy+=(Math.random()-.5)*6});
+    addSp(W/2,H/2,'#ff0',25);shake(8);snd('boom');
+  }catch(err){console.warn('showNation error:',err);G.chars.forEach(c=>{c.frozen=false})}
+  G.paused=false;
+}
+
+// NON-BLOCKING milestone flash — chars keep fighting!
+function showMilestone(ms){
+  snd('wow');
+  // Flash event card — appears, shows briefly, fades out. No pausing.
+  const card=document.getElementById('eventCard');
+  card.classList.remove('ec-out');
+  const imgWrap=document.getElementById('ecImgWrap');
+  if(ms.img){
+    imgWrap.innerHTML=`<img class="ec-img" src="images/${ms.img}" onerror="this.parentElement.innerHTML='<div class=\\'ec-img-placeholder\\' style=\\'border-color:${ms.col}\\'><span>${ms.em}</span><span style=\\'font-size:12px;color:${ms.col}\\'>${ms.yr}</span></div>'">`;
+  }else{
+    imgWrap.innerHTML=`<div class="ec-img-placeholder" style="border-color:${ms.col}"><span>${ms.em}</span><span style="font-size:12px;color:${ms.col}">${ms.yr}</span></div>`;
+  }
+  document.getElementById('ecTitle').textContent=`${ms.title} (${ms.yr})`;
+  document.getElementById('ecTitle').style.color=ms.col;
+  const typeKey=ms.type==='paper'?'paper':ms.type==='model'?'model':'hw';
+  const catLabel=TAG_LABELS[ms.cat]||'';
+  const ecType=document.getElementById('ecType');
+  ecType.textContent=`${t(typeKey)} • ${catLabel}`;
+  ecType.style.background=ms.type==='paper'?'rgba(255,255,0,.15)':'rgba(0,255,255,.15)';
+  ecType.style.color=ms.type==='paper'?'#ff0':'#0ff';
+  let desc=ms.d[LANG]||ms.d.en;
+  if(ms.author)desc+=` — ${ms.author}`;
+  document.getElementById('ecDesc').textContent=desc;
+  card.style.display='block';
+  // Particles burst at center
+  addSp(W/2,H/2,ms.col,20);shake(5);setCeoEmotion('😮',2500);
+  // History log
+  const typeTag=ms.type==='paper'?'📄':'🤖';
+  addHist('milestone',`${typeTag} [${catLabel}] ${ms.title}: ${desc.substring(0,80)}...`,ms.yr);
+  // Auto fade out after 2s
+  setTimeout(()=>{card.classList.add('ec-out')},1800);
+  setTimeout(()=>{card.style.display='none';card.classList.remove('ec-out')},2300);
+}
+
+// NON-BLOCKING human history flash
+let histFlashTimer=null;
+function showHistFlash(item){
+  try{
+  const el=document.getElementById('histFlash');
+  el.classList.remove('hf-out');
+  const wrap=document.getElementById('hfImgWrap');
+  if(item.img){
+    wrap.innerHTML=`<img class="hf-img" src="images/history/${item.img}" onerror="this.parentElement.innerHTML='<div class=\\'hf-img-em\\'>${item.em||'📜'}</div>'">`;
+  }else{
+    wrap.innerHTML=`<div class="hf-img-em">${item.em||'📜'}</div>`;
+  }
+  document.getElementById('hfYr').textContent=item.yr;
+  document.getElementById('hfTitle').textContent=item.t[LANG]||item.t.en;
+  el.style.display='block';
+  if(histFlashTimer)clearTimeout(histFlashTimer);
+  histFlashTimer=setTimeout(()=>{el.classList.add('hf-out')},2500);
+  setTimeout(()=>{el.style.display='none';el.classList.remove('hf-out')},3100);
+  }catch(e){console.warn('histFlash err',e)}
+}
+
+// ============================================================
+// FX
+// ============================================================
+function fxWinter(){
+  G.chars.forEach(c=>{c.frozen=true});snd('boom');shake(10);setCeoEmotion('😰',3000);
+  addHist('event',LANG==='ko'?'❄️ AI 겨울! 전부 동결!':LANG==='zh'?'❄️ AI寒冬！全部冻结！':LANG==='ja'?'❄️ AI冬の時代！全凍結！':'❄️ AI Winter! Frozen!');
+  // Snow! Generate snowflakes for 3 seconds
+  G.snowing=true;G.snowTimer=3000;
+  setTimeout(()=>{G.chars.forEach(c=>{c.frozen=false});G.snowing=false},3000);
+}
+function fxChatgpt(){shake(25);snd('boom');const sam=G.chars.find(c=>c.name==='Sam Altman');if(sam){sam.glow=true;sam.pw+=20;sam.sc=1.4}for(let i=0;i<120;i++){const a=Math.random()*Math.PI*2,sp=2+Math.random()*12;G.particles.push({x:W/2,y:H/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:3,col:['#f00','#ff0','#0f0','#0ff','#f0f'][i%5],sz:2+Math.random()*6})}G.chars.filter(c=>c.co==='OpenAI').forEach(c=>c.pw+=10);G.chars.forEach(c=>{c.vx+=(Math.random()-.5)*8;c.vy+=(Math.random()-.5)*8});setCeoEmotion('🤯',4000);addHist('event','🔥 ChatGPT! '+(LANG==='ko'?'5일 1억유저!':LANG==='zh'?'5天1亿用户！':LANG==='ja'?'5日で1億ユーザー！':'100M in 5 days!'));updCo()}
+
+// FUTURE FX
+const BIG_TECH_COS=['OpenAI','Anthropic','Google','DeepMind','Meta','NVIDIA','xAI/Tesla','Microsoft','Apple','Amazon'];
+function fxFuture(){
+  snd('rumble');shake(15);setCeoEmotion('😮',4000);
+  G.futureMode=true;
+  addHist('event',LANG==='ko'?'⚠ 미래 시뮬레이션 진입!':LANG==='zh'?'⚠ 进入未来模拟！':LANG==='ja'?'⚠ 未来シミュレーション突入！':'⚠ FUTURE simulation!');
+  for(let i=0;i<80;i++){const a=Math.random()*Math.PI*2,sp=2+Math.random()*8;G.particles.push({x:W/2,y:H/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:3,col:['#f0f','#0ff','#ff0','#fff'][i%4],sz:2+Math.random()*5})}
+}
+function fxPurge(){
+  snd('boom');shake(20);setCeoEmotion('😱',5000);
+  addHist('event',LANG==='ko'?'💀 대격변! 빅테크만 생존...':LANG==='zh'?'💀 大洗牌！只有科技巨头存活...':LANG==='ja'?'💀 大淘汰！ビッグテックのみ生存...':'💀 THE GREAT PURGE! Only Big Tech survives...');
+  G.chars.forEach(c=>{
+    if(c.isCeo)return;
+    const isBT=BIG_TECH_COS.some(bt=>c.co===bt||c.name===bt);
+    if(!isBT&&!c.fading){
+      c.fading=true;c.fadeAlpha=1;
+      for(let i=0;i<8;i++){const a=Math.random()*Math.PI*2;G.particles.push({x:c.x,y:c.y,vx:Math.cos(a)*4,vy:Math.sin(a)*4,life:1.5,col:'#f00',sz:3})}
+    }
+  });updCo();
+}
+function fxAgi(){
+  snd('fanfare');snd('boom');shake(25);setCeoEmotion('🤩',6000);
+  addHist('event',LANG==='ko'?'🌟 AGI 달성! 특이점!':LANG==='zh'?'🌟 AGI实现！奇点降临！':LANG==='ja'?'🌟 AGI達成！シンギュラリティ！':'🌟 AGI ACHIEVED! Singularity!');
+  for(let i=0;i<200;i++){const a=Math.random()*Math.PI*2,sp=1+Math.random()*15;G.particles.push({x:W/2,y:H/2,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:4,col:['#fff','#ff0','#0ff','#f0f','#0f0'][i%5],sz:2+Math.random()*6})}
+  G.chars.forEach(c=>{c.glow=true;c.vx+=(Math.random()-.5)*10;c.vy+=(Math.random()-.5)*10});
+}
+function fxConflict(){
+  snd('rumble');shake(15);setCeoEmotion('😰',4000);
+  addHist('event',LANG==='ko'?'🇺🇸🇨🇳 미중 AI 갈등!':LANG==='zh'?'🇺🇸🇨🇳 中美AI冲突！':LANG==='ja'?'🇺🇸🇨🇳 米中AI対立！チップ輸出禁止！':'🇺🇸🇨🇳 US-China AI conflict!');
+  // Debuff Chinese companies
+  G.chars.filter(c=>c.nation==='🇨🇳'||c.co==='Baidu'||c.co==='DeepSeek'||c.co==='01.AI').forEach(c=>{c.pw=Math.max(5,c.pw-8)});
+  // But give them resilience boost after a delay
+  setTimeout(()=>{G.chars.filter(c=>c.nation==='🇨🇳').forEach(c=>{c.pw+=5;c.glow=true})},2000);
+  for(let i=0;i<40;i++){const a=Math.random()*Math.PI*2;G.particles.push({x:W/2,y:H/2,vx:Math.cos(a)*6,vy:Math.sin(a)*6,life:2,col:i%2?'#f00':'#00f',sz:3})}
+  updCo();
+}
+function fxWildcard(){
+  // Random underdog surge — pick a non-top-3 company and boost massively
+  snd('rumble');snd('up');shake(12);setCeoEmotion('😮',3000);
+  updCo();
+  const sorted=Object.entries(G.companies).filter(([,v])=>v.p>0).sort((a,b)=>b[1].p-a[1].p);
+  const underdogs=sorted.slice(3).filter(([,v])=>v.p>10);
+  if(underdogs.length>0){
+    const pick=G.rng?G.rng.pick(underdogs):underdogs[Math.floor(Math.random()*underdogs.length)];
+    const name=pick[0];
+    // Massive power boost to this underdog
+    G.chars.filter(c=>c.co===name).forEach(c=>{c.pw+=25;c.glow=true;c.sc=Math.min(c.sc+.3,1.8);c.vx*=3;c.vy*=3});
+    const flag=CO_FLAG[name]||'';
+    addHist('event',`⚡ ${flag} ${name} ${LANG==='ko'?'예상치 못한 돌파!':LANG==='zh'?'意外突破！':LANG==='ja'?'予想外の突破！':'unexpected breakthrough!'}`);
+    for(let i=0;i<40;i++){const a=Math.random()*Math.PI*2;G.particles.push({x:W/2,y:H/2,vx:Math.cos(a)*8,vy:Math.sin(a)*8,life:2.5,col:'#ff0',sz:3+Math.random()*4})}
+  }else{
+    addHist('event',LANG==='ko'?'⚡ 와일드카드! 변수 발생!':'⚡ Wildcard! Unexpected variable!');
+  }
+  updCo();
+}
+
+// RANDOM EVENTS
+function tryRand(yr){if(G.randUsed.length>=5)return;const av=REVT.filter((e,i)=>!G.randUsed.includes(i)&&yr>=e.yr[0]&&yr<=e.yr[1]);if(!av.length||G.rng.next()>.35)return;const e=G.rng.pick(av),idx=REVT.indexOf(e);G.randUsed.push(idx);const bn=document.getElementById('breakingNews');bn.innerHTML=`<div class="bn-lbl">${t('bnLabel')}</div>${e.t[LANG]||e.t.en}`;bn.style.display='block';snd('rumble');shake(14);if(e.fx==='boost'&&e.tgt){const c=G.chars.find(x=>x.name===e.tgt);if(c){c.pw+=15;c.glow=true;c.sc=Math.min(c.sc+.2,1.6);c.vx*=2.5;c.vy*=2.5}}else if(e.fx==='nerf'&&e.tgt){const c=G.chars.find(x=>x.name===e.tgt);if(c){c.pw=Math.max(5,c.pw-10);c.sc=Math.max(.7,c.sc-.15)}}else if(e.fx==='dmg'){G.chars.forEach(c=>{c.pw=Math.max(5,c.pw-5);c.vx+=(Math.random()-.5)*6;c.vy+=(Math.random()-.5)*6})}else if(e.fx==='dmgp'){G.chars.filter(c=>c.co!=='Meta'&&c.obj).forEach(c=>c.pw=Math.max(5,c.pw-8))}else if(e.fx==='slow'){G.chars.forEach(c=>{c.vx*=.3;c.vy*=.3})}addHist('event','⚠ '+(e.t[LANG]||e.t.en));updCo();setTimeout(()=>{bn.style.display='none'},3500)}
+
+// BATTLE
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+async function battle(bt){
+  G.paused=true;const ot=document.getElementById('overlayText');
+  for(let i=3;i>=1;i--){ot.textContent=i;ot.style.display='block';ot.style.fontSize='120px';ot.style.color='#ff0';snd('tick');await sleep(400)}
+  ot.textContent=t('fight');ot.style.fontSize='90px';ot.style.color='#f44';snd('rumble');shake(14);await sleep(500);ot.style.display='none';
+  let wi;if(bt.royal){const pw=bt.f.map(f=>{const co=G.companies[f];return(co?co.p+10:20)*(.8+G.rng.next()*.4)});wi=pw.indexOf(Math.max(...pw))}else if(bt.tri){const r=G.rng.next();wi=r<.4?0:r<.7?1:2}else{wi=bt.w===-1?(G.rng.next()>.5?0:1):bt.w;if(G.rng.next()<.15)wi=wi===0?1:0}
+  for(let hit=0;hit<8;hit++){const col=bt.c[hit%bt.c.length];for(let p=0;p<30;p++){const a=Math.random()*Math.PI*2,sp=3+Math.random()*12;G.particles.push({x:W/2+(Math.random()-.5)*120,y:H/2+(Math.random()-.5)*120,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1.5,col,sz:2+Math.random()*5})}G.chars.forEach(c=>{c.vx+=(Math.random()-.5)*4;c.vy+=(Math.random()-.5)*4});snd('punch');shake(6+hit*2);await sleep(200)}
+  const wn=bt.f[wi];snd('fanfare');snd('boom');shake(20);setCeoEmotion('😱',3000);for(let i=0;i<100;i++){const a=Math.random()*Math.PI*2;G.particles.push({x:W/2,y:H/2,vx:Math.cos(a)*10,vy:Math.sin(a)*10,life:3,col:bt.c[wi],sz:2+Math.random()*6})}
+  bt.f.forEach((f,i)=>{let ch=G.chars.find(c=>c.name===f)||G.chars.find(c=>c.co===f);if(ch){if(i===wi){ch.pw+=15;ch.sc=Math.min(ch.sc+.2,1.8);ch.glow=true;ch.vx*=2.5;ch.vy*=2.5}else{ch.sc=Math.max(ch.sc-.1,.5)}}});updCo();
+  addHist('event',`🏆 ${wn} ${t('wins')}`);
+  const rEl=document.getElementById('battleResult');rEl.textContent=`🏆 ${wn} ${t('wins')}`;rEl.style.display='block';await sleep(2500);rEl.style.display='none';G.paused=false;
+}
+
+// ============================================================
+// TIMELINE ENGINE
+// ============================================================
+let lastT=0,yrAcc=0;const SPD=6;
+async function processEvt(e){
+  G.processing=true;G.paused=true;
+  try{
+    // Non-blocking types (safety fallback if called directly)
+    if(e.type==='milestone'){showMilestone(e.ms);G.paused=false;G.processing=false;return}
+    if(e.type==='histflash'){showHistFlash(e.item);G.paused=false;G.processing=false;return}
+    if(e.type==='ceointro'){showCeoIntro(e.ceo);spawnCeo(e.ceo);G.paused=false;G.processing=false;return}
+    if(e.type==='publicvoice'){showPublicVoice(e.voice);G.paused=false;G.processing=false;return}
+    // Blocking types
+    if(e.type==='nation'){await showNation(e);G.paused=false;G.processing=false;return}
+    const ev=e.ev?.[LANG]||e.ev?.en||'';
+    document.getElementById('eventDisplay').textContent=ev;
+    document.getElementById('eventDisplay').style.color=e.type==='battle'?'#f44':'#ff0';
+    addHist('event',ev,Math.floor(e.yr));
+    if(e.type==='spawn'){const defs=CHARS.filter(d=>e.ch.includes(d.name));for(const d of defs){spawn(d);await sleep(250)}await sleep(800)}
+    else if(e.type==='fx'){if(e.action==='winter')fxWinter();else if(e.action==='chatgpt')fxChatgpt();else if(e.action==='future')fxFuture();else if(e.action==='purge')fxPurge();else if(e.action==='agi')fxAgi();else if(e.action==='wildcard')fxWildcard();else if(e.action==='conflict')fxConflict();await sleep(2800)}
+    else if(e.type==='battle'){await battle(e.bt)}
+    else if(e.type==='end'){showFinal();G.processing=false;return}
+    document.getElementById('eventDisplay').textContent='';
+    G.paused=false;G.processing=false;tryRand(Math.floor(G.year));
+  }catch(err){
+    console.warn('processEvt error:',e.type,err);
+    G.paused=false;G.processing=false; // ALWAYS unstick on error
+  }
+}
+
+// MAIN LOOP
+function loop(now){
+  if(!G.running){requestAnimationFrame(loop);return}
+  const dt=Math.min(now-lastT,50);lastT=now;
+  if(!G.paused&&!G.processing){
+    yrAcc+=dt/1000*SPD;
+    if(yrAcc>=.5){
+      G.year+=.5;yrAcc=0;
+      // Process ALL pending events up to current year (drain queue)
+      while(G.evtIdx<G.timeline.length&&G.year>=G.timeline[G.evtIdx].yr&&!G.paused&&!G.processing){
+        const e=G.timeline[G.evtIdx];G.evtIdx++;
+        try{
+          // Non-blocking types: fire and continue loop
+          if(e.type==='milestone'){showMilestone(e.ms);continue}
+          if(e.type==='histflash'){showHistFlash(e.item);continue}
+          if(e.type==='ceointro'){showCeoIntro(e.ceo);spawnCeo(e.ceo);continue}
+          if(e.type==='publicvoice'){showPublicVoice(e.voice);continue}
+          // Blocking types: pause timeline, process async
+          processEvt(e);break;
+        }catch(err){console.warn('Event error:',e.type,err);continue}
+      }
+    }
+  }
+  try{physics(dt)}catch(e){console.warn('physics err',e)}
+  try{render()}catch(e){console.warn('render err',e)}
+  try{hud()}catch(e){console.warn('hud err',e)}
+  requestAnimationFrame(loop);
+}
+
+// FINAL
+// AI QUOTES for sharing
+const AI_QUOTES=[
+  {q:"The question is not whether intelligent machines can have emotions, but whether machines can be intelligent without emotions.",a:"Marvin Minsky"},
+  {q:"We can only see a short distance ahead, but we can see plenty there that needs to be done.",a:"Alan Turing"},
+  {q:"Artificial intelligence is the new electricity.",a:"Andrew Ng"},
+  {q:"The development of full artificial intelligence could spell the end of the human race.",a:"Stephen Hawking"},
+  {q:"AI is probably the most important thing humanity has ever worked on.",a:"Sundar Pichai"},
+  {q:"By far, the greatest danger of AI is that people conclude too early that they understand it.",a:"Eliezer Yudkowsky"},
+  {q:"The pace of progress in AI is incredibly fast. Unless you have direct exposure, you have no idea how fast.",a:"Elon Musk"},
+  {q:"I visualize a time when we will be to robots what dogs are to humans.",a:"Claude Shannon"},
+  {q:"Machine intelligence is the last invention that humanity will ever need to make.",a:"Nick Bostrom"},
+  {q:"The real question is, when will we draft an AI bill of rights?",a:"Gray Scott"},
+  {q:"It's going to be interesting to see how society deals with AI, but it will definitely be cool.",a:"Colin Angle"},
+  {q:"AI will be the best or worst thing ever for humanity.",a:"Elon Musk"},
+  {q:"The key to AI has always been the representation.",a:"Jeff Hawkins"},
+  {q:"AI doesn't have to be evil to destroy humanity. If AI has a goal and humanity just happens to be in the way, it will destroy humanity as a matter of course.",a:"Elon Musk"},
+  {q:"Success in creating AI would be the biggest event in human history. Unfortunately, it might also be the last.",a:"Stephen Hawking"},
+  {q:"Some people call this artificial intelligence, but the reality is this technology will enhance us.",a:"Ginni Rometty"},
+  {q:"The question of whether a computer can think is no more interesting than the question of whether a submarine can swim.",a:"Edsger Dijkstra"},
+  {q:"I believe AI is going to change the world more than anything in the history of humanity.",a:"Kai-Fu Lee"},
+  {q:"The sad thing about artificial intelligence is that it lacks artifice and therefore intelligence.",a:"Jean Baudrillard"},
+  {q:"The measure of intelligence is the ability to change.",a:"Albert Einstein"},
+  {q:"In God we trust. All others must bring data.",a:"W. Edwards Deming"},
+  {q:"Technology is a useful servant but a dangerous master.",a:"Christian Lous Lange"},
+  {q:"The best way to predict the future is to invent it.",a:"Alan Kay"},
+  {q:"We're entering an age where AI is not just a tool, but a collaborator.",a:"Dario Amodei"},
+  {q:"The real risk with AI isn't malice but competence.",a:"Stuart Russell"},
+];
+
+// COMPETITIVE TAUNTS — provoke sharing
+const TAUNTS={en:[
+  "In MY simulation, {winner} DOMINATES. Does yours? Prove it.",
+  "{winner} just crushed everyone. {loser} fans won't like this... Share if you dare.",
+  "The AI war is over. {winner} won. {loser} never stood a chance. Disagree? Run YOUR sim.",
+  "{winner} is the UNDISPUTED champion. @{ceo} — are you watching this?",
+  "This timeline says {winner} > {loser}. Your CEO might disagree. Let them prove it.",
+  "{loser} got DESTROYED. {winner} reigns supreme. Tag someone who needs to see this.",
+  "My simulation crowned {winner} king of AI. What does YOUR timeline say?",
+  "Plot twist: {winner} on top, {loser} in the dust. The algorithm has spoken.",
+  "{winner} just wrote history. {loser}? Footnote. Run your own sim or cope.",
+  "In {seed} timelines, {winner} wins THIS one. Can {loser} win in yours?",
+],ko:[
+  "내 시뮬레이션에선 {winner}가 압도적 1위. 너의 결과는? 증명해봐.",
+  "{winner}가 모두를 박살냈다. {loser} 팬들은 좋아하지 않을걸... 공유할 용기 있어?",
+  "AI 전쟁 끝. {winner} 승. {loser}는 상대도 안 됐다. 반박하려면 직접 돌려봐.",
+  "{winner} 논란의 여지 없는 챔피언. 이 결과 CEO들이 보면 어떨까?",
+  "이 타임라인은 {winner} > {loser}라고 말한다. 동의 못 하면 직접 해봐.",
+  "{loser} 완전히 박살남. {winner} 천하통일. 이거 공유 안 하면 겁쟁이.",
+  "내 시뮬레이션이 {winner}를 AI의 왕으로 선언했다. 너의 타임라인은?",
+  "반전: {winner} 정상, {loser} 먼지. 알고리즘이 판결했다.",
+  "{winner}가 역사를 썼다. {loser}? 각주. 직접 돌리든가 인정하든가.",
+  "이 시드에선 {winner}가 이겼다. {loser}가 이기는 시드를 찾아봐.",
+]};
+const TAUNT_SUBS={en:[
+  "Share to show your CEO who REALLY rules AI",
+  "Tag the CEO who needs a reality check",
+  "Every seed tells a different story. What's YOUR outcome?",
+  "The simulation never lies. The rankings speak.",
+  "Your company didn't win? Rerun and pray.",
+  "Screenshot this before the timeline shifts",
+],ko:[
+  "당신의 CEO에게 누가 진짜 AI 지배자인지 보여줘",
+  "현실 확인이 필요한 CEO를 태그해",
+  "매 시드마다 다른 스토리. 당신의 결과는?",
+  "시뮬레이션은 거짓말하지 않는다. 랭킹이 말한다.",
+  "당신 회사가 안 이겼다고? 다시 돌려봐.",
+  "타임라인이 바뀌기 전에 스크린샷 찍어",
+]};
+const CEO_HANDLES={'OpenAI':'@sama','Anthropic':'@DarioAmodei','Google':'@sundaborooah','Meta':'@faborooah','NVIDIA':'@jensen_huang','xAI/Tesla':'@elonmusk','DeepMind':'@demaborooah','Microsoft':'@sataborooah'};
+
+function getTaunt(winner,loser){
+  const pool=TAUNTS[LANG]||TAUNTS.en;
+  let msg=G.rng?G.rng.pick(pool):pool[Math.floor(Math.random()*pool.length)];
+  const ceo=CEO_HANDLES[winner]||'the CEO';
+  msg=msg.replace(/\{winner\}/g,winner).replace(/\{loser\}/g,loser).replace(/\{ceo\}/g,ceo).replace(/\{seed\}/g,G.seed);
+  return msg;
+}
+function getTauntSub(){
+  const pool=TAUNT_SUBS[LANG]||TAUNT_SUBS.en;
+  return G.rng?G.rng.pick(pool):pool[Math.floor(Math.random()*pool.length)];
+}
+
+function showFinal(){
+  G.running=false;updCo();
+  const s=Object.entries(G.companies).filter(([,v])=>v.p>0).sort((a,b)=>b[1].p-a[1].p);
+  G.finalTop3=s.slice(0,3).map(([n])=>n);
+  const top10=s.slice(0,10);
+  const winner=s[0][0],loser=s[1]?s[1][0]:'';
+  document.getElementById('finalRankings').innerHTML=top10.map(([n,d],i)=>{
+    const flag=CO_FLAG[n]||'';
+    const medal=i===0?'👑':i===1?'🥈':i===2?'🥉':i+1;
+    return`<div class="fr ${i<3?'top3':''}"><span class="rn">${medal}</span><span class="rm" style="color:${d.c}">${flag} ${n}</span><span class="rp">${d.p} PWR</span></div>`;
+  }).join('');
+  // Meme-style share hook
+  document.getElementById('tauntMsg').textContent=getShareHook(winner);
+  const subs=LANG==='ko'?['매번 다른 결과! 다시 돌려봐','친구에게 공유하고 결과 비교해봐','Seed마다 다른 역사가 펼쳐진다','스크린샷 찍고 공유해봐']:LANG==='zh'?['每次运行结果不同！再试一次','分享给朋友比较结果','每个种子都是不同的历史','截图分享你的排名']:LANG==='ja'?['毎回違う結果！もう一度試して','友達にシェアして結果を比較','Seedごとに違う歴史が展開','スクショして共有しよう']:['Every seed = different story. Try again!','Share & compare with friends','Screenshot your ranking!','Different seed, different history'];
+  document.getElementById('tauntSub').textContent=G.rng?G.rng.pick(subs):subs[0];
+  const rivalCol=s[0][1].c;
+  document.getElementById('rivalTag').textContent=`${CO_FLAG[winner]||''} ${winner} #1 — ${LANG==='ko'?'이의 있으면 직접 돌려봐':LANG==='zh'?'不服？自己跑一次':LANG==='ja'?'異議あり？自分で回して':'Disagree? Run your own.'}`;
+  document.getElementById('rivalTag').style.color=rivalCol;
+  document.getElementById('rivalTag').style.borderColor=rivalCol;
+  document.getElementById('rivalTag').style.background=rivalCol+'15';
+  document.getElementById('fTitle').textContent=t('simDone');
+  document.getElementById('finalScreen').style.display='flex';snd('fanfare');
+}
+function getQuote(){return G.rng?G.rng.pick(AI_QUOTES):AI_QUOTES[Math.floor(Math.random()*AI_QUOTES.length)]}
+// Meme-style share hooks (language-aware, no provocation)
+const SHARE_HOOKS={en:[
+  "My timeline chose {winner}. What does yours say?",
+  "In Seed #{seed}, {winner} rules AI. Try yours.",
+  "Every run tells a different story. This one picked {winner}.",
+  "{winner} on top. Can you get a different result?",
+  "The simulation has spoken: {winner} leads 2026.",
+],ko:[
+  "내 타임라인은 {winner}를 선택했다. 너의 결과는?",
+  "Seed #{seed}에선 {winner}가 1위. 너도 돌려봐.",
+  "매번 다른 결과. 이번엔 {winner}가 정상.",
+  "{winner} 1위. 다른 결과 나올 수 있을까?",
+  "시뮬레이션의 판결: {winner}가 2026을 지배.",
+],zh:[
+  "我的时间线选择了{winner}。你的呢？",
+  "种子#{seed}中，{winner}称霸AI。试试你的。",
+  "每次运行都是不同的故事。这次{winner}登顶。",
+  "{winner}第一。你能跑出不同结果吗？",
+  "模拟已裁定：{winner}主宰2026。",
+],ja:[
+  "私のタイムラインは{winner}を選んだ。あなたの結果は？",
+  "Seed#{seed}では{winner}がAIを制覇。あなたも試して。",
+  "毎回違うストーリー。今回は{winner}がトップ。",
+  "{winner}が1位。違う結果は出せる？",
+  "シミュレーションの判決：{winner}が2026を支配。",
+]};
+function getShareHook(winner){
+  const pool=SHARE_HOOKS[LANG]||SHARE_HOOKS.en;
+  let msg=G.rng?G.rng.pick(pool):pool[Math.floor(Math.random()*pool.length)];
+  return msg.replace(/\{winner\}/g,winner).replace(/\{seed\}/g,G.seed);
+}
+function tweetResult(){
+  updCo();const s=Object.entries(G.companies).filter(([,v])=>v.p>0).sort((a,b)=>b[1].p-a[1].p);const t3=s.slice(0,3);
+  const q=getQuote();const hook=getShareHook(t3[0][0]);
+  const label=LANG==='ko'?'2026 AI 파워 랭킹':LANG==='zh'?'2026 AI 实力排行':LANG==='ja'?'2026 AIパワーランキング':'2026 AI Power Rankings';
+  const play=LANG==='ko'?'플레이':LANG==='zh'?'开始游戏':LANG==='ja'?'プレイ':'Play';
+  const text=encodeURIComponent(`🎮 AI WARS\n\n🏆 ${label}:\n👑 ${CO_FLAG[t3[0][0]]||''} ${t3[0][0]}: ${t3[0][1].p}\n🥈 ${CO_FLAG[t3[1][0]]||''} ${t3[1][0]}: ${t3[1][1].p}\n🥉 ${CO_FLAG[t3[2][0]]||''} ${t3[2][0]}: ${t3[2][1].p}\n\n${hook}\n\n💬 "${q.q}" — ${q.a}\n\n▶ ${play}: http://leaf-kit.github.io/aiwars.game\n#AIWars`);
+  window.open(`https://x.com/intent/tweet?text=${text}&via=leafeditor`,'_blank');
+}
+function shareResult(){
+  updCo();const s=Object.entries(G.companies).filter(([,v])=>v.p>0).sort((a,b)=>b[1].p-a[1].p);const t3=s.slice(0,3);
+  const q=getQuote();const hook=getShareHook(t3[0][0]);
+  const txt=`🎮 AI WARS\n👑${CO_FLAG[t3[0][0]]||''} ${t3[0][0]}:${t3[0][1].p} 🥈${CO_FLAG[t3[1][0]]||''} ${t3[1][0]}:${t3[1][1].p} 🥉${CO_FLAG[t3[2][0]]||''} ${t3[2][0]}:${t3[2][1].p}\n\n${hook}\n💬 "${q.q}" — ${q.a}\n\n▶ http://leaf-kit.github.io/aiwars.game`;
+  navigator.clipboard.writeText(txt).then(()=>alert('Copied!')).catch(()=>prompt('Copy:',txt));
+}
+function restartGame(){document.getElementById('finalScreen').style.display='none';startGame()}
+
+// HUMAN HISTORY TICKER
+const HUMAN_HIST=[
+  {yr:1945,em:'💣',img:'1945_ww2.jpg',t:{en:'End of World War II',ko:'제2차 세계대전 종전',zh:'第二次世界大战结束',ja:'第二次世界大戦終結'}},
+  {yr:1948,em:'⚡',t:{en:'Transistor invented at Bell Labs',ko:'벨 연구소 트랜지스터 발명',zh:'贝尔实验室发明晶体管',ja:'ベル研究所トランジスタ発明'}},
+  {yr:1953,em:'🧬',img:'1953_dna.jpg',t:{en:'DNA structure discovered',ko:'DNA 이중나선 구조 발견',zh:'DNA双螺旋结构发现',ja:'DNA二重らせん構造発見'}},
+  {yr:1957,em:'🛰️',img:'1957_sputnik.jpg',t:{en:'Sputnik — Space Age begins',ko:'스푸트니크 — 우주 시대 개막',zh:'人造卫星——太空时代开始',ja:'スプートニク——宇宙時代開幕'}},
+  {yr:1961,em:'🚀',t:{en:'Gagarin — First human in space',ko:'가가린 — 최초 우주 비행',zh:'加加林——人类首次太空飞行',ja:'ガガーリン——人類初の宇宙飛行'}},
+  {yr:1964,em:'✊',t:{en:'Civil Rights Act signed',ko:'미국 시민권법 서명',zh:'美国民权法案签署',ja:'公民権法署名'}},
+  {yr:1969,em:'🌙',img:'1969_moon.jpg',t:{en:'Apollo 11 — Moon landing',ko:'아폴로 11호 — 달 착륙',zh:'阿波罗11号——登月',ja:'アポロ11号——月面着陸'}},
+  {yr:1971,em:'🔲',img:'1971_chip.jpg',t:{en:'Microprocessor invented (Intel 4004)',ko:'마이크로프로세서 발명 (Intel 4004)',zh:'微处理器发明（Intel 4004）',ja:'マイクロプロセッサ発明（Intel 4004）'}},
+  {yr:1973,em:'📱',t:{en:'First mobile phone call',ko:'최초 휴대전화 통화',zh:'首次移动电话通话',ja:'初の携帯電話通話'}},
+  {yr:1976,em:'🍎',img:'1976_apple.svg',t:{en:'Apple Computer founded',ko:'애플 컴퓨터 창립',zh:'苹果电脑创立',ja:'Apple Computer設立'}},
+  {yr:1981,em:'💻',t:{en:'IBM PC launched',ko:'IBM PC 출시',zh:'IBM PC发布',ja:'IBM PC発売'}},
+  {yr:1983,em:'🌐',t:{en:'Internet TCP/IP adopted',ko:'인터넷 TCP/IP 채택',zh:'互联网采用TCP/IP协议',ja:'インターネットTCP/IP採用'}},
+  {yr:1989,em:'🕸️',img:'1989_www.jpg',t:{en:'World Wide Web invented',ko:'월드 와이드 웹 발명',zh:'万维网发明',ja:'ワールド・ワイド・ウェブ発明'}},
+  {yr:1989,em:'🧱',img:'1989_berlin.jpg',t:{en:'Fall of Berlin Wall',ko:'베를린 장벽 붕괴',zh:'柏林墙倒塌',ja:'ベルリンの壁崩壊'}},
+  {yr:1991,em:'☭',t:{en:'Soviet Union dissolved',ko:'소련 해체',zh:'苏联解体',ja:'ソ連崩壊'}},
+  {yr:1994,em:'📦',t:{en:'Amazon founded',ko:'아마존 창립',zh:'亚马逊创立',ja:'Amazon設立'}},
+  {yr:1995,em:'🪟',t:{en:'Windows 95 — PC revolution',ko:'윈도우 95 — PC 혁명',zh:'Windows 95——PC革命',ja:'Windows 95——PC革命'}},
+  {yr:1998,em:'🔍',img:'1998_google.svg',t:{en:'Google founded',ko:'구글 창립',zh:'谷歌创立',ja:'Google設立'}},
+  {yr:2001,em:'🏢',img:'2001_911.jpg',t:{en:'September 11 attacks',ko:'9.11 테러',zh:'9·11恐怖袭击',ja:'9.11同時多発テロ'}},
+  {yr:2001,em:'📖',t:{en:'Wikipedia launched',ko:'위키피디아 출시',zh:'维基百科上线',ja:'Wikipedia開設'}},
+  {yr:2004,em:'👤',t:{en:'Facebook founded',ko:'페이스북 창립',zh:'Facebook创立',ja:'Facebook設立'}},
+  {yr:2007,em:'📱',img:'2007_iphone.svg',t:{en:'iPhone launched — Mobile era',ko:'아이폰 출시 — 모바일 시대',zh:'iPhone发布——移动时代',ja:'iPhone発売——モバイル時代'}},
+  {yr:2008,em:'📉',img:'2008_crisis.svg',t:{en:'Global Financial Crisis',ko:'글로벌 금융 위기',zh:'全球金融危机',ja:'世界金融危機'}},
+  {yr:2008,em:'₿',t:{en:'Bitcoin whitepaper published',ko:'비트코인 백서 발표',zh:'比特币白皮书发布',ja:'ビットコイン白書公開'}},
+  {yr:2010,em:'📷',t:{en:'Instagram launched',ko:'인스타그램 출시',zh:'Instagram上线',ja:'Instagram開設'}},
+  {yr:2011,em:'☢️',t:{en:'Fukushima nuclear disaster',ko:'후쿠시마 원전 사고',zh:'福岛核电站事故',ja:'福島原発事故'}},
+  {yr:2015,em:'🌍',t:{en:'Paris Climate Agreement',ko:'파리 기후 협정',zh:'巴黎气候协定',ja:'パリ気候協定'}},
+  {yr:2016,em:'🇬🇧',t:{en:'Brexit vote',ko:'브렉시트 투표',zh:'英国脱欧公投',ja:'ブレグジット投票'}},
+  {yr:2020,em:'🦠',img:'2020_covid.png',t:{en:'COVID-19 pandemic',ko:'코로나19 팬데믹',zh:'新冠疫情大流行',ja:'COVID-19パンデミック'}},
+  {yr:2022,em:'⚔️',t:{en:'Russia invades Ukraine',ko:'러시아 우크라이나 침공',zh:'俄罗斯入侵乌克兰',ja:'ロシアのウクライナ侵攻'}},
+  {yr:2023,em:'🤖',t:{en:'AI becomes mainstream',ko:'AI 주류화',zh:'AI成为主流',ja:'AIの主流化'}},
+  {yr:2024,em:'🚀',t:{en:'Commercial space tourism',ko:'상업 우주 관광',zh:'商业太空旅游',ja:'商業宇宙旅行'}},
+  {yr:2025,em:'⚖️',t:{en:'Global AI regulation debates',ko:'글로벌 AI 규제 논의',zh:'全球AI监管讨论',ja:'グローバルAI規制議論'}},
+];
+function buildTicker(){
+  const el=document.getElementById('histTicker');
+  el.innerHTML=HUMAN_HIST.map(h=>`<span class="tick-item" data-yr="${h.yr}"><span class="tick-yr">${h.yr}</span>${h.t[LANG]||h.t.en}</span>`).join('');
+}
+function updateTicker(){
+  const yr=Math.floor(G.year);
+  const el=document.getElementById('histTicker');
+  const items=el.querySelectorAll('.tick-item');
+  let currentIdx=0;
+  items.forEach((it,i)=>{
+    const iy=parseInt(it.dataset.yr);
+    it.classList.remove('past','current','future');
+    if(iy<yr)it.classList.add('past');
+    else if(iy===yr||( iy<=yr+2&&iy>=yr-2)){it.classList.add('current');currentIdx=i}
+    else it.classList.add('future');
+  });
+  // Scroll to current
+  if(items[currentIdx]){
+    const offset=items[currentIdx].offsetLeft-window.innerWidth/3;
+    el.style.transform=`translateX(${-Math.max(0,offset)}px)`;
+  }
+}
+
+function getSbWidth(){return Math.min(320,window.innerWidth*.22)}
+
+function startGame(){
+  G.seed=Math.floor(Math.random()*10000);G.rng=makeRng(G.seed);
+  G.year=1950;G.running=true;G.paused=false;G.processing=false;
+  G.chars=[];G.particles=[];G.trails=[];G.dialogues=[];G.history=[];
+  G.evtIdx=0;G.randUsed=[];G.gt=0;G.comboCount=0;G.comboTimer=0;G.snowing=false;G.snowflakes=[];G.futureMode=false;
+  G.selectedCompany=null;G.finalTop3=[];G.timeline=buildTimeline();initCo();
+  document.getElementById('seedLabel').textContent='SEED:'+G.seed;
+  document.getElementById('eventDisplay').textContent='';
+  document.getElementById('historyFeed').innerHTML='';
+  document.getElementById('companyDetail').style.display='none';
+  buildTicker();
+  lastT=performance.now();yrAcc=0;
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
