@@ -510,6 +510,163 @@ create-api/
 - 사용 예제는 [examples.md](examples.md) 참조</code></pre>
   </section>
 
+  <!-- 스크립트 번들링 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:960px;margin:0 auto">
+      <h2 class="section-title">Python 스크립트 번들링</h2>
+      <p class="section-desc">
+        스킬 디렉토리에 Python, Shell 등 스크립트를 함께 번들하면
+        Claude가 단일 프롬프트로 가능한 것 이상의 작업을 수행할 수 있다.
+        스크립트가 무거운 작업을 처리하고, Claude는 조율을 담당한다.
+      </p>
+
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem">디렉토리 구조</h3>
+      <pre><code><span class="comment"># 코드베이스 시각화 스킬 — Python 스크립트 번들 예제</span>
+~/.claude/skills/
+└── codebase-visualizer/
+    ├── <span class="hl">SKILL.md</span>                     <span class="comment"># 스킬 지침</span>
+    └── scripts/
+        └── <span class="val">visualize.py</span>             <span class="comment"># 번들된 Python 스크립트</span></code></pre>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">SKILL.md — 스크립트 실행 지시</h3>
+      <p style="font-size:.85rem;color:var(--text2);line-height:1.7;margin-bottom:1rem">
+        핵심은 <code>${CLAUDE_SKILL_DIR}</code> 변수다. 이 변수는 SKILL.md가 위치한 디렉토리의 절대 경로로 치환되므로,
+        현재 작업 디렉토리와 무관하게 번들된 스크립트를 정확히 참조할 수 있다.
+      </p>
+
+      <pre><code><span class="tag">---</span>
+<span class="key">name</span>: <span class="val">codebase-visualizer</span>
+<span class="key">description</span>: <span class="val">코드베이스의 인터랙티브 트리 시각화를 생성한다. 새 레포 탐색, 프로젝트 구조 파악, 대용량 파일 식별에 사용.</span>
+<span class="key">allowed-tools</span>: <span class="val">Bash(python *)</span>
+<span class="tag">---</span>
+
+# Codebase Visualizer
+
+프로젝트의 파일 구조를 접을 수 있는 인터랙티브 HTML 트리 뷰로 생성한다.
+
+## 사용법
+
+프로젝트 루트에서 시각화 스크립트를 실행한다:
+
+```bash
+python <span class="val">${CLAUDE_SKILL_DIR}</span>/scripts/visualize.py .
+```
+
+현재 디렉토리에 `codebase-map.html`을 생성하고 브라우저에서 연다.
+
+## 시각화 내용
+- <span class="key">접기/펼치기 디렉토리</span>: 폴더 클릭으로 토글
+- <span class="key">파일 크기</span>: 각 파일 옆에 표시
+- <span class="key">색상 코딩</span>: 파일 타입별 다른 색상
+- <span class="key">디렉토리 합계</span>: 폴더별 총 크기 표시</code></pre>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">scripts/visualize.py — 번들 스크립트</h3>
+      <p style="font-size:.85rem;color:var(--text2);line-height:1.7;margin-bottom:1rem">
+        Python 기본 라이브러리만 사용하므로 별도 패키지 설치가 필요없다.
+        디렉토리 트리를 스캔해서 자체 완결형 HTML 파일을 생성한다.
+      </p>
+
+      <pre><code><span class="comment">#!/usr/bin/env python3</span>
+<span class="comment">"""코드베이스의 인터랙티브 트리 시각화를 생성한다."""</span>
+
+<span class="key">import</span> json, sys, webbrowser
+<span class="key">from</span> pathlib <span class="key">import</span> Path
+<span class="key">from</span> collections <span class="key">import</span> Counter
+
+<span class="val">IGNORE</span> = {'.git', 'node_modules', '__pycache__', '.venv', 'dist', 'build'}
+
+<span class="key">def</span> <span class="hl">scan</span>(path: Path, stats: dict) -> dict:
+    result = {"name": path.name, "children": [], "size": 0}
+    <span class="key">try</span>:
+        <span class="key">for</span> item <span class="key">in</span> sorted(path.iterdir()):
+            <span class="key">if</span> item.name <span class="key">in</span> IGNORE <span class="key">or</span> item.name.startswith('.'):
+                <span class="key">continue</span>
+            <span class="key">if</span> item.is_file():
+                size = item.stat().st_size
+                ext = item.suffix.lower() <span class="key">or</span> '(no ext)'
+                result["children"].append(
+                    {"name": item.name, "size": size, "ext": ext}
+                )
+                result["size"] += size
+                stats["files"] += 1
+                stats["extensions"][ext] += 1
+            <span class="key">elif</span> item.is_dir():
+                stats["dirs"] += 1
+                child = scan(item, stats)
+                <span class="key">if</span> child["children"]:
+                    result["children"].append(child)
+                    result["size"] += child["size"]
+    <span class="key">except</span> PermissionError:
+        <span class="key">pass</span>
+    <span class="key">return</span> result
+
+<span class="key">def</span> <span class="hl">generate_html</span>(data, stats, output):
+    <span class="comment"># ... HTML 생성 로직 (요약 사이드바 + 막대 차트 + 트리 뷰)</span>
+    <span class="comment"># 전체 코드: code.claude.com/docs/ko/skills 공식 문서 참조</span>
+    ...
+
+<span class="key">if</span> __name__ == '__main__':
+    target = Path(sys.argv[1] <span class="key">if</span> len(sys.argv) > 1 <span class="key">else</span> '.').resolve()
+    stats = {"files": 0, "dirs": 0, "extensions": Counter()}
+    data = scan(target, stats)
+    out = Path('codebase-map.html')
+    generate_html(data, stats, out)
+    print(f'Generated {out.absolute()}')
+    webbrowser.open(f'file://{out.absolute()}')</code></pre>
+
+      <div class="info-box tip">
+        <strong>실행 흐름:</strong> 사용자가 "이 코드베이스를 시각화해줘"라고 말하면 →
+        Claude가 스킬을 로드 → <code>${CLAUDE_SKILL_DIR}/scripts/visualize.py</code>를 실행 →
+        Python이 디렉토리를 스캔해서 HTML 생성 → 브라우저에서 열림.
+        Claude는 조율만 하고, 무거운 작업은 스크립트가 처리한다.
+      </div>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">스크립트 번들링 패턴 정리</h3>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0">
+        <div style="padding:1.2rem;border:1px solid var(--border);border-radius:10px">
+          <div style="font-size:.82rem;font-weight:700;margin-bottom:.5rem">핵심 변수</div>
+          <div style="font-size:.8rem;color:var(--text2);line-height:1.7">
+            <code>${CLAUDE_SKILL_DIR}</code> — SKILL.md가 위치한 디렉토리의 절대 경로. 스크립트 참조 시 필수.<br>
+            <code>allowed-tools: Bash(python *)</code> — Claude가 Python 실행 시 허가를 묻지 않도록 설정.
+          </div>
+        </div>
+        <div style="padding:1.2rem;border:1px solid var(--border);border-radius:10px">
+          <div style="font-size:.82rem;font-weight:700;margin-bottom:.5rem">활용 예시</div>
+          <div style="font-size:.8rem;color:var(--text2);line-height:1.7">
+            코드베이스 시각화, 종속성 그래프, 테스트 커버리지 리포트, API 문서 생성, DB 스키마 다이어그램 등.
+            표준 라이브러리만 쓰면 별도 설치 없이 바로 동작.
+          </div>
+        </div>
+      </div>
+
+      <pre><code><span class="comment"># 스크립트 참조 패턴 비교</span>
+
+<span class="comment"># 잘못된 방법 — 상대 경로 (작업 디렉토리에 따라 깨짐)</span>
+<span class="pink">python ./scripts/visualize.py .</span>
+
+<span class="comment"># 올바른 방법 — ${CLAUDE_SKILL_DIR} 사용 (항상 정확)</span>
+<span class="val">python ${CLAUDE_SKILL_DIR}/scripts/visualize.py .</span>
+
+<span class="comment"># Shell 스크립트도 동일</span>
+<span class="val">bash ${CLAUDE_SKILL_DIR}/scripts/setup.sh</span>
+
+<span class="comment"># Node.js 스크립트</span>
+<span class="val">node ${CLAUDE_SKILL_DIR}/scripts/generate.js</span></code></pre>
+
+      <div class="info-box warn">
+        <strong>주의:</strong> 스크립트에서 외부 패키지가 필요하면 SKILL.md에 설치 절차를 명시하거나, 표준 라이브러리만 사용하도록 작성하는 게 이식성이 높다.
+        <code>allowed-tools</code>에 <code>Bash(python *)</code> 같이 실행 권한을 열어줘야 Claude가 허가 요청 없이 스크립트를 실행한다.
+      </div>
+
+      <p style="font-size:.85rem;color:var(--text2);line-height:1.7;margin-top:1.5rem">
+        전체 코드와 더 많은 예제는
+        <a href="https://code.claude.com/docs/ko/skills" target="_blank" style="font-weight:600">공식 문서 (code.claude.com/docs/ko/skills)</a>를
+        참고한다.
+      </p>
+    </div>
+  </section>
+
 </main>
 
 <footer class="footer">
