@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>퇴사자 인수인계 스킬 만들기 — Context Engineering</title>
+  <meta name="description" content="퇴사자의 업무 지식을 SKILL.md로 체계적으로 보존하는 방법. 중국 AI 분신 논란에서 배우는 올바른 지식 이전 패턴.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#EC4899;--primary-light:#F9A8D4;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--blue:#2563EB;--purple:#7C3AED;--radius:8px}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+    code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:rgba(236,72,153,.08);padding:.15em .4em;border-radius:4px;color:#9D174D}
+    pre{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:#1E293B;color:#E2E8F0;padding:1.5rem;border-radius:10px;overflow-x:auto;line-height:1.7;margin:1rem 0}
+    pre code{background:none;padding:0;color:inherit;font-size:inherit}
+    .comment{color:#64748B}
+    .key{color:#7DD3FC}
+    .val{color:#86EFAC}
+    .hl{color:#F9A8D4}
+    .tag{color:#FCD34D}
+    .pink{color:#F9A8D4}
+
+    .nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:#fff}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions a{color:rgba(255,255,255,.5);font-size:.78rem;font-weight:500;padding:.4rem .55rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:#fff;background:rgba(255,255,255,.1);text-decoration:none}
+
+    .hero{text-align:center;padding:4.5rem 2rem 3.5rem;background:linear-gradient(160deg,#0F172A 0%,#4C1D95 40%,#7C3AED 100%);color:#fff;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.25) 0%,transparent 60%);pointer-events:none}
+    .hero-badge{display:inline-block;font-size:.72rem;font-weight:600;padding:.3rem .8rem;border-radius:20px;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.4);color:#C4B5FD;margin-bottom:1rem}
+    .hero h1{font-size:2.2rem;font-weight:900;opacity:0;animation:fu .7s ease forwards .2s}
+    .hero .tagline{font-size:1rem;color:rgba(255,255,255,.7);margin-top:.75rem;opacity:0;animation:fu .7s ease forwards .4s;max-width:620px;margin-left:auto;margin-right:auto}
+    @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .container{max-width:900px;margin:0 auto;padding:0 2rem}
+    .section{padding:3.5rem 0}
+    .section-title{font-size:1.4rem;font-weight:800;margin-bottom:.5rem}
+    .section-desc{font-size:.88rem;color:var(--text2);margin-bottom:2rem;line-height:1.7}
+
+    .info-box{padding:1.2rem 1.5rem;border-radius:10px;margin:1.5rem 0;font-size:.85rem;line-height:1.7}
+    .info-box.tip{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);color:#065F46}
+    .info-box.warn{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);color:#92400E}
+    .info-box.danger{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:#991B1B}
+    .info-box.key{background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.2);color:#4C1D95}
+    .info-box strong{font-weight:700}
+
+    /* News card */
+    .news-card{display:flex;gap:1.5rem;padding:1.5rem;border:1px solid var(--border);border-radius:12px;margin:2rem 0;background:var(--surface)}
+    .news-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#EF4444,#DC2626);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;color:#fff}
+    .news-body{flex:1}
+    .news-title{font-size:1rem;font-weight:700;margin-bottom:.4rem}
+    .news-desc{font-size:.84rem;color:var(--text2);line-height:1.7}
+    .news-meta{margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.5rem}
+    .news-tag{font-size:.7rem;padding:.2rem .5rem;border-radius:4px;font-weight:600}
+
+    /* vs */
+    .vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:2rem 0}
+    .vs-col{padding:1.5rem}
+    .vs-col:first-child{border-right:1px solid var(--border)}
+    .vs-col h3{font-size:.9rem;font-weight:700;margin-bottom:.75rem}
+    .vs-col ul{list-style:none;font-size:.82rem;color:var(--text2);line-height:1.9}
+    .vs-col li{padding-left:1.2rem;position:relative}
+    .vs-col li::before{content:'\2022';position:absolute;left:0;font-weight:700}
+
+    /* Steps */
+    .steps{display:flex;flex-direction:column;gap:0;margin:2rem 0}
+    .step{display:flex;gap:1.2rem;padding-bottom:1.5rem;position:relative}
+    .step:last-child{padding-bottom:0}
+    .step::before{content:'';position:absolute;left:17px;top:40px;width:2px;height:calc(100% - 40px);background:var(--border)}
+    .step:last-child::before{display:none}
+    .step-n{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#4C1D95);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;z-index:1}
+    .step-body{flex:1;padding-top:.3rem}
+    .step-title{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+    .step-desc{font-size:.83rem;color:var(--text2);line-height:1.7}
+
+    /* Checklist */
+    .checklist{margin:1.5rem 0;padding:1.5rem;border:1px solid var(--border);border-radius:12px}
+    .checklist h3{font-size:.95rem;font-weight:700;margin-bottom:1rem}
+    .checklist ul{list-style:none;font-size:.84rem;line-height:2}
+    .checklist li{padding-left:1.5rem;position:relative;color:var(--text2)}
+    .checklist li::before{content:'\2610';position:absolute;left:0;color:var(--primary);font-size:1rem}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .hero h1{font-size:1.5rem}
+      .vs{grid-template-columns:1fr}
+      .vs-col:first-child{border-right:none;border-bottom:1px solid var(--border)}
+      .news-card{flex-direction:column;gap:1rem}
+      .container{padding:0 1rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Context Engineering
+  </a>
+  <div class="nav-actions">
+    <a href="./">Overview</a>
+    <a href="./claude-md">CLAUDE.md</a>
+    <a href="./agents-md">AGENTS.md</a>
+    <a href="./skill-md" class="active">SKILL.md</a>
+    <a href="./design-md">DESIGN.md</a>
+    <a href="./tools">도구 비교</a>
+    <a href="./pkm">PKM</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">SKILL.md 실전 활용 &middot; Offboarding Knowledge Transfer</div>
+  <h1>퇴사자 인수인계 스킬 만들기</h1>
+  <p class="tagline">사람이 떠나도 업무 지식은 남긴다.<br>퇴사자의 노하우를 SKILL.md로 체계화해서 AI 에이전트가 후임자를 돕도록 만드는 방법.</p>
+</section>
+
+<main class="container">
+
+  <!-- 배경: 뉴스 -->
+  <section class="section">
+    <h2 class="section-title">왜 이 스킬이 필요한가</h2>
+
+    <div class="news-card">
+      <div class="news-icon">!</div>
+      <div class="news-body">
+        <div class="news-title">중국 게임사, 퇴사 직원 데이터로 AI 분신 만들어 '재고용' 논란</div>
+        <div class="news-desc">
+          2026년 4월, 중국 산둥성의 한 게임 회사가 퇴사한 HR 직원의 업무 데이터를 학습시켜 AI 디지털 분신을 만들고
+          사내 채팅에서 "전직 직원의 디지털 아바타입니다"라며 업무를 수행하게 한 사실이 알려졌다.
+          채팅 기록, 업무 문서 등 개인정보를 무단으로 AI 학습에 사용한 점이 법적 쟁점이 되고 있다.
+        </div>
+        <div class="news-meta">
+          <span class="news-tag" style="background:rgba(239,68,68,.1);color:#DC2626">개인정보 침해</span>
+          <span class="news-tag" style="background:rgba(245,158,11,.1);color:#D97706">동의 없는 학습</span>
+          <span class="news-tag" style="background:rgba(124,58,237,.1);color:#7C3AED">AI 윤리</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.75rem;margin:1rem 0;flex-wrap:wrap">
+      <a href="https://www.hani.co.kr/arti/international/china/1253975.html" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:600;color:var(--text)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+        한겨레
+      </a>
+      <a href="https://www.sedaily.com/article/20032013" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:600;color:var(--text)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+        서울경제
+      </a>
+      <a href="https://www.yonhapnewstv.co.kr/news/AKR20260413100257Qc1" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:600;color:var(--text)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+        연합뉴스TV
+      </a>
+      <a href="https://www.chosun.com/economy/tech_it/2026/04/14/CNMRC5HJOBAZLKDUK36BNVT64Q/" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:600;color:var(--text)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+        조선일보
+      </a>
+      <a href="https://www.aitimes.com/news/articleView.html?idxno=209150" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:600;color:var(--text)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+        AI타임스
+      </a>
+    </div>
+
+    <p style="font-size:.88rem;color:var(--text2);line-height:1.8;margin-top:1.5rem">
+      이 사건의 핵심 문제는 <strong>개인의 데이터를 무단으로 AI에 학습시킨 것</strong>이다.
+      하지만 "퇴사자의 업무 지식을 보존한다"는 목표 자체는 모든 조직의 과제다.
+      올바른 방법은 개인 데이터를 복제하는 게 아니라,
+      <strong>업무 프로세스와 노하우를 구조화된 문서(SKILL.md)로 정리</strong>하는 것이다.
+    </p>
+  </section>
+
+  <!-- 잘못된 방법 vs 올바른 방법 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">AI 분신 vs SKILL.md 인수인계</h2>
+      <p class="section-desc">같은 목표, 완전히 다른 접근</p>
+
+      <div class="vs">
+        <div class="vs-col" style="background:rgba(239,68,68,.02)">
+          <h3 style="color:#DC2626">AI 분신 (중국 사례)</h3>
+          <ul>
+            <li style="color:#991B1B">개인 채팅/이메일을 무단으로 학습</li>
+            <li>퇴사자 동의 여부 불투명</li>
+            <li>개인정보보호법 위반 소지</li>
+            <li>"사람을 복제"하려는 시도</li>
+            <li>학습 데이터 수정/삭제 불가</li>
+            <li>법적 리스크가 큼</li>
+          </ul>
+        </div>
+        <div class="vs-col" style="background:rgba(16,185,129,.02)">
+          <h3 style="color:#059669">SKILL.md 인수인계</h3>
+          <ul>
+            <li style="color:#065F46">업무 프로세스만 문서화 (개인정보 제외)</li>
+            <li>퇴사자가 직접 작성하거나 검토/동의</li>
+            <li>Git에 커밋, 투명한 버전 관리</li>
+            <li>"업무 방법을 기록"하는 것</li>
+            <li>언제든 수정/삭제 가능</li>
+            <li>법적으로 안전, 윤리적으로 올바름</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box danger">
+        <strong>절대 하지 말 것:</strong> 퇴사자의 이메일, 채팅 기록, 개인 메모를 무단으로 AI 학습 데이터로 사용하지 않는다.
+        업무용 데이터라 해도 개인정보에 해당하며, 동의 없는 수집은 한국 개인정보보호법 위반이다.
+      </div>
+    </div>
+  </section>
+
+  <!-- 인수인계 스킬 구축 절차 -->
+  <section class="section">
+    <h2 class="section-title">인수인계 스킬 구축 5단계</h2>
+    <p class="section-desc">퇴사 예정자가 재직 중에 업무 지식을 SKILL.md로 정리하는 과정</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">1</div>
+        <div class="step-body">
+          <div class="step-title">업무 영역 식별</div>
+          <div class="step-desc">퇴사자가 담당하는 반복 업무, 의사결정 기준, 암묵지(문서화되지 않은 노하우)를 목록으로 정리한다. "내가 없으면 누가 이걸 어떻게 알지?"가 기준이다.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div class="step-body">
+          <div class="step-title">스킬 단위로 분리</div>
+          <div class="step-desc">하나의 업무 = 하나의 스킬. "채용 공고 작성", "월간 리포트 생성", "고객 문의 대응 가이드" 등 독립된 단위로 나눈다.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div class="step-body">
+          <div class="step-title">SKILL.md 작성</div>
+          <div class="step-desc">각 스킬을 마크다운으로 문서화한다. 절차, 주의사항, 예외 처리, 참고 자료를 포함한다. 개인정보는 절대 포함하지 않는다.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">4</div>
+        <div class="step-body">
+          <div class="step-title">후임자/팀 리뷰</div>
+          <div class="step-desc">작성된 스킬을 후임자나 팀원이 읽고 실행해본다. 빠진 내용, 불명확한 부분을 보완한다. PR 리뷰처럼 진행한다.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">5</div>
+        <div class="step-body">
+          <div class="step-title">Git 커밋 및 인계 완료</div>
+          <div class="step-desc">스킬 파일을 프로젝트의 <code>.claude/skills/</code>에 커밋한다. 후임자가 <code>/스킬이름</code>으로 언제든 호출할 수 있다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 실전 예제: 디렉토리 구조 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">실전 예제: HR 담당자 인수인계</h2>
+      <p class="section-desc">중국 사례처럼 "AI 분신"을 만드는 대신, 업무 프로세스를 스킬로 정리하는 올바른 방법</p>
+
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem">디렉토리 구조</h3>
+      <pre><code><span class="comment"># HR 담당자 인수인계 스킬 세트</span>
+.claude/skills/
+├── hr-recruit/
+│   ├── <span class="hl">SKILL.md</span>              <span class="comment"># /hr-recruit — 채용 공고 작성</span>
+│   └── templates/
+│       └── job-posting.md    <span class="comment"># 공고 템플릿</span>
+├── hr-onboarding/
+│   ├── <span class="hl">SKILL.md</span>              <span class="comment"># /hr-onboarding — 신규 입사자 온보딩</span>
+│   └── checklist.md          <span class="comment"># 온보딩 체크리스트</span>
+├── hr-monthly-report/
+│   ├── <span class="hl">SKILL.md</span>              <span class="comment"># /hr-monthly-report — 월간 인사 리포트</span>
+│   └── scripts/
+│       └── collect-data.py   <span class="comment"># 데이터 수집 스크립트</span>
+└── hr-leave-policy/
+    └── <span class="hl">SKILL.md</span>              <span class="comment"># /hr-leave-policy — 휴가 정책 안내</span></code></pre>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">채용 공고 작성 스킬</h3>
+      <pre><code><span class="comment"># .claude/skills/hr-recruit/SKILL.md</span>
+<span class="tag">---</span>
+<span class="key">name</span>: <span class="val">hr-recruit</span>
+<span class="key">description</span>: <span class="val">채용 공고를 작성한다. 직군, 포지션, 요구사항을 전달하면 회사 톤앤매너에 맞는 공고를 생성.</span>
+<span class="key">disable-model-invocation</span>: <span class="val">true</span>
+<span class="key">argument-hint</span>: <span class="val">[직군] [포지션명]</span>
+<span class="tag">---</span>
+
+# 채용 공고 작성
+
+$ARGUMENTS에 맞는 채용 공고를 작성한다.
+
+<span class="hl">## 공고 구조</span>
+1. <span class="key">포지션 소개</span> — 2-3문장으로 역할 요약
+2. <span class="key">주요 업무</span> — 5-7개 불릿 포인트
+3. <span class="key">자격 요건</span> — 필수 / 우대 분리
+4. <span class="key">혜택 및 복지</span> — 회사 공통 항목 + 팀 고유 항목
+5. <span class="key">전형 절차</span> — 서류 → 과제 → 면접 순서
+
+<span class="hl">## 톤앤매너</span>
+- 반말 금지, 존댓말 기본
+- 과도한 이모지 사용 금지
+- "~ 하실 분"보다 "~ 경험이 있는 분" 선호
+- 연봉 범위는 별도 문의로 안내 (공고에 미기재)
+
+<span class="hl">## 참고 자료</span>
+- 공고 템플릿: [templates/job-posting.md](templates/job-posting.md)
+
+<span class="hl">## 주의사항</span>
+- 성별, 나이, 출신 학교 등 차별적 표현 절대 금지
+- 경력 요구 시 "N년 이상" 대신 "관련 경험이 있는 분" 권장
+- 최종 공고는 반드시 HR 팀장 검토 후 게시</code></pre>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">월간 리포트 스킬 (Python 스크립트 연동)</h3>
+      <pre><code><span class="comment"># .claude/skills/hr-monthly-report/SKILL.md</span>
+<span class="tag">---</span>
+<span class="key">name</span>: <span class="val">hr-monthly-report</span>
+<span class="key">description</span>: <span class="val">월간 인사 리포트를 생성한다. 인원 현황, 채용/퇴사 추이, 휴가 사용률을 정리.</span>
+<span class="key">disable-model-invocation</span>: <span class="val">true</span>
+<span class="key">allowed-tools</span>: <span class="val">Bash(python *) Read</span>
+<span class="tag">---</span>
+
+# 월간 인사 리포트
+
+<span class="hl">## 절차</span>
+1. 데이터 수집 스크립트 실행:
+   ```bash
+   python <span class="val">${CLAUDE_SKILL_DIR}</span>/scripts/collect-data.py
+   ```
+2. 생성된 `hr-data.json`을 읽고 다음 항목을 정리:
+   - <span class="key">인원 현황</span>: 총원, 부서별 인원, 전월 대비 증감
+   - <span class="key">채용</span>: 이번 달 입사자 수, 진행 중인 포지션
+   - <span class="key">퇴사</span>: 이번 달 퇴사자 수, 퇴사 사유 분류
+   - <span class="key">휴가</span>: 평균 사용률, 미사용 잔여 일수 경고
+3. 마크다운 형식으로 리포트 생성
+4. `reports/YYYY-MM-hr-report.md`에 저장
+
+<span class="hl">## 리포트 톤</span>
+- 수치 중심, 감정 표현 최소화
+- 전월 대비 변화는 화살표로 표시 (12명 → 15명 (+3))
+- 이상 징후(퇴사율 급증 등)는 별도 섹션으로 하이라이트
+
+<span class="hl">## 배포</span>
+- 리포트 완성 후 반드시 HR 팀장에게 전달 (자동 공유 금지)
+- 리포트에 개인 식별 가능 정보 포함 금지 (이름 대신 부서/직급 단위로 집계)</code></pre>
+    </div>
+  </section>
+
+  <!-- 개발직군 예제 -->
+  <section class="section">
+    <h2 class="section-title">개발 직군 인수인계 예제</h2>
+    <p class="section-desc">HR뿐 아니라 개발자, 디자이너, PM 등 모든 직군에 적용 가능하다</p>
+
+    <pre><code><span class="comment"># 백엔드 개발자 인수인계 스킬 세트</span>
+.claude/skills/
+├── deploy-production/
+│   └── <span class="hl">SKILL.md</span>              <span class="comment"># /deploy-production — 프로덕션 배포 절차</span>
+├── db-migration-guide/
+│   └── <span class="hl">SKILL.md</span>              <span class="comment"># /db-migration-guide — DB 마이그레이션 가이드</span>
+├── incident-response/
+│   └── <span class="hl">SKILL.md</span>              <span class="comment"># /incident-response — 장애 대응 매뉴얼</span>
+├── api-design-review/
+│   └── <span class="hl">SKILL.md</span>              <span class="comment"># /api-design-review — API 설계 리뷰 기준</span>
+└── legacy-payment/
+    ├── <span class="hl">SKILL.md</span>              <span class="comment"># /legacy-payment — 레거시 결제 시스템 가이드</span>
+    └── reference.md          <span class="comment"># 시스템 구조 상세 문서</span></code></pre>
+
+    <pre><code><span class="comment"># .claude/skills/legacy-payment/SKILL.md</span>
+<span class="tag">---</span>
+<span class="key">name</span>: <span class="val">legacy-payment</span>
+<span class="key">description</span>: <span class="val">레거시 결제 시스템의 구조와 주의사항. 결제 관련 코드를 수정할 때 참조.</span>
+<span class="key">user-invocable</span>: <span class="val">false</span>
+<span class="tag">---</span>
+
+# 레거시 결제 시스템 가이드
+
+<span class="comment">이 스킬은 Claude가 결제 관련 코드를 수정할 때 자동으로 참조한다.</span>
+<span class="comment">user-invocable: false이므로 / 메뉴에는 표시되지 않는다.</span>
+
+<span class="hl">## 핵심 주의사항</span>
+- 결제 로직은 <span class="key">src/payment/</span> 디렉토리에 집중
+- PG사 연동은 <span class="key">src/payment/pg/</span> — 3개 PG사를 추상화한 어댑터 패턴
+- <span class="pink">절대 금지</span>: payment_core.py의 calculate_amount()는 수정하지 않는다
+  (세금 계산 로직이 세무사 검증을 거침, 함부로 바꾸면 세금 신고에 영향)
+- 환불 로직은 비동기 처리. 동기로 바꾸면 타임아웃 발생
+
+<span class="hl">## 아키텍처</span>
+상세 구조는 [reference.md](reference.md) 참조
+
+<span class="hl">## 이 코드를 수정해야 할 때</span>
+1. 반드시 staging 환경에서 먼저 테스트
+2. 테스트 결제 후 PG사 관리자 페이지에서 정상 처리 확인
+3. 금액 관련 변경은 PR 리뷰어를 2명 이상 지정</code></pre>
+
+    <div class="info-box tip">
+      <strong>user-invocable: false 활용:</strong> <code>/legacy-payment</code>로 직접 호출하는 게 아니라,
+      Claude가 결제 관련 코드를 수정할 때 자동으로 이 스킬을 참조하도록 한다.
+      퇴사자만 알던 "이건 절대 건드리면 안 돼"를 시스템으로 보존하는 패턴이다.
+    </div>
+  </section>
+
+  <!-- 인수인계 체크리스트 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">인수인계 스킬 작성 체크리스트</h2>
+
+      <div class="checklist">
+        <h3>퇴사 전 스킬 문서화 체크리스트</h3>
+        <ul>
+          <li>반복 업무를 모두 스킬 단위로 목록화했는가</li>
+          <li>각 스킬에 구체적인 절차(명령어, URL, 도구 등)를 포함했는가</li>
+          <li>예외 상황과 "이것만은 하지 말 것"을 명시했는가</li>
+          <li>"나만 아는" 암묵지를 문서화했는가</li>
+          <li>관련 스크립트/템플릿을 지원 파일로 번들했는가</li>
+          <li>개인정보(이름, 연락처, 급여 등)가 포함되지 않았는가</li>
+          <li>후임자 또는 팀원이 읽고 실행해봤는가</li>
+          <li>Git에 커밋하고 PR 리뷰를 받았는가</li>
+        </ul>
+      </div>
+
+      <div class="info-box key" style="margin-top:2rem">
+        <strong>핵심 원칙:</strong> 사람을 복제하는 게 아니라 업무 방법을 기록하는 것이다.
+        스킬 파일에는 "이 업무를 어떻게 하는가"만 담고,
+        "이 사람이 어떤 사람인가"는 담지 않는다.
+        이것이 중국 AI 분신 사건과 SKILL.md 인수인계의 근본적 차이다.
+      </div>
+    </div>
+  </section>
+
+  <!-- 관련 링크 -->
+  <section class="section">
+    <h2 class="section-title">관련 자료</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0">
+      <a href="https://www.hani.co.kr/arti/international/china/1253975.html" target="_blank" style="display:block;padding:1rem 1.2rem;border:1px solid var(--border);border-radius:10px;color:var(--text);transition:transform .15s">
+        <div style="font-size:.82rem;font-weight:700">한겨레 — 퇴사 직원 AI 분신 논란</div>
+        <div style="font-size:.75rem;color:var(--text2);margin-top:.2rem">hani.co.kr</div>
+      </a>
+      <a href="https://www.sedaily.com/article/20032013" target="_blank" style="display:block;padding:1rem 1.2rem;border:1px solid var(--border);border-radius:10px;color:var(--text);transition:transform .15s">
+        <div style="font-size:.82rem;font-weight:700">서울경제 — AI 출근시킨 중국 기업 논란</div>
+        <div style="font-size:.75rem;color:var(--text2);margin-top:.2rem">sedaily.com</div>
+      </a>
+      <a href="https://www.yonhapnewstv.co.kr/news/AKR20260413100257Qc1" target="_blank" style="display:block;padding:1rem 1.2rem;border:1px solid var(--border);border-radius:10px;color:var(--text);transition:transform .15s">
+        <div style="font-size:.82rem;font-weight:700">연합뉴스TV — 퇴사 직원 AI 복제</div>
+        <div style="font-size:.75rem;color:var(--text2);margin-top:.2rem">yonhapnewstv.co.kr</div>
+      </a>
+      <a href="https://www.chosun.com/economy/tech_it/2026/04/14/CNMRC5HJOBAZLKDUK36BNVT64Q/" target="_blank" style="display:block;padding:1rem 1.2rem;border:1px solid var(--border);border-radius:10px;color:var(--text);transition:transform .15s">
+        <div style="font-size:.82rem;font-weight:700">조선일보 — 중국 AI 디지털 분신 논란</div>
+        <div style="font-size:.75rem;color:var(--text2);margin-top:.2rem">chosun.com</div>
+      </a>
+      <a href="https://www.aitimes.com/news/articleView.html?idxno=209150" target="_blank" style="display:block;padding:1rem 1.2rem;border:1px solid var(--border);border-radius:10px;color:var(--text);transition:transform .15s">
+        <div style="font-size:.82rem;font-weight:700">AI타임스 — 퇴사자 데이터 AI 학습 논란</div>
+        <div style="font-size:.75rem;color:var(--text2);margin-top:.2rem">aitimes.com</div>
+      </a>
+      <a href="./skill-md" style="display:block;padding:1rem 1.2rem;border:1px solid var(--border);border-radius:10px;color:var(--text);transition:transform .15s">
+        <div style="font-size:.82rem;font-weight:700">SKILL.md 완전 가이드</div>
+        <div style="font-size:.75rem;color:var(--text2);margin-top:.2rem">스킬 작성법, Frontmatter, 고급 패턴</div>
+      </a>
+      <a href="https://code.claude.com/docs/ko/skills" target="_blank" style="display:block;padding:1rem 1.2rem;border:1px solid var(--border);border-radius:10px;color:var(--text);transition:transform .15s">
+        <div style="font-size:.82rem;font-weight:700">SKILL.md 공식 문서</div>
+        <div style="font-size:.75rem;color:var(--text2);margin-top:.2rem">code.claude.com/docs/ko/skills</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Context Engineering Guide &mdash; 퇴사자 인수인계 스킬</p>
+  <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
+    <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
+    <a href="https://x.com/intent/post?text=%ED%87%B4%EC%82%AC%EC%9E%90%20%EC%9D%B8%EC%88%98%EC%9D%B8%EA%B3%84%20%EC%8A%A4%ED%82%AC%20%EB%A7%8C%EB%93%A4%EA%B8%B0%20%E2%80%94%20SKILL.md%EB%A1%9C%20%EC%97%85%EB%AC%B4%20%EC%A7%80%EC%8B%9D%20%EB%B3%B4%EC%A1%B4%0A%0Ahttps%3A//leaf-kit.github.io/context-engineering/skill-offboarding%0A%0A%40leafeditor%20%23SKILLmd%20%23%EC%9D%B8%EC%88%98%EC%9D%B8%EA%B3%84%20%23ContextEngineering" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+  </div>
+</footer>
+
+</body>
+</html>
