@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DESIGN.md 완전 가이드 — Context Engineering</title>
+  <meta name="description" content="프로젝트 디자인 문서(DESIGN.md) 작성법. Google의 Design Doc 전통부터 AI 에이전트를 위한 아키텍처 컨텍스트 전달까지.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#0EA5E9;--primary-light:#7DD3FC;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--blue:#2563EB;--radius:8px}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+    code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:rgba(14,165,233,.08);padding:.15em .4em;border-radius:4px;color:#0369A1}
+    pre{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:#1E293B;color:#E2E8F0;padding:1.5rem;border-radius:10px;overflow-x:auto;line-height:1.7;margin:1rem 0}
+    pre code{background:none;padding:0;color:inherit;font-size:inherit}
+    .comment{color:#64748B}
+    .key{color:#7DD3FC}
+    .val{color:#86EFAC}
+    .hl{color:#7DD3FC}
+    .tag{color:#FCD34D}
+
+    .nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:#fff}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions a{color:rgba(255,255,255,.5);font-size:.78rem;font-weight:500;padding:.4rem .55rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:#fff;background:rgba(255,255,255,.1);text-decoration:none}
+
+    .hero{text-align:center;padding:4.5rem 2rem 3.5rem;background:linear-gradient(160deg,#0F172A 0%,#0C4A6E 50%,#075985 100%);color:#fff;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(14,165,233,.2) 0%,transparent 60%);pointer-events:none}
+    .hero-badge{display:inline-block;font-size:.72rem;font-weight:600;padding:.3rem .8rem;border-radius:20px;background:rgba(14,165,233,.3);border:1px solid rgba(14,165,233,.4);color:#7DD3FC;margin-bottom:1rem}
+    .hero h1{font-size:2.4rem;font-weight:900;opacity:0;animation:fu .7s ease forwards .2s}
+    .hero .tagline{font-size:1rem;color:rgba(255,255,255,.7);margin-top:.75rem;opacity:0;animation:fu .7s ease forwards .4s}
+    @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .container{max-width:900px;margin:0 auto;padding:0 2rem}
+    .section{padding:3.5rem 0}
+    .section-title{font-size:1.4rem;font-weight:800;margin-bottom:.5rem}
+    .section-desc{font-size:.88rem;color:var(--text2);margin-bottom:2rem;line-height:1.7}
+
+    .info-box{padding:1.2rem 1.5rem;border-radius:10px;margin:1.5rem 0;font-size:.85rem;line-height:1.7}
+    .info-box.tip{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);color:#065F46}
+    .info-box.warn{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);color:#92400E}
+    .info-box.key{background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.2);color:#0369A1}
+    .info-box strong{font-weight:700}
+
+    /* Quote */
+    .quote{padding:2rem;border-left:4px solid var(--primary);background:var(--surface);border-radius:0 10px 10px 0;margin:2rem 0}
+    .quote-text{font-size:1rem;font-style:italic;line-height:1.8;color:var(--text)}
+    .quote-author{font-size:.82rem;color:var(--text2);margin-top:.75rem;font-weight:600}
+
+    /* Roles grid */
+    .roles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+    .role-card{padding:1.5rem;border:1px solid var(--border);border-radius:12px;text-align:center;transition:transform .2s}
+    .role-card:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.05)}
+    .role-icon{font-size:2rem;margin-bottom:.75rem}
+    .role-title{font-size:.9rem;font-weight:700;margin-bottom:.4rem}
+    .role-file{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);margin-bottom:.5rem}
+    .role-desc{font-size:.78rem;color:var(--text2);line-height:1.6}
+
+    /* Sections list */
+    .doc-sections{margin:2rem 0}
+    .doc-section{display:flex;gap:1rem;padding:1rem 1.2rem;border:1px solid var(--border);border-radius:10px;margin-bottom:.75rem;transition:transform .15s}
+    .doc-section:hover{transform:translateX(4px)}
+    .doc-num{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0EA5E9,#0369A1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0}
+    .doc-section-body{flex:1}
+    .doc-section-title{font-size:.9rem;font-weight:700;margin-bottom:.2rem}
+    .doc-section-desc{font-size:.8rem;color:var(--text2);line-height:1.6}
+
+    /* AI integration */
+    .ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}
+    .ai-card{padding:1.5rem;border:1px solid var(--border);border-radius:12px}
+    .ai-card h3{font-size:.9rem;font-weight:700;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+    .ai-card p{font-size:.82rem;color:var(--text2);line-height:1.7}
+    .ai-card code{font-size:.75rem}
+
+    /* ADR */
+    .adr-box{background:linear-gradient(135deg,#0C4A6E,#075985);border-radius:16px;padding:2.5rem;color:#fff;margin:2rem 0}
+    .adr-box h3{font-size:1.1rem;font-weight:800;margin-bottom:1rem}
+    .adr-box p{font-size:.88rem;opacity:.85;line-height:1.8;margin-bottom:1rem}
+    .adr-list{list-style:none;font-size:.85rem;line-height:2}
+    .adr-list li{padding-left:1.5rem;position:relative}
+    .adr-list li::before{content:'\25C6';position:absolute;left:0;color:#7DD3FC}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .hero h1{font-size:1.6rem}
+      .roles-grid{grid-template-columns:1fr}
+      .ai-grid{grid-template-columns:1fr}
+      .container{padding:0 1rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Context Engineering
+  </a>
+  <div class="nav-actions">
+    <a href="./">Overview</a>
+    <a href="./claude-md.html">CLAUDE.md</a>
+    <a href="./agents-md.html">AGENTS.md</a>
+    <a href="./skill-md.html">Skills</a>
+    <a href="./design-md.html" class="active">DESIGN.md</a>
+    <a href="./tools.html">도구 비교</a>
+    <a href="./pkm.html">PKM</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">Architecture &middot; Design Document &middot; ADR</div>
+  <h1>DESIGN.md 완전 가이드</h1>
+  <p class="tagline">코드가 "무엇"을 하는지는 읽으면 안다. 하지만 "왜" 그렇게 만들었는지는<br>디자인 문서에 적어두지 않으면 사라진다.</p>
+</section>
+
+<main class="container">
+
+  <!-- DESIGN.md란? -->
+  <section class="section">
+    <h2 class="section-title">DESIGN.md란?</h2>
+    <p class="section-desc">
+      <code>DESIGN.md</code>는 프로젝트의 아키텍처, 설계 결정, 그 근거를 기록하는 마크다운 문서다.
+      Google이 오래전부터 실천해온 "코딩 전에 디자인 문서를 먼저 쓴다"는 문화에서 유래하며,
+      AI 코딩 도구의 등장으로 그 가치가 더 커졌다.
+    </p>
+
+    <div class="quote">
+      <p class="quote-text">
+        "디자인 문서의 가장 큰 가치는 코드를 작성하기 전에 생각을 강제한다는 점이다.
+        두 번째 가치는 결정의 근거를 기록해서 6개월 뒤에도 '왜?'에 답할 수 있다는 것이다."
+      </p>
+      <p class="quote-author">— Software Engineering at Google (O'Reilly, 2020)</p>
+    </div>
+
+    <div class="info-box key">
+      <strong>AI 에이전트 시대의 DESIGN.md:</strong> Claude Code, Cursor, Copilot 같은 AI 에이전트는 코드를 읽어서 "무엇"은 파악할 수 있다. 하지만 "왜 이 구조인가", "무엇을 하면 안 되는가"는 코드에서 유추하기 어렵다. DESIGN.md가 이 간극을 메운다.
+    </div>
+  </section>
+
+  <!-- 프로젝트 문서의 역할 분담 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">프로젝트 문서의 역할 분담</h2>
+      <p class="section-desc">각 마크다운 파일이 담당하는 영역이 다르다. 겹치지 않게 분리하면 효과적이다.</p>
+
+      <div class="roles-grid">
+        <div class="role-card">
+          <div class="role-icon">&#x1F4D6;</div>
+          <div class="role-title">README.md</div>
+          <div class="role-file">How to use</div>
+          <div class="role-desc">프로젝트 소개, 설치 방법, 빠른 시작 가이드. 외부 사용자와 기여자를 위한 입문 문서.</div>
+        </div>
+        <div class="role-card" style="border-color:rgba(14,165,233,.3)">
+          <div class="role-icon">&#x1F3D7;</div>
+          <div class="role-title">DESIGN.md</div>
+          <div class="role-file">Why it's built this way</div>
+          <div class="role-desc">아키텍처, 설계 결정, 근거, 트레이드오프. 시스템이 <strong>왜</strong> 이 구조인지 설명.</div>
+        </div>
+        <div class="role-card">
+          <div class="role-icon">&#x2699;</div>
+          <div class="role-title">CLAUDE.md</div>
+          <div class="role-file">How to work here</div>
+          <div class="role-desc">AI 에이전트를 위한 운영 지시. 빌드 명령어, 코드 스타일, 테스트 방법.</div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <strong>보완 관계:</strong> CLAUDE.md가 "어떻게 작업하라"를 말한다면, DESIGN.md는 "왜 이렇게 만들었는가"를 말한다. CLAUDE.md에서 <code>@DESIGN.md</code>로 참조하면 AI 에이전트가 아키텍처 맥락까지 파악할 수 있다.
+      </div>
+    </div>
+  </section>
+
+  <!-- 핵심 섹션 구조 -->
+  <section class="section">
+    <h2 class="section-title">DESIGN.md 핵심 섹션</h2>
+    <p class="section-desc">Google의 디자인 문서 전통을 기반으로, AI 에이전트 시대에 맞게 구성한 섹션 가이드</p>
+
+    <div class="doc-sections">
+      <div class="doc-section">
+        <div class="doc-num">1</div>
+        <div class="doc-section-body">
+          <div class="doc-section-title">Overview</div>
+          <div class="doc-section-desc">시스템이 무엇이고 왜 존재하는지 한 문단으로 요약. 처음 읽는 사람이 10초 안에 전체 그림을 잡을 수 있어야 한다.</div>
+        </div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-num">2</div>
+        <div class="doc-section-body">
+          <div class="doc-section-title">Goals & Non-Goals</div>
+          <div class="doc-section-desc">이 시스템이 달성하려는 것과 <strong>명시적으로 하지 않으려는 것</strong>. Non-Goals가 특히 중요하다 — AI 에이전트가 범위를 벗어나는 변경을 제안하는 걸 막아준다.</div>
+        </div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-num">3</div>
+        <div class="doc-section-body">
+          <div class="doc-section-title">Architecture</div>
+          <div class="doc-section-desc">주요 컴포넌트와 그 관계. ASCII 다이어그램 권장 — AI 에이전트가 이미지를 읽을 수 없으므로 텍스트 기반이 유리하다.</div>
+        </div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-num">4</div>
+        <div class="doc-section-body">
+          <div class="doc-section-title">Design Decisions</div>
+          <div class="doc-section-desc">핵심 설계 결정, 고려한 대안, 선택 이유. 각 결정마다 Context → Decision → Alternatives → Rationale 구조로 기록한다.</div>
+        </div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-num">5</div>
+        <div class="doc-section-body">
+          <div class="doc-section-title">Data Flow</div>
+          <div class="doc-section-desc">데이터가 시스템을 통과하는 경로. 입력 → 처리 → 저장 → 출력의 흐름을 단계별로 서술한다.</div>
+        </div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-num">6</div>
+        <div class="doc-section-body">
+          <div class="doc-section-title">Cross-cutting Concerns</div>
+          <div class="doc-section-desc">보안, 성능, 확장성, 에러 처리 등 여러 컴포넌트에 걸친 관심사. 기술 부채로 남기기 쉬운 영역이므로 명시적으로 기록한다.</div>
+        </div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-num">7</div>
+        <div class="doc-section-body">
+          <div class="doc-section-title">Constraints</div>
+          <div class="doc-section-desc">기술적·사업적 제약 조건. "PostgreSQL만 사용", "브라우저 호환성은 최신 2버전만", "번들 크기 200KB 이하" 같은 명시적 제약.</div>
+        </div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-num">8</div>
+        <div class="doc-section-body">
+          <div class="doc-section-title">Future Considerations</div>
+          <div class="doc-section-desc">알려진 한계와 향후 계획. "현재는 단일 리전이지만 멀티 리전 확장 예정" 같은 로드맵 맥락.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 실전 예제 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">실전 예제</h2>
+
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem">SaaS 플랫폼 DESIGN.md</h3>
+      <pre><code><span class="comment"># DESIGN.md — TaskFlow</span>
+
+<span class="hl">## Overview</span>
+TaskFlow는 팀 프로젝트 관리 SaaS다. Jira의 복잡함과 Trello의 단순함
+사이에서 중간 지점을 목표로 한다. Next.js App Router +
+Prisma + PostgreSQL 기반.
+
+<span class="hl">## Goals</span>
+- 5명 이하 소규모 팀을 위한 태스크 관리
+- 실시간 협업 (WebSocket 기반)
+- 모바일 웹에서도 완전한 기능 사용 가능
+
+<span class="hl">## Non-Goals</span>
+- 엔터프라이즈 기능 (SAML, SCIM, 감사 로그)
+- 데스크톱/모바일 네이티브 앱
+- Gantt 차트, 리소스 관리 같은 PM 고급 기능
+- 100명 이상의 팀 지원
+
+<span class="hl">## Architecture</span>
+
+<span class="comment">┌─────────────┐     ┌──────────────┐     ┌──────────┐</span>
+<span class="comment">│   Next.js   │────▶│   API Routes │────▶│ PostgreSQL│</span>
+<span class="comment">│  (App Router)│     │  (tRPC)      │     │ (Prisma) │</span>
+<span class="comment">└──────┬──────┘     └──────┬───────┘     └──────────┘</span>
+<span class="comment">       │                   │</span>
+<span class="comment">       │            ┌──────▼───────┐</span>
+<span class="comment">       └───────────▶│  WebSocket   │</span>
+<span class="comment">                    │  (Pusher)    │</span>
+<span class="comment">                    └──────────────┘</span>
+
+<span class="key">### 컴포넌트 책임</span>
+- <span class="val">Next.js App Router</span>: UI 렌더링, 라우팅, SSR
+- <span class="val">tRPC</span>: 타입 안전한 API 레이어 (REST 대신 선택)
+- <span class="val">Prisma</span>: ORM, 마이그레이션, 타입 생성
+- <span class="val">Pusher</span>: 실시간 이벤트 (자체 WS 서버 대신 — 운영 부담 회피)
+
+<span class="hl">## Design Decisions</span>
+
+<span class="key">### tRPC vs REST vs GraphQL</span>
+- <span class="tag">Context</span>: 프론트/백엔드 모두 TypeScript, 5명 팀
+- <span class="tag">Decision</span>: tRPC 사용
+- <span class="tag">Alternatives</span>: REST (범용적), GraphQL (유연한 쿼리)
+- <span class="tag">Rationale</span>: 팀 규모가 작고 모노레포라서 E2E 타입 안전성이
+  가장 큰 이점. GraphQL은 이 규모에서 오버엔지니어링.
+
+<span class="key">### Pusher vs 자체 WebSocket 서버</span>
+- <span class="tag">Context</span>: 실시간 기능 필요, 인프라 인력 없음
+- <span class="tag">Decision</span>: Pusher 사용
+- <span class="tag">Rationale</span>: 자체 WS 서버는 운영 부담 큼. Pusher의
+  무료 티어로 초기 사용자 충분히 처리 가능.
+
+<span class="hl">## Constraints</span>
+- Vercel 배포: Edge Runtime 제약 (Node.js API 일부 사용 불가)
+- 번들 크기: First Load JS 200KB 이하 유지
+- DB: Neon PostgreSQL (Serverless, connection pooling 필수)
+- 인증: NextAuth.js (OAuth만, 자체 패스워드 인증 안 함)
+
+<span class="hl">## Future Considerations</span>
+- Pusher → 자체 WebSocket 전환 검토 (MAU 10K 초과 시)
+- i18n 지원 (한/영/일) — 현재는 한국어만
+- 팀 간 프로젝트 공유 기능 — 현재 아키텍처에서 가능</code></pre>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">CLAUDE.md에서 DESIGN.md 연동</h3>
+      <pre><code><span class="comment"># CLAUDE.md</span>
+
+<span class="hl">## 아키텍처</span>
+아키텍처 결정과 그 이유는 DESIGN.md를 참조하라.
+<span class="key">@DESIGN.md</span>
+
+<span class="hl">## 중요</span>
+- DESIGN.md의 Non-Goals에 명시된 기능을 제안하지 않는다
+- 아키텍처 변경이 필요한 경우 DESIGN.md를 먼저 확인한다
+- 새로운 설계 결정은 DESIGN.md의 Design Decisions 섹션에 추가한다</code></pre>
+    </div>
+  </section>
+
+  <!-- AI 도구와의 연동 -->
+  <section class="section">
+    <h2 class="section-title">AI 코딩 도구와의 연동</h2>
+    <p class="section-desc">DESIGN.md를 각 AI 도구에서 활용하는 방법</p>
+
+    <div class="ai-grid">
+      <div class="ai-card">
+        <h3>Claude Code</h3>
+        <p>CLAUDE.md에서 <code>@DESIGN.md</code>로 import. 아키텍처 변경 전 자동 참조. Skills에서 디자인 리뷰 워크플로우 정의 가능.</p>
+      </div>
+      <div class="ai-card">
+        <h3>Cursor</h3>
+        <p><code>.cursor/rules/</code>에서 DESIGN.md를 참조하도록 지시. <code>@docs</code> 기능으로 인덱싱하면 자동 검색 대상이 된다.</p>
+      </div>
+      <div class="ai-card">
+        <h3>Aider</h3>
+        <p><code>--read DESIGN.md</code> 플래그로 읽기 전용 컨텍스트에 추가. 아키텍처 인식 상태에서 코드 수정.</p>
+      </div>
+      <div class="ai-card">
+        <h3>Copilot</h3>
+        <p><code>.github/copilot-instructions.md</code>에서 DESIGN.md를 참조하도록 명시. 조직 레벨 지시에 아키텍처 원칙 포함.</p>
+      </div>
+    </div>
+
+    <div class="info-box warn">
+      <strong>주의:</strong> 오래된 DESIGN.md는 없는 것보다 나쁘다. AI 에이전트가 현재와 다른 아키텍처를 기준으로 코드를 수정할 수 있다.
+      아키텍처가 바뀌면 DESIGN.md도 반드시 갱신한다.
+    </div>
+  </section>
+
+  <!-- ADR -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">ADR: Architecture Decision Records</h2>
+      <p class="section-desc">DESIGN.md의 보완재. 개별 설계 결정을 독립 문서로 기록하는 방식.</p>
+
+      <div class="adr-box">
+        <h3>DESIGN.md + ADR 조합</h3>
+        <p>
+          DESIGN.md가 "전체 아키텍처의 현재 상태"라면, ADR은 "개별 결정의 히스토리"다.
+          DESIGN.md는 최신 상태만 유지하고, 결정의 배경과 대안은 ADR에 기록하면 깔끔하다.
+        </p>
+        <ul class="adr-list">
+          <li><strong>DESIGN.md</strong> — 시스템의 현재 아키텍처 스냅샷 (최신 상태)</li>
+          <li><strong>docs/adr/</strong> — 개별 결정의 전체 맥락과 히스토리</li>
+          <li>DESIGN.md에서 각 결정에 대해 ADR 링크로 연결</li>
+          <li>ADR은 한 번 쓰면 수정하지 않는다 (새 결정은 새 ADR)</li>
+        </ul>
+      </div>
+
+      <pre><code><span class="comment"># 디렉토리 구조</span>
+my-project/
+├── <span class="hl">DESIGN.md</span>                <span class="comment"># 전체 아키텍처 (현재 상태)</span>
+├── <span class="key">docs/adr/</span>                <span class="comment"># 개별 결정 히스토리</span>
+│   ├── 001-use-trpc.md
+│   ├── 002-pusher-over-ws.md
+│   ├── 003-neon-postgresql.md
+│   └── template.md          <span class="comment"># ADR 템플릿</span>
+├── CLAUDE.md
+└── ...</code></pre>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem;color:#fff">ADR 템플릿</h3>
+      <pre><code><span class="comment"># docs/adr/template.md</span>
+
+<span class="hl"># ADR-{번호}: {제목}</span>
+
+<span class="key">## Status</span>
+<span class="val">Accepted</span> | Proposed | Deprecated | Superseded by ADR-{번호}
+
+<span class="key">## Context</span>
+이 결정이 필요한 배경과 상황.
+
+<span class="key">## Decision</span>
+무엇을 결정했는가.
+
+<span class="key">## Alternatives Considered</span>
+검토한 대안과 각각의 장단점.
+
+<span class="key">## Consequences</span>
+이 결정으로 인한 긍정적/부정적 영향.
+
+<span class="key">## Date</span>
+<span class="val">2026-04-13</span></code></pre>
+    </div>
+  </section>
+
+  <!-- DESIGN.md 작성 가이드 -->
+  <section class="section">
+    <h2 class="section-title">작성 가이드</h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0">
+      <div style="padding:1.5rem;border:1px solid rgba(16,185,129,.2);border-radius:12px;background:rgba(16,185,129,.03)">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem;color:#059669">DO</div>
+        <ul style="list-style:none;font-size:.82rem;color:var(--text2);line-height:1.9">
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> "왜"에 집중 — 코드가 말해주지 않는 것</li>
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> Non-Goals를 명시적으로 기록</li>
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> ASCII 다이어그램 사용 (AI 판독 가능)</li>
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> 제약 조건을 구체적으로 (수치 포함)</li>
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> 아키텍처 변경 시 DESIGN.md도 갱신</li>
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> 500~2000줄 이내로 유지</li>
+        </ul>
+      </div>
+      <div style="padding:1.5rem;border:1px solid rgba(239,68,68,.2);border-radius:12px;background:rgba(239,68,68,.03)">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem;color:#DC2626">DON'T</div>
+        <ul style="list-style:none;font-size:.82rem;color:var(--text2);line-height:1.9">
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> 코드를 읽으면 알 수 있는 내용 반복</li>
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> 이미지만으로 다이어그램 표현</li>
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> API 레퍼런스 문서를 대체하려 시도</li>
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> 작성 후 방치 (stale한 문서는 유해)</li>
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> 구현 세부사항 (코드 레벨) 기록</li>
+          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> CLAUDE.md와 내용 중복</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-box tip">
+      <strong>유사한 파일명:</strong> 일부 프로젝트에서는 <code>ARCHITECTURE.md</code>(rust-analyzer에서 유래)나 <code>CONTRIBUTING.md</code>의 아키텍처 섹션으로 같은 역할을 수행한다. 파일명보다 내용이 중요하다 — 핵심은 "왜 이 구조인가"를 기록하는 것.
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Context Engineering Guide &mdash; DESIGN.md</p>
+  <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
+    <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
+    <a href="https://x.com/intent/post?text=DESIGN.md%20%EC%99%84%EC%A0%84%20%EA%B0%80%EC%9D%B4%EB%93%9C%20%E2%80%94%20Context%20Engineering%0A%0Ahttps%3A//leaf-kit.github.io/context-engineering/design-md.html%0A%0A%40leafeditor%20%23DESIGNmd%20%23ContextEngineering%20%23Architecture" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+  </div>
+</footer>
+
+</body>
+</html>

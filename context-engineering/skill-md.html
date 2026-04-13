@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills 완전 가이드 — Context Engineering</title>
+  <meta name="description" content="Claude Code Skills 시스템 가이드. .claude/skills/ 디렉토리에 재사용 가능한 워크플로우를 정의하고 슬래시 명령으로 호출하는 방법.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#EC4899;--primary-light:#F9A8D4;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--blue:#2563EB;--radius:8px}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+    code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:rgba(236,72,153,.08);padding:.15em .4em;border-radius:4px;color:#9D174D}
+    pre{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:#1E293B;color:#E2E8F0;padding:1.5rem;border-radius:10px;overflow-x:auto;line-height:1.7;margin:1rem 0}
+    pre code{background:none;padding:0;color:inherit;font-size:inherit}
+    .comment{color:#64748B}
+    .key{color:#7DD3FC}
+    .val{color:#86EFAC}
+    .hl{color:#F9A8D4}
+    .tag{color:#FCD34D}
+
+    .nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:#fff}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions a{color:rgba(255,255,255,.5);font-size:.78rem;font-weight:500;padding:.4rem .55rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:#fff;background:rgba(255,255,255,.1);text-decoration:none}
+
+    .hero{text-align:center;padding:4.5rem 2rem 3.5rem;background:linear-gradient(160deg,#0F172A 0%,#831843 50%,#9D174D 100%);color:#fff;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(236,72,153,.2) 0%,transparent 60%);pointer-events:none}
+    .hero-badge{display:inline-block;font-size:.72rem;font-weight:600;padding:.3rem .8rem;border-radius:20px;background:rgba(236,72,153,.3);border:1px solid rgba(236,72,153,.4);color:#F9A8D4;margin-bottom:1rem}
+    .hero h1{font-size:2.4rem;font-weight:900;opacity:0;animation:fu .7s ease forwards .2s}
+    .hero .tagline{font-size:1rem;color:rgba(255,255,255,.7);margin-top:.75rem;opacity:0;animation:fu .7s ease forwards .4s}
+    @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .container{max-width:900px;margin:0 auto;padding:0 2rem}
+    .section{padding:3.5rem 0}
+    .section-title{font-size:1.4rem;font-weight:800;margin-bottom:.5rem}
+    .section-desc{font-size:.88rem;color:var(--text2);margin-bottom:2rem;line-height:1.7}
+
+    .info-box{padding:1.2rem 1.5rem;border-radius:10px;margin:1.5rem 0;font-size:.85rem;line-height:1.7}
+    .info-box.tip{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);color:#065F46}
+    .info-box.warn{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);color:#92400E}
+    .info-box.key{background:rgba(236,72,153,.06);border:1px solid rgba(236,72,153,.2);color:#9D174D}
+    .info-box strong{font-weight:700}
+
+    /* vs table */
+    .vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:2rem 0}
+    .vs-col{padding:1.5rem}
+    .vs-col:first-child{border-right:1px solid var(--border)}
+    .vs-col h3{font-size:.9rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+    .vs-col ul{list-style:none;font-size:.82rem;color:var(--text2);line-height:1.9}
+    .vs-col li{padding-left:1.2rem;position:relative}
+    .vs-col li::before{content:'\2022';position:absolute;left:0;font-weight:700}
+    .vs-col:first-child li::before{color:var(--primary)}
+    .vs-col:last-child li::before{color:var(--amber)}
+
+    /* Skill cards */
+    .skill-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;margin:2rem 0}
+    .skill-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:transform .2s,box-shadow .2s}
+    .skill-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.06)}
+    .skill-card-top{padding:1rem 1.2rem;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem}
+    .skill-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;color:var(--primary)}
+    .skill-card-body{padding:1rem 1.2rem}
+    .skill-card-body p{font-size:.8rem;color:var(--text2);line-height:1.6}
+
+    /* Steps */
+    .steps{display:flex;flex-direction:column;gap:0;margin:2rem 0}
+    .step{display:flex;gap:1.2rem;padding-bottom:1.5rem;position:relative}
+    .step:last-child{padding-bottom:0}
+    .step::before{content:'';position:absolute;left:17px;top:40px;width:2px;height:calc(100% - 40px);background:var(--border)}
+    .step:last-child::before{display:none}
+    .step-n{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#EC4899,#9D174D);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;z-index:1}
+    .step-body{flex:1;padding-top:.3rem}
+    .step-title{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+    .step-desc{font-size:.83rem;color:var(--text2);line-height:1.7}
+
+    /* Anatomy */
+    .anatomy{background:linear-gradient(135deg,#831843,#9D174D);border-radius:16px;padding:2.5rem;color:#fff;margin:2rem 0}
+    .anatomy h3{font-size:1.1rem;font-weight:800;margin-bottom:1.5rem}
+    .anatomy-parts{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .anatomy-part{padding:1rem;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:rgba(255,255,255,.05)}
+    .anatomy-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;opacity:.6;margin-bottom:.3rem}
+    .anatomy-name{font-size:.9rem;font-weight:700;margin-bottom:.3rem}
+    .anatomy-desc{font-size:.78rem;opacity:.75;line-height:1.5}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .hero h1{font-size:1.6rem}
+      .vs{grid-template-columns:1fr}
+      .vs-col:first-child{border-right:none;border-bottom:1px solid var(--border)}
+      .skill-cards{grid-template-columns:1fr}
+      .anatomy-parts{grid-template-columns:1fr}
+      .container{padding:0 1rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Context Engineering
+  </a>
+  <div class="nav-actions">
+    <a href="./">Overview</a>
+    <a href="./claude-md.html">CLAUDE.md</a>
+    <a href="./agents-md.html">AGENTS.md</a>
+    <a href="./skill-md.html" class="active">Skills</a>
+    <a href="./design-md.html">DESIGN.md</a>
+    <a href="./tools.html">도구 비교</a>
+    <a href="./pkm.html">PKM</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">Claude Code &middot; .claude/skills/</div>
+  <h1>Skills 완전 가이드</h1>
+  <p class="tagline">반복되는 워크플로우를 스킬 파일로 정의하고,<br>슬래시 명령 한 번으로 호출한다.</p>
+</section>
+
+<main class="container">
+
+  <!-- Skills란? -->
+  <section class="section">
+    <h2 class="section-title">Skills란?</h2>
+    <p class="section-desc">
+      Skills는 Claude Code의 <code>.claude/skills/</code> 디렉토리에 저장하는 마크다운 파일이다.
+      각 파일이 하나의 <strong>슬래시 명령</strong>이 되어, 특정 작업을 수행할 때 필요한 지시를 온디맨드로 주입한다.
+      CLAUDE.md가 "항상 적용되는 규칙"이라면, Skills는 "필요할 때 꺼내 쓰는 도구"다.
+    </p>
+
+    <div class="vs">
+      <div class="vs-col">
+        <h3>CLAUDE.md</h3>
+        <ul>
+          <li>매 대화 시작 시 <strong>항상</strong> 로드</li>
+          <li>프로젝트 전반의 규칙과 컨벤션</li>
+          <li>빌드 명령어, 코드 스타일, 아키텍처</li>
+          <li>200줄 이하 권장 (항상 컨텍스트 차지)</li>
+          <li>"이 프로젝트에서는 이렇게 해라"</li>
+        </ul>
+      </div>
+      <div class="vs-col">
+        <h3>Skills</h3>
+        <ul>
+          <li><strong>/명령어</strong>로 호출할 때만 로드</li>
+          <li>특정 작업을 위한 절차와 워크플로우</li>
+          <li>배포, 마이그레이션, 코드 리뷰, 페이지 생성</li>
+          <li>길이 제한 없음 (필요할 때만 주입)</li>
+          <li>"이 작업은 이 순서로 해라"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-box key">
+      <strong>핵심 차이:</strong> CLAUDE.md에 모든 걸 넣으면 컨텍스트 윈도우가 낭비된다. 배포 절차를 코드 작성할 때마다 로드할 필요가 없다.
+      자주 쓰지 않지만 정확한 절차가 필요한 작업은 Skills로 분리하면 된다.
+    </div>
+  </section>
+
+  <!-- 동작 원리 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">동작 원리</h2>
+
+      <div class="anatomy">
+        <h3>스킬 파일의 생명 주기</h3>
+        <div class="anatomy-parts">
+          <div class="anatomy-part">
+            <div class="anatomy-label">1. 파일 생성</div>
+            <div class="anatomy-name">.claude/skills/deploy.md</div>
+            <div class="anatomy-desc">마크다운 파일을 .claude/skills/ 아래에 저장한다. 파일명이 곧 명령어 이름이 된다.</div>
+          </div>
+          <div class="anatomy-part">
+            <div class="anatomy-label">2. 명령어 등록</div>
+            <div class="anatomy-name">/deploy</div>
+            <div class="anatomy-desc">Claude Code가 디렉토리를 스캔하고 자동으로 슬래시 명령으로 등록한다. 별도 설정 불필요.</div>
+          </div>
+          <div class="anatomy-part">
+            <div class="anatomy-label">3. 호출</div>
+            <div class="anatomy-name">사용자가 /deploy 입력</div>
+            <div class="anatomy-desc">스킬 파일의 내용이 대화 컨텍스트에 주입된다. Claude가 지시를 따라 작업을 수행한다.</div>
+          </div>
+          <div class="anatomy-part">
+            <div class="anatomy-label">4. 실행</div>
+            <div class="anatomy-name">단계별 수행</div>
+            <div class="anatomy-desc">스킬에 정의된 절차를 순서대로 실행한다. 필요하면 사용자에게 확인을 요청한다.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:1.5rem 0 1rem">디렉토리 구조</h3>
+      <pre><code><span class="comment"># 프로젝트 루트</span>
+my-project/
+├── CLAUDE.md                  <span class="comment"># 항상 적용되는 규칙</span>
+├── <span class="hl">.claude/</span>
+│   └── <span class="hl">skills/</span>                <span class="comment"># 스킬 디렉토리</span>
+│       ├── <span class="hl">deploy.md</span>          <span class="comment"># /deploy 명령</span>
+│       ├── <span class="hl">review.md</span>          <span class="comment"># /review 명령</span>
+│       ├── <span class="hl">create-page.md</span>     <span class="comment"># /create-page 명령</span>
+│       ├── <span class="hl">db-migrate.md</span>      <span class="comment"># /db-migrate 명령</span>
+│       └── <span class="hl">add-feature.md</span>     <span class="comment"># /add-feature 명령</span>
+└── src/
+
+<span class="comment"># 글로벌 스킬 (모든 프로젝트에서 사용)</span>
+~/.claude/
+└── skills/
+    ├── <span class="hl">commit.md</span>              <span class="comment"># /commit — 어디서든 사용</span>
+    └── <span class="hl">pr.md</span>                  <span class="comment"># /pr — 어디서든 사용</span></code></pre>
+    </div>
+  </section>
+
+  <!-- 스킬 파일 작성법 -->
+  <section class="section">
+    <h2 class="section-title">스킬 파일 작성법</h2>
+    <p class="section-desc">스킬 파일은 자유 형식 마크다운이다. 정해진 스키마 없이, Claude에게 보내는 지시를 그대로 작성하면 된다.</p>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem">기본 구조</h3>
+    <pre><code><span class="comment"># .claude/skills/deploy.md</span>
+
+<span class="hl">## 목적</span>
+프로덕션 환경에 배포하는 절차. 빌드 검증부터 배포 완료 확인까지.
+
+<span class="hl">## 사전 조건</span>
+- main 브랜치에서 작업 중이어야 한다
+- 커밋되지 않은 변경이 없어야 한다
+
+<span class="hl">## 절차</span>
+1. <span class="key">git status</span>로 클린 상태 확인
+2. <span class="key">pnpm build</span>로 빌드 성공 확인
+3. <span class="key">pnpm test</span>로 전체 테스트 통과 확인
+4. 빌드/테스트 모두 통과하면 <span class="key">git tag v{버전}</span> 생성
+5. <span class="key">git push origin main --tags</span> 실행
+6. GitHub Actions 배포 완료 대기
+7. 배포 결과 요약 출력
+
+<span class="hl">## 주의사항</span>
+- 테스트 실패 시 배포를 중단하고 실패 원인을 보고한다
+- 태그 버전은 package.json의 version 필드를 따른다
+- 배포 전 반드시 사용자 확인을 받는다</code></pre>
+
+    <div class="info-box tip">
+      <strong>작성 팁:</strong> "똑똑한 동료에게 작업을 인수인계하듯" 작성한다. 배경 지식을 전부 설명할 필요 없고, 핵심 절차와 주의사항에 집중한다. Claude는 코드를 읽을 수 있으므로 코드에서 알 수 있는 내용은 생략해도 된다.
+    </div>
+  </section>
+
+  <!-- 실전 예제 모음 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">실전 예제 모음</h2>
+      <p class="section-desc">프로젝트에서 바로 활용할 수 있는 스킬 파일 예제</p>
+
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem">코드 리뷰 스킬</h3>
+      <pre><code><span class="comment"># .claude/skills/review.md</span>
+
+현재 브랜치의 변경사항을 리뷰한다.
+
+<span class="hl">## 리뷰 절차</span>
+1. <span class="key">git diff main...HEAD</span>로 변경 범위 확인
+2. 변경된 파일을 하나씩 읽고 다음 관점에서 검토:
+   - 버그 가능성 (null 접근, 경계값, 동시성)
+   - 성능 문제 (N+1 쿼리, 불필요한 렌더링)
+   - 보안 취약점 (인젝션, XSS, 인증 누락)
+   - 코드 가독성과 네이밍
+3. 발견한 이슈를 심각도별로 분류:
+   - <span class="val">CRITICAL</span>: 반드시 수정 (버그, 보안)
+   - <span class="val">SUGGESTION</span>: 수정 권장 (가독성, 성능)
+   - <span class="val">NITPICK</span>: 사소한 개선 (스타일, 네이밍)
+4. 각 이슈에 파일명:라인번호와 수정 제안을 포함
+
+<span class="hl">## 출력 형식</span>
+이슈를 심각도별로 그룹핑해서 출력한다.
+이슈가 없으면 "LGTM" 으로 마무리한다.</code></pre>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">페이지 생성 스킬 (정적 사이트용)</h3>
+      <pre><code><span class="comment"># .claude/skills/create-page.md</span>
+
+새로운 HTML 페이지를 프로젝트에 추가한다.
+
+<span class="hl">## 절차</span>
+1. 사용자에게 페이지 제목과 설명을 확인
+2. 기존 페이지(예: about.html)를 템플릿으로 참조
+3. 동일한 nav, footer, CSS 변수 체계를 유지
+4. 새 페이지의 nav에서 해당 페이지를 active로 표시
+5. <span class="val">IMPORTANT</span>: 기존 모든 페이지의 nav에 새 페이지 링크를 추가
+6. footer에 트위터 공유 버튼 포함 (페이지 URL + 제목)
+
+<span class="hl">## 디자인 규칙</span>
+- Hero 배경: 다크 그라데이션 (기존 페이지와 톤 통일)
+- 폰트: Noto Sans KR + JetBrains Mono
+- 반응형: 768px 브레이크포인트
+- 색상 체계: CSS Custom Properties 사용</code></pre>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">DB 마이그레이션 스킬</h3>
+      <pre><code><span class="comment"># .claude/skills/db-migrate.md</span>
+
+데이터베이스 스키마 변경을 안전하게 수행한다.
+
+<span class="hl">## 절차</span>
+1. 변경할 스키마 내용을 사용자에게 확인
+2. prisma/schema.prisma 수정
+3. <span class="key">pnpm prisma migrate dev --name {설명}</span> 실행
+4. 마이그레이션 SQL 파일 내용 검토
+5. <span class="key">pnpm prisma generate</span>로 클라이언트 재생성
+6. 영향받는 코드를 찾아서 타입 업데이트
+
+<span class="hl">## 안전 규칙</span>
+- 컬럼 삭제 시 반드시 사용자 확인
+- NOT NULL 컬럼 추가 시 기본값 필수
+- 인덱스 추가/삭제는 마이그레이션 분리
+- 프로덕션 마이그레이션은 이 스킬 범위 밖 (수동 처리)</code></pre>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">커밋 스킬</h3>
+      <pre><code><span class="comment"># .claude/skills/commit.md</span>
+
+현재 변경사항을 커밋한다.
+
+<span class="hl">## 절차</span>
+1. <span class="key">git status</span>와 <span class="key">git diff</span>로 변경 내용 파악
+2. 변경 내용을 분석해서 커밋 메시지 초안 작성
+3. Conventional Commits 형식 사용:
+   - <span class="val">feat</span>: 새 기능
+   - <span class="val">fix</span>: 버그 수정
+   - <span class="val">refactor</span>: 리팩토링
+   - <span class="val">docs</span>: 문서
+   - <span class="val">chore</span>: 기타
+4. 제목은 50자 이내, 본문은 한국어
+5. 민감한 파일(.env, credentials)이 포함되어 있으면 경고
+6. 사용자 확인 후 커밋 실행</code></pre>
+    </div>
+  </section>
+
+  <!-- 활용 패턴 -->
+  <section class="section">
+    <h2 class="section-title">활용 패턴</h2>
+    <p class="section-desc">스킬을 효과적으로 활용하는 패턴들</p>
+
+    <div class="skill-cards">
+      <div class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-cmd">/deploy</div>
+        </div>
+        <div class="skill-card-body">
+          <p>배포 절차 자동화. 빌드 검증, 테스트 실행, 태그 생성, 푸시까지 일관된 순서로 수행.</p>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-cmd">/review</div>
+        </div>
+        <div class="skill-card-body">
+          <p>코드 리뷰 체크리스트 기반 검토. 심각도 분류, 수정 제안, 파일:라인 참조.</p>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-cmd">/create-page</div>
+        </div>
+        <div class="skill-card-body">
+          <p>새 페이지 스캐폴딩. 템플릿 복제, nav 일괄 업데이트, 공유 버튼 자동 생성.</p>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-cmd">/db-migrate</div>
+        </div>
+        <div class="skill-card-body">
+          <p>DB 마이그레이션 안전 수행. 스키마 수정, 마이그레이션 생성, 영향 코드 업데이트.</p>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-cmd">/add-api</div>
+        </div>
+        <div class="skill-card-body">
+          <p>API 엔드포인트 추가. 라우트, 핸들러, 타입, 테스트까지 일괄 생성.</p>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-cmd">/onboard</div>
+        </div>
+        <div class="skill-card-body">
+          <p>프로젝트 온보딩. 구조 설명, 핵심 파일 안내, 개발 환경 체크.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 베스트 프랙티스 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">베스트 프랙티스</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">한 스킬 = 한 작업</div>
+            <div class="step-desc">하나의 스킬 파일에 여러 작업을 넣지 않는다. "배포 + 롤백"이 아니라 <code>/deploy</code>와 <code>/rollback</code>으로 분리한다.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">파일명 = 동사 또는 동사구</div>
+            <div class="step-desc"><code>deploy.md</code>, <code>create-page.md</code>, <code>review-pr.md</code> 처럼 작업을 설명하는 동사로 이름 짓는다. 사용자가 /로 호출할 때 직관적이다.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">절차를 구체적으로</div>
+            <div class="step-desc">실행할 명령어, 확인할 조건, 실패 시 대응을 구체적으로 적는다. 추상적인 지시("테스트를 돌려라")보다 구체적인 명령어(<code>pnpm vitest run</code>)가 낫다.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div class="step-body">
+            <div class="step-title">CLAUDE.md 규칙을 반복하지 않기</div>
+            <div class="step-desc">스킬 파일에서 CLAUDE.md에 이미 정의된 컨벤션을 반복할 필요 없다. Claude는 CLAUDE.md를 이미 읽고 있으므로 스킬에서는 작업 절차에만 집중한다.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">5</div>
+          <div class="step-body">
+            <div class="step-title">글로벌 vs 프로젝트 분리</div>
+            <div class="step-desc">프로젝트에 무관한 범용 스킬(커밋, PR 생성 등)은 <code>~/.claude/skills/</code>에 두고, 프로젝트 고유 스킬(배포, 마이그레이션 등)은 프로젝트의 <code>.claude/skills/</code>에 둔다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box warn">
+        <strong>흔한 실수:</strong> CLAUDE.md에 모든 걸 넣는 것. 200줄 제한 권장은 "항상 로드되는 것"의 크기를 제한하기 위함이다. 배포 절차 30줄, DB 마이그레이션 20줄, 코드 리뷰 체크리스트 25줄 — 이런 건 Skills로 분리해야 CLAUDE.md가 가볍게 유지된다.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Context Engineering Guide &mdash; Skills</p>
+  <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
+    <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
+    <a href="https://x.com/intent/post?text=Claude%20Code%20Skills%20%EC%99%84%EC%A0%84%20%EA%B0%80%EC%9D%B4%EB%93%9C%0A%0Ahttps%3A//leaf-kit.github.io/context-engineering/skill-md.html%0A%0A%40leafeditor%20%23ClaudeCode%20%23Skills%20%23ContextEngineering" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+  </div>
+</footer>
+
+</body>
+</html>
