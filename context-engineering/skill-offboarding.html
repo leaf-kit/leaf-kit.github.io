@@ -93,6 +93,10 @@
       .vs-col:first-child{border-right:none;border-bottom:1px solid var(--border)}
       .news-card{flex-direction:column;gap:1rem}
       .container{padding:0 1rem}
+      .stat-grid-4{grid-template-columns:repeat(2,1fr)!important}
+      .scenario-grid{grid-template-columns:1fr!important}
+      .job-grid{grid-template-columns:1fr!important}
+      .ba-grid{grid-template-columns:1fr!important}
     }
   </style>
 </head>
@@ -172,6 +176,66 @@
       올바른 방법은 개인 데이터를 복제하는 게 아니라,
       <strong>업무 프로세스와 노하우를 구조화된 문서(SKILL.md)로 정리</strong>하는 것이다.
     </p>
+  </section>
+
+  <!-- 충격 수치 -->
+  <section class="section" style="background:linear-gradient(135deg,#1E1B4B,#312E81);margin:0 -2rem;padding:3rem 2rem;color:#fff">
+    <div style="max-width:900px;margin:0 auto;text-align:center">
+      <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:2rem">당신의 팀에서도 일어나고 있는 일</h2>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem">
+        <div>
+          <div style="font-size:2.5rem;font-weight:900;color:#C4B5FD">70%</div>
+          <div style="font-size:.78rem;opacity:.7;margin-top:.3rem">퇴사자와 함께 사라지는<br>문서화되지 않은 업무 지식</div>
+        </div>
+        <div>
+          <div style="font-size:2.5rem;font-weight:900;color:#F9A8D4">6개월</div>
+          <div style="font-size:.78rem;opacity:.7;margin-top:.3rem">후임자가 전임자 수준에<br>도달하는 데 걸리는 평균 시간</div>
+        </div>
+        <div>
+          <div style="font-size:2.5rem;font-weight:900;color:#FCD34D">3.2명</div>
+          <div style="font-size:.78rem;opacity:.7;margin-top:.3rem">한 명이 퇴사하면<br>영향받는 팀원 수</div>
+        </div>
+        <div>
+          <div style="font-size:2.5rem;font-weight:900;color:#86EFAC">15분</div>
+          <div style="font-size:.78rem;opacity:.7;margin-top:.3rem">SKILL.md 하나를<br>작성하는 데 걸리는 시간</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 공감 시나리오 -->
+  <section class="section">
+    <h2 class="section-title">이런 경험, 있지 않나요?</h2>
+    <p class="section-desc">퇴사자가 남기고 간 빈자리의 크기는 퇴사 후에야 드러난다</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin:1.5rem 0">
+      <div style="padding:1.5rem;border-radius:12px;background:rgba(239,68,68,.03);border:1px solid rgba(239,68,68,.12)">
+        <div style="font-size:1.2rem;margin-bottom:.5rem">&#x1F631;</div>
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:.4rem">"그건 김 대리한테 물어봐야 하는데..."</div>
+        <div style="font-size:.8rem;color:var(--text2);line-height:1.6">배포 스크립트에 숨겨진 환경변수가 있었다. 김 대리만 알고 있었는데, 이미 3개월 전에 퇴사했다. 프로덕션이 2시간 멈췄다.</div>
+      </div>
+      <div style="padding:1.5rem;border-radius:12px;background:rgba(239,68,68,.03);border:1px solid rgba(239,68,68,.12)">
+        <div style="font-size:1.2rem;margin-bottom:.5rem">&#x1F4B8;</div>
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:.4rem">"이 엑셀 매크로 누가 만든 거야?"</div>
+        <div style="font-size:.8rem;color:var(--text2);line-height:1.6">매달 회계 마감에 쓰이는 엑셀 매크로. 전임자가 만들었는데 비밀번호가 걸려 있고, 로직 설명이 없다. 외주로 다시 만들어야 했다.</div>
+      </div>
+      <div style="padding:1.5rem;border-radius:12px;background:rgba(239,68,68,.03);border:1px solid rgba(239,68,68,.12)">
+        <div style="font-size:1.2rem;margin-bottom:.5rem">&#x1F92F;</div>
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:.4rem">"왜 이 코드에 이런 예외 처리가 있지?"</div>
+        <div style="font-size:.8rem;color:var(--text2);line-height:1.6">이상한 if문을 삭제했더니 특정 고객사 결제가 전부 실패했다. 알고 보니 그 고객사만 쓰는 특수 로직이었다. 전임 개발자가 퇴사한 지 1년.</div>
+      </div>
+      <div style="padding:1.5rem;border-radius:12px;background:rgba(239,68,68,.03);border:1px solid rgba(239,68,68,.12)">
+        <div style="font-size:1.2rem;margin-bottom:.5rem">&#x1F3C3;</div>
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:.4rem">"인수인계서요? 여기 있는데..."</div>
+        <div style="font-size:.8rem;color:var(--text2);line-height:1.6">A4 2장짜리 인수인계서를 받았다. "OO 시스템 관리", "XX 업무 처리" — 그래서 어떻게? 구체적인 절차가 하나도 없다.</div>
+      </div>
+    </div>
+
+    <div class="info-box key">
+      <strong>공통점:</strong> 전부 "그 사람의 머릿속에만 있던 정보"가 사라진 것이다.
+      SKILL.md는 이 암묵지를 퇴사 <strong>전에</strong> 구조화된 형태로 꺼내서 저장하는 방법이다.
+      AI가 문서를 읽고 후임자를 도울 수 있도록.
+    </div>
   </section>
 
   <!-- 잘못된 방법 vs 올바른 방법 -->
@@ -398,6 +462,242 @@ $ARGUMENTS에 맞는 채용 공고를 작성한다.
       <strong>user-invocable: false 활용:</strong> <code>/legacy-payment</code>로 직접 호출하는 게 아니라,
       Claude가 결제 관련 코드를 수정할 때 자동으로 이 스킬을 참조하도록 한다.
       퇴사자만 알던 "이건 절대 건드리면 안 돼"를 시스템으로 보존하는 패턴이다.
+    </div>
+  </section>
+
+  <!-- 직군별 스킬 세트 총정리 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">직군별 인수인계 스킬 세트</h2>
+      <p class="section-desc">어떤 직군이든 패턴은 같다: "나만 아는 것"을 "누구나 실행할 수 있는 스킬"로 바꾼다</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0">
+        <!-- 디자이너 -->
+        <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;background:#fff">
+          <div style="font-size:1.2rem;margin-bottom:.5rem">&#x1F3A8;</div>
+          <div style="font-size:.95rem;font-weight:700;margin-bottom:.75rem">디자이너</div>
+          <pre style="font-size:.72rem;margin:0;padding:1rem"><code>.claude/skills/
+├── design-handoff/SKILL.md      <span class="comment"># 개발팀 전달 절차</span>
+├── brand-guide/SKILL.md         <span class="comment"># 브랜드 가이드라인</span>
+├── icon-export/SKILL.md         <span class="comment"># 아이콘 내보내기 규칙</span>
+└── figma-naming/SKILL.md        <span class="comment"># 피그마 네이밍 컨벤션</span></code></pre>
+        </div>
+        <!-- PM -->
+        <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;background:#fff">
+          <div style="font-size:1.2rem;margin-bottom:.5rem">&#x1F4CA;</div>
+          <div style="font-size:.95rem;font-weight:700;margin-bottom:.75rem">PM / 기획자</div>
+          <pre style="font-size:.72rem;margin:0;padding:1rem"><code>.claude/skills/
+├── prd-template/SKILL.md        <span class="comment"># PRD 작성 가이드</span>
+├── sprint-planning/SKILL.md     <span class="comment"># 스프린트 계획 절차</span>
+├── stakeholder-report/SKILL.md  <span class="comment"># 경영진 보고서 작성</span>
+└── ab-test-setup/SKILL.md       <span class="comment"># A/B 테스트 설정 가이드</span></code></pre>
+        </div>
+        <!-- 마케팅 -->
+        <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;background:#fff">
+          <div style="font-size:1.2rem;margin-bottom:.5rem">&#x1F4E3;</div>
+          <div style="font-size:.95rem;font-weight:700;margin-bottom:.75rem">마케터</div>
+          <pre style="font-size:.72rem;margin:0;padding:1rem"><code>.claude/skills/
+├── ad-campaign/SKILL.md         <span class="comment"># 광고 캠페인 세팅 절차</span>
+├── ga4-report/SKILL.md          <span class="comment"># GA4 보고서 생성 가이드</span>
+├── content-calendar/SKILL.md    <span class="comment"># 콘텐츠 캘린더 관리</span>
+└── influencer-outreach/SKILL.md <span class="comment"># 인플루언서 협업 절차</span></code></pre>
+        </div>
+        <!-- CS/운영 -->
+        <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;background:#fff">
+          <div style="font-size:1.2rem;margin-bottom:.5rem">&#x1F3E2;</div>
+          <div style="font-size:.95rem;font-weight:700;margin-bottom:.75rem">CS / 운영</div>
+          <pre style="font-size:.72rem;margin:0;padding:1rem"><code>.claude/skills/
+├── cs-response/SKILL.md         <span class="comment"># 고객 문의 응대 가이드</span>
+├── refund-process/SKILL.md      <span class="comment"># 환불 처리 절차</span>
+├── vip-escalation/SKILL.md      <span class="comment"># VIP 고객 에스컬레이션</span>
+└── weekly-cs-report/SKILL.md    <span class="comment"># 주간 CS 현황 리포트</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 실전 예제: 장애 대응 -->
+  <section class="section">
+    <h2 class="section-title">실전 예제: 새벽 3시 장애 대응</h2>
+    <p class="section-desc">퇴사한 시니어 개발자만 알던 장애 대응 노하우를 스킬로 남긴 사례</p>
+
+    <pre><code><span class="comment"># .claude/skills/incident-response/SKILL.md</span>
+<span class="tag">---</span>
+<span class="key">name</span>: <span class="val">incident-response</span>
+<span class="key">description</span>: <span class="val">프로덕션 장애 발생 시 대응 절차. 서비스 다운, 500 에러 급증, DB 커넥션 풀 고갈 등의 상황에서 사용.</span>
+<span class="key">disable-model-invocation</span>: <span class="val">true</span>
+<span class="tag">---</span>
+
+# 장애 대응 매뉴얼
+
+<span class="hl">## 1단계: 상황 파악 (5분 이내)</span>
+- Grafana 대시보드 확인: <span class="key">https://grafana.internal/d/main</span>
+- 핵심 지표: 요청 성공률, p99 레이턴시, DB 커넥션 수
+- Slack #incident 채널에 장애 선언: "@here [장애] {증상} 확인 중"
+
+<span class="hl">## 2단계: 원인 분류</span>
+
+<span class="key">### 500 에러 급증 → 대부분 배포 직후 발생</span>
+1. 최근 배포 이력 확인: <span class="val">kubectl rollout history deployment/api</span>
+2. 즉시 롤백: <span class="val">kubectl rollout undo deployment/api</span>
+3. 롤백 후 3분 대기, 에러율 정상화 확인
+
+<span class="key">### DB 커넥션 풀 고갈 → 슬로우 쿼리가 원인</span>
+1. 현재 활성 커넥션 확인: <span class="val">SELECT count(*) FROM pg_stat_activity;</span>
+2. 5초 이상 실행 중인 쿼리 식별:
+   <span class="val">SELECT pid, now() - pg_stat_activity.query_start AS duration, query
+   FROM pg_stat_activity WHERE state = 'active'
+   ORDER BY duration DESC LIMIT 10;</span>
+3. <span class="pink">주의</span>: 바로 kill 하지 않는다. 결제/정산 쿼리일 수 있음
+4. 쿼리 내용 확인 후 안전한 것만 종료: <span class="val">SELECT pg_cancel_backend({pid});</span>
+
+<span class="key">### 외부 API 타임아웃 → PG사 장애 가능성</span>
+1. PG사 상태 페이지 확인:
+   - A사: <span class="val">https://status.pg-a.co.kr</span>
+   - B사: <span class="val">https://status.pg-b.co.kr</span>
+2. 특정 PG사 장애면 fallback PG로 전환:
+   <span class="val">kubectl set env deployment/api PG_PRIMARY=pg-b</span>
+3. <span class="pink">절대 금지</span>: 두 PG사를 동시에 활성화하면 이중 결제 발생
+
+<span class="hl">## 3단계: 복구 후</span>
+1. #incident 채널에 복구 선언 + 원인 요약
+2. 24시간 이내 포스트모템 작성 (docs/postmortem/ 에 저장)
+3. 재발 방지 이슈 생성
+
+<span class="hl">## 연락처 (장애 등급별)</span>
+- <span class="key">P1 (서비스 전체 다운)</span>: CTO + 인프라 팀 전원
+- <span class="key">P2 (일부 기능 장애)</span>: 해당 팀 리드 + 온콜 담당
+- <span class="key">P3 (성능 저하)</span>: 온콜 담당자
+- 온콜 스케줄: <span class="val">https://opsgenie.internal/schedules</span></code></pre>
+
+    <div class="info-box warn">
+      <strong>이 스킬이 없었다면:</strong> 새벽 3시에 장애가 터졌을 때, 후임 개발자는 Grafana 대시보드 주소도 모르고,
+      "DB 커넥션 풀 고갈일 때 바로 kill 하면 안 된다"는 것도 모르고,
+      PG사 fallback 전환 시 이중 결제 위험이 있다는 것도 모른다.
+      전임자한테 전화하는 게 유일한 방법이 된다.
+    </div>
+  </section>
+
+  <!-- Before / After -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">Before / After</h2>
+      <p class="section-desc">SKILL.md 인수인계 도입 전후 비교</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:2rem 0">
+        <div style="padding:1.5rem;background:rgba(239,68,68,.03);border-right:1px solid var(--border)">
+          <div style="font-size:.75rem;font-weight:700;color:#DC2626;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem">Before — 기존 인수인계</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:2">
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#EF4444">&#x2717;</span> A4 2장짜리 인수인계서</div>
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#EF4444">&#x2717;</span> "OO 시스템 관리" (구체적 절차 없음)</div>
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#EF4444">&#x2717;</span> 1시간 미팅으로 끝</div>
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#EF4444">&#x2717;</span> 2주 뒤 기억 안 남</div>
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#EF4444">&#x2717;</span> 퇴사자한테 카톡으로 질문</div>
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#EF4444">&#x2717;</span> 암묵지 영구 소실</div>
+            <div style="display:flex;align-items:start;gap:.5rem"><span style="color:#EF4444">&#x2717;</span> 후임자 적응까지 6개월</div>
+          </div>
+        </div>
+        <div style="padding:1.5rem;background:rgba(16,185,129,.03)">
+          <div style="font-size:.75rem;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem">After — SKILL.md 인수인계</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:2">
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#10B981">&#x2713;</span> 업무별 독립된 스킬 파일</div>
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#10B981">&#x2713;</span> 구체적인 명령어, URL, 절차 포함</div>
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#10B981">&#x2713;</span> Git에 커밋, 영구 보존</div>
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#10B981">&#x2713;</span> 필요할 때 /명령어로 즉시 호출</div>
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#10B981">&#x2713;</span> AI가 스킬을 읽고 후임자를 도움</div>
+            <div style="display:flex;align-items:start;gap:.5rem;margin-bottom:.4rem"><span style="color:#10B981">&#x2713;</span> "이것만은 하지 말 것"이 시스템에 보존</div>
+            <div style="display:flex;align-items:start;gap:.5rem"><span style="color:#10B981">&#x2713;</span> 후임자 적응 기간 대폭 단축</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 고객 문의 대응 스킬 -->
+  <section class="section">
+    <h2 class="section-title">실전 예제: 고객 문의 대응 가이드</h2>
+    <p class="section-desc">CS 팀 경력 5년차가 퇴사하면서 남긴 스킬 — 신입이 바로 쓸 수 있도록</p>
+
+    <pre><code><span class="comment"># .claude/skills/cs-response/SKILL.md</span>
+<span class="tag">---</span>
+<span class="key">name</span>: <span class="val">cs-response</span>
+<span class="key">description</span>: <span class="val">고객 문의에 대한 응대 가이드. 문의 유형별 답변 템플릿, 에스컬레이션 기준, 톤앤매너 규칙 포함.</span>
+<span class="key">argument-hint</span>: <span class="val">[문의 유형: 환불/배송/결제오류/계정/기타]</span>
+<span class="tag">---</span>
+
+# 고객 문의 응대 가이드
+
+$ARGUMENTS 유형의 문의에 대한 응대 초안을 작성한다.
+
+<span class="hl">## 응대 원칙</span>
+1. <span class="key">3분 이내 초기 응답</span> — "확인 중" 이라도 보낸다
+2. <span class="key">감정 먼저, 해결 다음</span> — "불편을 드려 죄송합니다" 선행
+3. <span class="key">원인과 해결을 함께</span> — "~ 때문에 발생했고, ~ 처리하겠습니다"
+
+<span class="hl">## 문의 유형별 대응</span>
+
+<span class="key">### 환불 요청</span>
+- 결제 후 7일 이내: 전액 환불 가능 (관리자 페이지에서 처리)
+- 7~30일: 팀장 승인 필요 → Slack #cs-approval 에 요청
+- 30일 초과: 원칙적 불가, 특이사항 있으면 팀장에게 에스컬레이션
+- <span class="pink">주의</span>: 환불 승인 전에 "환불해드리겠습니다"라고 먼저 말하지 않는다
+
+<span class="key">### 결제 오류</span>
+- PG사 오류인 경우: "일시적인 결제 시스템 지연" 안내 → 30분 후 재시도 권유
+- 이중 결제: 즉시 관리자 페이지에서 확인 → 중복분 환불 처리 → 팀장 보고
+- 카드사 한도 초과: 고객에게 카드사 직접 문의 안내 (우리가 해결 불가)
+
+<span class="key">### VIP 고객 (월 결제 100만원 이상)</span>
+- 일반 가이드와 동일하지만 <span class="val">응대 속도 1분 이내</span> 목표
+- 환불/보상 재량권이 넓음 (팀장 승인 없이 10만원까지 가능)
+- 담당 AM이 있으면 반드시 참조 (Slack DM으로 상황 공유)
+
+<span class="hl">## 절대 하지 말 것</span>
+- 내부 시스템 URL이나 관리자 페이지 주소를 고객에게 노출
+- "다른 고객도 같은 문제를 겪고 있다"고 말하기 (불안 유발)
+- 개발팀 탓으로 돌리기 ("개발팀 실수로 인해..." 금지)
+- 해결 가능 여부 불확실한 상태에서 약속하기</code></pre>
+  </section>
+
+  <!-- 마케터 GA4 스킬 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">실전 예제: GA4 리포트 생성 가이드</h2>
+      <p class="section-desc">마케팅팀 퇴사자가 남긴 스킬 — "그 대시보드 어디서 보는 건데?" 방지용</p>
+
+      <pre><code><span class="comment"># .claude/skills/ga4-report/SKILL.md</span>
+<span class="tag">---</span>
+<span class="key">name</span>: <span class="val">ga4-report</span>
+<span class="key">description</span>: <span class="val">GA4 주간/월간 마케팅 성과 리포트를 생성한다. 트래픽, 전환율, 캠페인별 ROAS를 정리.</span>
+<span class="key">disable-model-invocation</span>: <span class="val">true</span>
+<span class="key">allowed-tools</span>: <span class="val">Bash(python *) Read</span>
+<span class="tag">---</span>
+
+# GA4 마케팅 리포트
+
+<span class="hl">## 접속 정보</span>
+- GA4 Property: <span class="val">properties/123456789</span>
+- 대시보드: <span class="val">https://analytics.google.com/analytics/web/#/p123456789</span>
+- Looker Studio: <span class="val">https://lookerstudio.google.com/reporting/abcd-1234</span>
+
+<span class="hl">## 주간 리포트 절차</span>
+1. GA4 → 보고서 → 획득 → 트래픽 획득에서 지난 7일 데이터 확인
+2. 핵심 지표 수집:
+   - <span class="key">세션 수</span> / <span class="key">신규 사용자</span> / <span class="key">이탈률</span>
+   - <span class="key">전환율</span> (회원가입, 구매 각각)
+   - <span class="key">채널별 유입</span> (Organic / Paid / Social / Direct)
+3. 전주 대비 증감률 계산
+4. 캠페인별 ROAS 확인: Looker Studio → "Campaign Performance" 탭
+
+<span class="hl">## 리포트 전달</span>
+- 매주 월요일 오전 Slack #marketing-weekly에 공유
+- 형식: "지난주 핵심 지표 → 인사이트 → 이번주 액션 아이템"
+- <span class="pink">주의</span>: 매출 수치는 #marketing-weekly에만 공유 (전사 채널 금지)
+
+<span class="hl">## 자주 하는 실수</span>
+- GA4 필터에서 "내부 트래픽 제외"를 빼먹으면 수치가 부풀려짐
+- UTM 파라미터 없이 집행한 캠페인은 "Direct"로 잡힘 — 반드시 UTM 세팅 확인
+- Looker Studio 데이터가 GA4와 1~2일 지연될 수 있음 — 월요일에 금요일 데이터까지만 신뢰</code></pre>
     </div>
   </section>
 
