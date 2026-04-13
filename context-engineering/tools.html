@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 코딩 도구별 설정 파일 비교 — Context Engineering</title>
+  <meta name="description" content="Cursor Rules, GitHub Copilot Instructions, Windsurf Rules, Aider, Continue, Gemini CLI의 설정 파일 구조와 실전 예제를 비교합니다.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#2563EB;--primary-light:#93C5FD;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--blue:#2563EB;--purple:#7C3AED;--radius:8px}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+    code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:rgba(37,99,235,.08);padding:.15em .4em;border-radius:4px;color:#1E40AF}
+    pre{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:#1E293B;color:#E2E8F0;padding:1.5rem;border-radius:10px;overflow-x:auto;line-height:1.7;margin:1rem 0}
+    pre code{background:none;padding:0;color:inherit;font-size:inherit}
+    .comment{color:#64748B}
+    .key{color:#7DD3FC}
+    .val{color:#86EFAC}
+    .hl{color:#FCD34D}
+    .tag{color:#F9A8D4}
+
+    .nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:#fff}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions a{color:rgba(255,255,255,.5);font-size:.78rem;font-weight:500;padding:.4rem .55rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:#fff;background:rgba(255,255,255,.1);text-decoration:none}
+
+    .hero{text-align:center;padding:4.5rem 2rem 3.5rem;background:linear-gradient(160deg,#0F172A 0%,#1E293B 50%,#334155 100%);color:#fff;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,.15) 0%,transparent 60%);pointer-events:none}
+    .hero-badge{display:inline-block;font-size:.72rem;font-weight:600;padding:.3rem .8rem;border-radius:20px;background:rgba(37,99,235,.3);border:1px solid rgba(37,99,235,.4);color:#93C5FD;margin-bottom:1rem}
+    .hero h1{font-size:2.4rem;font-weight:900;opacity:0;animation:fu .7s ease forwards .2s}
+    .hero .tagline{font-size:1rem;color:rgba(255,255,255,.7);margin-top:.75rem;opacity:0;animation:fu .7s ease forwards .4s}
+    @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .container{max-width:960px;margin:0 auto;padding:0 2rem}
+    .section{padding:3.5rem 0}
+    .section-title{font-size:1.4rem;font-weight:800;margin-bottom:.5rem}
+    .section-desc{font-size:.88rem;color:var(--text2);margin-bottom:2rem;line-height:1.7}
+
+    /* Tool section */
+    .tool-section{scroll-margin-top:60px;padding:3rem 0;border-bottom:1px solid var(--border)}
+    .tool-section:last-of-type{border-bottom:none}
+    .tool-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+    .tool-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;color:#fff;flex-shrink:0}
+    .tool-h2{font-size:1.3rem;font-weight:800}
+    .tool-sub{font-size:.82rem;color:var(--text2);margin-top:.15rem}
+
+    .info-box{padding:1.2rem 1.5rem;border-radius:10px;margin:1.5rem 0;font-size:.85rem;line-height:1.7}
+    .info-box.tip{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);color:#065F46}
+    .info-box.warn{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);color:#92400E}
+    .info-box strong{font-weight:700}
+
+    /* Feature list */
+    .feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+    .feat-item{padding:1rem 1.2rem;border:1px solid var(--border);border-radius:8px}
+    .feat-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);margin-bottom:.3rem}
+    .feat-val{font-size:.88rem;font-weight:600}
+
+    /* Trigger table */
+    .trigger-table{margin:1.5rem 0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .trigger-row{display:grid;grid-template-columns:140px 120px 1fr;border-bottom:1px solid var(--border);font-size:.82rem}
+    .trigger-row:last-child{border-bottom:none}
+    .trigger-row.header{background:var(--surface);font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text2)}
+    .trigger-cell{padding:.65rem 1rem}
+    .trigger-cell:not(:last-child){border-right:1px solid var(--border)}
+
+    /* Quick jump */
+    .quick-jump{display:flex;flex-wrap:wrap;gap:.5rem;margin:2rem 0;justify-content:center}
+    .quick-btn{padding:.5rem 1rem;border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:600;color:var(--text2);transition:all .15s}
+    .quick-btn:hover{border-color:var(--primary);color:var(--primary);background:rgba(37,99,235,.04);text-decoration:none}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .hero h1{font-size:1.6rem}
+      .feat-grid{grid-template-columns:1fr}
+      .trigger-row{grid-template-columns:1fr}
+      .trigger-cell:not(:last-child){border-right:none;border-bottom:1px solid var(--border)}
+      .container{padding:0 1rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Context Engineering
+  </a>
+  <div class="nav-actions">
+    <a href="./">Overview</a>
+    <a href="./claude-md.html">CLAUDE.md</a>
+    <a href="./agents-md.html">AGENTS.md</a>
+    <a href="./tools.html" class="active">도구 비교</a>
+    <a href="./pkm.html">PKM</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">6 Tools Deep Dive</div>
+  <h1>AI 코딩 도구별 설정 파일</h1>
+  <p class="tagline">Cursor, Copilot, Windsurf, Aider, Continue, Gemini CLI —<br>각 도구의 설정 파일 구조와 실전 예제를 상세 비교</p>
+</section>
+
+<main class="container">
+
+  <div class="quick-jump">
+    <a href="#cursor" class="quick-btn">Cursor Rules</a>
+    <a href="#copilot" class="quick-btn">GitHub Copilot</a>
+    <a href="#windsurf" class="quick-btn">Windsurf</a>
+    <a href="#aider" class="quick-btn">Aider</a>
+    <a href="#continue" class="quick-btn">Continue</a>
+    <a href="#gemini" class="quick-btn">Gemini CLI</a>
+  </div>
+
+  <!-- ==================== CURSOR ==================== -->
+  <section class="tool-section" id="cursor">
+    <div class="tool-header">
+      <div class="tool-icon" style="background:linear-gradient(135deg,#2563EB,#3B82F6)">Cu</div>
+      <div>
+        <div class="tool-h2">Cursor Rules</div>
+        <div class="tool-sub">.cursor/rules/*.mdc &middot; 구 .cursorrules</div>
+      </div>
+    </div>
+
+    <p style="font-size:.88rem;color:var(--text2);line-height:1.7;margin-bottom:1.5rem">
+      Cursor IDE의 AI 컨텍스트 시스템. 레거시 <code>.cursorrules</code> (프로젝트 루트 단일 파일)에서
+      모듈화된 <code>.cursor/rules/</code> 디렉토리로 진화했다. 파일별로 트리거 조건을 설정할 수 있어
+      상황에 맞는 규칙만 로드된다.
+    </p>
+
+    <div class="feat-grid">
+      <div class="feat-item">
+        <div class="feat-label">파일 형식</div>
+        <div class="feat-val">MDC (Markdown + Config)</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">위치</div>
+        <div class="feat-val">.cursor/rules/*.mdc</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">Glob 스코핑</div>
+        <div class="feat-val">지원 (Minimatch 패턴)</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">레거시 호환</div>
+        <div class="feat-val">.cursorrules (하위 호환)</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin:1.5rem 0 .75rem">4가지 트리거 타입</h3>
+    <div class="trigger-table">
+      <div class="trigger-row header">
+        <div class="trigger-cell">타입</div>
+        <div class="trigger-cell">동작</div>
+        <div class="trigger-cell">설명</div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-cell" style="font-weight:600">Always On</div>
+        <div class="trigger-cell">항상 적용</div>
+        <div class="trigger-cell">모든 AI 상호작용에 포함. 글로벌 코딩 컨벤션에 적합.</div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-cell" style="font-weight:600">Auto-attached</div>
+        <div class="trigger-cell">Glob 매칭</div>
+        <div class="trigger-cell">열린/편집 중인 파일이 glob 패턴에 매칭되면 자동 활성화.</div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-cell" style="font-weight:600">Model Decision</div>
+        <div class="trigger-cell">AI 판단</div>
+        <div class="trigger-cell">AI가 description을 읽고 관련성을 판단해서 로드 여부를 결정.</div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-cell" style="font-weight:600">Manual</div>
+        <div class="trigger-cell">@mention</div>
+        <div class="trigger-cell">사용자가 @규칙이름으로 명시적으로 호출할 때만 활성화.</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin:1.5rem 0 .75rem">실전 예제</h3>
+    <pre><code><span class="comment"># .cursor/rules/react-components.mdc</span>
+<span class="tag">---</span>
+<span class="key">description</span>: <span class="val">React 컴포넌트 작성 규칙</span>
+<span class="key">globs</span>: <span class="val">src/components/**/*.tsx</span>
+<span class="key">alwaysApply</span>: <span class="val">false</span>
+<span class="tag">---</span>
+
+- 함수형 컴포넌트만 사용 (class 컴포넌트 금지)
+- Props 인터페이스는 컴포넌트 바로 위에 정의
+- named export만 사용 (default export 금지)
+- 스타일은 CSS Modules 사용
+- 컴포넌트 파일명은 PascalCase</code></pre>
+
+    <pre><code><span class="comment"># .cursor/rules/testing.mdc</span>
+<span class="tag">---</span>
+<span class="key">description</span>: <span class="val">테스트 파일 작성 컨벤션</span>
+<span class="key">globs</span>: <span class="val">**/*.test.{ts,tsx}</span>
+<span class="key">alwaysApply</span>: <span class="val">false</span>
+<span class="tag">---</span>
+
+- vitest 사용 (jest 구문 호환)
+- describe > it 구조 (test 대신 it 사용)
+- 모킹은 vi.mock() 사용
+- 테스트 데이터는 fixtures/ 디렉토리에 분리
+- 스냅샷 테스트보다 assertion 우선</code></pre>
+
+    <pre><code><span class="comment"># 디렉토리 구조</span>
+.cursor/
+└── rules/
+    ├── <span class="hl">global.mdc</span>              <span class="comment"># alwaysApply: true</span>
+    ├── <span class="hl">react-components.mdc</span>   <span class="comment"># globs: src/components/**</span>
+    ├── <span class="hl">api-routes.mdc</span>         <span class="comment"># globs: src/api/**</span>
+    ├── <span class="hl">testing.mdc</span>            <span class="comment"># globs: **/*.test.*</span>
+    └── <span class="hl">deployment.mdc</span>         <span class="comment"># Manual (@deployment)</span></code></pre>
+
+    <div class="info-box tip">
+      <strong>마이그레이션 팁:</strong> <code>.cursorrules</code>를 아직 쓰고 있다면 <code>.cursor/rules/global.mdc</code>로 내용을 옮기고 <code>alwaysApply: true</code>를 설정하면 동일하게 동작한다. 이후 도메인별로 파일을 분리하면 된다.
+    </div>
+  </section>
+
+  <!-- ==================== COPILOT ==================== -->
+  <section class="tool-section" id="copilot">
+    <div class="tool-header">
+      <div class="tool-icon" style="background:linear-gradient(135deg,#1F2937,#374151)">GH</div>
+      <div>
+        <div class="tool-h2">GitHub Copilot Instructions</div>
+        <div class="tool-sub">.github/copilot-instructions.md &middot; .github/instructions/*.instructions.md</div>
+      </div>
+    </div>
+
+    <p style="font-size:.88rem;color:var(--text2);line-height:1.7;margin-bottom:1.5rem">
+      GitHub Copilot Chat의 커스텀 지시 시스템. 레포지토리, 파일 경로, 조직 3단계 범위를 지원한다.
+      저장 즉시 반영되며 별도 리로드가 필요없다.
+    </p>
+
+    <div class="feat-grid">
+      <div class="feat-item">
+        <div class="feat-label">레포지토리 레벨</div>
+        <div class="feat-val">.github/copilot-instructions.md</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">스코프 레벨</div>
+        <div class="feat-val">.github/instructions/*.instructions.md</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">조직 레벨</div>
+        <div class="feat-val">GitHub 관리자 설정 (GA 2026.04)</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">특징</div>
+        <div class="feat-val">저장 즉시 반영, 리로드 불필요</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin:1.5rem 0 .75rem">실전 예제</h3>
+    <pre><code><span class="comment"># .github/copilot-instructions.md</span>
+<span class="comment"># 모든 Copilot Chat 대화에 자동으로 추가됨</span>
+
+이 프로젝트는 TypeScript + Next.js 14 App Router를 사용합니다.
+
+<span class="hl">## 코드 스타일</span>
+- 함수형 프로그래밍 스타일을 선호합니다
+- 타입 추론이 가능한 경우 명시적 타입 생략 가능
+- zod를 사용한 런타임 검증을 선호합니다
+- 에러 처리: neverthrow의 Result 패턴 사용
+
+<span class="hl">## 테스트</span>
+- vitest 사용
+- 유닛 테스트보다 통합 테스트 우선
+- MSW로 API 모킹</code></pre>
+
+    <pre><code><span class="comment"># .github/instructions/react.instructions.md</span>
+<span class="comment"># applyTo 패턴으로 특정 파일에만 적용</span>
+<span class="tag">---</span>
+<span class="key">applyTo</span>: <span class="val">"src/components/**/*.tsx"</span>
+<span class="tag">---</span>
+
+React 컴포넌트 규칙:
+- Server Components가 기본
+- 'use client'는 이벤트 핸들러나 hooks가 필요할 때만
+- Suspense 바운더리를 적극 활용</code></pre>
+
+    <pre><code><span class="comment"># 디렉토리 구조</span>
+.github/
+├── <span class="hl">copilot-instructions.md</span>          <span class="comment"># 전체 레포 적용</span>
+└── instructions/
+    ├── <span class="hl">react.instructions.md</span>        <span class="comment"># components/**/*.tsx</span>
+    ├── <span class="hl">api.instructions.md</span>          <span class="comment"># app/api/**</span>
+    └── <span class="hl">testing.instructions.md</span>      <span class="comment"># **/*.test.*</span></code></pre>
+  </section>
+
+  <!-- ==================== WINDSURF ==================== -->
+  <section class="tool-section" id="windsurf">
+    <div class="tool-header">
+      <div class="tool-icon" style="background:linear-gradient(135deg,#0EA5E9,#06B6D4)">W</div>
+      <div>
+        <div class="tool-h2">Windsurf Rules</div>
+        <div class="tool-sub">.windsurf/rules/*.md &middot; Cascade Agent</div>
+      </div>
+    </div>
+
+    <p style="font-size:.88rem;color:var(--text2);line-height:1.7;margin-bottom:1.5rem">
+      Codeium의 Windsurf IDE가 Cascade 에이전트에 주입하는 규칙 시스템.
+      YAML frontmatter로 트리거 조건을 정의하며, Global/Workspace/System 3단계 범위를 지원한다.
+    </p>
+
+    <div class="feat-grid">
+      <div class="feat-item">
+        <div class="feat-label">Global</div>
+        <div class="feat-val">~/.codeium/windsurf/memories/global_rules.md (6K)</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">Workspace</div>
+        <div class="feat-val">.windsurf/rules/*.md (12K/파일)</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">System (Enterprise)</div>
+        <div class="feat-val">OS별 시스템 디렉토리 (읽기 전용)</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">무시 파일</div>
+        <div class="feat-val">.codeiumignore (.gitignore 형식)</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin:1.5rem 0 .75rem">4가지 트리거 타입</h3>
+    <div class="trigger-table">
+      <div class="trigger-row header">
+        <div class="trigger-cell">trigger 값</div>
+        <div class="trigger-cell">동작</div>
+        <div class="trigger-cell">설명</div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-cell"><code>always_on</code></div>
+        <div class="trigger-cell">항상 적용</div>
+        <div class="trigger-cell">모든 메시지의 시스템 프롬프트에 포함.</div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-cell"><code>model_decision</code></div>
+        <div class="trigger-cell">AI 판단</div>
+        <div class="trigger-cell">모델이 description을 보고 관련성을 판단. 관련 있으면 전체 내용 로드.</div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-cell"><code>glob</code></div>
+        <div class="trigger-cell">패턴 매칭</div>
+        <div class="trigger-cell">globs 필드의 패턴과 매칭되는 파일을 편집할 때 자동 활성화.</div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-cell"><code>manual</code></div>
+        <div class="trigger-cell">@mention</div>
+        <div class="trigger-cell">@규칙이름으로 명시적 호출할 때만 활성화.</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin:1.5rem 0 .75rem">실전 예제</h3>
+    <pre><code><span class="comment"># .windsurf/rules/typescript-style.md</span>
+<span class="tag">---</span>
+<span class="key">trigger</span>: <span class="val">always_on</span>
+<span class="tag">---</span>
+
+TypeScript 프로젝트 전역 규칙:
+- strict 모드 사용
+- any 금지, unknown 사용
+- enum 대신 const object + as const
+- 함수 오버로드보다 유니온 타입 선호</code></pre>
+
+    <pre><code><span class="comment"># .windsurf/rules/test-patterns.md</span>
+<span class="tag">---</span>
+<span class="key">trigger</span>: <span class="val">glob</span>
+<span class="key">globs</span>: <span class="val">**/*.test.ts</span>
+<span class="tag">---</span>
+
+테스트 파일 규칙:
+- arrange-act-assert 패턴 사용
+- 테스트 이름은 "should ~" 형식
+- beforeEach에서 공통 setup, afterEach에서 cleanup
+- 비동기 테스트는 반드시 await</code></pre>
+  </section>
+
+  <!-- ==================== AIDER ==================== -->
+  <section class="tool-section" id="aider">
+    <div class="tool-header">
+      <div class="tool-icon" style="background:linear-gradient(135deg,#059669,#10B981)">Ai</div>
+      <div>
+        <div class="tool-h2">Aider</div>
+        <div class="tool-sub">CONVENTIONS.md &middot; .aider.conf.yml</div>
+      </div>
+    </div>
+
+    <p style="font-size:.88rem;color:var(--text2);line-height:1.7;margin-bottom:1.5rem">
+      Aider는 YAML 설정 파일(<code>.aider.conf.yml</code>)과 마크다운 컨벤션 파일(<code>CONVENTIONS.md</code>)을 조합해서 사용한다.
+      CONVENTIONS.md는 <code>--read</code> 옵션으로 읽기 전용으로 로드되어 AI에게 프로젝트 맥락을 제공한다.
+    </p>
+
+    <div class="feat-grid">
+      <div class="feat-item">
+        <div class="feat-label">설정 파일</div>
+        <div class="feat-val">.aider.conf.yml</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">컨벤션 파일</div>
+        <div class="feat-val">CONVENTIONS.md (read-only)</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">로드 순서</div>
+        <div class="feat-val">홈 &rarr; git root &rarr; 현재 디렉토리</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">AGENTS.md 지원</div>
+        <div class="feat-val">지원 (fallback)</div>
+      </div>
+    </div>
+
+    <pre><code><span class="comment"># .aider.conf.yml</span>
+<span class="key">model</span>: <span class="val">claude-sonnet-4-20250514</span>
+<span class="key">read</span>:
+  - <span class="val">CONVENTIONS.md</span>     <span class="comment"># 읽기 전용으로 컨벤션 로드</span>
+  - <span class="val">docs/architecture.md</span>
+<span class="key">auto-commits</span>: <span class="val">true</span>
+<span class="key">lint-cmd</span>: <span class="val">pnpm eslint --fix</span>
+<span class="key">test-cmd</span>: <span class="val">pnpm vitest run</span></code></pre>
+
+    <pre><code><span class="comment"># CONVENTIONS.md</span>
+<span class="comment"># Aider가 --read로 로드하는 코딩 컨벤션</span>
+
+<span class="hl">## 코드 스타일</span>
+- 들여쓰기: 2칸 스페이스
+- 세미콜론 필수
+- trailing comma 사용
+- import 순서: 외부 패키지 → 내부 모듈 → 상대 경로
+
+<span class="hl">## 커밋 메시지</span>
+- Conventional Commits 형식 (feat:, fix:, refactor:)
+- 본문은 한국어로 작성
+- 제목은 50자 이내</code></pre>
+
+    <div class="info-box tip">
+      <strong>Prompt Caching:</strong> Aider는 CONVENTIONS.md를 읽기 전용으로 로드하기 때문에 LLM의 프롬프트 캐시를 활용할 수 있다. 파일이 변경되지 않으면 캐시가 유지되어 비용을 절약한다.
+    </div>
+  </section>
+
+  <!-- ==================== CONTINUE ==================== -->
+  <section class="tool-section" id="continue">
+    <div class="tool-header">
+      <div class="tool-icon" style="background:linear-gradient(135deg,#7C3AED,#8B5CF6)">Co</div>
+      <div>
+        <div class="tool-h2">Continue.dev</div>
+        <div class="tool-sub">.continue/rules/*.md &middot; config.yaml</div>
+      </div>
+    </div>
+
+    <p style="font-size:.88rem;color:var(--text2);line-height:1.7;margin-bottom:1.5rem">
+      Continue.dev는 YAML frontmatter가 있는 마크다운 규칙 파일을 사용한다.
+      Hub, 레퍼런스, 로컬, 글로벌 4단계 우선순위를 지원하며,
+      파일명에 숫자 프리픽스를 붙여 로드 순서를 제어할 수 있다.
+    </p>
+
+    <div class="feat-grid">
+      <div class="feat-item">
+        <div class="feat-label">워크스페이스</div>
+        <div class="feat-val">.continue/rules/*.md</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">글로벌</div>
+        <div class="feat-val">~/.continue/rules/*.md</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">스코핑</div>
+        <div class="feat-val">Glob + Regex 패턴</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">로드 순서</div>
+        <div class="feat-val">숫자 프리픽스 (01-xx.md)</div>
+      </div>
+    </div>
+
+    <pre><code><span class="comment"># .continue/rules/01-general.md</span>
+<span class="tag">---</span>
+<span class="key">name</span>: <span class="val">General Project Rules</span>
+<span class="key">alwaysApply</span>: <span class="val">true</span>
+<span class="tag">---</span>
+
+이 프로젝트는 Python 3.12 + FastAPI를 사용합니다.
+타입 힌트를 항상 사용하고, Pydantic v2 모델을 선호합니다.</code></pre>
+
+    <pre><code><span class="comment"># .continue/rules/02-frontend.md</span>
+<span class="tag">---</span>
+<span class="key">name</span>: <span class="val">Frontend Rules</span>
+<span class="key">globs</span>: <span class="val">["src/frontend/**/*.tsx", "src/frontend/**/*.ts"]</span>
+<span class="key">alwaysApply</span>: <span class="val">false</span>
+<span class="tag">---</span>
+
+React 18 + TypeScript + Tailwind CSS 환경입니다.
+Server Components 기반, 클라이언트 상태는 Zustand 사용.</code></pre>
+
+    <pre><code><span class="comment"># 디렉토리 구조</span>
+.continue/
+├── rules/
+│   ├── <span class="hl">01-general.md</span>      <span class="comment"># 항상 적용 (숫자 순서 1)</span>
+│   ├── <span class="hl">02-frontend.md</span>     <span class="comment"># 프론트엔드 파일에만</span>
+│   ├── <span class="hl">03-backend.md</span>      <span class="comment"># 백엔드 파일에만</span>
+│   └── <span class="hl">04-testing.md</span>      <span class="comment"># 테스트 파일에만</span>
+└── config.yaml            <span class="comment"># Continue 메인 설정</span></code></pre>
+  </section>
+
+  <!-- ==================== GEMINI ==================== -->
+  <section class="tool-section" id="gemini">
+    <div class="tool-header">
+      <div class="tool-icon" style="background:linear-gradient(135deg,#7C3AED,#EC4899)">G</div>
+      <div>
+        <div class="tool-h2">Gemini CLI</div>
+        <div class="tool-sub">GEMINI.md &middot; Google</div>
+      </div>
+    </div>
+
+    <p style="font-size:.88rem;color:var(--text2);line-height:1.7;margin-bottom:1.5rem">
+      Google의 Gemini CLI가 사용하는 설정 파일. CLAUDE.md와 유사한 계층 구조를 가지며,
+      <code>/memory</code> 명령어로 실시간으로 메모리를 관리할 수 있다.
+      <code>@file.md</code> 문법으로 외부 파일을 import할 수 있다.
+    </p>
+
+    <div class="feat-grid">
+      <div class="feat-item">
+        <div class="feat-label">글로벌</div>
+        <div class="feat-val">~/.gemini/GEMINI.md</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">프로젝트</div>
+        <div class="feat-val">./GEMINI.md (+ 상위 디렉토리)</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">메모리 명령</div>
+        <div class="feat-val">/memory show, add, reload</div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-label">무시 파일</div>
+        <div class="feat-val">.geminiignore + .gitignore</div>
+      </div>
+    </div>
+
+    <pre><code><span class="comment"># GEMINI.md</span>
+
+<span class="hl">## 프로젝트</span>
+Go 1.22 + HTMX를 사용하는 웹 애플리케이션.
+SQLite로 데이터를 저장하고, Tailwind CSS로 스타일링.
+
+<span class="hl">## 빌드</span>
+- dev: <span class="val">go run ./cmd/server</span>
+- build: <span class="val">go build -o bin/server ./cmd/server</span>
+- test: <span class="val">go test ./...</span>
+
+<span class="hl">## 컨벤션</span>
+- 에러 처리: errors.Wrap 사용, bare return 금지
+- 구조체 메서드: 포인터 리시버 사용
+- 테스트: testify 사용, 테이블 드리븐 테스트 선호
+
+<span class="key">@docs/api-spec.md</span>    <span class="comment"># 외부 파일 import</span>
+<span class="key">@docs/db-schema.md</span>   <span class="comment"># DB 스키마 문서 참조</span></code></pre>
+
+    <div class="info-box tip">
+      <strong>/memory 활용법:</strong> 대화 중에 <code>/memory add "이 프로젝트는 Docker Compose를 사용한다"</code>로 메모리를 추가하면 GEMINI.md에 자동 기록된다. <code>/memory show</code>로 현재 메모리를 확인할 수 있다.
+    </div>
+  </section>
+
+  <!-- 선택 가이드 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">어떤 설정 파일을 선택할까?</h2>
+      <p class="section-desc">상황별 추천</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+        <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;background:#fff">
+          <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem;color:var(--primary)">도구 하나만 쓴다면</div>
+          <p style="font-size:.82rem;color:var(--text2);line-height:1.7">해당 도구의 전용 설정 파일을 사용하라. Claude Code만 쓴다면 CLAUDE.md, Cursor만 쓴다면 .cursor/rules/를 쓰면 된다. 전용 기능을 온전히 활용할 수 있다.</p>
+        </div>
+        <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;background:#fff">
+          <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem;color:var(--green)">여러 도구를 섞어 쓴다면</div>
+          <p style="font-size:.82rem;color:var(--text2);line-height:1.7">AGENTS.md를 공통 기반으로 두고, 각 도구의 전용 파일에는 해당 도구에서만 가능한 기능(glob 트리거, Skills 등)만 넣어라.</p>
+        </div>
+        <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;background:#fff">
+          <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem;color:var(--amber)">오픈소스 프로젝트라면</div>
+          <p style="font-size:.82rem;color:var(--text2);line-height:1.7">AGENTS.md를 우선 추가하라. 기여자들이 어떤 AI 도구를 쓸지 알 수 없으므로 범용 표준이 최선이다.</p>
+        </div>
+        <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;background:#fff">
+          <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem;color:var(--purple)">기업 환경이라면</div>
+          <p style="font-size:.82rem;color:var(--text2);line-height:1.7">조직 레벨 설정이 있는 도구(Copilot Org Instructions, Windsurf System Rules)를 활용해서 전사 표준을 강제할 수 있다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Context Engineering Guide &mdash; 도구별 비교</p>
+  <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
+    <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
+    <a href="https://x.com/intent/post?text=AI%20%EC%BD%94%EB%94%A9%20%EB%8F%84%EA%B5%AC%EB%B3%84%20%EC%84%A4%EC%A0%95%20%ED%8C%8C%EC%9D%BC%20%EB%B9%84%EA%B5%90%0A%0Ahttps%3A//leaf-kit.github.io/context-engineering/tools.html%0A%0A%40leafeditor%20%23ContextEngineering%20%23CursorRules%20%23Copilot" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+  </div>
+</footer>
+
+</body>
+</html>

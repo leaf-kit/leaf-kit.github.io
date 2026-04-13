@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PKM + Context Engineering — AI 시대의 지식 관리</title>
+  <meta name="description" content="Andrej Karpathy의 Context Engineering 개념과 LLM-Wiki PKM 구축법. AI 시대에 개인 지식을 체계적으로 관리하고 AI 에이전트와 공유하는 방법.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#8B5CF6;--primary-light:#C4B5FD;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--blue:#2563EB;--radius:8px}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+    code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:rgba(139,92,246,.08);padding:.15em .4em;border-radius:4px;color:#6D28D9}
+    pre{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:#1E293B;color:#E2E8F0;padding:1.5rem;border-radius:10px;overflow-x:auto;line-height:1.7;margin:1rem 0}
+    pre code{background:none;padding:0;color:inherit;font-size:inherit}
+    .comment{color:#64748B}
+    .key{color:#7DD3FC}
+    .val{color:#86EFAC}
+    .hl{color:#C4B5FD}
+
+    .nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:#fff}
+    .nav-brand:hover{text-decoration:none}
+    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+    .nav-actions a{color:rgba(255,255,255,.5);font-size:.78rem;font-weight:500;padding:.4rem .55rem;border-radius:5px;white-space:nowrap}
+    .nav-actions a:hover,.nav-actions a.active{color:#fff;background:rgba(255,255,255,.1);text-decoration:none}
+
+    .hero{text-align:center;padding:4.5rem 2rem 3.5rem;background:linear-gradient(160deg,#0F172A 0%,#1E1B4B 40%,#4C1D95 100%);color:#fff;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,.2) 0%,transparent 60%);pointer-events:none}
+    .hero-badge{display:inline-block;font-size:.72rem;font-weight:600;padding:.3rem .8rem;border-radius:20px;background:rgba(139,92,246,.3);border:1px solid rgba(139,92,246,.4);color:#C4B5FD;margin-bottom:1rem}
+    .hero h1{font-size:2.4rem;font-weight:900;opacity:0;animation:fu .7s ease forwards .2s}
+    .hero .tagline{font-size:1rem;color:rgba(255,255,255,.7);margin-top:.75rem;opacity:0;animation:fu .7s ease forwards .4s}
+    @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .container{max-width:900px;margin:0 auto;padding:0 2rem}
+    .section{padding:3.5rem 0}
+    .section-title{font-size:1.4rem;font-weight:800;margin-bottom:.5rem}
+    .section-desc{font-size:.88rem;color:var(--text2);margin-bottom:2rem;line-height:1.7}
+
+    .info-box{padding:1.2rem 1.5rem;border-radius:10px;margin:1.5rem 0;font-size:.85rem;line-height:1.7}
+    .info-box.tip{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);color:#065F46}
+    .info-box.insight{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);color:#4C1D95}
+    .info-box strong{font-weight:700}
+
+    /* Quote */
+    .quote{padding:2rem;border-left:4px solid var(--primary);background:var(--surface);border-radius:0 10px 10px 0;margin:2rem 0}
+    .quote-text{font-size:1rem;font-style:italic;line-height:1.8;color:var(--text)}
+    .quote-author{font-size:.82rem;color:var(--text2);margin-top:.75rem;font-weight:600}
+
+    /* Three layer */
+    .layers{display:flex;flex-direction:column;gap:0;margin:2rem 0}
+    .layer{position:relative;padding:2rem;border:2px solid var(--border);border-radius:16px;margin-bottom:-8px;z-index:1;background:var(--bg)}
+    .layer:nth-child(1){z-index:3;border-color:rgba(139,92,246,.3)}
+    .layer:nth-child(2){z-index:2;border-color:rgba(37,99,235,.3);margin-left:1rem;margin-right:1rem}
+    .layer:nth-child(3){z-index:1;border-color:rgba(16,185,129,.3);margin-left:2rem;margin-right:2rem}
+    .layer-badge{display:inline-block;font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:4px;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.05em}
+    .layer-title{font-size:1.05rem;font-weight:800;margin-bottom:.4rem}
+    .layer-desc{font-size:.82rem;color:var(--text2);line-height:1.7}
+    .layer-files{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.75rem}
+    .layer-file{font-size:.72rem;font-family:'JetBrains Mono',monospace;padding:.2rem .5rem;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text2)}
+
+    /* Comparison cards */
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}
+    .compare-card{padding:1.5rem;border:1px solid var(--border);border-radius:12px}
+    .compare-card h3{font-size:.95rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+    .compare-card p{font-size:.82rem;color:var(--text2);line-height:1.7}
+    .compare-card ul{list-style:none;font-size:.82rem;color:var(--text2);line-height:1.9;margin-top:.5rem}
+    .compare-card li{padding-left:1.2rem;position:relative}
+    .compare-card li::before{content:'\2022';position:absolute;left:0;color:var(--primary);font-weight:700}
+
+    /* Use case */
+    .usecase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin:2rem 0}
+    .usecase{padding:1.5rem;border:1px solid var(--border);border-radius:12px;transition:transform .2s,box-shadow .2s}
+    .usecase:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.06)}
+    .usecase-num{font-size:.72rem;font-weight:700;color:var(--primary);margin-bottom:.3rem}
+    .usecase-title{font-size:.95rem;font-weight:700;margin-bottom:.5rem}
+    .usecase-desc{font-size:.82rem;color:var(--text2);line-height:1.7}
+
+    /* Memex section */
+    .memex{background:linear-gradient(135deg,#1E1B4B,#4C1D95);border-radius:16px;padding:2.5rem;color:#fff;margin:2rem 0}
+    .memex h3{font-size:1.1rem;font-weight:800;margin-bottom:1rem}
+    .memex p{font-size:.88rem;opacity:.85;line-height:1.8;margin-bottom:1rem}
+    .memex-timeline{display:flex;gap:1rem;margin-top:1.5rem;overflow-x:auto;padding-bottom:.5rem}
+    .memex-item{flex:0 0 200px;padding:1.2rem;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:rgba(255,255,255,.05)}
+    .memex-year{font-size:.72rem;opacity:.6;margin-bottom:.3rem}
+    .memex-name{font-size:.88rem;font-weight:700;margin-bottom:.3rem}
+    .memex-detail{font-size:.75rem;opacity:.7;line-height:1.5}
+
+    .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
+
+    @media(max-width:768px){
+      .hero h1{font-size:1.6rem}
+      .compare-grid{grid-template-columns:1fr}
+      .layer:nth-child(2),.layer:nth-child(3){margin-left:0;margin-right:0}
+      .container{padding:0 1rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Context Engineering
+  </a>
+  <div class="nav-actions">
+    <a href="./">Overview</a>
+    <a href="./claude-md.html">CLAUDE.md</a>
+    <a href="./agents-md.html">AGENTS.md</a>
+    <a href="./tools.html">도구 비교</a>
+    <a href="./pkm.html" class="active">PKM</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">Andrej Karpathy &middot; LLM-Wiki &middot; Memex</div>
+  <h1>PKM + Context Engineering</h1>
+  <p class="tagline">AI 시대의 개인 지식 관리.<br>LLM이 당신의 지식을 관리하고, 당신은 LLM에게 맥락을 제공한다.</p>
+</section>
+
+<main class="container">
+
+  <!-- Karpathy's Context Engineering -->
+  <section class="section">
+    <h2 class="section-title">Karpathy의 Context Engineering</h2>
+
+    <div class="quote">
+      <p class="quote-text">
+        "Context Engineering — LLM의 컨텍스트 윈도우에 다음 스텝에 필요한 정보를 정확히 채워넣는 섬세한 기술이자 과학. 사람들은 '프롬프트 엔지니어링'이라고 하면 일상적인 LLM 사용에서의 짧은 질문을 떠올린다. 하지만 산업 수준의 LLM 애플리케이션에서 진짜 중요한 건 전체 컨텍스트 윈도우를 설계하는 것이다."
+      </p>
+      <p class="quote-author">— Andrej Karpathy, 전 Tesla AI Director, OpenAI 공동 창립자</p>
+    </div>
+
+    <p style="font-size:.88rem;color:var(--text2);line-height:1.8;margin-top:1.5rem">
+      Karpathy는 2025년 중반, "프롬프트 엔지니어링"이라는 용어가 산업 현실을 제대로 반영하지 못한다고 지적하며
+      <strong>Context Engineering</strong>이라는 개념을 제시했다. 핵심 비유는 이렇다:
+    </p>
+
+    <div class="compare-grid" style="margin-top:1.5rem">
+      <div class="compare-card" style="border-color:rgba(139,92,246,.3)">
+        <h3>LLM = CPU</h3>
+        <p>추론 능력은 고정된 하드웨어. 모델 자체를 바꿀 수는 없다. 대신 이 CPU에 무엇을 먹이느냐가 결과를 결정한다.</p>
+      </div>
+      <div class="compare-card" style="border-color:rgba(37,99,235,.3)">
+        <h3>Context Window = RAM</h3>
+        <p>작업 메모리. 엔지니어의 역할은 OS처럼 — 이 RAM에 현재 작업에 필요한 코드와 데이터를 정확하게 로드하는 것.</p>
+      </div>
+    </div>
+
+    <div class="info-box insight">
+      <strong>핵심 통찰:</strong> 같은 LLM이라도 컨텍스트 윈도우에 무엇이 들어있느냐에 따라 결과가 극적으로 달라진다. "좋은 프롬프트"보다 "좋은 컨텍스트"가 더 중요하다. CLAUDE.md, AGENTS.md 같은 설정 파일은 이 컨텍스트를 체계적으로 관리하는 도구다.
+    </div>
+  </section>
+
+  <!-- LLM-Wiki PKM -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">LLM-Wiki: AI가 관리하는 개인 위키</h2>
+      <p class="section-desc">
+        기존 PKM(Obsidian, Notion, Roam)의 가장 큰 문제는 <strong>"관리 부담"</strong>이었다.
+        정보를 수집하는 건 쉬운데, 분류하고 연결하고 갱신하는 건 너무 번거롭다.
+        LLM-Wiki는 이 관리 부담을 AI에게 넘긴다.
+      </p>
+
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1.5rem">3계층 아키텍처</h3>
+
+      <div class="layers">
+        <div class="layer">
+          <div class="layer-badge" style="background:rgba(139,92,246,.15);color:#7C3AED">Layer 3 — Schema</div>
+          <div class="layer-title">설정 파일 (Config)</div>
+          <div class="layer-desc">AI에게 위키의 구조를 가르치는 설정. CLAUDE.md, AGENTS.md가 여기에 해당한다. "이 디렉토리 구조를 따르라", "이 형식으로 정리하라" 같은 메타 지시.</div>
+          <div class="layer-files">
+            <span class="layer-file">CLAUDE.md</span>
+            <span class="layer-file">AGENTS.md</span>
+            <span class="layer-file">.cursorrules</span>
+            <span class="layer-file">config.yaml</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div class="layer-badge" style="background:rgba(37,99,235,.15);color:#2563EB">Layer 2 — Wiki</div>
+          <div class="layer-title">AI 생성 정리 문서</div>
+          <div class="layer-desc">AI가 원본 소스를 종합해서 만든 마크다운 문서. 주제별로 정리되고, 상호 링크로 연결된다. 노트의 노트. AI가 자동으로 갱신한다.</div>
+          <div class="layer-files">
+            <span class="layer-file">wiki/react-patterns.md</span>
+            <span class="layer-file">wiki/system-design.md</span>
+            <span class="layer-file">wiki/career-log.md</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div class="layer-badge" style="background:rgba(16,185,129,.15);color:#059669">Layer 1 — Raw Sources</div>
+          <div class="layer-title">원본 소스 (불변)</div>
+          <div class="layer-desc">수집한 원본 그대로. 논문 PDF, 스크린샷, 북마크, 메모. 절대 수정하지 않는다. AI가 참조만 한다.</div>
+          <div class="layer-files">
+            <span class="layer-file">sources/papers/</span>
+            <span class="layer-file">sources/bookmarks/</span>
+            <span class="layer-file">sources/screenshots/</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <strong>기존 PKM과의 결정적 차이:</strong> 기존 PKM에서는 사용자가 직접 노트를 작성하고, 태그를 달고, 링크를 만들어야 했다.
+        LLM-Wiki에서는 사용자가 원본 소스만 던져넣으면 AI가 자동으로 종합, 분류, 연결, 갱신한다. "관리 부담(bookkeeping overhead)"이 거의 제로에 가깝다.
+      </div>
+    </div>
+  </section>
+
+  <!-- 실전 구축 -->
+  <section class="section">
+    <h2 class="section-title">실전: LLM-Wiki PKM 구축법</h2>
+    <p class="section-desc">마크다운 파일 기반으로 AI가 관리하는 개인 위키를 직접 만들어보자</p>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem">디렉토리 구조</h3>
+    <pre><code><span class="comment"># LLM-Wiki PKM 디렉토리 구조</span>
+my-wiki/
+├── <span class="hl">CLAUDE.md</span>              <span class="comment"># AI에게 위키 구조와 규칙을 알려주는 설정</span>
+├── <span class="hl">AGENTS.md</span>              <span class="comment"># 범용 AI 도구용 설정 (선택)</span>
+│
+├── <span class="key">sources/</span>               <span class="comment"># Layer 1: 원본 소스 (수정 금지)</span>
+│   ├── papers/            <span class="comment"># 논문, 보고서 PDF</span>
+│   ├── bookmarks/         <span class="comment"># 웹 북마크, 아티클 스크랩</span>
+│   ├── notes/             <span class="comment"># 빠른 메모, 회의록</span>
+│   └── screenshots/       <span class="comment"># 스크린샷, 다이어그램</span>
+│
+├── <span class="key">wiki/</span>                  <span class="comment"># Layer 2: AI 생성 정리 문서</span>
+│   ├── tech/              <span class="comment"># 기술 관련</span>
+│   │   ├── react.md
+│   │   ├── system-design.md
+│   │   └── devops.md
+│   ├── career/            <span class="comment"># 커리어 관련</span>
+│   │   ├── skills-map.md
+│   │   └── growth-log.md
+│   └── _index.md          <span class="comment"># 전체 위키 인덱스</span>
+│
+└── <span class="key">.claude/</span>               <span class="comment"># Layer 3: AI 설정</span>
+    └── skills/
+        ├── add-source.md  <span class="comment"># 새 소스 추가 스킬</span>
+        ├── update-wiki.md <span class="comment"># 위키 갱신 스킬</span>
+        └── search.md      <span class="comment"># 위키 검색 스킬</span></code></pre>
+
+    <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">CLAUDE.md 설정 예시</h3>
+    <pre><code><span class="comment"># CLAUDE.md — LLM-Wiki PKM 설정</span>
+
+<span class="hl">## 이 프로젝트에 대해</span>
+이것은 개인 지식 관리 위키다. 3계층 구조로 운영된다:
+- sources/: 원본 소스. 절대 수정하지 않는다.
+- wiki/: AI가 생성하고 관리하는 정리 문서.
+- .claude/skills/: 위키 운영 자동화 스킬.
+
+<span class="hl">## 위키 문서 규칙</span>
+- wiki/ 아래의 모든 .md 파일은 YAML frontmatter를 포함해야 한다
+- frontmatter에는 title, tags[], updated, sources[] 필드 필수
+- 문서 간 상호 참조는 [[파일명]] 형식 (Obsidian 호환)
+- 매 업데이트 시 _index.md를 함께 갱신한다
+
+<span class="hl">## 소스 추가 규칙</span>
+- 새 소스는 반드시 sources/ 아래에 먼저 저장
+- 소스를 저장한 뒤 관련 wiki/ 문서를 갱신하거나 새로 생성
+- 기존 wiki 문서와 관련 있으면 해당 문서에 병합, 새 주제면 새 파일 생성
+
+<span class="hl">## IMPORTANT</span>
+- sources/ 디렉토리의 파일은 절대 수정하지 않는다
+- wiki/ 문서의 updated 날짜를 항상 갱신한다
+- 태그는 최대 5개, 소문자 kebab-case</code></pre>
+
+    <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">위키 문서 예시</h3>
+    <pre><code><span class="comment"># wiki/tech/react.md</span>
+<span class="hl">---</span>
+<span class="key">title</span>: <span class="val">React 패턴과 베스트 프랙티스</span>
+<span class="key">tags</span>: [<span class="val">react</span>, <span class="val">frontend</span>, <span class="val">patterns</span>]
+<span class="key">updated</span>: <span class="val">2026-04-13</span>
+<span class="key">sources</span>:
+  - <span class="val">sources/bookmarks/react-server-components.md</span>
+  - <span class="val">sources/papers/react-19-changes.pdf</span>
+  - <span class="val">sources/notes/2026-03-meeting-frontend.md</span>
+<span class="hl">---</span>
+
+## Server Components
+
+React 19부터 Server Components가 기본이다.
+클라이언트 번들에 포함되지 않으므로...
+
+<span class="comment">관련: [[system-design]], [[devops]]</span></code></pre>
+  </section>
+
+  <!-- Karpathy 활용 사례 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">활용 시나리오</h2>
+      <p class="section-desc">LLM-Wiki PKM을 실제로 어떻게 쓸 수 있는가</p>
+
+      <div class="usecase-grid">
+        <div class="usecase">
+          <div class="usecase-num">Scenario 01</div>
+          <div class="usecase-title">기술 학습 아카이브</div>
+          <div class="usecase-desc">
+            새 기술을 공부할 때 블로그 글, 논문, 튜토리얼을 sources/에 던져넣는다.
+            AI가 자동으로 핵심을 추출하고, 기존 wiki/ 문서와 연결하고, 자신만의 레퍼런스를 만들어준다.
+          </div>
+        </div>
+        <div class="usecase">
+          <div class="usecase-num">Scenario 02</div>
+          <div class="usecase-title">프로젝트 의사결정 기록</div>
+          <div class="usecase-desc">
+            "왜 이 기술을 선택했는가"를 기록한다. 6개월 뒤 돌아왔을 때 AI가 맥락을 복원해준다.
+            CLAUDE.md의 아키텍처 결정을 위키와 연동하면 프로젝트와 개인 지식이 동기화된다.
+          </div>
+        </div>
+        <div class="usecase">
+          <div class="usecase-num">Scenario 03</div>
+          <div class="usecase-title">커리어 성장 추적</div>
+          <div class="usecase-desc">
+            학습한 스킬, 해결한 문제, 받은 피드백을 기록한다. AI가 스킬맵을 자동 생성하고,
+            부족한 영역을 파악하고, 다음 학습 방향을 제안한다.
+          </div>
+        </div>
+        <div class="usecase">
+          <div class="usecase-num">Scenario 04</div>
+          <div class="usecase-title">팀 온보딩 문서</div>
+          <div class="usecase-desc">
+            팀의 컨벤션, 아키텍처, FAQ를 위키로 관리한다. 새 팀원이 AI에게 "우리 팀의 배포 프로세스 알려줘"라고
+            물으면 위키를 기반으로 정확하게 답변한다.
+          </div>
+        </div>
+        <div class="usecase">
+          <div class="usecase-num">Scenario 05</div>
+          <div class="usecase-title">독서 노트 & 인사이트 축적</div>
+          <div class="usecase-desc">
+            읽은 책의 핵심 내용과 인사이트를 sources/에 저장한다. AI가 책 간의 공통 주제를 발견하고,
+            이전에 읽은 책과 새 책의 연결고리를 만들어준다.
+          </div>
+        </div>
+        <div class="usecase">
+          <div class="usecase-num">Scenario 06</div>
+          <div class="usecase-title">코드 리뷰 패턴 학습</div>
+          <div class="usecase-desc">
+            받은 코드 리뷰 피드백을 기록한다. AI가 반복되는 패턴을 파악하고,
+            자주 지적받는 영역을 정리해서 CLAUDE.md에 반영할 규칙을 제안한다.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Memex 역사 -->
+  <section class="section">
+    <h2 class="section-title">PKM의 계보: Memex에서 LLM-Wiki까지</h2>
+    <p class="section-desc">개인 지식 관리의 꿈은 80년 전에 시작되었다</p>
+
+    <div class="memex">
+      <h3>지식 관리 도구의 진화</h3>
+      <p>
+        1945년 Vannevar Bush가 "As We May Think"에서 Memex를 구상했을 때부터,
+        개인이 자신의 지식을 체계적으로 관리하고 연결하는 것은 오래된 꿈이었다.
+        LLM의 등장으로 이 꿈이 마침내 현실이 되고 있다.
+      </p>
+
+      <div class="memex-timeline">
+        <div class="memex-item">
+          <div class="memex-year">1945</div>
+          <div class="memex-name">Memex</div>
+          <div class="memex-detail">Vannevar Bush의 구상. 개인 지식 저장소의 원형. 문서 간 연결(trail)이 핵심 아이디어.</div>
+        </div>
+        <div class="memex-item">
+          <div class="memex-year">1960s</div>
+          <div class="memex-name">Hypertext</div>
+          <div class="memex-detail">Ted Nelson의 Xanadu. 문서 간 양방향 링크. 웹(WWW)의 사상적 기반이 된다.</div>
+        </div>
+        <div class="memex-item">
+          <div class="memex-year">2004</div>
+          <div class="memex-name">Wiki</div>
+          <div class="memex-detail">Wikipedia, 개인 위키(TiddlyWiki). 누구나 편집 가능한 공유 지식. 관리 부담이 크다.</div>
+        </div>
+        <div class="memex-item">
+          <div class="memex-year">2020</div>
+          <div class="memex-name">Networked Notes</div>
+          <div class="memex-detail">Roam Research, Obsidian, Logseq. 양방향 링크와 그래프 뷰. PKM 부흥기.</div>
+        </div>
+        <div class="memex-item">
+          <div class="memex-year">2025</div>
+          <div class="memex-name">LLM-Wiki</div>
+          <div class="memex-detail">AI가 관리하는 위키. 사용자는 소스만 던져넣으면 AI가 종합, 분류, 연결, 갱신한다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Context Engineering + PKM 교차점 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:900px;margin:0 auto">
+      <h2 class="section-title">Context Engineering과 PKM의 교차점</h2>
+      <p class="section-desc">프로젝트 설정 파일과 개인 지식 관리는 사실 같은 문제의 다른 면이다</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h3>프로젝트 Context (코딩)</h3>
+          <ul>
+            <li>CLAUDE.md, AGENTS.md = 프로젝트 규칙</li>
+            <li>AI가 코드를 이해하는 데 필요한 맥락</li>
+            <li>팀이 공유하는 컨벤션과 결정</li>
+            <li>코드베이스에 종속된 정보</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <h3>개인 Context (PKM)</h3>
+          <ul>
+            <li>CLAUDE.md = 개인 위키의 스키마</li>
+            <li>AI가 나를 이해하는 데 필요한 맥락</li>
+            <li>개인의 경험, 인사이트, 학습 기록</li>
+            <li>프로젝트를 넘어 축적되는 정보</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box insight">
+        <strong>결국 같은 원리:</strong> Context Engineering의 핵심은 "AI에게 필요한 정보를 적재적소에 전달하는 것"이다.
+        프로젝트에서는 CLAUDE.md가, 개인 지식에서는 위키의 스키마가 이 역할을 한다.
+        둘 다 마크다운이고, 둘 다 AI가 읽고, 둘 다 사람이 관리한다. 형식이 통일되면 시너지가 생긴다.
+      </div>
+    </div>
+  </section>
+
+  <!-- 시작하기 -->
+  <section class="section">
+    <h2 class="section-title">지금 바로 시작하기</h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:2rem 0">
+      <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:.75rem">1</div>
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:.5rem">빈 디렉토리 만들기</div>
+        <div style="font-size:.8rem;color:var(--text2);line-height:1.6"><code>sources/</code>, <code>wiki/</code> 두 폴더만 만들면 된다. Git으로 버전 관리.</div>
+      </div>
+      <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:.75rem">2</div>
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:.5rem">CLAUDE.md 작성</div>
+        <div style="font-size:.8rem;color:var(--text2);line-height:1.6">위키 구조와 규칙을 AI에게 알려주는 설정 파일. 위의 예시를 참고.</div>
+      </div>
+      <div style="padding:1.5rem;border:1px solid var(--border);border-radius:12px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:.75rem">3</div>
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:.5rem">소스 던져넣기</div>
+        <div style="font-size:.8rem;color:var(--text2);line-height:1.6">관심 있는 글, 메모, PDF를 <code>sources/</code>에 넣고 AI에게 정리를 요청.</div>
+      </div>
+    </div>
+
+    <div class="quote">
+      <p class="quote-text">
+        "Bookkeeping overhead(관리 부담)가 개인 위키를 포기하게 만드는 가장 큰 원인이다. LLM은 이 부담을 거의 제로로 만든다."
+      </p>
+      <p class="quote-author">— LLM-Wiki 개념 제안자</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Context Engineering Guide &mdash; PKM</p>
+  <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
+    <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
+    <a href="https://x.com/intent/post?text=PKM%20%2B%20Context%20Engineering%20%E2%80%94%20AI%20%EC%8B%9C%EB%8C%80%EC%9D%98%20%EC%A7%80%EC%8B%9D%20%EA%B4%80%EB%A6%AC%0A%0Ahttps%3A//leaf-kit.github.io/context-engineering/pkm.html%0A%0A%40leafeditor%20%23PKM%20%23ContextEngineering%20%23LLMWiki" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+  </div>
+</footer>
+
+</body>
+</html>
