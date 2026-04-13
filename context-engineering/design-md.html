@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DESIGN.md 완전 가이드 — Context Engineering</title>
-  <meta name="description" content="프로젝트 디자인 문서(DESIGN.md) 작성법. Google의 Design Doc 전통부터 AI 에이전트를 위한 아키텍처 컨텍스트 전달까지.">
+  <meta name="description" content="Google Stitch가 도입한 DESIGN.md 가이드. AI 코딩 에이전트가 읽는 UI 디자인 시스템 마크다운. 9개 표준 섹션, 실전 예제, 60+ 브랜드 디자인 시스템.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#0EA5E9;--primary-light:#7DD3FC;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--blue:#2563EB;--radius:8px}
+    :root{--bg:#fff;--surface:#F9FAFB;--text:#111827;--text2:#6B7280;--primary:#0EA5E9;--primary-light:#7DD3FC;--border:#E5E7EB;--red:#EF4444;--amber:#F59E0B;--green:#10B981;--blue:#2563EB;--purple:#7C3AED;--radius:8px}
     html{font-size:16px;scroll-behavior:smooth}
     body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
     a{color:var(--primary);text-decoration:none}
@@ -21,6 +21,7 @@
     .val{color:#86EFAC}
     .hl{color:#7DD3FC}
     .tag{color:#FCD34D}
+    .pink{color:#F9A8D4}
 
     .nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
     .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:#fff}
@@ -33,10 +34,10 @@
     .hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(14,165,233,.2) 0%,transparent 60%);pointer-events:none}
     .hero-badge{display:inline-block;font-size:.72rem;font-weight:600;padding:.3rem .8rem;border-radius:20px;background:rgba(14,165,233,.3);border:1px solid rgba(14,165,233,.4);color:#7DD3FC;margin-bottom:1rem}
     .hero h1{font-size:2.4rem;font-weight:900;opacity:0;animation:fu .7s ease forwards .2s}
-    .hero .tagline{font-size:1rem;color:rgba(255,255,255,.7);margin-top:.75rem;opacity:0;animation:fu .7s ease forwards .4s}
+    .hero .tagline{font-size:1rem;color:rgba(255,255,255,.7);margin-top:.75rem;opacity:0;animation:fu .7s ease forwards .4s;max-width:600px;margin-left:auto;margin-right:auto}
     @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-    .container{max-width:900px;margin:0 auto;padding:0 2rem}
+    .container{max-width:960px;margin:0 auto;padding:0 2rem}
     .section{padding:3.5rem 0}
     .section-title{font-size:1.4rem;font-weight:800;margin-bottom:.5rem}
     .section-desc{font-size:.88rem;color:var(--text2);margin-bottom:2rem;line-height:1.7}
@@ -47,50 +48,71 @@
     .info-box.key{background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.2);color:#0369A1}
     .info-box strong{font-weight:700}
 
-    /* Quote */
-    .quote{padding:2rem;border-left:4px solid var(--primary);background:var(--surface);border-radius:0 10px 10px 0;margin:2rem 0}
-    .quote-text{font-size:1rem;font-style:italic;line-height:1.8;color:var(--text)}
-    .quote-author{font-size:.82rem;color:var(--text2);margin-top:.75rem;font-weight:600}
-
-    /* Roles grid */
+    /* Roles comparison */
     .roles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
     .role-card{padding:1.5rem;border:1px solid var(--border);border-radius:12px;text-align:center;transition:transform .2s}
     .role-card:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.05)}
+    .role-card.featured{border-color:rgba(14,165,233,.3);background:rgba(14,165,233,.02)}
     .role-icon{font-size:2rem;margin-bottom:.75rem}
-    .role-title{font-size:.9rem;font-weight:700;margin-bottom:.4rem}
+    .role-title{font-size:.9rem;font-weight:700;margin-bottom:.2rem}
     .role-file{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);margin-bottom:.5rem}
     .role-desc{font-size:.78rem;color:var(--text2);line-height:1.6}
 
-    /* Sections list */
-    .doc-sections{margin:2rem 0}
-    .doc-section{display:flex;gap:1rem;padding:1rem 1.2rem;border:1px solid var(--border);border-radius:10px;margin-bottom:.75rem;transition:transform .15s}
-    .doc-section:hover{transform:translateX(4px)}
-    .doc-num{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0EA5E9,#0369A1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0}
-    .doc-section-body{flex:1}
-    .doc-section-title{font-size:.9rem;font-weight:700;margin-bottom:.2rem}
-    .doc-section-desc{font-size:.8rem;color:var(--text2);line-height:1.6}
+    /* 9 sections */
+    .nine-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+    .nine-card{padding:1.2rem;border:1px solid var(--border);border-radius:10px;transition:transform .15s}
+    .nine-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.05)}
+    .nine-num{font-size:.68rem;font-weight:800;color:var(--primary);margin-bottom:.3rem}
+    .nine-title{font-size:.88rem;font-weight:700;margin-bottom:.3rem}
+    .nine-desc{font-size:.78rem;color:var(--text2);line-height:1.6}
 
-    /* AI integration */
+    /* Brand grid */
+    .brand-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.5rem;margin:1.5rem 0}
+    .brand-tag{padding:.5rem .6rem;border:1px solid var(--border);border-radius:8px;text-align:center;font-size:.75rem;font-weight:600;color:var(--text2);transition:all .15s}
+    .brand-tag:hover{border-color:var(--primary);color:var(--primary);background:rgba(14,165,233,.03)}
+
+    /* Pipeline */
+    .pipeline{display:flex;gap:0;margin:2rem 0;overflow-x:auto}
+    .pipe-step{flex:1;min-width:140px;padding:1.2rem;text-align:center;position:relative;border:1px solid var(--border);background:var(--bg)}
+    .pipe-step:first-child{border-radius:10px 0 0 10px}
+    .pipe-step:last-child{border-radius:0 10px 10px 0}
+    .pipe-step:not(:last-child){border-right:none}
+    .pipe-step:not(:last-child)::after{content:'\25B6';position:absolute;right:-8px;top:50%;transform:translateY(-50%);color:var(--primary);font-size:.7rem;z-index:1;background:var(--bg);padding:2px}
+    .pipe-num{font-size:.65rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.05em}
+    .pipe-title{font-size:.82rem;font-weight:700;margin:.3rem 0}
+    .pipe-desc{font-size:.72rem;color:var(--text2);line-height:1.4}
+
+    /* Ecosystem */
+    .eco-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:2rem 0}
+    .eco-card{padding:1.2rem;border:1px solid var(--border);border-radius:10px}
+    .eco-card h3{font-size:.88rem;font-weight:700;margin-bottom:.3rem}
+    .eco-card .url{font-size:.72rem;font-family:'JetBrains Mono',monospace;color:var(--text2);margin-bottom:.4rem}
+    .eco-card p{font-size:.78rem;color:var(--text2);line-height:1.6}
+
+    /* AI tool integration */
     .ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}
     .ai-card{padding:1.5rem;border:1px solid var(--border);border-radius:12px}
-    .ai-card h3{font-size:.9rem;font-weight:700;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+    .ai-card h3{font-size:.9rem;font-weight:700;margin-bottom:.5rem}
     .ai-card p{font-size:.82rem;color:var(--text2);line-height:1.7}
-    .ai-card code{font-size:.75rem}
 
-    /* ADR */
-    .adr-box{background:linear-gradient(135deg,#0C4A6E,#075985);border-radius:16px;padding:2.5rem;color:#fff;margin:2rem 0}
-    .adr-box h3{font-size:1.1rem;font-weight:800;margin-bottom:1rem}
-    .adr-box p{font-size:.88rem;opacity:.85;line-height:1.8;margin-bottom:1rem}
-    .adr-list{list-style:none;font-size:.85rem;line-height:2}
-    .adr-list li{padding-left:1.5rem;position:relative}
-    .adr-list li::before{content:'\25C6';position:absolute;left:0;color:#7DD3FC}
+    /* Stats */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:2rem 0}
+    .stat-card{text-align:center;padding:1.5rem 1rem;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+    .stat-num{font-size:2rem;font-weight:900;font-variant-numeric:tabular-nums}
+    .stat-label{font-size:.75rem;color:var(--text2);margin-top:.2rem}
 
     .footer{text-align:center;padding:1.5rem;margin-top:2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.78rem}
 
     @media(max-width:768px){
       .hero h1{font-size:1.6rem}
       .roles-grid{grid-template-columns:1fr}
-      .ai-grid{grid-template-columns:1fr}
+      .nine-grid{grid-template-columns:1fr}
+      .pipeline{flex-direction:column}
+      .pipe-step{border-radius:0!important}
+      .pipe-step:not(:last-child){border-right:1px solid var(--border);border-bottom:none}
+      .pipe-step:not(:last-child)::after{display:none}
+      .eco-grid,.ai-grid{grid-template-columns:1fr}
+      .stats-row{grid-template-columns:repeat(2,1fr)}
       .container{padding:0 1rem}
     }
   </style>
@@ -114,9 +136,9 @@
 </nav>
 
 <section class="hero">
-  <div class="hero-badge">Architecture &middot; Design Document &middot; ADR</div>
+  <div class="hero-badge">Google Stitch &middot; UI Design System &middot; 47K+ Stars</div>
   <h1>DESIGN.md 완전 가이드</h1>
-  <p class="tagline">코드가 "무엇"을 하는지는 읽으면 안다. 하지만 "왜" 그렇게 만들었는지는<br>디자인 문서에 적어두지 않으면 사라진다.</p>
+  <p class="tagline">Figma 없이 마크다운 하나로 AI 에이전트에게 디자인 시스템을 전달한다.<br>Google Stitch가 도입하고 60+ 브랜드가 채택한 새로운 표준.</p>
 </section>
 
 <main class="container">
@@ -125,321 +147,454 @@
   <section class="section">
     <h2 class="section-title">DESIGN.md란?</h2>
     <p class="section-desc">
-      <code>DESIGN.md</code>는 프로젝트의 아키텍처, 설계 결정, 그 근거를 기록하는 마크다운 문서다.
-      Google이 오래전부터 실천해온 "코딩 전에 디자인 문서를 먼저 쓴다"는 문화에서 유래하며,
-      AI 코딩 도구의 등장으로 그 가치가 더 커졌다.
+      <code>DESIGN.md</code>는 Google Stitch가 도입한 개념으로,
+      <strong>AI 코딩 에이전트가 읽고 일관된 UI를 생성하기 위한 텍스트 기반 디자인 시스템 문서</strong>다.
+      Figma 파일이나 JSON 스키마 없이, 마크다운 파일 하나를 프로젝트 루트에 두면
+      AI가 즉시 색상, 타이포그래피, 컴포넌트 스타일을 인식한다.
     </p>
 
-    <div class="quote">
-      <p class="quote-text">
-        "디자인 문서의 가장 큰 가치는 코드를 작성하기 전에 생각을 강제한다는 점이다.
-        두 번째 가치는 결정의 근거를 기록해서 6개월 뒤에도 '왜?'에 답할 수 있다는 것이다."
-      </p>
-      <p class="quote-author">— Software Engineering at Google (O'Reilly, 2020)</p>
+    <div class="info-box key">
+      <strong>핵심 아이디어:</strong> LLM은 마크다운의 구조를 네이티브로 이해한다 — 헤딩은 계층, 볼드는 강조, 리스트는 열거.
+      디자인 토큰을 JSON이나 Figma로 관리하는 대신, AI가 가장 잘 읽는 형식인 마크다운으로 디자인 시스템 전체를 표현하는 것이다.
     </div>
 
-    <div class="info-box key">
-      <strong>AI 에이전트 시대의 DESIGN.md:</strong> Claude Code, Cursor, Copilot 같은 AI 에이전트는 코드를 읽어서 "무엇"은 파악할 수 있다. 하지만 "왜 이 구조인가", "무엇을 하면 안 되는가"는 코드에서 유추하기 어렵다. DESIGN.md가 이 간극을 메운다.
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--primary)">47K+</div>
+        <div class="stat-label">GitHub Stars</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--green)">66+</div>
+        <div class="stat-label">브랜드 디자인 시스템</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--amber)">9</div>
+        <div class="stat-label">표준 섹션</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--purple)">3종</div>
+        <div class="stat-label">세트 (md + preview)</div>
+      </div>
     </div>
   </section>
 
-  <!-- 프로젝트 문서의 역할 분담 -->
+  <!-- 역할 분담 -->
   <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
-    <div style="max-width:900px;margin:0 auto">
-      <h2 class="section-title">프로젝트 문서의 역할 분담</h2>
-      <p class="section-desc">각 마크다운 파일이 담당하는 영역이 다르다. 겹치지 않게 분리하면 효과적이다.</p>
+    <div style="max-width:960px;margin:0 auto">
+      <h2 class="section-title">마크다운 파일의 역할 분담</h2>
+      <p class="section-desc">AGENTS.md / CLAUDE.md가 AI의 "행동"을 정의한다면, DESIGN.md는 "외관"을 정의한다.</p>
 
       <div class="roles-grid">
         <div class="role-card">
-          <div class="role-icon">&#x1F4D6;</div>
-          <div class="role-title">README.md</div>
-          <div class="role-file">How to use</div>
-          <div class="role-desc">프로젝트 소개, 설치 방법, 빠른 시작 가이드. 외부 사용자와 기여자를 위한 입문 문서.</div>
+          <div class="role-icon">&#x2699;</div>
+          <div class="role-title">CLAUDE.md / AGENTS.md</div>
+          <div class="role-file">How to build</div>
+          <div class="role-desc">빌드 명령어, 코드 스타일, 아키텍처 규칙. AI 에이전트의 <strong>행동</strong>을 지시한다.</div>
         </div>
-        <div class="role-card" style="border-color:rgba(14,165,233,.3)">
-          <div class="role-icon">&#x1F3D7;</div>
+        <div class="role-card featured">
+          <div class="role-icon">&#x1F3A8;</div>
           <div class="role-title">DESIGN.md</div>
-          <div class="role-file">Why it's built this way</div>
-          <div class="role-desc">아키텍처, 설계 결정, 근거, 트레이드오프. 시스템이 <strong>왜</strong> 이 구조인지 설명.</div>
+          <div class="role-file">How it should look</div>
+          <div class="role-desc">색상, 타이포그래피, 컴포넌트 스타일. AI 에이전트가 만드는 UI의 <strong>외관</strong>을 정의한다.</div>
         </div>
         <div class="role-card">
-          <div class="role-icon">&#x2699;</div>
-          <div class="role-title">CLAUDE.md</div>
-          <div class="role-file">How to work here</div>
-          <div class="role-desc">AI 에이전트를 위한 운영 지시. 빌드 명령어, 코드 스타일, 테스트 방법.</div>
+          <div class="role-icon">&#x1F4CB;</div>
+          <div class="role-title">Skills (.claude/skills/)</div>
+          <div class="role-file">How to do specific tasks</div>
+          <div class="role-desc">배포, 리뷰, 마이그레이션 등 특정 <strong>워크플로우</strong>의 절차를 정의한다.</div>
         </div>
-      </div>
-
-      <div class="info-box tip">
-        <strong>보완 관계:</strong> CLAUDE.md가 "어떻게 작업하라"를 말한다면, DESIGN.md는 "왜 이렇게 만들었는가"를 말한다. CLAUDE.md에서 <code>@DESIGN.md</code>로 참조하면 AI 에이전트가 아키텍처 맥락까지 파악할 수 있다.
       </div>
     </div>
   </section>
 
-  <!-- 핵심 섹션 구조 -->
+  <!-- 9개 표준 섹션 -->
   <section class="section">
-    <h2 class="section-title">DESIGN.md 핵심 섹션</h2>
-    <p class="section-desc">Google의 디자인 문서 전통을 기반으로, AI 에이전트 시대에 맞게 구성한 섹션 가이드</p>
+    <h2 class="section-title">9개 표준 섹션</h2>
+    <p class="section-desc">awesome-design-md 커뮤니티가 표준화한 DESIGN.md의 9개 섹션</p>
 
-    <div class="doc-sections">
-      <div class="doc-section">
-        <div class="doc-num">1</div>
-        <div class="doc-section-body">
-          <div class="doc-section-title">Overview</div>
-          <div class="doc-section-desc">시스템이 무엇이고 왜 존재하는지 한 문단으로 요약. 처음 읽는 사람이 10초 안에 전체 그림을 잡을 수 있어야 한다.</div>
-        </div>
+    <div class="nine-grid">
+      <div class="nine-card">
+        <div class="nine-num">Section 1</div>
+        <div class="nine-title">Visual Theme & Atmosphere</div>
+        <div class="nine-desc">디자인 철학, 분위기, 밀도, 미학 원칙. "세련된 미니멀리스트 공간", "가볍지만 견고한" 같은 감성 언어로 표현.</div>
       </div>
-      <div class="doc-section">
-        <div class="doc-num">2</div>
-        <div class="doc-section-body">
-          <div class="doc-section-title">Goals & Non-Goals</div>
-          <div class="doc-section-desc">이 시스템이 달성하려는 것과 <strong>명시적으로 하지 않으려는 것</strong>. Non-Goals가 특히 중요하다 — AI 에이전트가 범위를 벗어나는 변경을 제안하는 걸 막아준다.</div>
-        </div>
+      <div class="nine-card">
+        <div class="nine-num">Section 2</div>
+        <div class="nine-title">Color Palette & Roles</div>
+        <div class="nine-desc">모든 색상을 서술적 이름 + Hex 코드 + 기능적 역할로 기록. Foundation, Accent, Typography, Functional 카테고리로 분류.</div>
       </div>
-      <div class="doc-section">
-        <div class="doc-num">3</div>
-        <div class="doc-section-body">
-          <div class="doc-section-title">Architecture</div>
-          <div class="doc-section-desc">주요 컴포넌트와 그 관계. ASCII 다이어그램 권장 — AI 에이전트가 이미지를 읽을 수 없으므로 텍스트 기반이 유리하다.</div>
-        </div>
+      <div class="nine-card">
+        <div class="nine-num">Section 3</div>
+        <div class="nine-title">Typography Rules</div>
+        <div class="nine-desc">폰트 패밀리, H1~Small 텍스트까지 전체 계층, font-weight, letter-spacing, line-height 정의.</div>
       </div>
-      <div class="doc-section">
-        <div class="doc-num">4</div>
-        <div class="doc-section-body">
-          <div class="doc-section-title">Design Decisions</div>
-          <div class="doc-section-desc">핵심 설계 결정, 고려한 대안, 선택 이유. 각 결정마다 Context → Decision → Alternatives → Rationale 구조로 기록한다.</div>
-        </div>
+      <div class="nine-card">
+        <div class="nine-num">Section 4</div>
+        <div class="nine-title">Component Stylings</div>
+        <div class="nine-desc">버튼, 카드, 네비게이션, 인풋/폼의 상세 스타일. corner radius, shadow, hover/focus/active 상태까지.</div>
       </div>
-      <div class="doc-section">
-        <div class="doc-num">5</div>
-        <div class="doc-section-body">
-          <div class="doc-section-title">Data Flow</div>
-          <div class="doc-section-desc">데이터가 시스템을 통과하는 경로. 입력 → 처리 → 저장 → 출력의 흐름을 단계별로 서술한다.</div>
-        </div>
+      <div class="nine-card">
+        <div class="nine-num">Section 5</div>
+        <div class="nine-title">Layout Principles</div>
+        <div class="nine-desc">그리드 시스템, 최대 너비, 컬럼 수, 여백 전략(기본 단위, 수직 리듬), 정렬 규칙.</div>
       </div>
-      <div class="doc-section">
-        <div class="doc-num">6</div>
-        <div class="doc-section-body">
-          <div class="doc-section-title">Cross-cutting Concerns</div>
-          <div class="doc-section-desc">보안, 성능, 확장성, 에러 처리 등 여러 컴포넌트에 걸친 관심사. 기술 부채로 남기기 쉬운 영역이므로 명시적으로 기록한다.</div>
-        </div>
+      <div class="nine-card">
+        <div class="nine-num">Section 6</div>
+        <div class="nine-title">Depth & Elevation</div>
+        <div class="nine-desc">그림자 시스템, 표면 계층, hover lift 효과. "속삭이듯 부드러운 확산 그림자" 같은 감성 표현 사용.</div>
       </div>
-      <div class="doc-section">
-        <div class="doc-num">7</div>
-        <div class="doc-section-body">
-          <div class="doc-section-title">Constraints</div>
-          <div class="doc-section-desc">기술적·사업적 제약 조건. "PostgreSQL만 사용", "브라우저 호환성은 최신 2버전만", "번들 크기 200KB 이하" 같은 명시적 제약.</div>
-        </div>
+      <div class="nine-card">
+        <div class="nine-num">Section 7</div>
+        <div class="nine-title">Do's and Don'ts</div>
+        <div class="nine-desc">디자인 가드레일과 안티패턴. 해야 할 것과 절대 하지 말아야 할 것을 명시.</div>
       </div>
-      <div class="doc-section">
-        <div class="doc-num">8</div>
-        <div class="doc-section-body">
-          <div class="doc-section-title">Future Considerations</div>
-          <div class="doc-section-desc">알려진 한계와 향후 계획. "현재는 단일 리전이지만 멀티 리전 확장 예정" 같은 로드맵 맥락.</div>
-        </div>
+      <div class="nine-card">
+        <div class="nine-num">Section 8</div>
+        <div class="nine-title">Responsive Behavior</div>
+        <div class="nine-desc">브레이크포인트, 터치 타겟(최소 44x44px), 축소 전략, 모바일 우선 원칙.</div>
+      </div>
+      <div class="nine-card">
+        <div class="nine-num">Section 9</div>
+        <div class="nine-title">Agent Prompt Guide</div>
+        <div class="nine-desc">AI 에이전트를 위한 빠른 참조. 색상 이름+hex 목록, 바로 쓸 수 있는 컴포넌트 프롬프트, 반복 가이드.</div>
       </div>
     </div>
   </section>
 
   <!-- 실전 예제 -->
   <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
-    <div style="max-width:900px;margin:0 auto">
+    <div style="max-width:960px;margin:0 auto">
       <h2 class="section-title">실전 예제</h2>
+      <p class="section-desc">DESIGN.md는 기술적 CSS 값 대신 <strong>감성적이고 서술적인 언어</strong>를 사용한다. AI가 "느낌"을 이해하도록.</p>
 
-      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem">SaaS 플랫폼 DESIGN.md</h3>
-      <pre><code><span class="comment"># DESIGN.md — TaskFlow</span>
+      <pre><code><span class="comment"># DESIGN.md — Minimal Furniture Store</span>
 
-<span class="hl">## Overview</span>
-TaskFlow는 팀 프로젝트 관리 SaaS다. Jira의 복잡함과 Trello의 단순함
-사이에서 중간 지점을 목표로 한다. Next.js App Router +
-Prisma + PostgreSQL 기반.
+<span class="hl">## 1. Visual Theme & Atmosphere</span>
 
-<span class="hl">## Goals</span>
-- 5명 이하 소규모 팀을 위한 태스크 관리
-- 실시간 협업 (WebSocket 기반)
-- 모바일 웹에서도 완전한 기능 사용 가능
+세련된 미니멀리스트 공간. 스칸디나비아 디자인의 간결함과
+럭셔리 에디토리얼의 시각 언어를 결합한다.
 
-<span class="hl">## Non-Goals</span>
-- 엔터프라이즈 기능 (SAML, SCIM, 감사 로그)
-- 데스크톱/모바일 네이티브 앱
-- Gantt 차트, 리소스 관리 같은 PM 고급 기능
-- 100명 이상의 팀 지원
+<span class="key">핵심 특성:</span>
+- 넉넉한 여백 — 콘텐츠가 숨 쉴 공간을 확보
+- 사진 중심 프레젠테이션 — 텍스트보다 이미지가 주인공
+- 속삭이듯 부드러운 시각적 계층 — 강렬한 대비 대신 미묘한 차이
+- 의도적으로 절제된 색상 — 제품이 돋보이도록
 
-<span class="hl">## Architecture</span>
+<span class="hl">## 2. Color Palette & Roles</span>
 
-<span class="comment">┌─────────────┐     ┌──────────────┐     ┌──────────┐</span>
-<span class="comment">│   Next.js   │────▶│   API Routes │────▶│ PostgreSQL│</span>
-<span class="comment">│  (App Router)│     │  (tRPC)      │     │ (Prisma) │</span>
-<span class="comment">└──────┬──────┘     └──────┬───────┘     └──────────┘</span>
-<span class="comment">       │                   │</span>
-<span class="comment">       │            ┌──────▼───────┐</span>
-<span class="comment">       └───────────▶│  WebSocket   │</span>
-<span class="comment">                    │  (Pusher)    │</span>
-<span class="comment">                    └──────────────┘</span>
+<span class="key">### Foundation</span>
+- <span class="val">Pure White</span> (#FFFFFF) — 기본 배경. 깨끗한 캔버스.
+- <span class="val">Warm Cream</span> (#FAF8F5) — 보조 배경, 카드 표면.
+- <span class="val">Whisper Gray</span> (#F5F3F0) — 구분선, 미묘한 영역 분리.
 
-<span class="key">### 컴포넌트 책임</span>
-- <span class="val">Next.js App Router</span>: UI 렌더링, 라우팅, SSR
-- <span class="val">tRPC</span>: 타입 안전한 API 레이어 (REST 대신 선택)
-- <span class="val">Prisma</span>: ORM, 마이그레이션, 타입 생성
-- <span class="val">Pusher</span>: 실시간 이벤트 (자체 WS 서버 대신 — 운영 부담 회피)
+<span class="key">### Accent & Interactive</span>
+- <span class="val">Deep Muted Teal-Navy</span> (#294056) — 유일한 강조색.
+  CTA 버튼, 활성 네비게이션 링크, 선택된 필터 상태에만 사용.
 
-<span class="hl">## Design Decisions</span>
+<span class="key">### Typography Hierarchy</span>
+- <span class="val">Charcoal</span> (#1A1A1A) — H1, H2 헤드라인.
+- <span class="val">Dark Gray</span> (#4A4A4A) — 본문 텍스트.
+- <span class="val">Medium Gray</span> (#8A8A8A) — 보조 텍스트, 캡션.
+- <span class="val">Light Gray</span> (#B0B0B0) — 플레이스홀더, 비활성 요소.
 
-<span class="key">### tRPC vs REST vs GraphQL</span>
-- <span class="tag">Context</span>: 프론트/백엔드 모두 TypeScript, 5명 팀
-- <span class="tag">Decision</span>: tRPC 사용
-- <span class="tag">Alternatives</span>: REST (범용적), GraphQL (유연한 쿼리)
-- <span class="tag">Rationale</span>: 팀 규모가 작고 모노레포라서 E2E 타입 안전성이
-  가장 큰 이점. GraphQL은 이 규모에서 오버엔지니어링.
+<span class="key">### Functional States</span>
+- <span class="val">Sage Success</span> (#4A7C59) — 성공, 재고 있음.
+- <span class="val">Warm Amber</span> (#C4922A) — 경고, 한정 수량.
+- <span class="val">Dusty Rose</span> (#B85450) — 오류, 품절.
 
-<span class="key">### Pusher vs 자체 WebSocket 서버</span>
-- <span class="tag">Context</span>: 실시간 기능 필요, 인프라 인력 없음
-- <span class="tag">Decision</span>: Pusher 사용
-- <span class="tag">Rationale</span>: 자체 WS 서버는 운영 부담 큼. Pusher의
-  무료 티어로 초기 사용자 충분히 처리 가능.
+<span class="hl">## 3. Typography Rules</span>
 
-<span class="hl">## Constraints</span>
-- Vercel 배포: Edge Runtime 제약 (Node.js API 일부 사용 불가)
-- 번들 크기: First Load JS 200KB 이하 유지
-- DB: Neon PostgreSQL (Serverless, connection pooling 필수)
-- 인증: NextAuth.js (OAuth만, 자체 패스워드 인증 안 함)
+<span class="key">Font Family:</span> Manrope — 기하학적이면서 부드러운 느낌.
 
-<span class="hl">## Future Considerations</span>
-- Pusher → 자체 WebSocket 전환 검토 (MAU 10K 초과 시)
-- i18n 지원 (한/영/일) — 현재는 한국어만
-- 팀 간 프로젝트 공유 기능 — 현재 아키텍처에서 가능</code></pre>
+| 용도 | 크기 | Weight | 자간 |
+|------|------|--------|------|
+| H1 Display | 2.75–3.5rem | Semi-bold (600) | -0.02em |
+| H2 Section | 1.75–2.25rem | Semi-bold (600) | -0.01em |
+| H3 Subsection | 1.25–1.5rem | Medium (500) | 0 |
+| Body | 1rem | Regular (400) | 0.01em |
+| Small/Meta | 0.875rem | Regular (400) | 0.02em |
 
-      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">CLAUDE.md에서 DESIGN.md 연동</h3>
-      <pre><code><span class="comment"># CLAUDE.md</span>
+<span class="hl">## 4. Component Stylings</span>
 
-<span class="hl">## 아키텍처</span>
-아키텍처 결정과 그 이유는 DESIGN.md를 참조하라.
-<span class="key">@DESIGN.md</span>
+<span class="key">### Buttons</span>
+- Corner radius: <span class="val">8px</span>
+- Primary: Deep Muted Teal-Navy 배경, 흰색 텍스트
+- Hover: 살짝 밝아지며 미세한 lift (translateY -1px)
+- Focus: 2px 오프셋 아웃라인, 주 색상 50% 투명도
+- Transition: <span class="val">all 0.2s ease</span>
 
-<span class="hl">## 중요</span>
-- DESIGN.md의 Non-Goals에 명시된 기능을 제안하지 않는다
-- 아키텍처 변경이 필요한 경우 DESIGN.md를 먼저 확인한다
-- 새로운 설계 결정은 DESIGN.md의 Design Decisions 섹션에 추가한다</code></pre>
+<span class="key">### Cards</span>
+- Corner radius: <span class="val">12px</span>
+- 배경: Warm Cream
+- 그림자: <span class="val">0 2px 8px rgba(0,0,0,0.06)</span>
+- Hover: <span class="val">translateY(-4px)</span> + 그림자 깊어짐
+- 내부 패딩: <span class="val">1.5rem</span>
+
+<span class="key">### Navigation</span>
+- 대문자 변환, 자간 0.06em, Medium weight
+- 활성 링크: Deep Muted Teal-Navy 색상 + 하단 2px 바
+
+<span class="hl">## 5. Layout Principles</span>
+
+- 최대 너비: <span class="val">1440px</span>
+- 기본 그리드: <span class="val">12컬럼</span>
+- 제품 그리드: 4열(데스크톱) → 3열(태블릿) → 2열(모바일) → 1열(소형)
+- 기본 단위: <span class="val">8px</span>
+- 섹션 간격: <span class="val">5–8rem</span> (넉넉한 호흡)
+- 브레이크포인트: <span class="val">768px / 1024px / 1440px</span>
+
+<span class="hl">## 6. Depth & Elevation</span>
+
+- 기본 표면: 그림자 없음 — 평평하고 깨끗
+- 카드: 속삭이듯 부드러운 확산 그림자 (<span class="val">0 2px 8px rgba(0,0,0,0.06)</span>)
+- Hover lift: <span class="val">translateY(-4px)</span> + 그림자 확대
+- 모달/오버레이: <span class="val">0 16px 48px rgba(0,0,0,0.12)</span>
+- 표면 간 경계는 그림자로 표현, 실선 보더 최소화
+
+<span class="hl">## 7. Do's and Don'ts</span>
+
+<span class="val">DO:</span>
+- 여백을 아끼지 않는다 — 빼곡한 레이아웃 금지
+- 제품 이미지에 집중한다 — UI 장식을 최소화
+- 색상을 절제한다 — Teal-Navy만 강조색으로 사용
+- 일관된 8px 그리드를 지킨다
+
+<span class="pink">DON'T:</span>
+- 그라디언트 배경 사용 금지
+- 3가지 이상의 폰트 웨이트 혼용 금지
+- 짙은 그림자 사용 금지 — 항상 부드럽고 확산된 그림자
+- 네온 색상이나 고채도 강조색 사용 금지
+
+<span class="hl">## 8. Responsive Behavior</span>
+
+- 모바일 우선 접근
+- 터치 타겟: 최소 <span class="val">44x44px</span>
+- 이미지: 모바일에서 aspect-ratio 유지, object-fit: cover
+- 네비게이션: 모바일에서 가로 스크롤 또는 햄버거
+- 타이포그래피: 모바일에서 H1은 2rem으로 축소
+
+<span class="hl">## 9. Agent Prompt Guide</span>
+
+<span class="key">빠른 색상 참조:</span>
+- 배경: Pure White #FFFFFF, Warm Cream #FAF8F5
+- 강조: Deep Muted Teal-Navy #294056
+- 텍스트: Charcoal #1A1A1A, Dark Gray #4A4A4A
+
+<span class="key">컴포넌트 프롬프트:</span>
+"부드럽게 둥근 모서리(12px), 풀블리드 정사각형 제품 이미지,
+hover 시 속삭이듯 부드러운 그림자가 깊어지는 제품 카드를 만들어줘"</code></pre>
+
+      <div class="info-box tip">
+        <strong>작성 핵심 원칙:</strong> CSS 값만 나열하지 않는다. <code>border-radius: 12px</code> 대신 "부드럽게 둥근 모서리(12px)"처럼 <strong>감성적 서술 + 기술적 값</strong>을 함께 쓴다. AI가 "느낌"과 "수치"를 모두 이해할 수 있도록.
+      </div>
     </div>
   </section>
 
-  <!-- AI 도구와의 연동 -->
+  <!-- Stitch 파이프라인 -->
   <section class="section">
-    <h2 class="section-title">AI 코딩 도구와의 연동</h2>
-    <p class="section-desc">DESIGN.md를 각 AI 도구에서 활용하는 방법</p>
+    <h2 class="section-title">Google Stitch의 DESIGN.md 생성 파이프라인</h2>
+    <p class="section-desc">Stitch는 기존 웹사이트에서 디자인 시스템을 추출해 DESIGN.md로 변환한다</p>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-num">Step 1</div>
+        <div class="pipe-title">Retrieval</div>
+        <div class="pipe-desc">Stitch 프로젝트에서 스크린 ID, HTML/CSS 소스를 수집</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Step 2</div>
+        <div class="pipe-title">Download</div>
+        <div class="pipe-desc">MCP 도구를 통해 HTML/CSS 소스와 스크린샷을 다운로드</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Step 3</div>
+        <div class="pipe-title">Extraction</div>
+        <div class="pipe-desc">CSS에서 색상, radius, font-weight, shadow 등 기술적 값을 파싱</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Step 4</div>
+        <div class="pipe-title">Translation</div>
+        <div class="pipe-desc">기술적 값을 감성 언어로 변환. #294056 → "Deep Muted Teal-Navy"</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Step 5</div>
+        <div class="pipe-title">Synthesis</div>
+        <div class="pipe-desc">9개 표준 섹션으로 조직화하여 DESIGN.md 파일 생성</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3종 세트 -->
+  <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
+    <div style="max-width:960px;margin:0 auto">
+      <h2 class="section-title">3종 세트 구성</h2>
+      <p class="section-desc">각 브랜드마다 DESIGN.md + preview 2종이 제공된다</p>
+
+      <pre><code><span class="comment"># awesome-design-md 디렉토리 구조</span>
+designs/
+├── stripe/
+│   ├── <span class="hl">DESIGN.md</span>            <span class="comment"># 디자인 시스템 문서 (AI가 읽음)</span>
+│   ├── <span class="val">preview.html</span>         <span class="comment"># 라이트 테마 시각 카탈로그</span>
+│   └── <span class="val">preview-dark.html</span>    <span class="comment"># 다크 테마 시각 카탈로그</span>
+├── notion/
+│   ├── DESIGN.md
+│   ├── preview.html
+│   └── preview-dark.html
+├── vercel/
+├── claude/
+├── figma/
+├── linear/
+└── ... <span class="comment">(66+ 브랜드)</span></code></pre>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">수록된 브랜드 (66+)</h3>
+
+      <div class="brand-grid">
+        <div class="brand-tag">Claude</div>
+        <div class="brand-tag">Vercel</div>
+        <div class="brand-tag">Stripe</div>
+        <div class="brand-tag">Notion</div>
+        <div class="brand-tag">Figma</div>
+        <div class="brand-tag">Cursor</div>
+        <div class="brand-tag">Linear</div>
+        <div class="brand-tag">Supabase</div>
+        <div class="brand-tag">PostHog</div>
+        <div class="brand-tag">Raycast</div>
+        <div class="brand-tag">Cal.com</div>
+        <div class="brand-tag">Resend</div>
+        <div class="brand-tag">Spotify</div>
+        <div class="brand-tag">Apple</div>
+        <div class="brand-tag">Tesla</div>
+        <div class="brand-tag">BMW</div>
+        <div class="brand-tag">Coinbase</div>
+        <div class="brand-tag">MongoDB</div>
+        <div class="brand-tag">Sentry</div>
+        <div class="brand-tag">Zapier</div>
+        <div class="brand-tag">Framer</div>
+        <div class="brand-tag">Miro</div>
+        <div class="brand-tag">Webflow</div>
+        <div class="brand-tag">NVIDIA</div>
+        <div class="brand-tag">Ferrari</div>
+        <div class="brand-tag">Uber</div>
+        <div class="brand-tag">Wise</div>
+        <div class="brand-tag">Revolut</div>
+        <div class="brand-tag">Expo</div>
+        <div class="brand-tag">외 36+</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 사용법 -->
+  <section class="section">
+    <h2 class="section-title">AI 코딩 도구와 함께 사용하기</h2>
+    <p class="section-desc">DESIGN.md를 프로젝트 루트에 두고, 각 AI 도구에서 참조하도록 설정한다</p>
 
     <div class="ai-grid">
       <div class="ai-card">
         <h3>Claude Code</h3>
-        <p>CLAUDE.md에서 <code>@DESIGN.md</code>로 import. 아키텍처 변경 전 자동 참조. Skills에서 디자인 리뷰 워크플로우 정의 가능.</p>
+        <p>프로젝트 루트에 DESIGN.md를 두고 CLAUDE.md에 다음을 추가:
+        <code>UI 컴포넌트를 생성할 때 반드시 DESIGN.md를 참조하라. 정의된 색상, 폰트, 간격만 사용하고 새 값을 만들지 않는다.</code></p>
       </div>
       <div class="ai-card">
         <h3>Cursor</h3>
-        <p><code>.cursor/rules/</code>에서 DESIGN.md를 참조하도록 지시. <code>@docs</code> 기능으로 인덱싱하면 자동 검색 대상이 된다.</p>
+        <p><code>.cursor/rules/</code>에 DESIGN.md를 참조하는 규칙을 추가하거나, <code>@docs</code> 기능으로 인덱싱한다. UI 관련 파일에 auto-attach 설정.</p>
       </div>
       <div class="ai-card">
-        <h3>Aider</h3>
-        <p><code>--read DESIGN.md</code> 플래그로 읽기 전용 컨텍스트에 추가. 아키텍처 인식 상태에서 코드 수정.</p>
+        <h3>빠른 설치 (npx)</h3>
+        <p><code>npx getdesign@latest add stripe</code> — 원하는 브랜드의 DESIGN.md를 프로젝트에 바로 설치. 여러 브랜드의 디자인을 참고해서 커스텀 시스템을 만들 수도 있다.</p>
       </div>
       <div class="ai-card">
-        <h3>Copilot</h3>
-        <p><code>.github/copilot-instructions.md</code>에서 DESIGN.md를 참조하도록 명시. 조직 레벨 지시에 아키텍처 원칙 포함.</p>
+        <h3>기존 사이트에서 추출</h3>
+        <p>design-extractor.com에서 공개 URL을 입력하면 해당 사이트의 디자인 시스템을 DESIGN.md로 자동 추출. Figma 플러그인으로도 변환 가능.</p>
       </div>
     </div>
 
-    <div class="info-box warn">
-      <strong>주의:</strong> 오래된 DESIGN.md는 없는 것보다 나쁘다. AI 에이전트가 현재와 다른 아키텍처를 기준으로 코드를 수정할 수 있다.
-      아키텍처가 바뀌면 DESIGN.md도 반드시 갱신한다.
-    </div>
+    <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem">CLAUDE.md에서 DESIGN.md 연동하기</h3>
+    <pre><code><span class="comment"># CLAUDE.md</span>
+
+<span class="hl">## UI 작업 규칙</span>
+- UI 컴포넌트를 생성하거나 수정할 때 <span class="key">@DESIGN.md</span>를 참조한다
+- DESIGN.md에 정의된 색상만 사용한다 — 새 색상 값을 만들지 않는다
+- 타이포그래피 계층을 따른다 — H1~Small 범위 내에서만
+- 컴포넌트 스타일(corner radius, shadow, hover 상태)을 준수한다
+- Do's and Don'ts 섹션을 반드시 확인한다
+
+<span class="hl">## 디자인 감사</span>
+- UI 변경 후 "DESIGN.md에 정의되지 않은 색상이 사용됐는지 확인해줘"로 검사
+- 새 컴포넌트 추가 시 기존 Component Stylings과 일관성 확인</code></pre>
   </section>
 
-  <!-- ADR -->
+  <!-- 생태계 -->
   <section class="section" style="background:var(--surface);margin:0 -2rem;padding:3.5rem 2rem">
-    <div style="max-width:900px;margin:0 auto">
-      <h2 class="section-title">ADR: Architecture Decision Records</h2>
-      <p class="section-desc">DESIGN.md의 보완재. 개별 설계 결정을 독립 문서로 기록하는 방식.</p>
+    <div style="max-width:960px;margin:0 auto">
+      <h2 class="section-title">DESIGN.md 생태계</h2>
+      <p class="section-desc">DESIGN.md를 둘러싼 도구와 커뮤니티</p>
 
-      <div class="adr-box">
-        <h3>DESIGN.md + ADR 조합</h3>
-        <p>
-          DESIGN.md가 "전체 아키텍처의 현재 상태"라면, ADR은 "개별 결정의 히스토리"다.
-          DESIGN.md는 최신 상태만 유지하고, 결정의 배경과 대안은 ADR에 기록하면 깔끔하다.
-        </p>
-        <ul class="adr-list">
-          <li><strong>DESIGN.md</strong> — 시스템의 현재 아키텍처 스냅샷 (최신 상태)</li>
-          <li><strong>docs/adr/</strong> — 개별 결정의 전체 맥락과 히스토리</li>
-          <li>DESIGN.md에서 각 결정에 대해 ADR 링크로 연결</li>
-          <li>ADR은 한 번 쓰면 수정하지 않는다 (새 결정은 새 ADR)</li>
-        </ul>
+      <div class="eco-grid">
+        <div class="eco-card">
+          <h3>awesome-design-md</h3>
+          <div class="url">github.com/VoltAgent/awesome-design-md</div>
+          <p>66+ 브랜드의 DESIGN.md 컬렉션. 47K+ Stars. 10일 만에 35K 달성, GitHub 역대 최고 속도 성장 awesome 목록.</p>
+        </div>
+        <div class="eco-card">
+          <h3>Google Stitch Skills</h3>
+          <div class="url">github.com/google-labs-code/stitch-skills</div>
+          <p>Stitch 공식 스킬. 웹사이트에서 디자인 시스템을 추출하여 DESIGN.md로 변환하는 파이프라인.</p>
+        </div>
+        <div class="eco-card">
+          <h3>getdesign.md</h3>
+          <div class="url">getdesign.md</div>
+          <p>브라우저/인스톨러. <code>npx getdesign@latest add [brand]</code>로 원하는 브랜드의 DESIGN.md를 프로젝트에 바로 설치.</p>
+        </div>
+        <div class="eco-card">
+          <h3>designmd.app</h3>
+          <div class="url">designmd.app</div>
+          <p>423개 이상의 DESIGN.md 파일을 제공하는 오픈 라이브러리. 다양한 스타일과 업종의 디자인 시스템.</p>
+        </div>
+        <div class="eco-card">
+          <h3>design-extractor</h3>
+          <div class="url">design-extractor.com</div>
+          <p>공개 URL을 입력하면 해당 사이트의 디자인 시스템을 자동으로 DESIGN.md 형식으로 추출.</p>
+        </div>
+        <div class="eco-card">
+          <h3>awesome-design-md-jp</h3>
+          <div class="url">github.com/kzhrknt/awesome-design-md-jp</div>
+          <p>일본어/CJK 타이포그래피 확장. 한중일 폰트와 조판 규칙을 DESIGN.md에 반영.</p>
+        </div>
       </div>
-
-      <pre><code><span class="comment"># 디렉토리 구조</span>
-my-project/
-├── <span class="hl">DESIGN.md</span>                <span class="comment"># 전체 아키텍처 (현재 상태)</span>
-├── <span class="key">docs/adr/</span>                <span class="comment"># 개별 결정 히스토리</span>
-│   ├── 001-use-trpc.md
-│   ├── 002-pusher-over-ws.md
-│   ├── 003-neon-postgresql.md
-│   └── template.md          <span class="comment"># ADR 템플릿</span>
-├── CLAUDE.md
-└── ...</code></pre>
-
-      <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem;color:#fff">ADR 템플릿</h3>
-      <pre><code><span class="comment"># docs/adr/template.md</span>
-
-<span class="hl"># ADR-{번호}: {제목}</span>
-
-<span class="key">## Status</span>
-<span class="val">Accepted</span> | Proposed | Deprecated | Superseded by ADR-{번호}
-
-<span class="key">## Context</span>
-이 결정이 필요한 배경과 상황.
-
-<span class="key">## Decision</span>
-무엇을 결정했는가.
-
-<span class="key">## Alternatives Considered</span>
-검토한 대안과 각각의 장단점.
-
-<span class="key">## Consequences</span>
-이 결정으로 인한 긍정적/부정적 영향.
-
-<span class="key">## Date</span>
-<span class="val">2026-04-13</span></code></pre>
     </div>
   </section>
 
-  <!-- DESIGN.md 작성 가이드 -->
+  <!-- 마크다운 파일 전체 생태계 -->
   <section class="section">
-    <h2 class="section-title">작성 가이드</h2>
+    <h2 class="section-title">AI 에이전트 설정 파일 생태계</h2>
+    <p class="section-desc">마크다운이 AI-인간 커뮤니케이션의 새로운 프로토콜이 되고 있다</p>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0">
-      <div style="padding:1.5rem;border:1px solid rgba(16,185,129,.2);border-radius:12px;background:rgba(16,185,129,.03)">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem;color:#059669">DO</div>
-        <ul style="list-style:none;font-size:.82rem;color:var(--text2);line-height:1.9">
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> "왜"에 집중 — 코드가 말해주지 않는 것</li>
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> Non-Goals를 명시적으로 기록</li>
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> ASCII 다이어그램 사용 (AI 판독 가능)</li>
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> 제약 조건을 구체적으로 (수치 포함)</li>
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> 아키텍처 변경 시 DESIGN.md도 갱신</li>
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#10B981;font-weight:700">&#x2713;</span> 500~2000줄 이내로 유지</li>
-        </ul>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:2rem 0">
+      <div style="padding:1.2rem;border:1px solid var(--border);border-radius:12px;text-align:center">
+        <div style="font-size:.75rem;color:var(--amber);font-weight:700;margin-bottom:.3rem">CLAUDE.md</div>
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:.2rem">에이전트 행동</div>
+        <div style="font-size:.72rem;color:var(--text2)">빌드, 스타일, 규칙</div>
       </div>
-      <div style="padding:1.5rem;border:1px solid rgba(239,68,68,.2);border-radius:12px;background:rgba(239,68,68,.03)">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem;color:#DC2626">DON'T</div>
-        <ul style="list-style:none;font-size:.82rem;color:var(--text2);line-height:1.9">
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> 코드를 읽으면 알 수 있는 내용 반복</li>
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> 이미지만으로 다이어그램 표현</li>
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> API 레퍼런스 문서를 대체하려 시도</li>
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> 작성 후 방치 (stale한 문서는 유해)</li>
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> 구현 세부사항 (코드 레벨) 기록</li>
-          <li style="padding-left:1.2rem;position:relative"><span style="position:absolute;left:0;color:#EF4444;font-weight:700">&#x2717;</span> CLAUDE.md와 내용 중복</li>
-        </ul>
+      <div style="padding:1.2rem;border:1px solid var(--border);border-radius:12px;text-align:center">
+        <div style="font-size:.75rem;color:var(--green);font-weight:700;margin-bottom:.3rem">AGENTS.md</div>
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:.2rem">범용 지시</div>
+        <div style="font-size:.72rem;color:var(--text2)">멀티 도구 공통</div>
+      </div>
+      <div style="padding:1.2rem;border:1px solid rgba(14,165,233,.3);border-radius:12px;text-align:center;background:rgba(14,165,233,.03)">
+        <div style="font-size:.75rem;color:var(--primary);font-weight:700;margin-bottom:.3rem">DESIGN.md</div>
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:.2rem">시각적 외관</div>
+        <div style="font-size:.72rem;color:var(--text2)">색상, 폰트, 컴포넌트</div>
+      </div>
+      <div style="padding:1.2rem;border:1px solid var(--border);border-radius:12px;text-align:center">
+        <div style="font-size:.75rem;color:var(--red);font-weight:700;margin-bottom:.3rem">Skills</div>
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:.2rem">워크플로우</div>
+        <div style="font-size:.72rem;color:var(--text2)">배포, 리뷰, 생성</div>
       </div>
     </div>
 
-    <div class="info-box tip">
-      <strong>유사한 파일명:</strong> 일부 프로젝트에서는 <code>ARCHITECTURE.md</code>(rust-analyzer에서 유래)나 <code>CONTRIBUTING.md</code>의 아키텍처 섹션으로 같은 역할을 수행한다. 파일명보다 내용이 중요하다 — 핵심은 "왜 이 구조인가"를 기록하는 것.
+    <div class="info-box key">
+      <strong>왜 마크다운인가?</strong> LLM은 마크다운의 구조를 네이티브로 이해한다. 헤딩은 계층, 볼드는 강조, 리스트는 열거를 의미한다.
+      JSON보다 유연하고, YAML보다 읽기 쉽고, Figma보다 접근성이 높다. 그래서 AI 시대의 설정 파일 포맷으로 마크다운이 수렴하고 있다.
     </div>
   </section>
 
@@ -449,7 +604,7 @@ my-project/
   <p>Context Engineering Guide &mdash; DESIGN.md</p>
   <div style="margin-top:.5rem;display:flex;gap:.75rem;justify-content:center;align-items:center">
     <a href="https://x.com/leafeditor" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;color:var(--text2);font-size:.75rem;font-weight:500"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@leafeditor</a>
-    <a href="https://x.com/intent/post?text=DESIGN.md%20%EC%99%84%EC%A0%84%20%EA%B0%80%EC%9D%B4%EB%93%9C%20%E2%80%94%20Context%20Engineering%0A%0Ahttps%3A//leaf-kit.github.io/context-engineering/design-md.html%0A%0A%40leafeditor%20%23DESIGNmd%20%23ContextEngineering%20%23Architecture" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
+    <a href="https://x.com/intent/post?text=DESIGN.md%20%EC%99%84%EC%A0%84%20%EA%B0%80%EC%9D%B4%EB%93%9C%20%E2%80%94%20Google%20Stitch%EC%9D%98%20AI%20%EB%94%94%EC%9E%90%EC%9D%B8%20%EC%8B%9C%EC%8A%A4%ED%85%9C%0A%0Ahttps%3A//leaf-kit.github.io/context-engineering/design-md.html%0A%0A%40leafeditor%20%23DESIGNmd%20%23GoogleStitch%20%23ContextEngineering" target="_blank" style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:#000;color:#fff;border-radius:5px;font-size:.72rem;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>공유하기</a>
   </div>
 </footer>
 
