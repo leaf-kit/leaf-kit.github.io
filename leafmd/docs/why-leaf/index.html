@@ -77,30 +77,89 @@ td{padding:10px 16px;border-top:1px solid var(--border)}.check{color:var(--accen
   <h3 class="reveal"><span class="show-ko">3. 한국어 퍼스트</span><span class="show-en">3. Korean First</span></h3>
   <p class="reveal"><span class="show-ko">Leaf는 한국어 사용자를 위해 만들어졌다. 한글 번호 매기기(가, 나, 다 / 일, 이, 삼), HWP 가져오기/내보내기, 한국 공문서 템플릿(기안문, 품의서, 보고서 등 18종), 네이티브 메뉴 한글화까지. "번역된" 한국어가 아니라 처음부터 한국어로 설계했다.</span><span class="show-en">Leaf was built for Korean users first. Hangul numbering (가나다 / 일이삼), HWP import/export, 18 Korean government document templates, fully localized menus. Not translated Korean — designed in Korean from day one.</span></p>
 
-  <h2 class="reveal"><span class="show-ko">다른 에디터와의 비교</span><span class="show-en">Comparison with Other Editors</span></h2>
+  <h2 class="reveal"><span class="show-ko">Obsidian과 Typora, 그리고 Leaf</span><span class="show-en">Obsidian, Typora, and Leaf</span></h2>
+
+  <p class="reveal"><span class="show-ko">마크다운 에디터 시장에서 Obsidian과 Typora는 각각 전혀 다른 문제를 풀고 있다. Leaf는 이 둘의 강점을 이해하고, 그 사이에서 자기만의 자리를 찾았다.</span><span class="show-en">Obsidian and Typora solve fundamentally different problems in the markdown editor space. Leaf understands both strengths and carves its own position between them.</span></p>
+
+  <h3 class="reveal"><span class="show-ko">Obsidian — 지식의 연결에 집중</span><span class="show-en">Obsidian — Focused on Connecting Knowledge</span></h3>
+  <p class="reveal"><span class="show-ko">Obsidian의 핵심은 <strong>"제2의 뇌(Second Brain)"</strong>다. [[위키링크]]로 문서를 연결하고, 그래프 뷰에서 지식의 관계를 시각적으로 탐색한다. 백링크가 쌓이면서 노트 사이의 의외의 연결고리가 드러나고, 이것이 새로운 아이디어로 이어진다. 플러그인 생태계도 강력해서 칸반, 데이터뷰, 템플릿 등 커뮤니티가 만든 1,000개 이상의 확장이 있다.</span><span class="show-en">Obsidian's core is the <strong>"Second Brain."</strong> Connect documents with [[wikilinks]], explore knowledge relationships visually in graph view. As backlinks accumulate, unexpected connections emerge between notes, leading to new ideas. The plugin ecosystem is powerful — 1,000+ community extensions for Kanban, Dataview, templates, and more.</span></p>
+  <p class="reveal"><span class="show-ko">하지만 Obsidian에는 트레이드오프가 있다. <strong>편집 경험이 거칠다.</strong> 라이브 프리뷰가 있지만 Typora만큼 매끄럽지 않다. 마크다운 소스와 렌더링 결과 사이에서 시각적 어색함이 남는다. 그리고 Electron 기반이라 400MB 이상의 메모리를 먹는다. 플러그인을 많이 설치하면 더 무거워진다.</span><span class="show-en">But Obsidian has trade-offs. <strong>The editing experience is rough.</strong> Live preview exists but isn't as polished as Typora. Visual awkwardness remains between markdown source and rendered output. It's Electron-based, consuming 400MB+. More plugins means even more weight.</span></p>
+
+  <div class="card reveal">
+    <h4><span class="show-ko">Leaf가 Obsidian에서 가져온 것</span><span class="show-en">What Leaf Took from Obsidian</span></h4>
+    <p style="margin:0"><span class="show-ko"><strong>[[위키링크]] + 지식 그래프.</strong> Leaf도 D3.js 기반 인터랙티브 그래프를 지원한다. 로컬 뷰(현재 문서 중심)와 글로벌 뷰(전체 볼트) 전환, 노드 호버 시 문서 미리보기와 미니 그래프 팝업, 링크 수에 비례하는 노드 크기까지. 다만 Obsidian과 달리 <strong>플러그인 없이 칸반, 머메이드, KaTeX, 코넬 노트가 전부 내장</strong>되어 있어서 플러그인 호환성 걱정이 없다.</span><span class="show-en"><strong>[[Wikilinks]] + Knowledge Graph.</strong> Leaf also supports interactive D3.js graphs. Local view (current doc center) and global view (full vault), node hover with document preview and mini-graph popup, node size proportional to link count. Unlike Obsidian, <strong>Kanban, Mermaid, KaTeX, and Cornell Notes are all built-in</strong> — no plugin compatibility worries.</span></p>
+  </div>
+
+  <h3 class="reveal"><span class="show-ko">Typora — 글쓰기 경험에 집중</span><span class="show-en">Typora — Focused on Writing Experience</span></h3>
+  <p class="reveal"><span class="show-ko">Typora의 핵심은 <strong>"쓰는 곳이 곧 보는 곳"</strong>이다. 마크다운을 입력하는 순간 즉시 렌더링되어 별도의 미리보기 패널이 필요 없다. <code># 제목</code>을 치면 마크다운 문법이 사라지고 큰 글씨만 남는다. 이 매끄러운 WYSIWYG 경험은 다른 에디터가 쉽게 따라오지 못한다. UI도 극도로 깔끔해서 글에만 집중할 수 있다.</span><span class="show-en">Typora's core is <strong>"where you write is where you read."</strong> Markdown renders instantly as you type — no separate preview pane. Type <code># Heading</code> and the markdown syntax disappears, leaving only the large text. This seamless WYSIWYG experience is hard for others to match. The UI is extremely clean, letting you focus solely on writing.</span></p>
+  <p class="reveal"><span class="show-ko">하지만 Typora에는 <strong>지식 관리 기능이 없다.</strong> 위키링크도, 그래프 뷰도, 백링크도 없다. 하나의 문서를 예쁘게 쓰는 데는 최고지만, 수백 개의 노트를 연결하고 탐색하는 워크플로우에는 맞지 않는다. 다이어그램이나 칸반 같은 확장 기능도 제한적이다.</span><span class="show-en">But Typora has <strong>no knowledge management.</strong> No wikilinks, no graph view, no backlinks. It's the best for writing a single beautiful document, but doesn't fit workflows that connect and explore hundreds of notes. Extended features like diagrams and Kanban are also limited.</span></p>
+
+  <div class="card reveal">
+    <h4><span class="show-ko">Leaf가 Typora에서 가져온 것</span><span class="show-en">What Leaf Took from Typora</span></h4>
+    <p style="margin:0"><span class="show-ko"><strong>인라인 라이브 프리뷰.</strong> Leaf의 편집 엔진은 CodeMirror 6 위에 10,000줄 이상의 커스텀 라이브 프리뷰 플러그인을 구축했다. Typora처럼 마크다운을 쓰면 즉시 렌더링되고, <code>Cmd+/</code>로 소스 모드와 전환할 수 있다. 26종의 커스텀 위젯(테이블 인라인 편집, 체크박스 토글, 수식 렌더링, 코드 하이라이팅 등)이 편집 중에 실시간으로 동작한다. Typora의 깔끔함에 Obsidian의 연결성을 더한 셈이다.</span><span class="show-en"><strong>Inline live preview.</strong> Leaf's editor engine built 10,000+ lines of custom live preview plugin on CodeMirror 6. Like Typora, markdown renders instantly as you type, toggleable with <code>Cmd+/</code>. 26 custom widgets (inline table editing, checkbox toggle, math rendering, code highlighting, etc.) work in real-time while editing. It's Typora's polish plus Obsidian's connectivity.</span></p>
+  </div>
+
+  <h3 class="reveal"><span class="show-ko">Leaf의 포지션 — 둘 다이면서 둘 다가 아닌</span><span class="show-en">Leaf's Position — Both, Yet Neither</span></h3>
+  <p class="reveal"><span class="show-ko">Leaf는 Obsidian의 "지식 연결" 철학과 Typora의 "매끄러운 글쓰기" 경험을 동시에 추구한다. 그러면서 어느 쪽에도 없는 것들을 더했다.</span><span class="show-en">Leaf pursues both Obsidian's "knowledge connection" philosophy and Typora's "seamless writing" experience. And adds things found in neither.</span></p>
+
+  <div class="card highlight reveal">
+    <h4><span class="show-ko">Leaf만의 영역</span><span class="show-en">Leaf's Own Territory</span></h4>
+    <p><span class="show-ko"><strong>Obsidian에도 Typora에도 없는 것:</strong><br>
+    &middot; 코넬 노트 — 학습에 최적화된 3단 노트를 마크다운으로 직접 작성<br>
+    &middot; 칸반/메모 보드 — 플러그인 없이 마크다운 파일 하나로 작업 관리<br>
+    &middot; 웹 &rarr; 마크다운 스크래핑 — 내장 브라우저에서 버튼 하나로 웹 페이지를 마크다운 변환<br>
+    &middot; 저널리스트 모드 — 5W1H 분석, 수동태 탐지, 역피라미드 구조 검사<br>
+    &middot; 잔디 히트맵 — GitHub 잔디처럼 글쓰기 활동을 날짜별로 시각화<br>
+    &middot; 테이블 수식 — 마크다운 테이블에서 합계, 평균, 최대, 최소 계산<br>
+    &middot; ABC 악보 — 악보 렌더링과 MIDI 재생<br>
+    &middot; 물리 시뮬레이터 — 교육용 물리 시각화 7종<br>
+    &middot; HWP 변환 — 한국 공문서 표준 포맷 지원<br>
+    &middot; 한글 번호 매기기 — 가나다, 일이삼 네이티브 지원<br>
+    <br>그리고 이 모든 것이 <strong>Electron이 아니라 Tauri + Rust</strong> 위에서 150MB 미만으로 돌아간다.</span><span class="show-en"><strong>Found in neither Obsidian nor Typora:</strong><br>
+    &middot; Cornell Notes — study-optimized 3-section notes directly in markdown<br>
+    &middot; Kanban/Memo Board — task management in a single markdown file, no plugins<br>
+    &middot; Web &rarr; Markdown scraping — convert web pages to markdown with one click in the built-in browser<br>
+    &middot; Journalist Mode — 5W1H analysis, passive voice detection, reverse pyramid check<br>
+    &middot; Grass Heatmap — GitHub-style visualization of writing activity by date<br>
+    &middot; Table Formulas — calculate sum, average, max, min in markdown tables<br>
+    &middot; ABC Music — sheet music rendering with MIDI playback<br>
+    &middot; Physics Simulator — 7 educational physics visualizations<br>
+    &middot; HWP Conversion — Korean government standard format support<br>
+    &middot; Hangul Numbering — 가나다, 일이삼 natively supported<br>
+    <br>And all of this runs under 150MB on <strong>Tauri + Rust, not Electron.</strong></span></p>
+  </div>
+
+  <p class="reveal"><span class="show-ko">정리하면 이렇다:</span><span class="show-en">To summarize:</span></p>
 
   <div class="vs-grid reveal">
     <div class="vs-col">
-      <h4><span class="show-ko">기존 에디터의 한계</span><span class="show-en">Limitations of Others</span></h4>
+      <h4 style="color:var(--purple)">Obsidian</h4>
       <ul>
-        <li><span class="show-ko">Electron 기반 = 무거운 메모리</span><span class="show-en">Electron-based = heavy memory</span></li>
-        <li><span class="show-ko">칸반/다이어그램은 플러그인 의존</span><span class="show-en">Kanban/diagrams need plugins</span></li>
-        <li><span class="show-ko">한국어 지원 제한적</span><span class="show-en">Limited Korean support</span></li>
-        <li><span class="show-ko">HWP 변환 불가</span><span class="show-en">No HWP conversion</span></li>
-        <li><span class="show-ko">코넬 노트 미지원</span><span class="show-en">No Cornell Notes</span></li>
+        <li><span class="show-ko"><strong>강점:</strong> 지식 연결, 그래프, 플러그인 생태계</span><span class="show-en"><strong>Strength:</strong> Knowledge connection, graph, plugin ecosystem</span></li>
+        <li><span class="show-ko"><strong>약점:</strong> 편집 UX 거친, 무거운 메모리, 핵심 기능도 플러그인 의존</span><span class="show-en"><strong>Weakness:</strong> Rough editing UX, heavy memory, core features depend on plugins</span></li>
       </ul>
     </div>
-    <div class="vs-col leaf">
-      <h4>Leaf</h4>
+    <div class="vs-col">
+      <h4 style="color:var(--amber)">Typora</h4>
       <ul>
-        <li><span class="show-ko">Tauri + Rust = &lt;150MB</span><span class="show-en">Tauri + Rust = &lt;150MB</span></li>
-        <li><span class="show-ko">칸반/머메이드/KaTeX 내장</span><span class="show-en">Kanban/Mermaid/KaTeX built-in</span></li>
-        <li><span class="show-ko">한국어 퍼스트 설계</span><span class="show-en">Korean-first design</span></li>
-        <li><span class="show-ko">HWP 가져오기/내보내기</span><span class="show-en">HWP import/export</span></li>
-        <li><span class="show-ko">코넬 노트 네이티브 지원</span><span class="show-en">Native Cornell Notes</span></li>
+        <li><span class="show-ko"><strong>강점:</strong> 최고의 WYSIWYG, 깔끔한 UI, 집중 환경</span><span class="show-en"><strong>Strength:</strong> Best WYSIWYG, clean UI, focused environment</span></li>
+        <li><span class="show-ko"><strong>약점:</strong> 지식 관리 없음, 확장 기능 부재, 생태계 폐쇄적</span><span class="show-en"><strong>Weakness:</strong> No knowledge management, no extensions, closed ecosystem</span></li>
       </ul>
     </div>
   </div>
+  <div class="vs-grid reveal" style="margin-top:0">
+    <div class="vs-col leaf" style="grid-column:1/-1">
+      <h4>Leaf</h4>
+      <ul>
+        <li><span class="show-ko"><strong>Obsidian의 연결:</strong> 위키링크, 그래프 뷰, 백링크, 태그 필터링 → 내장</span><span class="show-en"><strong>Obsidian's connectivity:</strong> Wikilinks, graph view, backlinks, tag filtering → built-in</span></li>
+        <li><span class="show-ko"><strong>Typora의 품질:</strong> 인라인 WYSIWYG, Cmd+/ 소스 전환, 깔끔한 UI → 10,000줄 커스텀 프리뷰 엔진으로 구현</span><span class="show-en"><strong>Typora's quality:</strong> Inline WYSIWYG, Cmd+/ source toggle, clean UI → 10,000-line custom preview engine</span></li>
+        <li><span class="show-ko"><strong>둘 다에 없는 것:</strong> 코넬 노트, 칸반, 웹 스크래핑, 저널리스트 분석, 잔디 히트맵, 테이블 수식, 물리 시뮬레이터, HWP, 한글 번호, 40+ 템플릿</span><span class="show-en"><strong>Neither has:</strong> Cornell Notes, Kanban, web scraping, journalist analysis, grass heatmap, table formulas, physics sim, HWP, Hangul numbering, 40+ templates</span></li>
+        <li><span class="show-ko"><strong>성능:</strong> Tauri + Rust로 메모리 1/3, 시작 속도 3배 이상 빠르게</span><span class="show-en"><strong>Performance:</strong> Tauri + Rust means 1/3 memory, 3x+ faster startup</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="reveal"><span class="show-ko">상세 비교표</span><span class="show-en">Detailed Comparison</span></h2>
 
   <div class="table-wrap reveal">
     <table>
@@ -115,6 +174,10 @@ td{padding:10px 16px;border-top:1px solid var(--border)}.check{color:var(--accen
         <tr><td><strong>HWP</strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
         <tr><td><strong>ABC <span class="show-ko">악보</span><span class="show-en">Music</span></strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
         <tr><td><strong><span class="show-ko">내장 터미널</span><span class="show-en">Terminal</span></strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td></tr>
+        <tr><td><strong><span class="show-ko">웹 스크래핑</span><span class="show-en">Web Scraping</span></strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">잔디 히트맵</span><span class="show-en">Grass Heatmap</span></strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">테이블 수식</span><span class="show-en">Table Formulas</span></strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">글쓰기 분석</span><span class="show-en">Writing Analysis</span></strong></td><td class="check"><span class="show-ko">저널리스트</span><span class="show-en">Journalist</span></td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
       </tbody>
     </table>
   </div>
