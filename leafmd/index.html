@@ -95,7 +95,7 @@ a:hover{color:var(--accent2)}
 .hero-orb-2{width:350px;height:350px;background:var(--purple);bottom:-100px;left:-80px;animation-delay:-7s}
 .hero-orb-3{width:250px;height:250px;background:var(--amber);top:40%;left:60%;animation-delay:-14s}
 @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(30px,-40px) scale(1.05)}50%{transform:translate(-20px,30px) scale(.95)}75%{transform:translate(40px,20px) scale(1.02)}}
-.hero-content{position:relative;z-index:1;max-width:740px}
+.hero-content{position:relative;z-index:2;max-width:740px}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;font:500 .78rem var(--font);color:var(--text2);background:var(--bg2);border:1px solid var(--border);padding:6px 18px;border-radius:100px;margin-bottom:32px;box-shadow:var(--shadow-xs);opacity:0;animation:fadeUp .8s var(--ease-out) .2s forwards}
 .hero-badge .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(13,159,110,.4);animation:livePulse 2s ease infinite}
 @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(13,159,110,.4)}70%{box-shadow:0 0 0 10px rgba(13,159,110,0)}100%{box-shadow:0 0 0 0 rgba(13,159,110,0)}}
@@ -107,14 +107,14 @@ a:hover{color:var(--accent2)}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(13,159,110,.35);color:#fff}
 .btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .3s}
 .btn-primary:hover::after{opacity:1}
-.btn-primary.coming-soon{opacity:.55;cursor:default;pointer-events:none}
-.btn-secondary{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:14px;font:600 .95rem var(--font);transition:all .25s var(--ease);cursor:pointer}
+.btn-primary.coming-soon{opacity:.5;cursor:default;pointer-events:none;box-shadow:none}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:14px;font:600 .95rem var(--font);transition:all .25s var(--ease);cursor:pointer;backdrop-filter:blur(8px)}
 .btn-secondary:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg);transform:translateY(-1px)}
 .hero-note{font-size:.78rem;color:var(--text3);margin-top:16px;opacity:0;animation:fadeUp .6s var(--ease-out) 1s forwards}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
 /* ============ EDITOR MOCKUP ============ */
-.mockup-wrap{position:relative;max-width:780px;margin:56px auto 0;opacity:0;animation:fadeUp 1s var(--ease-out) 1.2s forwards}
+.mockup-wrap{position:relative;z-index:2;max-width:780px;margin:56px auto 0;opacity:0;animation:fadeUp 1s var(--ease-out) 1.2s forwards}
 .mockup{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg),var(--shadow-glow);overflow:hidden}
 .mockup-bar{height:44px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:8px}
 .mockup-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border2)}
@@ -184,13 +184,13 @@ a:hover{color:var(--accent2)}
 .scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:300;width:0;transition:width .1s linear}
 
 /* ============ FALLING LEAVES ============ */
-.leaf-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35}
-[data-theme="dark"] .leaf-canvas{opacity:.2}
+.leaf-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.25}
+[data-theme="dark"] .leaf-canvas{opacity:.15}
 
 /* ============ FEATURE HIGHLIGHT BANNER ============ */
-.highlight-banner{background:linear-gradient(90deg,var(--accent),#0ABE82);color:#fff;overflow:hidden;height:40px;position:relative}
-.highlight-track{display:flex;animation:bannerScroll 30s linear infinite;white-space:nowrap}
-.highlight-item{padding:0 48px;font:600 .82rem var(--font);line-height:40px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.highlight-banner{background:linear-gradient(90deg,var(--accent),#0ABE82);color:#fff;overflow:hidden;height:36px;position:relative;z-index:1}
+.highlight-track{display:flex;animation:bannerScroll 35s linear infinite;white-space:nowrap}
+.highlight-item{padding:0 40px;font:500 .75rem var(--font);line-height:36px;display:flex;align-items:center;gap:6px;flex-shrink:0;opacity:.9}
 @keyframes bannerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* ============ ASMR DEMO ============ */
@@ -349,14 +349,6 @@ a:hover{color:var(--accent2)}
 <!-- Scroll Progress -->
 <div class="scroll-progress" id="scroll-progress"></div>
 
-<!-- Falling Leaves Canvas -->
-<canvas class="leaf-canvas" id="leaf-canvas"></canvas>
-
-<!-- Feature Highlight Banner -->
-<div class="highlight-banner">
-  <div class="highlight-track" id="highlight-track"></div>
-</div>
-
 <!-- ============ NAV ============ -->
 <nav class="nav" id="nav">
   <div class="nav-inner">
@@ -384,6 +376,7 @@ a:hover{color:var(--accent2)}
     <div class="hero-orb hero-orb-2"></div>
     <div class="hero-orb hero-orb-3"></div>
   </div>
+  <canvas class="leaf-canvas" id="leaf-canvas"></canvas>
   <div class="hero-content">
     <div class="hero-badge"><span class="pulse"></span> <span class="show-ko">Tauri + Rust 네이티브 앱</span><span class="show-en">Tauri + Rust Native App</span></div>
     <h1>
@@ -438,6 +431,11 @@ a:hover{color:var(--accent2)}
     </div>
   </div>
 </section>
+
+<!-- Feature Highlight Banner -->
+<div class="highlight-banner">
+  <div class="highlight-track" id="highlight-track"></div>
+</div>
 
 <!-- ============ PERFORMANCE ============ -->
 <section class="perf reveal">
@@ -912,13 +910,14 @@ a:hover{color:var(--accent2)}
     progressBar.style.width = (window.scrollY / h * 100) + '%';
   }, {passive:true});
 
-  // === Falling leaves canvas ===
+  // === Falling leaves canvas (hero only) ===
   (function(){
     var canvas = document.getElementById('leaf-canvas');
     var ctx = canvas.getContext('2d');
     var leaves = [];
-    var MAX = 15;
-    function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    var MAX = 12;
+    var hero = canvas.parentElement;
+    function resize(){ canvas.width = hero.offsetWidth; canvas.height = hero.offsetHeight; }
     resize(); window.addEventListener('resize', resize);
     function Leaf(){
       this.x = Math.random() * canvas.width;
