@@ -4,876 +4,599 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Leaf — 생각이 흐르는 마크다운 에디터</title>
-  <meta name="description" content="Tauri + Rust 기반 네이티브 마크다운 에디터. Typora의 라이브 프리뷰, Obsidian의 지식 그래프, 그리고 Electron 없는 가벼움. 코넬 노트, 칸반 보드, 머메이드 다이어그램까지.">
-  <meta name="keywords" content="Leaf, markdown editor, Tauri, Rust, 마크다운 에디터, WYSIWYG, knowledge graph, 코넬노트">
-
+  <meta name="description" content="Tauri + Rust 기반 네이티브 마크다운 에디터. Typora의 라이브 프리뷰, Obsidian의 지식 그래프, 그리고 Electron 없는 가벼움.">
+  <meta name="keywords" content="Leaf, markdown editor, Tauri, Rust, 마크다운 에디터, WYSIWYG, knowledge graph">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Leaf — 생각이 흐르는 마크다운 에디터">
   <meta property="og:description" content="Tauri + Rust 기반 네이티브 마크다운 에디터. 라이브 프리뷰, 지식 그래프, 150MB 미만 메모리.">
   <meta property="og:url" content="https://leaf-kit.github.io/leafmd/">
   <meta property="og:site_name" content="leaf-kit.github.io">
   <meta property="og:locale" content="ko_KR">
-
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@leafeditor">
   <meta name="twitter:creator" content="@leafeditor">
   <meta name="twitter:title" content="Leaf — 생각이 흐르는 마크다운 에디터">
-  <meta name="twitter:description" content="Tauri + Rust. 라이브 프리뷰, 지식 그래프, 150MB 미만 메모리. Electron 없이 빠르고 가볍게.">
-
+  <meta name="twitter:description" content="Tauri + Rust. 라이브 프리뷰, 지식 그래프, 150MB 미만 메모리.">
   <link rel="canonical" href="https://leaf-kit.github.io/leafmd/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #FAFBFC; --bg2: #FFFFFF; --bg3: #F0F2F5;
-      --text: #111827; --text2: #4B5563; --text3: #9CA3AF;
-      --accent: #059669; --accent2: #10B981; --accent-bg: rgba(5,150,105,.06);
-      --accent-border: rgba(5,150,105,.2);
-      --amber: #D97706; --amber-bg: rgba(217,119,6,.08);
-      --blue: #3B82F6; --purple: #8B5CF6; --red: #EF4444;
-      --border: #E5E7EB;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
-      --shadow: 0 8px 24px rgba(0,0,0,.06);
-      --shadow-lg: 0 20px 60px rgba(0,0,0,.08);
-      --font: 'Noto Sans KR', -apple-system, sans-serif;
-      --mono: 'JetBrains Mono', monospace;
-      --radius: 14px;
-    }
-    [data-theme="dark"] {
-      --bg: #0C0F1A; --bg2: #141825; --bg3: #1C2030;
-      --text: #E5E7EB; --text2: #9CA3AF; --text3: #6B7280;
-      --border: #2A2F40;
-      --accent-bg: rgba(16,185,129,.1);
-      --accent-border: rgba(16,185,129,.25);
-      --amber-bg: rgba(217,119,6,.1);
-      --shadow-sm: 0 1px 3px rgba(0,0,0,.2);
-      --shadow: 0 8px 24px rgba(0,0,0,.3);
-      --shadow-lg: 0 20px 60px rgba(0,0,0,.4);
-    }
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { font-size: 17px; scroll-behavior: smooth; }
-    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.8; -webkit-font-smoothing: antialiased; }
-    a { color: var(--accent); text-decoration: none; transition: opacity .2s; }
-    a:hover { opacity: .8; }
-    .hide-ko, .hide-en { display: none; }
-    [data-lang="ko"] .show-ko { display: initial; }
-    [data-lang="ko"] .show-en { display: none; }
-    [data-lang="en"] .show-en { display: initial; }
-    [data-lang="en"] .show-ko { display: none; }
+:root {
+  --bg: #FFFFFF; --bg2: #F8FAFB; --bg3: #F1F4F8;
+  --text: #1A1A2E; --text2: #5A6070; --text3: #9BA3B0;
+  --accent: #0D9F6E; --accent2: #34D399; --accent-glow: rgba(13,159,110,.15);
+  --accent-bg: rgba(13,159,110,.05); --accent-border: rgba(13,159,110,.15);
+  --amber: #E67E22; --amber-bg: rgba(230,126,34,.08);
+  --blue: #4A90D9; --purple: #7C5CFC; --rose: #E84393;
+  --border: #E8ECF0; --border2: #D5DBE3;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.04);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.05);
+  --shadow: 0 8px 30px rgba(0,0,0,.06);
+  --shadow-lg: 0 24px 64px rgba(0,0,0,.08);
+  --shadow-glow: 0 0 60px rgba(13,159,110,.08);
+  --font: 'Inter', 'Noto Sans KR', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 16px; --radius-lg: 24px;
+  --ease: cubic-bezier(.4,0,.2,1);
+  --ease-bounce: cubic-bezier(.34,1.56,.64,1);
+  --ease-out: cubic-bezier(0,.55,.45,1);
+}
+[data-theme="dark"] {
+  --bg: #0A0D14; --bg2: #12151E; --bg3: #1A1E2A;
+  --text: #EAEDF2; --text2: #8B92A0; --text3: #5A6070;
+  --border: #242838; --border2: #2E3348;
+  --accent-glow: rgba(52,211,153,.1);
+  --accent-bg: rgba(52,211,153,.06);
+  --accent-border: rgba(52,211,153,.18);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.2);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.25);
+  --shadow: 0 8px 30px rgba(0,0,0,.3);
+  --shadow-lg: 0 24px 64px rgba(0,0,0,.4);
+  --shadow-glow: 0 0 80px rgba(52,211,153,.06);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none;transition:color .2s var(--ease)}
+a:hover{color:var(--accent2)}
+[data-lang="ko"] .show-ko{display:initial}[data-lang="ko"] .show-en{display:none}
+[data-lang="en"] .show-en{display:initial}[data-lang="en"] .show-ko{display:none}
 
-    /* Nav */
-    .nav { position: sticky; top: 0; z-index: 100; background: var(--bg2); border-bottom: 1px solid var(--border); backdrop-filter: blur(20px); }
-    [data-theme="dark"] .nav { background: rgba(20,24,37,.9); }
-    .nav-inner { max-width: 1080px; margin: 0 auto; padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
-    .nav-left { display: flex; align-items: center; gap: 10px; }
-    .nav-logo { font: 900 1.1rem var(--font); color: var(--accent); letter-spacing: -.03em; }
-    .nav-tag { font: 600 .62rem var(--mono); color: var(--amber); background: var(--amber-bg); padding: 2px 8px; border-radius: 10px; }
-    .nav-right { display: flex; align-items: center; gap: 6px; }
-    .nav-btn { height: 34px; border: 1px solid var(--border); background: var(--bg); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: .8rem; transition: all .2s; padding: 0 10px; font-family: var(--mono); font-weight: 600; }
-    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .nav-link { color: var(--text3); display: flex; align-items: center; padding: 6px; border-radius: 6px; transition: color .2s; }
-    .nav-link:hover { color: var(--accent); }
+/* Reveal animations */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}.reveal-delay-4{transition-delay:.4s}
+.reveal-scale{opacity:0;transform:scale(.92);transition:opacity .6s var(--ease-out),transform .6s var(--ease-bounce)}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
 
-    /* Hero */
-    .hero { padding: 80px 24px 64px; text-align: center; position: relative; overflow: hidden; }
-    .hero::before { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(16,185,129,.04) 0%, transparent 65%); pointer-events: none; }
-    .hero-inner { max-width: 680px; margin: 0 auto; position: relative; }
-    .hero-icon { font-size: 3rem; margin-bottom: 20px; display: inline-block; filter: drop-shadow(0 4px 12px rgba(16,185,129,.2)); }
-    .hero h1 { font-size: 2.6rem; font-weight: 900; line-height: 1.25; letter-spacing: -.04em; margin-bottom: 20px; }
-    .hero h1 em { font-style: normal; color: var(--accent); }
-    .hero-sub { font-size: 1.05rem; color: var(--text2); line-height: 1.9; max-width: 520px; margin: 0 auto 28px; }
-    .hero-chips { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
-    .chip { font: 600 .72rem var(--mono); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--text2); background: var(--bg2); }
-    .chip.green { color: var(--accent); border-color: var(--accent-border); background: var(--accent-bg); }
-    .hero-cta { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--accent); color: #fff; border-radius: 10px; font-weight: 700; font-size: .92rem; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 16px rgba(5,150,105,.25); cursor: default; opacity: .6; }
-    .hero-cta-note { font-size: .75rem; color: var(--text3); margin-top: 10px; }
+/* ============ NAV ============ */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 24px;transition:background .3s,box-shadow .3s,backdrop-filter .3s}
+.nav.scrolled{background:var(--bg);box-shadow:var(--shadow-sm);backdrop-filter:blur(20px)}
+[data-theme="dark"] .nav.scrolled{background:rgba(10,13,20,.85)}
+.nav-inner{max-width:1200px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-logo{font:800 1.2rem var(--font);color:var(--accent);letter-spacing:-.04em;display:flex;align-items:center;gap:8px}
+.nav-logo svg{width:28px;height:28px}
+.nav-tag{font:600 .58rem var(--mono);color:var(--amber);background:var(--amber-bg);padding:3px 10px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase}
+.nav-right{display:flex;align-items:center;gap:6px}
+.nav-btn{height:36px;padding:0 12px;border:1px solid var(--border);background:transparent;border-radius:10px;cursor:pointer;font:600 .78rem var(--mono);color:var(--text2);transition:all .25s var(--ease);display:flex;align-items:center;gap:4px}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.nav-icon{width:36px;height:36px;border:1px solid transparent;background:transparent;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .2s var(--ease)}
+.nav-icon:hover{color:var(--accent);background:var(--accent-bg)}
+.nav-icon svg{width:18px;height:18px}
 
-    /* Philosophy */
-    .philosophy { max-width: 640px; margin: 0 auto; padding: 56px 24px 48px; }
-    .philosophy blockquote { border: none; padding: 0; margin: 0; background: none; }
-    .philosophy p { font-size: 1.05rem; color: var(--text2); margin-bottom: 12px; line-height: 2; }
-    .philosophy p.bold { color: var(--text); font-weight: 600; }
-    .philosophy p.indent { padding-left: 20px; border-left: 2px solid var(--accent-border); }
-    .philosophy .sig { text-align: right; margin-top: 24px; font-size: .88rem; color: var(--text3); }
+/* ============ HERO ============ */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.4;animation:orbFloat 20s ease-in-out infinite}
+[data-theme="dark"] .hero-orb{opacity:.2}
+.hero-orb-1{width:500px;height:500px;background:var(--accent);top:-150px;right:-100px;animation-delay:0s}
+.hero-orb-2{width:350px;height:350px;background:var(--purple);bottom:-100px;left:-80px;animation-delay:-7s}
+.hero-orb-3{width:250px;height:250px;background:var(--amber);top:40%;left:60%;animation-delay:-14s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(30px,-40px) scale(1.05)}50%{transform:translate(-20px,30px) scale(.95)}75%{transform:translate(40px,20px) scale(1.02)}}
+.hero-content{position:relative;z-index:1;max-width:740px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font:500 .78rem var(--font);color:var(--text2);background:var(--bg2);border:1px solid var(--border);padding:6px 18px;border-radius:100px;margin-bottom:32px;box-shadow:var(--shadow-xs);opacity:0;animation:fadeUp .8s var(--ease-out) .2s forwards}
+.hero-badge .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(13,159,110,.4);animation:livePulse 2s ease infinite}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(13,159,110,.4)}70%{box-shadow:0 0 0 10px rgba(13,159,110,0)}100%{box-shadow:0 0 0 0 rgba(13,159,110,0)}}
+.hero h1{font-size:4rem;font-weight:900;line-height:1.1;letter-spacing:-.05em;margin-bottom:24px;opacity:0;animation:fadeUp .8s var(--ease-out) .4s forwards}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.2rem;color:var(--text2);line-height:1.8;max-width:480px;margin:0 auto 40px;font-weight:400;opacity:0;animation:fadeUp .8s var(--ease-out) .6s forwards}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .8s var(--ease-out) .8s forwards}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:linear-gradient(135deg,var(--accent),#0ABE82);color:#fff;border-radius:14px;font:600 .95rem var(--font);transition:transform .25s var(--ease),box-shadow .25s var(--ease);box-shadow:0 4px 20px rgba(13,159,110,.3);cursor:pointer;border:none;position:relative;overflow:hidden}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(13,159,110,.35);color:#fff}
+.btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .3s}
+.btn-primary:hover::after{opacity:1}
+.btn-primary.coming-soon{opacity:.55;cursor:default;pointer-events:none}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:14px;font:600 .95rem var(--font);transition:all .25s var(--ease);cursor:pointer}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg);transform:translateY(-1px)}
+.hero-note{font-size:.78rem;color:var(--text3);margin-top:16px;opacity:0;animation:fadeUp .6s var(--ease-out) 1s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-    /* Sections */
-    .section { max-width: 1080px; margin: 0 auto; padding: 56px 24px; }
-    .section-header { text-align: center; margin-bottom: 40px; }
-    .section-header h2 { font-size: 1.6rem; font-weight: 900; letter-spacing: -.03em; margin-bottom: 8px; }
-    .section-header p { font-size: .95rem; color: var(--text2); max-width: 500px; margin: 0 auto; }
-    .section-divider { border: none; border-top: 1px solid var(--border); max-width: 1080px; margin: 0 auto; }
+/* ============ EDITOR MOCKUP ============ */
+.mockup-wrap{position:relative;max-width:780px;margin:56px auto 0;opacity:0;animation:fadeUp 1s var(--ease-out) 1.2s forwards}
+.mockup{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg),var(--shadow-glow);overflow:hidden}
+.mockup-bar{height:44px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:8px}
+.mockup-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border2)}
+.mockup-dot:nth-child(1){border-color:#FF6058}.mockup-dot:nth-child(2){border-color:#FFC02F}.mockup-dot:nth-child(3){border-color:#27CA40}
+.mockup-tabs{margin-left:20px;display:flex;gap:2px}
+.mockup-tab{padding:6px 16px;font:500 .72rem var(--font);color:var(--text3);border-radius:8px 8px 0 0;background:transparent}
+.mockup-tab.active{background:var(--bg2);color:var(--text)}
+.mockup-body{display:flex;min-height:320px}
+.mockup-sidebar{width:200px;border-right:1px solid var(--border);padding:16px 12px;flex-shrink:0}
+.mockup-file{padding:6px 10px;font:400 .72rem var(--font);color:var(--text3);border-radius:6px;margin-bottom:2px;display:flex;align-items:center;gap:6px;transition:background .2s}
+.mockup-file.active{background:var(--accent-bg);color:var(--accent)}
+.mockup-file::before{content:'';width:4px;height:4px;border-radius:1px;background:currentColor;opacity:.4;flex-shrink:0}
+.mockup-editor{flex:1;padding:28px 32px;font-family:var(--font);font-size:.88rem;line-height:1.9;color:var(--text2)}
+.mockup-editor .me-h1{font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.mockup-editor .me-h2{font-size:1rem;font-weight:700;color:var(--text);margin:16px 0 6px;border-bottom:2px solid var(--accent-bg);padding-bottom:4px;display:inline-block}
+.mockup-editor .me-bold{font-weight:600;color:var(--text)}
+.mockup-editor .me-code{font-family:var(--mono);font-size:.78rem;background:var(--bg3);padding:2px 7px;border-radius:5px;color:var(--accent)}
+.mockup-editor .me-check{color:var(--accent);margin-right:4px}
+.me-cursor{display:inline-block;width:2px;height:1.1em;background:var(--accent);margin-left:1px;vertical-align:text-bottom;animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.me-line{opacity:0;transform:translateY(8px);transition:opacity .4s var(--ease-out),transform .4s var(--ease-out)}
+.me-line.typed{opacity:1;transform:translateY(0)}
 
-    /* Performance Strip */
-    .perf-strip { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .perf-inner { max-width: 900px; margin: 0 auto; padding: 36px 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
-    .perf-item .perf-val { font: 900 1.8rem var(--mono); color: var(--accent); letter-spacing: -.03em; }
-    .perf-item .perf-label { font-size: .78rem; color: var(--text3); margin-top: 4px; }
+@media(max-width:768px){
+  .mockup-sidebar{display:none}
+  .mockup-body{min-height:240px}
+  .mockup-editor{padding:20px}
+}
 
-    /* Feature Cards */
-    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .feat { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: border-color .25s, transform .25s, box-shadow .25s; }
-    .feat:hover { border-color: var(--accent-border); transform: translateY(-3px); box-shadow: var(--shadow); }
-    .feat-icon { font-size: 1.6rem; margin-bottom: 10px; }
-    .feat h3 { font-size: .95rem; font-weight: 700; margin-bottom: 6px; }
-    .feat p { font-size: .82rem; color: var(--text2); line-height: 1.65; margin: 0; }
+/* ============ PERF COUNTER ============ */
+.perf{padding:80px 24px;background:var(--bg2);position:relative;overflow:hidden}
+.perf::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,var(--accent-glow),transparent 70%);pointer-events:none}
+.perf-grid{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;position:relative}
+.perf-card{text-align:center;padding:24px 0}
+.perf-num{font:900 3.2rem var(--mono);letter-spacing:-.05em;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.perf-num small{font-size:.4em;-webkit-text-fill-color:var(--text3);opacity:.7}
+.perf-label{font:500 .82rem var(--font);color:var(--text3);margin-top:8px}
 
-    /* Surprise Section */
-    .surprises { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-    .surprise { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 24px; display: flex; gap: 16px; align-items: flex-start; transition: border-color .2s; }
-    .surprise:hover { border-color: var(--accent-border); }
-    .surprise-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
-    .surprise h4 { font-size: .88rem; font-weight: 700; margin-bottom: 4px; }
-    .surprise p { font-size: .8rem; color: var(--text2); line-height: 1.6; margin: 0; }
+/* ============ PHILOSOPHY ============ */
+.philosophy{max-width:660px;margin:0 auto;padding:100px 24px 80px}
+.phil-line{font-size:1.15rem;color:var(--text2);margin-bottom:16px;line-height:2}
+.phil-line.bold{font-size:1.3rem;color:var(--text);font-weight:700;letter-spacing:-.02em}
+.phil-line.indent{padding-left:24px;border-left:3px solid var(--accent);margin-left:0}
+.phil-line.small{font-size:1rem;color:var(--text3);font-style:italic;margin-top:32px}
+.phil-sig{text-align:right;margin-top:28px;font:500 .9rem var(--font);color:var(--accent);letter-spacing:.02em}
 
-    /* Tech Stack */
-    .stack { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 700px; margin: 0 auto; }
-    .stack-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
-    .stack-item .sl { font-size: .82rem; font-weight: 600; }
-    .stack-item .sr { font: 500 .75rem var(--mono); color: var(--accent); background: var(--accent-bg); padding: 3px 10px; border-radius: 6px; }
+/* ============ SECTION ============ */
+.section{max-width:1200px;margin:0 auto;padding:100px 24px}
+.section-label{font:600 .72rem var(--mono);color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;text-align:center}
+.section-title{font-size:2.2rem;font-weight:900;letter-spacing:-.04em;text-align:center;margin-bottom:8px;line-height:1.2}
+.section-desc{font-size:1rem;color:var(--text2);text-align:center;max-width:500px;margin:0 auto 48px}
+.section-divider{border:none;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);max-width:600px;margin:0 auto}
 
-    /* Formats */
-    .formats { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
-    .fmt { font: 600 .72rem var(--mono); padding: 6px 14px; border-radius: 8px; background: var(--bg2); border: 1px solid var(--border); color: var(--text2); }
-    .fmt.imp { border-left: 3px solid var(--blue); }
-    .fmt.exp { border-left: 3px solid var(--accent); }
+/* ============ FEATURES ============ */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:32px 28px;transition:all .4s var(--ease);cursor:default;overflow:hidden}
+.feat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.feat:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--accent-border)}
+.feat:hover::before{transform:scaleX(1)}
+.feat-icon{width:48px;height:48px;border-radius:14px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:16px;transition:transform .3s var(--ease-bounce)}
+.feat:hover .feat-icon{transform:scale(1.1) rotate(-3deg)}
+.feat h3{font-size:1rem;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.feat p{font-size:.84rem;color:var(--text2);line-height:1.7;margin:0}
 
-    /* Comparison */
-    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); max-width: 800px; margin: 24px auto 0; }
-    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-    thead { background: var(--bg3); }
-    th { padding: 12px 16px; text-align: left; font-weight: 700; font-size: .72rem; color: var(--text3); text-transform: uppercase; letter-spacing: .04em; }
-    td { padding: 10px 16px; border-top: 1px solid var(--border); }
-    .check { color: var(--accent); font-weight: 700; }
-    .cross { color: var(--text3); }
+/* ============ SURPRISES ============ */
+.surp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.surp{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;display:flex;gap:20px;align-items:flex-start;transition:all .3s var(--ease);position:relative;overflow:hidden}
+.surp:hover{border-color:var(--accent-border);transform:translateX(4px)}
+.surp-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;transition:transform .3s var(--ease-bounce)}
+.surp:nth-child(1) .surp-icon{background:rgba(74,144,217,.1)}
+.surp:nth-child(2) .surp-icon{background:rgba(230,126,34,.1)}
+.surp:nth-child(3) .surp-icon{background:rgba(124,92,252,.1)}
+.surp:nth-child(4) .surp-icon{background:rgba(232,67,147,.1)}
+.surp:nth-child(5) .surp-icon{background:rgba(13,159,110,.1)}
+.surp:nth-child(6) .surp-icon{background:rgba(74,144,217,.1)}
+.surp:nth-child(7) .surp-icon{background:rgba(230,126,34,.1)}
+.surp:nth-child(8) .surp-icon{background:rgba(124,92,252,.1)}
+.surp:hover .surp-icon{transform:scale(1.15) rotate(5deg)}
+.surp h4{font-size:.9rem;font-weight:700;margin-bottom:4px}
+.surp p{font-size:.8rem;color:var(--text2);line-height:1.65;margin:0}
 
-    /* Templates */
-    .templates { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-    .tmpl { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; font-size: .82rem; font-weight: 500; color: var(--text2); transition: border-color .2s; display: flex; align-items: center; gap: 8px; }
-    .tmpl:hover { border-color: var(--accent-border); }
-    .tmpl-icon { font-size: 1.1rem; flex-shrink: 0; }
+/* ============ IMPORT/EXPORT ============ */
+.io-flow{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.io-group{display:flex;flex-direction:column;gap:8px;align-items:center}
+.io-label{font:700 .68rem var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.io-items{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.io-pill{font:600 .75rem var(--mono);padding:8px 16px;border-radius:10px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);transition:all .25s var(--ease)}
+.io-pill:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.io-pill.imp{border-left:3px solid var(--blue)}
+.io-pill.exp{border-left:3px solid var(--accent)}
+.io-arrow{font-size:1.5rem;color:var(--text3);font-weight:300}
+.io-center{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;display:flex;align-items:center;justify-content:center;font:700 .82rem var(--mono);box-shadow:0 8px 24px rgba(13,159,110,.2);flex-shrink:0}
 
-    /* Footer */
-    .footer { border-top: 1px solid var(--border); padding: 36px 24px; text-align: center; }
-    .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
-    .footer-links a { font-size: .82rem; color: var(--text3); display: flex; align-items: center; gap: 6px; }
-    .footer-links a:hover { color: var(--accent); }
-    .footer-copy { font-size: .72rem; color: var(--text3); }
-    .share-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 20px; background: var(--accent-bg); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 8px; font: 600 .82rem var(--font); cursor: pointer; transition: all .2s; text-decoration: none; margin-top: 16px; }
-    .share-btn:hover { background: var(--accent); color: #fff; opacity: 1; }
+/* ============ TEMPLATES ============ */
+.tmpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.tmpl{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font:500 .82rem var(--font);color:var(--text2);display:flex;align-items:center;gap:10px;transition:all .25s var(--ease);cursor:default}
+.tmpl:hover{border-color:var(--accent-border);background:var(--accent-bg);color:var(--accent);transform:translateY(-2px)}
+.tmpl-icon{font-size:1.2rem;flex-shrink:0}
 
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 1.8rem; }
-      .hero { padding: 52px 20px 40px; }
-      .perf-inner { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-      .features { grid-template-columns: 1fr; }
-      .surprises { grid-template-columns: 1fr; }
-      .stack { grid-template-columns: 1fr; }
-      .templates { grid-template-columns: repeat(2, 1fr); }
-    }
+/* ============ TECH STACK ============ */
+.stack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:800px;margin:0 auto}
+.stack-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;transition:all .25s var(--ease)}
+.stack-card:hover{border-color:var(--accent-border);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.stack-card .sc-name{font:700 .72rem var(--mono);color:var(--accent);background:var(--accent-bg);display:inline-block;padding:3px 12px;border-radius:8px;margin-bottom:8px}
+.stack-card .sc-label{font:500 .78rem var(--font);color:var(--text2)}
+
+/* ============ COMPARISON ============ */
+.cmp-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);max-width:860px;margin:32px auto 0;box-shadow:var(--shadow-sm)}
+.cmp-wrap table{width:100%;border-collapse:collapse;font-size:.82rem}
+.cmp-wrap thead{background:var(--bg3)}
+.cmp-wrap th{padding:14px 18px;text-align:left;font:700 .7rem var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.cmp-wrap td{padding:12px 18px;border-top:1px solid var(--border);transition:background .2s}
+.cmp-wrap tr:hover td{background:var(--accent-bg)}
+.cmp-wrap .check{color:var(--accent);font-weight:700}
+.cmp-wrap .cross{color:var(--text3);opacity:.5}
+
+/* ============ FOOTER ============ */
+.footer{border-top:1px solid var(--border);padding:48px 24px;text-align:center;background:var(--bg2)}
+.footer-inner{max-width:600px;margin:0 auto}
+.footer-links{display:flex;justify-content:center;gap:28px;margin-bottom:20px;flex-wrap:wrap}
+.footer-links a{font:500 .85rem var(--font);color:var(--text3);display:flex;align-items:center;gap:7px;transition:color .2s}
+.footer-links a:hover{color:var(--accent)}
+.footer-links a svg{width:16px;height:16px}
+.share-cta{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--bg);border:1px solid var(--border);color:var(--text2);border-radius:12px;font:600 .85rem var(--font);transition:all .3s var(--ease);margin-top:8px}
+.share-cta:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.share-cta svg{width:16px;height:16px}
+.footer-copy{font-size:.72rem;color:var(--text3);margin-top:20px}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:1024px){.feat-grid{grid-template-columns:repeat(2,1fr)}.stack-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+  .hero h1{font-size:2.4rem}
+  .hero{padding:80px 20px 60px;min-height:auto}
+  .perf-grid{grid-template-columns:repeat(2,1fr);gap:20px}
+  .perf-num{font-size:2.2rem}
+  .feat-grid{grid-template-columns:1fr}
+  .surp-grid{grid-template-columns:1fr}
+  .stack-grid{grid-template-columns:repeat(2,1fr)}
+  .tmpl-grid{grid-template-columns:repeat(2,1fr)}
+  .section-title{font-size:1.6rem}
+  .section{padding:64px 20px}
+  .io-flow{flex-direction:column}
+  .io-center{width:60px;height:60px;font-size:.7rem}
+  .mockup-wrap{margin:32px auto 0}
+}
+@media(max-width:480px){
+  .hero h1{font-size:1.9rem}
+  .perf-grid{grid-template-columns:1fr 1fr}
+  .nav-inner{height:56px}
+}
   </style>
 </head>
 <body>
-  <nav class="nav">
-    <div class="nav-inner">
-      <div class="nav-left">
-        <span class="nav-logo">Leaf</span>
-        <span class="nav-tag">BETA</span>
-      </div>
-      <div class="nav-right">
-        <button class="nav-btn" id="btn-lang">
-          <span class="show-ko">EN</span>
-          <span class="show-en">KO</span>
-        </button>
-        <button class="nav-btn" id="btn-theme"><span id="theme-icon">&#9788;</span></button>
-        <a class="nav-link" href="https://github.com/leaf-kit" target="_blank" title="GitHub">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        </a>
-        <a class="nav-link" href="https://x.com/leafeditor" target="_blank" title="@leafeditor">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        </a>
-      </div>
-    </div>
-  </nav>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-icon">&#x1f343;</div>
-      <h1>
-        <span class="show-ko"><em>Leaf</em><br>생각이 흐르는<br>마크다운 에디터</span>
-        <span class="show-en"><em>Leaf</em><br>Where Thoughts<br>Flow Naturally</span>
-      </h1>
-      <p class="hero-sub">
-        <span class="show-ko">
-          Tauri + Rust로 만든 네이티브 마크다운 에디터.<br>
-          Typora처럼 쓰고, Obsidian처럼 연결하고,<br>
-          Electron 없이 가볍게.
-        </span>
-        <span class="show-en">
-          A native markdown editor built with Tauri + Rust.<br>
-          Write like Typora, connect like Obsidian,<br>
-          lightweight without Electron.
-        </span>
-      </p>
-      <div class="hero-chips">
-        <span class="chip green">Tauri v2</span>
-        <span class="chip green">Rust Backend</span>
-        <span class="chip">CodeMirror 6</span>
-        <span class="chip">React 18</span>
-        <span class="chip">macOS</span>
-      </div>
-      <div class="hero-cta">
+<!-- ============ NAV ============ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <a href="/leafmd/" class="nav-logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2C10 2 4 8 4 16c0 6 3 10 8 12 1-2 2-5 4-8 2 3 3 6 4 8 5-2 8-6 8-12 0-8-6-14-12-14z" fill="currentColor" opacity=".15"/><path d="M16 6c-4 0-8 4-8 10s4 10 8 10 8-4 8-10-4-10-8-10z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M16 6v20M10 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Leaf
+      </a>
+      <span class="nav-tag">Beta</span>
+    </div>
+    <div class="nav-right">
+      <button class="nav-btn" id="btn-lang"><span class="show-ko">EN</span><span class="show-en">KO</span></button>
+      <button class="nav-icon" id="btn-theme" title="Toggle theme"><svg id="theme-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
+      <a class="nav-icon" href="https://github.com/leaf-kit" target="_blank" title="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a>
+      <a class="nav-icon" href="https://x.com/leafeditor" target="_blank" title="@leafeditor"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="pulse"></span> <span class="show-ko">Tauri + Rust 네이티브 앱</span><span class="show-en">Tauri + Rust Native App</span></div>
+    <h1>
+      <span class="show-ko"><em>Leaf</em><br>생각이 흐르는<br>마크다운 에디터</span>
+      <span class="show-en"><em>Leaf</em><br>Where Thoughts<br>Flow Naturally</span>
+    </h1>
+    <p class="hero-sub">
+      <span class="show-ko">Typora처럼 쓰고, Obsidian처럼 연결하고, Electron 없이 가볍게.</span>
+      <span class="show-en">Write like Typora. Connect like Obsidian. Lightweight without Electron.</span>
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary coming-soon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span class="show-ko">다운로드 (준비 중)</span>
-        <span class="show-en">Download (Coming Soon)</span>
-      </div>
-      <p class="hero-cta-note">
-        <span class="show-ko">macOS 지원 &middot; Windows/Linux 예정</span>
-        <span class="show-en">macOS supported &middot; Windows/Linux planned</span>
-      </p>
+        <span class="show-ko">다운로드 (준비 중)</span><span class="show-en">Download (Coming Soon)</span>
+      </button>
+      <a class="btn-secondary" href="https://github.com/leaf-kit" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
     </div>
-  </section>
+    <p class="hero-note"><span class="show-ko">macOS 지원 &middot; Windows / Linux 예정</span><span class="show-en">macOS supported &middot; Windows / Linux planned</span></p>
+  </div>
 
-  <!-- Performance Strip -->
-  <div class="perf-strip">
-    <div class="perf-inner">
-      <div class="perf-item">
-        <div class="perf-val">&lt;300<small style="font-size:.5em">ms</small></div>
-        <div class="perf-label">
-          <span class="show-ko">콜드 스타트</span>
-          <span class="show-en">Cold Start</span>
+  <!-- Editor Mockup -->
+  <div class="mockup-wrap">
+    <div class="mockup">
+      <div class="mockup-bar">
+        <div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div>
+        <div class="mockup-tabs">
+          <div class="mockup-tab active">README.md</div>
+          <div class="mockup-tab">notes.md</div>
         </div>
       </div>
-      <div class="perf-item">
-        <div class="perf-val">&lt;150<small style="font-size:.5em">MB</small></div>
-        <div class="perf-label">
-          <span class="show-ko">메모리 사용량</span>
-          <span class="show-en">Memory Usage</span>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="mockup-file active">README.md</div>
+          <div class="mockup-file">project-plan.md</div>
+          <div class="mockup-file">meeting-notes.md</div>
+          <div class="mockup-file">architecture.md</div>
+          <div class="mockup-file">daily-log.md</div>
         </div>
-      </div>
-      <div class="perf-item">
-        <div class="perf-val">~0<small style="font-size:.5em">%</small></div>
-        <div class="perf-label">
-          <span class="show-ko">대기 시 CPU</span>
-          <span class="show-en">Idle CPU</span>
-        </div>
-      </div>
-      <div class="perf-item">
-        <div class="perf-val">&lt;16<small style="font-size:.5em">ms</small></div>
-        <div class="perf-label">
-          <span class="show-ko">입력 → 렌더링</span>
-          <span class="show-en">Type to Render</span>
+        <div class="mockup-editor" id="mockup-editor">
+          <div class="me-line" data-delay="0"><span class="me-h1">&#x1f343; Leaf Editor</span></div>
+          <div class="me-line" data-delay="400"><span class="show-ko">생각을 가볍게, 행동을 빠르게</span><span class="show-en">Lighten your thoughts, accelerate action</span></div>
+          <div class="me-line" data-delay="900"><span class="me-h2"><span class="show-ko">오늘 할 일</span><span class="show-en">Today's Tasks</span></span></div>
+          <div class="me-line" data-delay="1300"><span class="me-check">&#10003;</span> <span class="me-bold"><span class="show-ko">라이브 프리뷰 최적화</span><span class="show-en">Optimize live preview</span></span></div>
+          <div class="me-line" data-delay="1600"><span class="me-check">&#10003;</span> <span class="show-ko">머메이드 렌더링 수정</span><span class="show-en">Fix Mermaid rendering</span></div>
+          <div class="me-line" data-delay="1900"><span style="color:var(--text3);margin-right:4px">&#9744;</span> <span class="show-ko">코넬 노트 CSS 개선</span><span class="show-en">Improve Cornell Notes CSS</span></div>
+          <div class="me-line" data-delay="2300"><span class="me-h2"><span class="show-ko">메모</span><span class="show-en">Notes</span></span></div>
+          <div class="me-line" data-delay="2700"><span class="show-ko">KaTeX 수식: </span><span class="show-en">KaTeX: </span><span class="me-code">$E = mc^2$</span></div>
+          <div class="me-line" data-delay="3100"><span class="show-ko">위키링크: </span><span class="show-en">Wikilink: </span><span style="color:var(--accent)">[[architecture]]</span><span class="me-cursor"></span></div>
         </div>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- Philosophy -->
-  <section class="philosophy">
-    <p class="bold">
-      <span class="show-ko">나는 복잡한 것을 좋아하지 않는다.</span>
-      <span class="show-en">I don't like complexity.</span>
-    </p>
-    <p>
-      <span class="show-ko">그래서 오히려 복잡한 문제를 해결하는 도구를 만든다.</span>
-      <span class="show-en">That's exactly why I build tools that solve complex problems.</span>
-    </p>
-    <p>
-      <span class="show-ko">
-        글을 쓰기 위한 도구가 아니라,<br>
-        생각이 자연스럽게 흐르고 실행까지 이어지게 만드는 환경을 만드는 중이다.
-      </span>
-      <span class="show-en">
-        Not a tool for writing,<br>
-        but an environment where thoughts flow naturally and lead to action.
-      </span>
-    </p>
-    <p class="indent">
-      <span class="show-ko">
-        개인 지식 관리는 거창하지 않다.<br>
-        잘 정리된 시스템보다,<br>
-        다시 열어보고 싶어지는 기록이 더 중요하다고 믿는다.
-      </span>
-      <span class="show-en">
-        Personal knowledge management doesn't have to be grand.<br>
-        A well-organized system matters less<br>
-        than notes you actually want to come back to.
-      </span>
-    </p>
-    <p class="bold">
-      <span class="show-ko">
-        짧게 쓰고, 자주 남기고, 바로 실행한다.
-      </span>
-      <span class="show-en">
-        Write short. Save often. Act immediately.
-      </span>
-    </p>
-    <p>
-      <span class="show-ko">
-        마크다운은 단순한 문법이 아니라<br>
-        생각을 가볍게 만들고, 행동을 빠르게 만드는 인터페이스다.
-      </span>
-      <span class="show-en">
-        Markdown isn't just syntax.<br>
-        It's an interface that lightens thought and accelerates action.
-      </span>
-    </p>
-    <p>
-      <span class="show-ko">Leaf는 아직 완성되지 않았다. 하지만 생각이 흘러가는 방식은 이미 바뀌고 있다.</span>
-      <span class="show-en">Leaf isn't finished yet. But the way thoughts flow has already changed.</span>
-    </p>
-    <div class="sig">— Leaf</div>
-  </section>
-
-  <hr class="section-divider">
-
-  <!-- Core Features -->
-  <section class="section">
-    <div class="section-header">
-      <h2>
-        <span class="show-ko">핵심 기능</span>
-        <span class="show-en">Core Features</span>
-      </h2>
-      <p>
-        <span class="show-ko">마크다운 에디터에 필요한 것, 그리고 기대하지 못한 것까지</span>
-        <span class="show-en">What you need in a markdown editor, and what you didn't expect</span>
-      </p>
+<!-- ============ PERFORMANCE ============ -->
+<section class="perf reveal">
+  <div class="perf-grid">
+    <div class="perf-card reveal reveal-delay-1">
+      <div class="perf-num" data-count="300" data-prefix="<" data-suffix="ms">0</div>
+      <div class="perf-label"><span class="show-ko">콜드 스타트</span><span class="show-en">Cold Start</span></div>
     </div>
-    <div class="features">
-      <div class="feat">
-        <div class="feat-icon">&#x270D;&#xFE0F;</div>
-        <h3>
-          <span class="show-ko">라이브 프리뷰</span>
-          <span class="show-en">Live Preview</span>
-        </h3>
-        <p>
-          <span class="show-ko">Typora 스타일의 인라인 WYSIWYG. 별도 미리보기 패널 없이 쓰는 그대로 보인다. Cmd+/ 로 소스 모드 전환.</span>
-          <span class="show-en">Typora-style inline WYSIWYG. No separate preview pane — what you type is what you see. Toggle source mode with Cmd+/.</span>
-        </p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">&#x1f578;&#xFE0F;</div>
-        <h3>
-          <span class="show-ko">지식 그래프</span>
-          <span class="show-en">Knowledge Graph</span>
-        </h3>
-        <p>
-          <span class="show-ko">[[위키링크]]로 문서를 연결하면 D3.js 기반 인터랙티브 그래프가 자동 생성된다. 로컬/글로벌 뷰 전환 가능.</span>
-          <span class="show-en">Connect documents with [[wikilinks]] and an interactive D3.js graph is auto-generated. Switch between local and global views.</span>
-        </p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">&#x1f4d0;</div>
-        <h3>
-          <span class="show-ko">머메이드 다이어그램</span>
-          <span class="show-en">Mermaid Diagrams</span>
-        </h3>
-        <p>
-          <span class="show-ko">플로차트, 시퀀스, 클래스, ER 다이어그램을 마크다운 안에서 바로 렌더링. Excalidraw 변환도 가능.</span>
-          <span class="show-en">Render flowcharts, sequences, class diagrams, ER diagrams inline. Excalidraw conversion available.</span>
-        </p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">&#x1f4DD;</div>
-        <h3>
-          <span class="show-ko">코넬 노트</span>
-          <span class="show-en">Cornell Notes</span>
-        </h3>
-        <p>
-          <span class="show-ko">Leaf만의 코넬 노트 포맷. Cue | Note | Summary 3단 레이아웃을 마크다운 안에서 직접 편집.</span>
-          <span class="show-en">Leaf-exclusive Cornell Notes format. Edit Cue | Note | Summary 3-column layout directly in markdown.</span>
-        </p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">&#x1f4CB;</div>
-        <h3>
-          <span class="show-ko">칸반 보드</span>
-          <span class="show-en">Kanban Board</span>
-        </h3>
-        <p>
-          <span class="show-ko">에디터를 떠나지 않고 인라인 칸반 보드로 작업을 관리한다. 메모 보드도 함께 지원.</span>
-          <span class="show-en">Manage tasks with inline Kanban boards without leaving the editor. Memo boards also supported.</span>
-        </p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">&#x1f3a8;</div>
-        <h3>
-          <span class="show-ko">17가지 테마</span>
-          <span class="show-en">17 Themes</span>
-        </h3>
-        <p>
-          <span class="show-ko">GitHub, Night, Forest, Aurora, Ocean, Moonlight 등 라이트/다크 테마. CSS 변수 기반으로 커스터마이징 가능.</span>
-          <span class="show-en">GitHub, Night, Forest, Aurora, Ocean, Moonlight and more. Customizable with CSS variables.</span>
-        </p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">&#x1f4CA;</div>
-        <h3>
-          <span class="show-ko">KaTeX 수식</span>
-          <span class="show-en">KaTeX Math</span>
-        </h3>
-        <p>
-          <span class="show-ko">인라인 $...$ 과 블록 $$...$$ 수식을 실시간 렌더링. 학술 논문과 기술 문서 작성에 적합.</span>
-          <span class="show-en">Real-time rendering of inline $...$ and block $$...$$ equations. Perfect for academic and technical writing.</span>
-        </p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">&#x1f4C1;</div>
-        <h3>
-          <span class="show-ko">멀티 탭</span>
-          <span class="show-en">Multi-Tab</span>
-        </h3>
-        <p>
-          <span class="show-ko">여러 문서를 동시에 열어서 작업. 파일 트리 + 탭 기반 탐색. 외부 파일 변경도 실시간 감지.</span>
-          <span class="show-en">Work with multiple documents simultaneously. File tree + tab navigation. Real-time external file change detection.</span>
-        </p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">&#x1f310;</div>
-        <h3>
-          <span class="show-ko">다국어 지원</span>
-          <span class="show-en">Multilingual</span>
-        </h3>
-        <p>
-          <span class="show-ko">한국어, 영어, 중국어, 일본어 완전 지원. 한글 번호 매기기(가나다, 일이삼)까지 네이티브로 처리.</span>
-          <span class="show-en">Full Korean, English, Chinese, Japanese support. Native Hangul numbering (가나다, 일이삼) included.</span>
-        </p>
+    <div class="perf-card reveal reveal-delay-2">
+      <div class="perf-num" data-count="150" data-prefix="<" data-suffix="MB">0</div>
+      <div class="perf-label"><span class="show-ko">메모리 사용량</span><span class="show-en">Memory Usage</span></div>
+    </div>
+    <div class="perf-card reveal reveal-delay-3">
+      <div class="perf-num" data-count="0" data-prefix="~" data-suffix="%">0</div>
+      <div class="perf-label"><span class="show-ko">대기 시 CPU</span><span class="show-en">Idle CPU</span></div>
+    </div>
+    <div class="perf-card reveal reveal-delay-4">
+      <div class="perf-num" data-count="16" data-prefix="<" data-suffix="ms">0</div>
+      <div class="perf-label"><span class="show-ko">입력 &rarr; 렌더링</span><span class="show-en">Type &rarr; Render</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PHILOSOPHY ============ -->
+<section class="philosophy">
+  <p class="phil-line bold reveal"><span class="show-ko">나는 복잡한 것을 좋아하지 않는다.</span><span class="show-en">I don't like complexity.</span></p>
+  <p class="phil-line reveal"><span class="show-ko">그래서 오히려 복잡한 문제를 해결하는 도구를 만든다.</span><span class="show-en">That's exactly why I build tools that solve complex problems.</span></p>
+  <p class="phil-line reveal"><span class="show-ko">글을 쓰기 위한 도구가 아니라,<br>생각이 자연스럽게 흐르고 실행까지 이어지게 만드는 환경을 만드는 중이다.</span><span class="show-en">Not a tool for writing,<br>but an environment where thoughts flow naturally and lead to action.</span></p>
+  <p class="phil-line indent reveal"><span class="show-ko">개인 지식 관리는 거창하지 않다.<br>잘 정리된 시스템보다,<br>다시 열어보고 싶어지는 기록이 더 중요하다고 믿는다.</span><span class="show-en">Personal knowledge management doesn't have to be grand.<br>A well-organized system matters less<br>than notes you actually want to come back to.</span></p>
+  <p class="phil-line bold reveal"><span class="show-ko">짧게 쓰고, 자주 남기고, 바로 실행한다.</span><span class="show-en">Write short. Save often. Act immediately.</span></p>
+  <p class="phil-line reveal"><span class="show-ko">마크다운은 단순한 문법이 아니라<br>생각을 가볍게 만들고, 행동을 빠르게 만드는 인터페이스다.</span><span class="show-en">Markdown isn't just syntax.<br>It's an interface that lightens thought and accelerates action.</span></p>
+  <p class="phil-line small reveal"><span class="show-ko">Leaf는 아직 완성되지 않았다. 하지만 생각이 흘러가는 방식은 이미 바뀌고 있다.</span><span class="show-en">Leaf isn't finished yet. But the way thoughts flow has already changed.</span></p>
+  <div class="phil-sig reveal">&mdash; Leaf</div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ============ CORE FEATURES ============ -->
+<section class="section">
+  <div class="section-label reveal"><span class="show-ko">기능</span><span class="show-en">Features</span></div>
+  <h2 class="section-title reveal"><span class="show-ko">마크다운 에디터의 새로운 기준</span><span class="show-en">A New Standard for Markdown</span></h2>
+  <p class="section-desc reveal"><span class="show-ko">필요한 것은 모두, 기대하지 못한 것까지</span><span class="show-en">Everything you need, and what you didn't expect</span></p>
+  <div class="feat-grid">
+    <div class="feat reveal reveal-scale"><div class="feat-icon">&#x270D;&#xFE0F;</div><h3><span class="show-ko">라이브 프리뷰</span><span class="show-en">Live Preview</span></h3><p><span class="show-ko">Typora 스타일 인라인 WYSIWYG. 별도 미리보기 패널 없이 쓰는 그대로 보인다. Cmd+/ 로 소스 모드 전환.</span><span class="show-en">Typora-style inline WYSIWYG. No split pane — what you type is what you see. Toggle source with Cmd+/.</span></p></div>
+    <div class="feat reveal reveal-scale"><div class="feat-icon">&#x1f578;&#xFE0F;</div><h3><span class="show-ko">지식 그래프</span><span class="show-en">Knowledge Graph</span></h3><p><span class="show-ko">[[위키링크]]로 문서를 연결하면 D3.js 기반 인터랙티브 그래프가 자동 생성된다. 로컬/글로벌 뷰 전환.</span><span class="show-en">Connect documents with [[wikilinks]] and get an interactive D3.js graph. Local and global views.</span></p></div>
+    <div class="feat reveal reveal-scale"><div class="feat-icon">&#x1f4d0;</div><h3><span class="show-ko">머메이드 다이어그램</span><span class="show-en">Mermaid Diagrams</span></h3><p><span class="show-ko">플로차트, 시퀀스, 클래스, ER 다이어그램을 마크다운 안에서 바로 렌더링. Excalidraw 변환 지원.</span><span class="show-en">Flowcharts, sequences, class diagrams, ER diagrams rendered inline. Excalidraw conversion available.</span></p></div>
+    <div class="feat reveal reveal-scale"><div class="feat-icon">&#x1f4DD;</div><h3><span class="show-ko">코넬 노트</span><span class="show-en">Cornell Notes</span></h3><p><span class="show-ko">Leaf만의 코넬 노트 포맷. Cue | Note | Summary 3단 레이아웃을 마크다운 안에서 직접 편집.</span><span class="show-en">Leaf-exclusive format. Edit Cue | Note | Summary 3-column layout directly in markdown.</span></p></div>
+    <div class="feat reveal reveal-scale"><div class="feat-icon">&#x1f4CB;</div><h3><span class="show-ko">칸반 보드</span><span class="show-en">Kanban Board</span></h3><p><span class="show-ko">에디터를 떠나지 않고 인라인 칸반 보드로 작업을 관리한다. 메모 보드도 함께 지원.</span><span class="show-en">Manage tasks with inline Kanban boards. Memo boards also supported.</span></p></div>
+    <div class="feat reveal reveal-scale"><div class="feat-icon">&#x1f3a8;</div><h3><span class="show-ko">17가지 테마</span><span class="show-en">17 Themes</span></h3><p><span class="show-ko">GitHub, Night, Forest, Aurora, Ocean, Moonlight 등 라이트/다크 테마. CSS 변수 기반 커스터마이징.</span><span class="show-en">GitHub, Night, Forest, Aurora, Ocean, Moonlight and more. Customizable with CSS variables.</span></p></div>
+    <div class="feat reveal reveal-scale"><div class="feat-icon">&#x1f4CA;</div><h3><span class="show-ko">KaTeX 수식</span><span class="show-en">KaTeX Math</span></h3><p><span class="show-ko">인라인 $...$ 과 블록 $$...$$ 수식을 실시간 렌더링. 학술 논문과 기술 문서에 적합.</span><span class="show-en">Real-time inline and block equation rendering. Perfect for academic and technical writing.</span></p></div>
+    <div class="feat reveal reveal-scale"><div class="feat-icon">&#x1f4C1;</div><h3><span class="show-ko">멀티 탭</span><span class="show-en">Multi-Tab</span></h3><p><span class="show-ko">여러 문서를 동시에 열어서 작업. 파일 트리 + 탭 기반 탐색. 외부 파일 변경 실시간 감지.</span><span class="show-en">Multiple documents open simultaneously. File tree + tabs. Real-time external change detection.</span></p></div>
+    <div class="feat reveal reveal-scale"><div class="feat-icon">&#x1f310;</div><h3><span class="show-ko">다국어 지원</span><span class="show-en">Multilingual</span></h3><p><span class="show-ko">한국어, 영어, 중국어, 일본어 완전 지원. 한글 번호 매기기(가나다, 일이삼)까지 네이티브.</span><span class="show-en">Full Korean, English, Chinese, Japanese. Native Hangul numbering included.</span></p></div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ============ SURPRISES ============ -->
+<section class="section">
+  <div class="section-label reveal"><span class="show-ko">의외의 기능</span><span class="show-en">Unexpected</span></div>
+  <h2 class="section-title reveal"><span class="show-ko">마크다운 에디터에 이런 게?</span><span class="show-en">Wait, This Is a Markdown Editor?</span></h2>
+  <p class="section-desc reveal"><span class="show-ko">만들고 싶어서 만든 것들</span><span class="show-en">Built because we wanted to</span></p>
+  <div class="surp-grid">
+    <div class="surp reveal"><div class="surp-icon">&#x1f3ae;</div><div><h4><span class="show-ko">타이핑 게임</span><span class="show-en">Typing Game</span></h4><p><span class="show-ko">키보드 속도를 연습하는 미니 게임. 글쓰기 워밍업으로 제격.</span><span class="show-en">Built-in typing speed mini-game. Perfect for writing warm-ups.</span></p></div></div>
+    <div class="surp reveal"><div class="surp-icon">&#x1f423;</div><div><h4><span class="show-ko">다마고치</span><span class="show-en">Tamagotchi</span></h4><p><span class="show-ko">글을 쓰면 성장하는 가상 펫. 당신의 글쓰기 동반자.</span><span class="show-en">A virtual pet that grows as you write. Your writing companion.</span></p></div></div>
+    <div class="surp reveal"><div class="surp-icon">&#x1f3ac;</div><div><h4><span class="show-ko">스크린세이버 모드</span><span class="show-en">Screensaver Mode</span></h4><p><span class="show-ko">52개의 영감을 주는 문구가 화면에 순환 표시된다.</span><span class="show-en">52 inspirational quotes rotate on screen for ambient inspiration.</span></p></div></div>
+    <div class="surp reveal"><div class="surp-icon">&#x270B;</div><div><h4><span class="show-ko">헤밍웨이 모드</span><span class="show-en">Hemingway Mode</span></h4><p><span class="show-ko">Delete 키를 비활성화. 지우지 말고 앞으로만 써라. 분당 속도 측정.</span><span class="show-en">Disables Delete key. Only move forward. Tracks your words per minute.</span></p></div></div>
+    <div class="surp reveal"><div class="surp-icon">&#x1f30A;</div><div><h4><span class="show-ko">물리 시뮬레이터</span><span class="show-en">Physics Simulator</span></h4><p><span class="show-ko">인터랙티브 물리 캔버스. 마크다운 에디터에 왜? 만들고 싶어서.</span><span class="show-en">Interactive physics canvas. Why? Because we wanted to build it.</span></p></div></div>
+    <div class="surp reveal"><div class="surp-icon">&#x1f3b5;</div><div><h4><span class="show-ko">ABC 악보</span><span class="show-en">ABC Music Notation</span></h4><p><span class="show-ko">ABC 문법으로 악보 렌더링 + 재생. 음악 수업 노트에 딱.</span><span class="show-en">Render and play sheet music with ABC notation.</span></p></div></div>
+    <div class="surp reveal"><div class="surp-icon">&#x1f9D3;</div><div><h4><span class="show-ko">시니어 모드</span><span class="show-en">Senior Mode</span></h4><p><span class="show-ko">큰 글씨, 단순화된 UI. 접근성을 진지하게 고민한 결과물.</span><span class="show-en">Larger fonts, simplified UI. A serious take on accessibility.</span></p></div></div>
+    <div class="surp reveal"><div class="surp-icon">&#x1f4bb;</div><div><h4><span class="show-ko">내장 터미널</span><span class="show-en">Built-in Terminal</span></h4><p><span class="show-ko">xterm 기반 터미널. 문서 쓰다가 바로 명령어 실행.</span><span class="show-en">xterm-based terminal. Run commands while writing docs.</span></p></div></div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ============ IMPORT/EXPORT ============ -->
+<section class="section">
+  <div class="section-label reveal"><span class="show-ko">호환성</span><span class="show-en">Compatibility</span></div>
+  <h2 class="section-title reveal"><span class="show-ko">어디서든 가져오고, 어디로든 내보내기</span><span class="show-en">Import Anything, Export Everywhere</span></h2>
+  <p class="section-desc reveal"><span class="show-ko">마크다운을 중심으로 모든 형식이 연결된다</span><span class="show-en">Markdown at the center, connected to every format</span></p>
+  <div class="io-flow reveal">
+    <div class="io-group">
+      <div class="io-label">Import</div>
+      <div class="io-items">
+        <span class="io-pill imp">.xlsx</span><span class="io-pill imp">.pptx</span><span class="io-pill imp">.docx</span><span class="io-pill imp">.pdf</span><span class="io-pill imp">.hwp</span>
       </div>
     </div>
-  </section>
-
-  <hr class="section-divider">
-
-  <!-- Surprises -->
-  <section class="section">
-    <div class="section-header">
-      <h2>
-        <span class="show-ko">마크다운 에디터에 이런 게?</span>
-        <span class="show-en">Wait, a Markdown Editor Has This?</span>
-      </h2>
-      <p>
-        <span class="show-ko">예상 밖의 기능들</span>
-        <span class="show-en">Unexpected features</span>
-      </p>
-    </div>
-    <div class="surprises">
-      <div class="surprise">
-        <div class="surprise-icon">&#x1f3ae;</div>
-        <div>
-          <h4>
-            <span class="show-ko">타이핑 게임</span>
-            <span class="show-en">Typing Game</span>
-          </h4>
-          <p>
-            <span class="show-ko">키보드 속도를 연습하는 미니 게임이 내장되어 있다. 글쓰기 워밍업용.</span>
-            <span class="show-en">Built-in typing speed mini-game. Perfect for writing warm-ups.</span>
-          </p>
-        </div>
-      </div>
-      <div class="surprise">
-        <div class="surprise-icon">&#x1f423;</div>
-        <div>
-          <h4>
-            <span class="show-ko">다마고치</span>
-            <span class="show-en">Tamagotchi</span>
-          </h4>
-          <p>
-            <span class="show-ko">글을 쓰면 성장하는 가상 펫. 글쓰기 동반자 역할을 한다.</span>
-            <span class="show-en">A virtual pet that grows as you write. Your writing companion.</span>
-          </p>
-        </div>
-      </div>
-      <div class="surprise">
-        <div class="surprise-icon">&#x1f3ac;</div>
-        <div>
-          <h4>
-            <span class="show-ko">스크린세이버 모드</span>
-            <span class="show-en">Screensaver Mode</span>
-          </h4>
-          <p>
-            <span class="show-ko">52개의 영감을 주는 문구가 화면에 순환 표시된다. 사무실에 켜놓으면 분위기가 달라진다.</span>
-            <span class="show-en">52 inspirational quotes rotate on screen. Leave it on in the office for ambient inspiration.</span>
-          </p>
-        </div>
-      </div>
-      <div class="surprise">
-        <div class="surprise-icon">&#x270B;</div>
-        <div>
-          <h4>
-            <span class="show-ko">헤밍웨이 모드</span>
-            <span class="show-en">Hemingway Mode</span>
-          </h4>
-          <p>
-            <span class="show-ko">Delete 키를 비활성화한다. 지우지 말고 앞으로만 써라. 분당 글쓰기 속도도 측정.</span>
-            <span class="show-en">Disables the Delete key. Don't erase — only move forward. Tracks your words per minute.</span>
-          </p>
-        </div>
-      </div>
-      <div class="surprise">
-        <div class="surprise-icon">&#x1f30A;</div>
-        <div>
-          <h4>
-            <span class="show-ko">물리 시뮬레이터</span>
-            <span class="show-en">Physics Simulator</span>
-          </h4>
-          <p>
-            <span class="show-ko">인터랙티브 물리 캔버스가 들어있다. 마크다운 에디터에 왜? 만들고 싶어서.</span>
-            <span class="show-en">Interactive physics canvas is built in. Why in a markdown editor? Because we wanted to.</span>
-          </p>
-        </div>
-      </div>
-      <div class="surprise">
-        <div class="surprise-icon">&#x1f3b5;</div>
-        <div>
-          <h4>
-            <span class="show-ko">ABC 악보</span>
-            <span class="show-en">ABC Music Notation</span>
-          </h4>
-          <p>
-            <span class="show-ko">ABC 문법으로 악보를 렌더링하고 재생까지 할 수 있다. 음악 수업 노트에 제격.</span>
-            <span class="show-en">Render sheet music with ABC notation and play it back. Perfect for music class notes.</span>
-          </p>
-        </div>
-      </div>
-      <div class="surprise">
-        <div class="surprise-icon">&#x1f468;&#x200D;&#x1f3A4;</div>
-        <div>
-          <h4>
-            <span class="show-ko">시니어 모드</span>
-            <span class="show-en">Senior Mode</span>
-          </h4>
-          <p>
-            <span class="show-ko">큰 글씨, 단순화된 UI. 접근성을 진지하게 고민한 결과물.</span>
-            <span class="show-en">Larger fonts, simplified UI. A serious take on accessibility.</span>
-          </p>
-        </div>
-      </div>
-      <div class="surprise">
-        <div class="surprise-icon">&#x1f4bb;</div>
-        <div>
-          <h4>
-            <span class="show-ko">내장 터미널</span>
-            <span class="show-en">Built-in Terminal</span>
-          </h4>
-          <p>
-            <span class="show-ko">xterm 기반 터미널이 에디터 안에 있다. 문서 쓰다가 바로 명령어 실행.</span>
-            <span class="show-en">xterm-based terminal right in the editor. Run commands while writing docs.</span>
-          </p>
-        </div>
+    <div class="io-arrow">&rarr;</div>
+    <div class="io-center">.md</div>
+    <div class="io-arrow">&rarr;</div>
+    <div class="io-group">
+      <div class="io-label">Export</div>
+      <div class="io-items">
+        <span class="io-pill exp">.pdf</span><span class="io-pill exp">.html</span><span class="io-pill exp">.docx</span><span class="io-pill exp">.hwp</span>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <hr class="section-divider">
+<hr class="section-divider">
 
-  <!-- Import/Export -->
-  <section class="section">
-    <div class="section-header">
-      <h2>
-        <span class="show-ko">가져오기 &amp; 내보내기</span>
-        <span class="show-en">Import &amp; Export</span>
-      </h2>
-      <p>
-        <span class="show-ko">마크다운을 중심으로 다양한 형식과 연결된다</span>
-        <span class="show-en">Markdown at the center, connected to many formats</span>
-      </p>
-    </div>
-    <div class="formats">
-      <span class="fmt imp">
-        <span class="show-ko">가져오기</span>
-        <span class="show-en">Import</span>
-        &nbsp;.xlsx
-      </span>
-      <span class="fmt imp">
-        <span class="show-ko">가져오기</span>
-        <span class="show-en">Import</span>
-        &nbsp;.pptx
-      </span>
-      <span class="fmt imp">
-        <span class="show-ko">가져오기</span>
-        <span class="show-en">Import</span>
-        &nbsp;.docx
-      </span>
-      <span class="fmt imp">
-        <span class="show-ko">가져오기</span>
-        <span class="show-en">Import</span>
-        &nbsp;.pdf
-      </span>
-      <span class="fmt imp">
-        <span class="show-ko">가져오기</span>
-        <span class="show-en">Import</span>
-        &nbsp;.hwp
-      </span>
-    </div>
-    <div class="formats" style="margin-top: 10px;">
-      <span class="fmt exp">
-        <span class="show-ko">내보내기</span>
-        <span class="show-en">Export</span>
-        &nbsp;.pdf
-      </span>
-      <span class="fmt exp">
-        <span class="show-ko">내보내기</span>
-        <span class="show-en">Export</span>
-        &nbsp;.html
-      </span>
-      <span class="fmt exp">
-        <span class="show-ko">내보내기</span>
-        <span class="show-en">Export</span>
-        &nbsp;.docx
-      </span>
-      <span class="fmt exp">
-        <span class="show-ko">내보내기</span>
-        <span class="show-en">Export</span>
-        &nbsp;.hwp
-      </span>
-    </div>
-  </section>
+<!-- ============ TEMPLATES ============ -->
+<section class="section">
+  <div class="section-label reveal"><span class="show-ko">템플릿</span><span class="show-en">Templates</span></div>
+  <h2 class="section-title reveal"><span class="show-ko">14가지 내장 템플릿</span><span class="show-en">14 Built-in Templates</span></h2>
+  <p class="section-desc reveal"><span class="show-ko">빈 문서 앞에서 고민하지 않아도 된다</span><span class="show-en">No more staring at a blank page</span></p>
+  <div class="tmpl-grid">
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f4C4;</span><span class="show-ko">빈 노트</span><span class="show-en">Blank Note</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f4C5;</span><span class="show-ko">주간 플래너</span><span class="show-en">Weekly Planner</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f4CA;</span><span class="show-ko">보고서</span><span class="show-en">Report</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f393;</span><span class="show-ko">학술 논문</span><span class="show-en">Academic Paper</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f3D7;&#xFE0F;</span><span class="show-ko">아키텍처 설계</span><span class="show-en">Architecture</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f50D;</span><span class="show-ko">코드 리뷰</span><span class="show-en">Code Review</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f343;</span><span class="show-ko">Leaf 쇼케이스</span><span class="show-en">Leaf Showcase</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f4DD;</span><span class="show-ko">코넬 노트</span><span class="show-en">Cornell Notes</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f4D4;</span><span class="show-ko">다이어리</span><span class="show-en">Diary</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f4DA;</span><span class="show-ko">독서 노트</span><span class="show-en">Book Notes</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f91D;</span><span class="show-ko">회의록</span><span class="show-en">Meeting Minutes</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f9EE;</span><span class="show-ko">수식 참조</span><span class="show-en">Formula Ref</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x1f4D0;</span><span class="show-ko">머메이드 패턴</span><span class="show-en">Mermaid Patterns</span></div>
+    <div class="tmpl reveal"><span class="tmpl-icon">&#x23F0;</span><span class="show-ko">일정 관리</span><span class="show-en">Schedule</span></div>
+  </div>
+</section>
 
-  <hr class="section-divider">
+<hr class="section-divider">
 
-  <!-- Templates -->
-  <section class="section">
-    <div class="section-header">
-      <h2>
-        <span class="show-ko">14가지 내장 템플릿</span>
-        <span class="show-en">14 Built-in Templates</span>
-      </h2>
-      <p>
-        <span class="show-ko">빈 문서 앞에서 고민하지 않아도 된다</span>
-        <span class="show-en">No more staring at a blank page</span>
-      </p>
-    </div>
-    <div class="templates">
-      <div class="tmpl"><span class="tmpl-icon">&#x1f4C4;</span>
-        <span class="show-ko">빈 노트</span>
-        <span class="show-en">Blank Note</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f4C5;</span>
-        <span class="show-ko">주간 플래너</span>
-        <span class="show-en">Weekly Planner</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f4CA;</span>
-        <span class="show-ko">보고서</span>
-        <span class="show-en">Report</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f393;</span>
-        <span class="show-ko">학술 논문</span>
-        <span class="show-en">Academic Paper</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f3D7;&#xFE0F;</span>
-        <span class="show-ko">아키텍처 설계</span>
-        <span class="show-en">Architecture Design</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f50D;</span>
-        <span class="show-ko">코드 리뷰</span>
-        <span class="show-en">Code Review</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f343;</span>
-        <span class="show-ko">Leaf 쇼케이스</span>
-        <span class="show-en">Leaf Showcase</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f4DD;</span>
-        <span class="show-ko">코넬 노트</span>
-        <span class="show-en">Cornell Notes</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f4D4;</span>
-        <span class="show-ko">다이어리</span>
-        <span class="show-en">Diary</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f4DA;</span>
-        <span class="show-ko">독서 노트</span>
-        <span class="show-en">Book Notes</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f91D;</span>
-        <span class="show-ko">회의록</span>
-        <span class="show-en">Meeting Minutes</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f9EE;</span>
-        <span class="show-ko">수식 참조</span>
-        <span class="show-en">Formula Reference</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x1f4D0;</span>
-        <span class="show-ko">머메이드 패턴</span>
-        <span class="show-en">Mermaid Patterns</span>
-      </div>
-      <div class="tmpl"><span class="tmpl-icon">&#x23F0;</span>
-        <span class="show-ko">일정 관리</span>
-        <span class="show-en">Schedule</span>
-      </div>
-    </div>
-  </section>
+<!-- ============ TECH STACK ============ -->
+<section class="section">
+  <div class="section-label reveal"><span class="show-ko">기술</span><span class="show-en">Technology</span></div>
+  <h2 class="section-title reveal"><span class="show-ko">가볍고 빠른 이유</span><span class="show-en">Why It's Fast and Light</span></h2>
+  <p class="section-desc reveal"><span class="show-ko">Electron이 아니라 Rust다</span><span class="show-en">Not Electron. Rust.</span></p>
+  <div class="stack-grid">
+    <div class="stack-card reveal"><div class="sc-name">Tauri v2</div><div class="sc-label">Runtime</div></div>
+    <div class="stack-card reveal"><div class="sc-name">Rust</div><div class="sc-label">Backend</div></div>
+    <div class="stack-card reveal"><div class="sc-name">React 18</div><div class="sc-label">Frontend</div></div>
+    <div class="stack-card reveal"><div class="sc-name">CodeMirror 6</div><div class="sc-label">Editor</div></div>
+    <div class="stack-card reveal"><div class="sc-name">D3.js v7</div><div class="sc-label">Graph</div></div>
+    <div class="stack-card reveal"><div class="sc-name">Zustand</div><div class="sc-label">State</div></div>
+    <div class="stack-card reveal"><div class="sc-name">Vite</div><div class="sc-label">Build</div></div>
+    <div class="stack-card reveal"><div class="sc-name">i18next</div><div class="sc-label">i18n</div></div>
+  </div>
 
-  <hr class="section-divider">
+  <div class="cmp-wrap reveal" style="margin-top:48px">
+    <table>
+      <thead><tr><th></th><th>Leaf</th><th>Obsidian</th><th>Typora</th><th>VS Code</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Runtime</strong></td><td class="check">Tauri (Rust)</td><td>Electron</td><td>Electron</td><td>Electron</td></tr>
+        <tr><td><strong><span class="show-ko">메모리</span><span class="show-en">Memory</span></strong></td><td class="check">&lt;150MB</td><td>~400MB</td><td>~250MB</td><td>~500MB</td></tr>
+        <tr><td><strong><span class="show-ko">라이브 프리뷰</span><span class="show-en">Live Preview</span></strong></td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">지식 그래프</span><span class="show-en">Graph</span></strong></td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">코넬 노트</span><span class="show-en">Cornell Notes</span></strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">칸반</span><span class="show-en">Kanban</span></strong></td><td class="check">&#10003;</td><td><span class="show-ko">플러그인</span><span class="show-en">Plugin</span></td><td class="cross">&#10007;</td><td><span class="show-ko">확장</span><span class="show-en">Extension</span></td></tr>
+        <tr><td><strong>HWP</strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">한글 번호</span><span class="show-en">KR Numbering</span></strong></td><td class="check">&#44032;&#45208;&#45796;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-  <!-- Tech Stack -->
-  <section class="section">
-    <div class="section-header">
-      <h2>
-        <span class="show-ko">기술 스택</span>
-        <span class="show-en">Tech Stack</span>
-      </h2>
-      <p>
-        <span class="show-ko">가볍고 빠른 이유가 있다</span>
-        <span class="show-en">There's a reason it's fast and light</span>
-      </p>
-    </div>
-    <div class="stack">
-      <div class="stack-item"><span class="sl">Runtime</span><span class="sr">Tauri v2</span></div>
-      <div class="stack-item"><span class="sl">Backend</span><span class="sr">Rust</span></div>
-      <div class="stack-item"><span class="sl">Frontend</span><span class="sr">React 18</span></div>
-      <div class="stack-item"><span class="sl">Editor</span><span class="sr">CodeMirror 6</span></div>
-      <div class="stack-item"><span class="sl">Graph</span><span class="sr">D3.js v7</span></div>
-      <div class="stack-item"><span class="sl">State</span><span class="sr">Zustand</span></div>
-      <div class="stack-item"><span class="sl">Build</span><span class="sr">Vite</span></div>
-      <div class="stack-item"><span class="sl">i18n</span><span class="sr">i18next</span></div>
-    </div>
-
-    <div class="table-wrap" style="margin-top: 40px;">
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Leaf</th>
-            <th>Obsidian</th>
-            <th>Typora</th>
-            <th>VS Code</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Runtime</strong></td>
-            <td><span class="check">Tauri (Rust)</span></td>
-            <td>Electron</td>
-            <td>Electron</td>
-            <td>Electron</td>
-          </tr>
-          <tr>
-            <td><strong>
-              <span class="show-ko">메모리</span>
-              <span class="show-en">Memory</span>
-            </strong></td>
-            <td><span class="check">&lt;150MB</span></td>
-            <td>~400MB</td>
-            <td>~250MB</td>
-            <td>~500MB</td>
-          </tr>
-          <tr>
-            <td><strong>
-              <span class="show-ko">라이브 프리뷰</span>
-              <span class="show-en">Live Preview</span>
-            </strong></td>
-            <td><span class="check">&#10003;</span></td>
-            <td><span class="check">&#10003;</span></td>
-            <td><span class="check">&#10003;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-          </tr>
-          <tr>
-            <td><strong>
-              <span class="show-ko">지식 그래프</span>
-              <span class="show-en">Graph</span>
-            </strong></td>
-            <td><span class="check">&#10003;</span></td>
-            <td><span class="check">&#10003;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-          </tr>
-          <tr>
-            <td><strong>
-              <span class="show-ko">코넬 노트</span>
-              <span class="show-en">Cornell Notes</span>
-            </strong></td>
-            <td><span class="check">&#10003;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-          </tr>
-          <tr>
-            <td><strong>
-              <span class="show-ko">칸반 보드</span>
-              <span class="show-en">Kanban</span>
-            </strong></td>
-            <td><span class="check">&#10003;</span></td>
-            <td>
-              <span class="show-ko">플러그인</span>
-              <span class="show-en">Plugin</span>
-            </td>
-            <td><span class="cross">&#10007;</span></td>
-            <td>
-              <span class="show-ko">확장</span>
-              <span class="show-en">Extension</span>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>HWP</strong></td>
-            <td><span class="check">&#10003;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-          </tr>
-          <tr>
-            <td><strong>
-              <span class="show-ko">한글 번호</span>
-              <span class="show-en">KR Numbering</span>
-            </strong></td>
-            <td><span class="check">가나다</span></td>
-            <td><span class="cross">&#10007;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-            <td><span class="cross">&#10007;</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="footer-inner">
     <div class="footer-links">
-      <a href="https://github.com/leaf-kit" target="_blank">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        GitHub
-      </a>
-      <a href="https://x.com/leafeditor" target="_blank">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        @leafeditor
-      </a>
+      <a href="https://github.com/leaf-kit" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg> GitHub</a>
+      <a href="https://x.com/leafeditor" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> @leafeditor</a>
       <a href="https://leaf-kit.github.io">leaf-kit.github.io</a>
     </div>
-    <a class="share-btn" href="https://twitter.com/intent/tweet?text=Leaf%20%E2%80%94%20Tauri%20%2B%20Rust%20%EA%B8%B0%EB%B0%98%20%EB%84%A4%EC%9D%B4%ED%8B%B0%EB%B8%8C%20%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%EC%97%90%EB%94%94%ED%84%B0.%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%20%ED%94%84%EB%A6%AC%EB%B7%B0%2C%20%EC%A7%80%EC%8B%9D%20%EA%B7%B8%EB%9E%98%ED%94%84%2C%20150MB%20%EB%AF%B8%EB%A7%8C%20%EB%A9%94%EB%AA%A8%EB%A6%AC.&url=https%3A%2F%2Fleaf-kit.github.io%2Fleafmd%2F&via=leafeditor&hashtags=Leaf,Markdown,Tauri,Rust" target="_blank">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      <span class="show-ko">트위터에 공유하기</span>
-      <span class="show-en">Share on X</span>
+    <a class="share-cta" href="https://twitter.com/intent/tweet?text=Leaf%20%E2%80%94%20Tauri%20%2B%20Rust%20%EB%84%A4%EC%9D%B4%ED%8B%B0%EB%B8%8C%20%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%EC%97%90%EB%94%94%ED%84%B0&url=https%3A%2F%2Fleaf-kit.github.io%2Fleafmd%2F&via=leafeditor&hashtags=Leaf,Markdown,Tauri,Rust" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      <span class="show-ko">트위터에 공유하기</span><span class="show-en">Share on X</span>
     </a>
-    <p class="footer-copy" style="margin-top: 16px;">Leaf &middot; leaf-kit.github.io</p>
-  </footer>
+    <p class="footer-copy">Leaf &middot; leaf-kit.github.io</p>
+  </div>
+</footer>
 
-  <script>
-  (function() {
-    var html = document.documentElement;
+<script>
+(function(){
+  var html = document.documentElement;
 
-    // Theme
-    var btnTheme = document.getElementById('btn-theme');
-    var themeIcon = document.getElementById('theme-icon');
-    var savedTheme = localStorage.getItem('theme');
-    if (savedTheme) html.dataset.theme = savedTheme;
-    else if (matchMedia('(prefers-color-scheme: light)').matches) html.dataset.theme = 'light';
-    function updateThemeIcon() { themeIcon.textContent = html.dataset.theme === 'dark' ? '\u2600' : '\u263D'; }
-    updateThemeIcon();
-    btnTheme.addEventListener('click', function() {
-      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('theme', html.dataset.theme);
-      updateThemeIcon();
+  // === Theme ===
+  var btnTheme = document.getElementById('btn-theme');
+  var saved = localStorage.getItem('theme');
+  if (saved) html.dataset.theme = saved;
+  else if (matchMedia('(prefers-color-scheme:light)').matches) html.dataset.theme = 'light';
+  btnTheme.addEventListener('click', function(){
+    html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', html.dataset.theme);
+  });
+
+  // === Language ===
+  var btnLang = document.getElementById('btn-lang');
+  var savedLang = localStorage.getItem('leafmd-lang');
+  if (savedLang) html.dataset.lang = savedLang;
+  btnLang.addEventListener('click', function(){
+    html.dataset.lang = html.dataset.lang === 'ko' ? 'en' : 'ko';
+    localStorage.setItem('leafmd-lang', html.dataset.lang);
+  });
+
+  // === Nav scroll ===
+  var nav = document.getElementById('nav');
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (!ticking) { requestAnimationFrame(function(){ nav.classList.toggle('scrolled', window.scrollY > 40); ticking = false; }); ticking = true; }
+  }, {passive:true});
+
+  // === Reveal on scroll ===
+  var reveals = document.querySelectorAll('.reveal');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
     });
+  }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+  reveals.forEach(function(el){ observer.observe(el); });
 
-    // Language
-    var btnLang = document.getElementById('btn-lang');
-    var savedLang = localStorage.getItem('leafmd-lang');
-    if (savedLang) html.dataset.lang = savedLang;
-    btnLang.addEventListener('click', function() {
-      html.dataset.lang = html.dataset.lang === 'ko' ? 'en' : 'ko';
-      localStorage.setItem('leafmd-lang', html.dataset.lang);
+  // === Typing animation in mockup ===
+  var lines = document.querySelectorAll('.me-line');
+  lines.forEach(function(line){
+    var delay = parseInt(line.dataset.delay) || 0;
+    setTimeout(function(){ line.classList.add('typed'); }, 1400 + delay);
+  });
+
+  // === Counter animation ===
+  var counters = document.querySelectorAll('.perf-num[data-count]');
+  var counterObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting || e.target.dataset.animated) return;
+      e.target.dataset.animated = '1';
+      var target = parseInt(e.target.dataset.count);
+      var prefix = e.target.dataset.prefix || '';
+      var suffix = e.target.dataset.suffix || '';
+      if (target === 0) { e.target.innerHTML = prefix + '0<small>' + suffix + '</small>'; return; }
+      var start = 0, duration = 1200, startTime = null;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var p = Math.min((ts - startTime) / duration, 1);
+        var ease = 1 - Math.pow(1 - p, 3);
+        var val = Math.round(ease * target);
+        e.target.innerHTML = prefix + val + '<small>' + suffix + '</small>';
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
     });
-  })();
-  </script>
+  }, {threshold:0.5});
+  counters.forEach(function(c){ counterObs.observe(c); });
+})();
+</script>
 </body>
 </html>
