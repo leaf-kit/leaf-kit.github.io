@@ -180,6 +180,68 @@ a:hover{color:var(--accent2)}
 @keyframes typeExpand{from{width:0}to{width:var(--tw-width,100%)}}
 @keyframes cursorBlink{0%,100%{border-color:var(--accent)}50%{border-color:transparent}}
 
+/* ============ SCROLL PROGRESS ============ */
+.scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:300;width:0;transition:width .1s linear}
+
+/* ============ FALLING LEAVES ============ */
+.leaf-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35}
+[data-theme="dark"] .leaf-canvas{opacity:.2}
+
+/* ============ FEATURE HIGHLIGHT BANNER ============ */
+.highlight-banner{background:linear-gradient(90deg,var(--accent),#0ABE82);color:#fff;overflow:hidden;height:40px;position:relative}
+.highlight-track{display:flex;animation:bannerScroll 30s linear infinite;white-space:nowrap}
+.highlight-item{padding:0 48px;font:600 .82rem var(--font);line-height:40px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+@keyframes bannerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ============ ASMR DEMO ============ */
+.asmr-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.asmr-grid{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:700px;margin:0 auto}
+.asmr-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 20px;background:var(--bg);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:all .3s var(--ease);min-width:80px;position:relative;overflow:hidden}
+.asmr-btn::after{content:'';position:absolute;bottom:0;left:0;right:0;height:0;background:var(--accent-bg);transition:height .4s var(--ease)}
+.asmr-btn.playing{border-color:var(--accent);box-shadow:0 0 20px var(--accent-glow)}
+.asmr-btn.playing::after{height:100%}
+.asmr-btn:hover{transform:translateY(-2px);border-color:var(--accent-border)}
+.asmr-btn .asmr-icon{font-size:1.5rem;position:relative;z-index:1;transition:transform .3s var(--ease-bounce)}
+.asmr-btn:hover .asmr-icon{transform:scale(1.15)}
+.asmr-btn.playing .asmr-icon{animation:asmrPulse 2s ease infinite}
+.asmr-btn .asmr-name{font:500 .68rem var(--font);color:var(--text3);position:relative;z-index:1}
+.asmr-btn.playing .asmr-name{color:var(--accent)}
+@keyframes asmrPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+/* Equalizer bars */
+.asmr-eq{display:flex;gap:2px;height:16px;align-items:flex-end;position:relative;z-index:1}
+.asmr-eq span{width:3px;background:var(--accent);border-radius:1px;opacity:0;transition:opacity .3s}
+.asmr-btn.playing .asmr-eq span{opacity:1}
+.asmr-eq span:nth-child(1){animation:eqBar 1.2s ease infinite;height:40%}
+.asmr-eq span:nth-child(2){animation:eqBar .8s ease infinite .2s;height:70%}
+.asmr-eq span:nth-child(3){animation:eqBar 1s ease infinite .1s;height:50%}
+@keyframes eqBar{0%,100%{height:30%}50%{height:100%}}
+
+/* ============ POMODORO DEMO ============ */
+.pomo-demo{display:flex;align-items:center;justify-content:center;gap:32px;margin:24px auto;max-width:500px;flex-wrap:wrap}
+.pomo-ring{width:140px;height:140px;position:relative;flex-shrink:0}
+.pomo-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.pomo-ring .pomo-bg{fill:none;stroke:var(--border);stroke-width:6}
+.pomo-ring .pomo-fg{fill:none;stroke:var(--accent);stroke-width:6;stroke-linecap:round;stroke-dasharray:408;stroke-dashoffset:408;transition:stroke-dashoffset .5s var(--ease)}
+.pomo-time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font:800 1.8rem var(--mono);color:var(--accent)}
+.pomo-time small{font:500 .65rem var(--font);color:var(--text3);margin-top:2px}
+.pomo-controls{display:flex;flex-direction:column;gap:10px}
+.pomo-btn{padding:10px 24px;border:1px solid var(--border);background:var(--bg2);border-radius:10px;cursor:pointer;font:600 .82rem var(--font);color:var(--text2);transition:all .2s var(--ease)}
+.pomo-btn:hover{border-color:var(--accent);color:var(--accent)}
+.pomo-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ============ MD TRANSFORM DEMO ============ */
+.md-transform{max-width:600px;margin:32px auto;position:relative}
+.md-split{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.md-pane{padding:20px;min-height:180px}
+.md-pane-label{font:700 .65rem var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px}
+.md-pane.raw{background:#1a1e2a;font:400 .8rem/1.7 var(--mono);color:#cdd6f4}
+.md-pane.rendered{background:var(--bg2);font:400 .88rem/1.8 var(--font);color:var(--text2)}
+.md-pane.rendered h3{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.md-pane.rendered .md-hl{background:rgba(245,158,11,.2);padding:1px 3px;border-radius:3px}
+.md-pane.rendered .md-check{color:var(--accent)}
+.md-arrow{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:40px;height:40px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;z-index:2;box-shadow:0 4px 12px rgba(13,159,110,.3);animation:arrowPulse 2s ease infinite}
+@keyframes arrowPulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.1)}}
+
 /* ============ SECTION ============ */
 .section{max-width:1200px;margin:0 auto;padding:100px 24px}
 .section-label{font:600 .72rem var(--mono);color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;text-align:center}
@@ -203,14 +265,10 @@ a:hover{color:var(--accent2)}
 .surp{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;display:flex;gap:20px;align-items:flex-start;transition:all .3s var(--ease);position:relative;overflow:hidden}
 .surp:hover{border-color:var(--accent-border);transform:translateX(4px)}
 .surp-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;transition:transform .3s var(--ease-bounce)}
-.surp:nth-child(1) .surp-icon{background:rgba(74,144,217,.1)}
-.surp:nth-child(2) .surp-icon{background:rgba(230,126,34,.1)}
-.surp:nth-child(3) .surp-icon{background:rgba(124,92,252,.1)}
-.surp:nth-child(4) .surp-icon{background:rgba(232,67,147,.1)}
-.surp:nth-child(5) .surp-icon{background:rgba(13,159,110,.1)}
-.surp:nth-child(6) .surp-icon{background:rgba(74,144,217,.1)}
-.surp:nth-child(7) .surp-icon{background:rgba(230,126,34,.1)}
-.surp:nth-child(8) .surp-icon{background:rgba(124,92,252,.1)}
+.surp:nth-child(4n+1) .surp-icon{background:rgba(74,144,217,.1)}
+.surp:nth-child(4n+2) .surp-icon{background:rgba(230,126,34,.1)}
+.surp:nth-child(4n+3) .surp-icon{background:rgba(124,92,252,.1)}
+.surp:nth-child(4n) .surp-icon{background:rgba(232,67,147,.1)}
 .surp:hover .surp-icon{transform:scale(1.15) rotate(5deg)}
 .surp h4{font-size:.9rem;font-weight:700;margin-bottom:4px}
 .surp p{font-size:.8rem;color:var(--text2);line-height:1.65;margin:0}
@@ -287,6 +345,17 @@ a:hover{color:var(--accent2)}
   </style>
 </head>
 <body>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress" id="scroll-progress"></div>
+
+<!-- Falling Leaves Canvas -->
+<canvas class="leaf-canvas" id="leaf-canvas"></canvas>
+
+<!-- Feature Highlight Banner -->
+<div class="highlight-banner">
+  <div class="highlight-track" id="highlight-track"></div>
+</div>
 
 <!-- ============ NAV ============ -->
 <nav class="nav" id="nav">
@@ -391,6 +460,72 @@ a:hover{color:var(--accent2)}
     </div>
   </div>
 </section>
+
+<!-- ============ FOCUS TOOLS DEMO ============ -->
+<section class="section asmr-section">
+  <div class="section-label reveal"><span class="show-ko">집중 도구</span><span class="show-en">Focus Tools</span></div>
+  <h2 class="section-title reveal"><span class="show-ko">글쓰기에 몰입하는 환경</span><span class="show-en">Immerse Yourself in Writing</span></h2>
+  <p class="section-desc reveal"><span class="show-ko">뽀모도로 타이머와 ASMR 환경음을 직접 체험해보세요</span><span class="show-en">Try the Pomodoro timer and ASMR ambient sounds</span></p>
+
+  <div class="pomo-demo reveal">
+    <div class="pomo-ring">
+      <svg viewBox="0 0 140 140"><circle class="pomo-bg" cx="70" cy="70" r="65"/><circle class="pomo-fg" id="pomo-fg" cx="70" cy="70" r="65"/></svg>
+      <div class="pomo-time"><span id="pomo-display">25:00</span><small id="pomo-phase"><span class="show-ko">집중</span><span class="show-en">Focus</span></small></div>
+    </div>
+    <div class="pomo-controls">
+      <button class="pomo-btn" id="pomo-start"><span class="show-ko">시작</span><span class="show-en">Start</span></button>
+      <button class="pomo-btn" id="pomo-reset"><span class="show-ko">리셋</span><span class="show-en">Reset</span></button>
+    </div>
+  </div>
+
+  <p style="text-align:center;font-size:.82rem;color:var(--text3);margin:24px 0 16px" class="reveal"><span class="show-ko">클릭해서 환경음을 켜보세요 (볼륨 주의)</span><span class="show-en">Click to play ambient sounds (watch your volume)</span></p>
+  <div class="asmr-grid reveal">
+    <button class="asmr-btn" data-sound="campfire"><span class="asmr-icon">&#x1f525;</span><div class="asmr-eq"><span></span><span></span><span></span></div><span class="asmr-name"><span class="show-ko">모닥불</span><span class="show-en">Fire</span></span></button>
+    <button class="asmr-btn" data-sound="ocean"><span class="asmr-icon">&#x1f30A;</span><div class="asmr-eq"><span></span><span></span><span></span></div><span class="asmr-name"><span class="show-ko">파도</span><span class="show-en">Ocean</span></span></button>
+    <button class="asmr-btn" data-sound="rain"><span class="asmr-icon">&#x1f327;&#xFE0F;</span><div class="asmr-eq"><span></span><span></span><span></span></div><span class="asmr-name"><span class="show-ko">빗소리</span><span class="show-en">Rain</span></span></button>
+    <button class="asmr-btn" data-sound="wind"><span class="asmr-icon">&#x1f343;</span><div class="asmr-eq"><span></span><span></span><span></span></div><span class="asmr-name"><span class="show-ko">바람</span><span class="show-en">Wind</span></span></button>
+    <button class="asmr-btn" data-sound="forest"><span class="asmr-icon">&#x1f332;</span><div class="asmr-eq"><span></span><span></span><span></span></div><span class="asmr-name"><span class="show-ko">숲</span><span class="show-en">Forest</span></span></button>
+    <button class="asmr-btn" data-sound="stream"><span class="asmr-icon">&#x1f4A7;</span><div class="asmr-eq"><span></span><span></span><span></span></div><span class="asmr-name"><span class="show-ko">시냇물</span><span class="show-en">Stream</span></span></button>
+    <button class="asmr-btn" data-sound="thunder"><span class="asmr-icon">&#x26A1;</span><div class="asmr-eq"><span></span><span></span><span></span></div><span class="asmr-name"><span class="show-ko">천둥</span><span class="show-en">Thunder</span></span></button>
+    <button class="asmr-btn" data-sound="whitenoise"><span class="asmr-icon">&#x1f4E1;</span><div class="asmr-eq"><span></span><span></span><span></span></div><span class="asmr-name"><span class="show-ko">화이트</span><span class="show-en">White</span></span></button>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ============ MD TRANSFORM DEMO ============ -->
+<section class="section">
+  <div class="section-label reveal"><span class="show-ko">라이브 프리뷰</span><span class="show-en">Live Preview</span></div>
+  <h2 class="section-title reveal"><span class="show-ko">쓰는 그대로 보인다</span><span class="show-en">What You Type Is What You See</span></h2>
+  <p class="section-desc reveal"><span class="show-ko">마크다운 원문이 즉시 렌더링된다. 미리보기 패널이 따로 없다.</span><span class="show-en">Markdown renders instantly. No separate preview pane.</span></p>
+  <div class="md-transform reveal">
+    <div class="md-split">
+      <div class="md-pane raw">
+        <div class="md-pane-label">Markdown</div>
+        # Leaf Editor<br><br>
+        ==하이라이트== 텍스트<br>
+        **굵은 글씨**와 *기울임*<br><br>
+        - [x] 라이브 프리뷰<br>
+        - [x] 지식 그래프<br>
+        - [ ] 다운로드 배포<br><br>
+        `$E = mc^2$`
+      </div>
+      <div class="md-pane rendered">
+        <div class="md-pane-label">Rendered</div>
+        <h3>Leaf Editor</h3>
+        <span class="md-hl"><span class="show-ko">하이라이트</span><span class="show-en">Highlighted</span></span> <span class="show-ko">텍스트</span><span class="show-en">text</span><br>
+        <strong><span class="show-ko">굵은 글씨</span><span class="show-en">Bold</span></strong><span class="show-ko">와</span><span class="show-en"> and </span><em><span class="show-ko">기울임</span><span class="show-en">italic</span></em><br><br>
+        <span class="md-check">&#10003;</span> <span class="show-ko">라이브 프리뷰</span><span class="show-en">Live Preview</span><br>
+        <span class="md-check">&#10003;</span> <span class="show-ko">지식 그래프</span><span class="show-en">Knowledge Graph</span><br>
+        &#9744; <span class="show-ko">다운로드 배포</span><span class="show-en">Download release</span><br><br>
+        <em>E = mc<sup>2</sup></em>
+      </div>
+    </div>
+    <div class="md-arrow">&rarr;</div>
+  </div>
+</section>
+
+<hr class="section-divider">
 
 <!-- ============ PHILOSOPHY ============ -->
 <section class="philosophy">
@@ -769,6 +904,176 @@ a:hover{color:var(--accent2)}
     });
   }, {threshold:0.5});
   counters.forEach(function(c){ counterObs.observe(c); });
+
+  // === Scroll progress bar ===
+  var progressBar = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.width = (window.scrollY / h * 100) + '%';
+  }, {passive:true});
+
+  // === Falling leaves canvas ===
+  (function(){
+    var canvas = document.getElementById('leaf-canvas');
+    var ctx = canvas.getContext('2d');
+    var leaves = [];
+    var MAX = 15;
+    function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    function Leaf(){
+      this.x = Math.random() * canvas.width;
+      this.y = -20 - Math.random() * 200;
+      this.size = 8 + Math.random() * 10;
+      this.speedY = .3 + Math.random() * .6;
+      this.speedX = Math.random() * .4 - .2;
+      this.rot = Math.random() * Math.PI * 2;
+      this.rotSpeed = (Math.random() - .5) * .02;
+      this.wobble = Math.random() * Math.PI * 2;
+      this.wobbleSpeed = .01 + Math.random() * .02;
+      this.opacity = .3 + Math.random() * .4;
+    }
+    function drawLeaf(l){
+      ctx.save();
+      ctx.translate(l.x, l.y);
+      ctx.rotate(l.rot);
+      ctx.globalAlpha = l.opacity;
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+      ctx.beginPath();
+      var s = l.size;
+      ctx.moveTo(0, -s);
+      ctx.bezierCurveTo(s*.6, -s*.6, s*.5, s*.3, 0, s);
+      ctx.bezierCurveTo(-s*.5, s*.3, -s*.6, -s*.6, 0, -s);
+      ctx.fill();
+      ctx.strokeStyle = ctx.fillStyle;
+      ctx.globalAlpha = l.opacity * .5;
+      ctx.lineWidth = .5;
+      ctx.beginPath(); ctx.moveTo(0, -s*.7); ctx.lineTo(0, s*.7); ctx.stroke();
+      ctx.restore();
+    }
+    for(var i=0;i<MAX;i++) leaves.push(new Leaf());
+    function animate(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      leaves.forEach(function(l){
+        l.y += l.speedY;
+        l.x += l.speedX + Math.sin(l.wobble) * .3;
+        l.rot += l.rotSpeed;
+        l.wobble += l.wobbleSpeed;
+        if(l.y > canvas.height + 20){
+          l.y = -20; l.x = Math.random() * canvas.width;
+        }
+        drawLeaf(l);
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  })();
+
+  // === Highlight banner ===
+  (function(){
+    var items = [
+      {e:'&#x1f343;',ko:'Tauri + Rust 네이티브',en:'Tauri + Rust Native'},
+      {e:'&#x270D;&#xFE0F;',ko:'Typora 스타일 라이브 프리뷰',en:'Typora-Style Live Preview'},
+      {e:'&#x1f578;&#xFE0F;',ko:'D3.js 지식 그래프',en:'D3.js Knowledge Graph'},
+      {e:'&#x1f4DD;',ko:'코넬 노트 네이티브',en:'Cornell Notes Native'},
+      {e:'&#x1f345;',ko:'뽀모도로 + ASMR 8종',en:'Pomodoro + 8 ASMR Sounds'},
+      {e:'&#x1f3a8;',ko:'60+ 테마',en:'60+ Themes'},
+      {e:'&#x1f310;',ko:'웹 → 마크다운 스크래핑',en:'Web → Markdown Scraping'},
+      {e:'&#x1f4CA;',ko:'테이블 수식 계산',en:'Table Formula Calculations'},
+      {e:'&#x1f4f0;',ko:'저널리스트 5W1H 분석',en:'Journalist 5W1H Analysis'},
+      {e:'&#x1f33F;',ko:'잔디 히트맵',en:'Grass Heatmap'},
+      {e:'&#x1f4CB;',ko:'40+ 내장 템플릿',en:'40+ Built-in Templates'},
+      {e:'&#x1f423;',ko:'다마고치 글쓰기 펫',en:'Tamagotchi Writing Pet'},
+    ];
+    var track = document.getElementById('highlight-track');
+    var lang = html.dataset.lang || 'ko';
+    var content = '';
+    items.forEach(function(it){ content += '<span class="highlight-item">' + it.e + ' ' + (lang==='ko'?it.ko:it.en) + '</span>'; });
+    track.innerHTML = content + content;
+  })();
+
+  // === ASMR Sound Engine (Web Audio API) ===
+  (function(){
+    var actx = null;
+    var playing = {};
+    function getCtx(){ if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)(); return actx; }
+    function makeNoise(type){
+      var ctx = getCtx();
+      var gain = ctx.createGain();
+      gain.gain.value = .15;
+      gain.connect(ctx.destination);
+      var node;
+      if(type==='whitenoise'){
+        var buf = ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);
+        var d = buf.getChannelData(0);
+        for(var i=0;i<d.length;i++) d[i] = Math.random()*2-1;
+        node = ctx.createBufferSource(); node.buffer = buf; node.loop = true;
+        var filt = ctx.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=800;
+        node.connect(filt); filt.connect(gain);
+      } else {
+        var buf = ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate);
+        var d = buf.getChannelData(0);
+        var freq = {campfire:3,ocean:0.15,rain:8,wind:0.5,forest:2,stream:4,thunder:0.08}[type]||1;
+        for(var i=0;i<d.length;i++){
+          var t = i/ctx.sampleRate;
+          d[i] = (Math.random()*2-1) * (0.5 + 0.5*Math.sin(t*freq*Math.PI*2)) * 0.6;
+        }
+        node = ctx.createBufferSource(); node.buffer = buf; node.loop = true;
+        var filt = ctx.createBiquadFilter();
+        filt.type = {campfire:'bandpass',ocean:'lowpass',rain:'highpass',wind:'lowpass',forest:'bandpass',stream:'bandpass',thunder:'lowpass'}[type]||'lowpass';
+        filt.frequency.value = {campfire:400,ocean:300,rain:3000,wind:200,forest:1500,stream:2000,thunder:100}[type]||500;
+        filt.Q.value = {campfire:2,ocean:1,rain:0.5,wind:3,forest:1,stream:1.5,thunder:5}[type]||1;
+        node.connect(filt); filt.connect(gain);
+      }
+      node.start();
+      return {node:node,gain:gain};
+    }
+    document.querySelectorAll('.asmr-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var sound = this.dataset.sound;
+        if(playing[sound]){
+          playing[sound].node.stop();
+          delete playing[sound];
+          this.classList.remove('playing');
+        } else {
+          playing[sound] = makeNoise(sound);
+          this.classList.add('playing');
+        }
+      });
+    });
+  })();
+
+  // === Pomodoro Timer Demo ===
+  (function(){
+    var total = 25*60, remaining = total, running = false, interval = null;
+    var fg = document.getElementById('pomo-fg');
+    var display = document.getElementById('pomo-display');
+    var circumference = 2 * Math.PI * 65;
+    fg.style.strokeDasharray = circumference;
+    fg.style.strokeDashoffset = circumference;
+    function update(){
+      var m = Math.floor(remaining/60), s = remaining%60;
+      display.textContent = m+':'+(s<10?'0':'')+s;
+      var progress = 1 - remaining/total;
+      fg.style.strokeDashoffset = circumference * (1 - progress);
+    }
+    update();
+    document.getElementById('pomo-start').addEventListener('click',function(){
+      if(running){ clearInterval(interval); running=false; this.textContent=html.dataset.lang==='en'?'Start':'시작'; return; }
+      running = true;
+      this.textContent = html.dataset.lang==='en'?'Pause':'일시정지';
+      this.classList.add('active');
+      interval = setInterval(function(){
+        if(remaining>0){ remaining--; update(); }
+        else{ clearInterval(interval); running=false; }
+      },1000);
+    });
+    document.getElementById('pomo-reset').addEventListener('click',function(){
+      clearInterval(interval); running=false; remaining=total; update();
+      fg.style.strokeDashoffset = circumference;
+      document.getElementById('pomo-start').textContent=html.dataset.lang==='en'?'Start':'시작';
+      document.getElementById('pomo-start').classList.remove('active');
+    });
+  })();
 })();
 </script>
 </body>
