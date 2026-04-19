@@ -133,15 +133,28 @@ a:hover{color:var(--accent2)}
 .mockup-editor .me-bold{font-weight:600;color:var(--text)}
 .mockup-editor .me-code{font-family:var(--mono);font-size:.78rem;background:var(--bg3);padding:2px 7px;border-radius:5px;color:var(--accent)}
 .mockup-editor .me-check{color:var(--accent);margin-right:4px}
-.me-cursor{display:inline-block;width:2px;height:1.1em;background:var(--accent);margin-left:1px;vertical-align:text-bottom;animation:blink 1s step-end infinite}
+.me-cursor{display:inline-block;width:2px;height:1.2em;background:var(--accent);vertical-align:text-bottom;animation:blink 1s step-end infinite;margin-left:1px}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.me-line{opacity:0;transform:translateY(8px);transition:opacity .4s var(--ease-out),transform .4s var(--ease-out)}
-.me-line.typed{opacity:1;transform:translateY(0)}
+.me-line{min-height:1.9em;display:flex;align-items:baseline;gap:0}
+.me-linenum{width:28px;flex-shrink:0;text-align:right;font:400 .7rem var(--mono);color:var(--text3);opacity:.4;user-select:none;padding-right:10px}
+.me-content{flex:1;min-width:0}
+.me-content .md-raw{font-family:var(--mono);color:var(--text3);font-size:.82rem}
+.me-content .md-rendered{display:none}
+.me-line.rendered .md-raw{display:none}
+.me-line.rendered .md-rendered{display:inline}
+/* Status Bar */
+.mockup-status{height:28px;background:var(--bg3);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font:400 .65rem var(--mono);color:var(--text3)}
+.mockup-status .ms-left,.mockup-status .ms-right{display:flex;gap:14px}
+.mockup-status .ms-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:4px;animation:livePulse 2s ease infinite}
+/* Typing highlight flash */
+.me-line.just-typed .me-content{background:var(--accent-bg);border-radius:3px;transition:background .8s ease}
+.me-line.just-typed-off .me-content{background:transparent}
 
 @media(max-width:768px){
   .mockup-sidebar{display:none}
   .mockup-body{min-height:240px}
   .mockup-editor{padding:20px}
+  .me-linenum{display:none}
 }
 
 /* ============ PERF COUNTER ============ */
@@ -160,6 +173,12 @@ a:hover{color:var(--accent2)}
 .phil-line.indent{padding-left:24px;border-left:3px solid var(--accent);margin-left:0}
 .phil-line.small{font-size:1rem;color:var(--text3);font-style:italic;margin-top:32px}
 .phil-sig{text-align:right;margin-top:28px;font:500 .9rem var(--font);color:var(--accent);letter-spacing:.02em}
+/* Typewriter for philosophy */
+.phil-typewriter{overflow:hidden;border-right:2px solid var(--accent);white-space:nowrap;width:0;display:inline-block;vertical-align:bottom;animation:none}
+.phil-typewriter.typing{animation:typeExpand var(--tw-dur,.8s) var(--ease-out) var(--tw-delay,0s) forwards,cursorBlink .7s step-end var(--tw-delay,0s) infinite}
+.phil-typewriter.done{border-right-color:transparent;animation:none;width:auto;white-space:normal}
+@keyframes typeExpand{from{width:0}to{width:var(--tw-width,100%)}}
+@keyframes cursorBlink{0%,100%{border-color:var(--accent)}50%{border-color:transparent}}
 
 /* ============ SECTION ============ */
 .section{max-width:1200px;margin:0 auto;padding:100px 24px}
@@ -336,17 +355,11 @@ a:hover{color:var(--accent2)}
           <div class="mockup-file">architecture.md</div>
           <div class="mockup-file">daily-log.md</div>
         </div>
-        <div class="mockup-editor" id="mockup-editor">
-          <div class="me-line" data-delay="0"><span class="me-h1">&#x1f343; Leaf Editor</span></div>
-          <div class="me-line" data-delay="400"><span class="show-ko">생각을 가볍게, 행동을 빠르게</span><span class="show-en">Lighten your thoughts, accelerate action</span></div>
-          <div class="me-line" data-delay="900"><span class="me-h2"><span class="show-ko">오늘 할 일</span><span class="show-en">Today's Tasks</span></span></div>
-          <div class="me-line" data-delay="1300"><span class="me-check">&#10003;</span> <span class="me-bold"><span class="show-ko">라이브 프리뷰 최적화</span><span class="show-en">Optimize live preview</span></span></div>
-          <div class="me-line" data-delay="1600"><span class="me-check">&#10003;</span> <span class="show-ko">머메이드 렌더링 수정</span><span class="show-en">Fix Mermaid rendering</span></div>
-          <div class="me-line" data-delay="1900"><span style="color:var(--text3);margin-right:4px">&#9744;</span> <span class="show-ko">코넬 노트 CSS 개선</span><span class="show-en">Improve Cornell Notes CSS</span></div>
-          <div class="me-line" data-delay="2300"><span class="me-h2"><span class="show-ko">메모</span><span class="show-en">Notes</span></span></div>
-          <div class="me-line" data-delay="2700"><span class="show-ko">KaTeX 수식: </span><span class="show-en">KaTeX: </span><span class="me-code">$E = mc^2$</span></div>
-          <div class="me-line" data-delay="3100"><span class="show-ko">위키링크: </span><span class="show-en">Wikilink: </span><span style="color:var(--accent)">[[architecture]]</span><span class="me-cursor"></span></div>
-        </div>
+        <div class="mockup-editor" id="mockup-editor"></div>
+      </div>
+      <div class="mockup-status">
+        <div class="ms-left"><span><span class="ms-dot"></span>Markdown</span><span id="ms-lines">0 lines</span></div>
+        <div class="ms-right"><span id="ms-chars">0 chars</span><span>UTF-8</span></div>
       </div>
     </div>
   </div>
@@ -566,12 +579,145 @@ a:hover{color:var(--accent2)}
   }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
   reveals.forEach(function(el){ observer.observe(el); });
 
-  // === Typing animation in mockup ===
-  var lines = document.querySelectorAll('.me-line');
-  lines.forEach(function(line){
-    var delay = parseInt(line.dataset.delay) || 0;
-    setTimeout(function(){ line.classList.add('typed'); }, 1400 + delay);
-  });
+  // === Typing engine for mockup editor ===
+  (function(){
+    var editor = document.getElementById('mockup-editor');
+    var msLines = document.getElementById('ms-lines');
+    var msChars = document.getElementById('ms-chars');
+    var lang = html.dataset.lang || 'ko';
+    var typingData = [
+      { raw:'# Leaf Editor', rendered:'<span class="me-h1">&#x1f343; Leaf Editor</span>', pause:400 },
+      { raw:lang==='ko'?'생각을 가볍게, 행동을 빠르게':'Lighten your thoughts, accelerate action', rendered:null, pause:300 },
+      { raw:'', rendered:null, pause:200 },
+      { raw:lang==='ko'?'## 오늘 할 일':'## Today\'s Tasks', rendered:'<span class="me-h2">'+(lang==='ko'?'오늘 할 일':'Today\'s Tasks')+'</span>', pause:300 },
+      { raw:lang==='ko'?'- [x] **라이브 프리뷰 최적화**':'- [x] **Optimize live preview**', rendered:'<span class="me-check">&#10003;</span> <span class="me-bold">'+(lang==='ko'?'라이브 프리뷰 최적화':'Optimize live preview')+'</span>', pause:200 },
+      { raw:lang==='ko'?'- [x] 머메이드 렌더링 수정':'- [x] Fix Mermaid rendering', rendered:'<span class="me-check">&#10003;</span> '+(lang==='ko'?'머메이드 렌더링 수정':'Fix Mermaid rendering'), pause:200 },
+      { raw:lang==='ko'?'- [ ] 코넬 노트 CSS 개선':'- [ ] Improve Cornell Notes CSS', rendered:'<span style="color:var(--text3);margin-right:4px">&#9744;</span> '+(lang==='ko'?'코넬 노트 CSS 개선':'Improve Cornell Notes CSS'), pause:300 },
+      { raw:'', rendered:null, pause:200 },
+      { raw:lang==='ko'?'## 메모':'## Notes', rendered:'<span class="me-h2">'+(lang==='ko'?'메모':'Notes')+'</span>', pause:300 },
+      { raw:(lang==='ko'?'KaTeX 수식: ':'KaTeX: ')+'`$E = mc^2$`', rendered:(lang==='ko'?'KaTeX 수식: ':'KaTeX: ')+'<span class="me-code">$E = mc^2$</span>', pause:300 },
+      { raw:(lang==='ko'?'위키링크: ':'Wikilink: ')+'[[architecture]]', rendered:(lang==='ko'?'위키링크: ':'Wikilink: ')+'<span style="color:var(--accent)">[[architecture]]</span>', pause:0 },
+    ];
+    var lineIdx = 0, charIdx = 0, totalChars = 0, lineCount = 0;
+    var currentLineEl = null, currentContentEl = null;
+    var BASE_SPEED = 45, FAST_SPEED = 25;
+    var startDelay = 1800;
+
+    function createLine(){
+      var line = document.createElement('div');
+      line.className = 'me-line';
+      var num = document.createElement('span');
+      num.className = 'me-linenum';
+      num.textContent = lineCount + 1;
+      var content = document.createElement('span');
+      content.className = 'me-content';
+      var rawSpan = document.createElement('span');
+      rawSpan.className = 'md-raw';
+      var cursor = document.createElement('span');
+      cursor.className = 'me-cursor';
+      content.appendChild(rawSpan);
+      content.appendChild(cursor);
+      if (typingData[lineIdx].rendered) {
+        var renderedSpan = document.createElement('span');
+        renderedSpan.className = 'md-rendered';
+        renderedSpan.innerHTML = typingData[lineIdx].rendered;
+        content.appendChild(renderedSpan);
+      }
+      line.appendChild(num);
+      line.appendChild(content);
+      editor.appendChild(line);
+      lineCount++;
+      currentLineEl = line;
+      currentContentEl = rawSpan;
+      msLines.textContent = lineCount + ' lines';
+    }
+
+    function typeChar(){
+      if (lineIdx >= typingData.length) {
+        // Done - remove last cursor, keep it on last line
+        return;
+      }
+      var data = typingData[lineIdx];
+      if (!currentLineEl) createLine();
+
+      if (charIdx < data.raw.length) {
+        currentContentEl.textContent += data.raw[charIdx];
+        charIdx++;
+        totalChars++;
+        msChars.textContent = totalChars + ' chars';
+        // Vary speed: faster for spaces/punctuation
+        var ch = data.raw[charIdx-1];
+        var speed = (ch === ' ' || ch === ',' || ch === '.') ? FAST_SPEED : BASE_SPEED;
+        // Random jitter
+        speed += Math.random() * 30 - 10;
+        setTimeout(typeChar, speed);
+      } else {
+        // Line complete - render markdown transformation
+        currentLineEl.classList.add('just-typed');
+        setTimeout(function(){
+          currentLineEl.classList.remove('just-typed');
+          currentLineEl.classList.add('just-typed-off');
+        }, 400);
+        if (data.rendered) {
+          setTimeout(function(){
+            currentLineEl.classList.add('rendered');
+            // Remove cursor from this line
+            var cursor = currentLineEl.querySelector('.me-cursor');
+            if (cursor) cursor.remove();
+          }, 350);
+        } else {
+          var cursor = currentLineEl.querySelector('.me-cursor');
+          if (cursor) cursor.remove();
+        }
+        // Move to next line
+        lineIdx++;
+        charIdx = 0;
+        currentLineEl = null;
+        if (lineIdx < typingData.length) {
+          setTimeout(function(){
+            createLine();
+            typeChar();
+          }, data.pause + 150);
+        }
+      }
+    }
+
+    setTimeout(function(){
+      createLine();
+      typeChar();
+    }, startDelay);
+  })();
+
+  // === Philosophy typewriter ===
+  (function(){
+    var philLines = document.querySelectorAll('.phil-line');
+    var philObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (!entry.isIntersecting || entry.target.dataset.twDone) return;
+        entry.target.dataset.twDone = '1';
+        var el = entry.target;
+        var lang = html.dataset.lang || 'ko';
+        var textEl = el.querySelector('.show-' + lang);
+        if (!textEl) return;
+        var fullText = textEl.textContent;
+        textEl.textContent = '';
+        var i = 0;
+        var speed = 30;
+        function tick(){
+          if (i < fullText.length) {
+            textEl.textContent += fullText[i];
+            i++;
+            var s = speed + Math.random() * 15;
+            if (fullText[i-1] === ',' || fullText[i-1] === '.') s += 120;
+            else if (fullText[i-1] === '\n') s += 80;
+            setTimeout(tick, s);
+          }
+        }
+        tick();
+      });
+    }, {threshold:0.3});
+    philLines.forEach(function(p){ philObs.observe(p); });
+  })();
 
   // === Counter animation ===
   var counters = document.querySelectorAll('.perf-num[data-count]');
