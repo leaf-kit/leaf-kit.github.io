@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark" data-lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaf — 생각이 흐르는 마크다운 에디터</title>
+  <meta name="description" content="Tauri + Rust 기반 네이티브 마크다운 에디터. Typora의 라이브 프리뷰, Obsidian의 지식 그래프, 그리고 Electron 없는 가벼움. 코넬 노트, 칸반 보드, 머메이드 다이어그램까지.">
+  <meta name="keywords" content="Leaf, markdown editor, Tauri, Rust, 마크다운 에디터, WYSIWYG, knowledge graph, 코넬노트">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Leaf — 생각이 흐르는 마크다운 에디터">
+  <meta property="og:description" content="Tauri + Rust 기반 네이티브 마크다운 에디터. 라이브 프리뷰, 지식 그래프, 150MB 미만 메모리.">
+  <meta property="og:url" content="https://leaf-kit.github.io/leafmd/">
+  <meta property="og:site_name" content="leaf-kit.github.io">
+  <meta property="og:locale" content="ko_KR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@leafeditor">
+  <meta name="twitter:creator" content="@leafeditor">
+  <meta name="twitter:title" content="Leaf — 생각이 흐르는 마크다운 에디터">
+  <meta name="twitter:description" content="Tauri + Rust. 라이브 프리뷰, 지식 그래프, 150MB 미만 메모리. Electron 없이 빠르고 가볍게.">
+
+  <link rel="canonical" href="https://leaf-kit.github.io/leafmd/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #FAFBFC; --bg2: #FFFFFF; --bg3: #F0F2F5;
+      --text: #111827; --text2: #4B5563; --text3: #9CA3AF;
+      --accent: #059669; --accent2: #10B981; --accent-bg: rgba(5,150,105,.06);
+      --accent-border: rgba(5,150,105,.2);
+      --amber: #D97706; --amber-bg: rgba(217,119,6,.08);
+      --blue: #3B82F6; --purple: #8B5CF6; --red: #EF4444;
+      --border: #E5E7EB;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
+      --shadow: 0 8px 24px rgba(0,0,0,.06);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,.08);
+      --font: 'Noto Sans KR', -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 14px;
+    }
+    [data-theme="dark"] {
+      --bg: #0C0F1A; --bg2: #141825; --bg3: #1C2030;
+      --text: #E5E7EB; --text2: #9CA3AF; --text3: #6B7280;
+      --border: #2A2F40;
+      --accent-bg: rgba(16,185,129,.1);
+      --accent-border: rgba(16,185,129,.25);
+      --amber-bg: rgba(217,119,6,.1);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.2);
+      --shadow: 0 8px 24px rgba(0,0,0,.3);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,.4);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 17px; scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.8; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); text-decoration: none; transition: opacity .2s; }
+    a:hover { opacity: .8; }
+    .hide-ko, .hide-en { display: none; }
+    [data-lang="ko"] .show-ko { display: initial; }
+    [data-lang="ko"] .show-en { display: none; }
+    [data-lang="en"] .show-en { display: initial; }
+    [data-lang="en"] .show-ko { display: none; }
+
+    /* Nav */
+    .nav { position: sticky; top: 0; z-index: 100; background: var(--bg2); border-bottom: 1px solid var(--border); backdrop-filter: blur(20px); }
+    [data-theme="dark"] .nav { background: rgba(20,24,37,.9); }
+    .nav-inner { max-width: 1080px; margin: 0 auto; padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-left { display: flex; align-items: center; gap: 10px; }
+    .nav-logo { font: 900 1.1rem var(--font); color: var(--accent); letter-spacing: -.03em; }
+    .nav-tag { font: 600 .62rem var(--mono); color: var(--amber); background: var(--amber-bg); padding: 2px 8px; border-radius: 10px; }
+    .nav-right { display: flex; align-items: center; gap: 6px; }
+    .nav-btn { height: 34px; border: 1px solid var(--border); background: var(--bg); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: .8rem; transition: all .2s; padding: 0 10px; font-family: var(--mono); font-weight: 600; }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-link { color: var(--text3); display: flex; align-items: center; padding: 6px; border-radius: 6px; transition: color .2s; }
+    .nav-link:hover { color: var(--accent); }
+
+    /* Hero */
+    .hero { padding: 80px 24px 64px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(16,185,129,.04) 0%, transparent 65%); pointer-events: none; }
+    .hero-inner { max-width: 680px; margin: 0 auto; position: relative; }
+    .hero-icon { font-size: 3rem; margin-bottom: 20px; display: inline-block; filter: drop-shadow(0 4px 12px rgba(16,185,129,.2)); }
+    .hero h1 { font-size: 2.6rem; font-weight: 900; line-height: 1.25; letter-spacing: -.04em; margin-bottom: 20px; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero-sub { font-size: 1.05rem; color: var(--text2); line-height: 1.9; max-width: 520px; margin: 0 auto 28px; }
+    .hero-chips { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+    .chip { font: 600 .72rem var(--mono); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--text2); background: var(--bg2); }
+    .chip.green { color: var(--accent); border-color: var(--accent-border); background: var(--accent-bg); }
+    .hero-cta { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--accent); color: #fff; border-radius: 10px; font-weight: 700; font-size: .92rem; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 16px rgba(5,150,105,.25); cursor: default; opacity: .6; }
+    .hero-cta-note { font-size: .75rem; color: var(--text3); margin-top: 10px; }
+
+    /* Philosophy */
+    .philosophy { max-width: 640px; margin: 0 auto; padding: 56px 24px 48px; }
+    .philosophy blockquote { border: none; padding: 0; margin: 0; background: none; }
+    .philosophy p { font-size: 1.05rem; color: var(--text2); margin-bottom: 12px; line-height: 2; }
+    .philosophy p.bold { color: var(--text); font-weight: 600; }
+    .philosophy p.indent { padding-left: 20px; border-left: 2px solid var(--accent-border); }
+    .philosophy .sig { text-align: right; margin-top: 24px; font-size: .88rem; color: var(--text3); }
+
+    /* Sections */
+    .section { max-width: 1080px; margin: 0 auto; padding: 56px 24px; }
+    .section-header { text-align: center; margin-bottom: 40px; }
+    .section-header h2 { font-size: 1.6rem; font-weight: 900; letter-spacing: -.03em; margin-bottom: 8px; }
+    .section-header p { font-size: .95rem; color: var(--text2); max-width: 500px; margin: 0 auto; }
+    .section-divider { border: none; border-top: 1px solid var(--border); max-width: 1080px; margin: 0 auto; }
+
+    /* Performance Strip */
+    .perf-strip { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .perf-inner { max-width: 900px; margin: 0 auto; padding: 36px 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
+    .perf-item .perf-val { font: 900 1.8rem var(--mono); color: var(--accent); letter-spacing: -.03em; }
+    .perf-item .perf-label { font-size: .78rem; color: var(--text3); margin-top: 4px; }
+
+    /* Feature Cards */
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .feat { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: border-color .25s, transform .25s, box-shadow .25s; }
+    .feat:hover { border-color: var(--accent-border); transform: translateY(-3px); box-shadow: var(--shadow); }
+    .feat-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .feat h3 { font-size: .95rem; font-weight: 700; margin-bottom: 6px; }
+    .feat p { font-size: .82rem; color: var(--text2); line-height: 1.65; margin: 0; }
+
+    /* Surprise Section */
+    .surprises { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .surprise { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 24px; display: flex; gap: 16px; align-items: flex-start; transition: border-color .2s; }
+    .surprise:hover { border-color: var(--accent-border); }
+    .surprise-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+    .surprise h4 { font-size: .88rem; font-weight: 700; margin-bottom: 4px; }
+    .surprise p { font-size: .8rem; color: var(--text2); line-height: 1.6; margin: 0; }
+
+    /* Tech Stack */
+    .stack { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 700px; margin: 0 auto; }
+    .stack-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .stack-item .sl { font-size: .82rem; font-weight: 600; }
+    .stack-item .sr { font: 500 .75rem var(--mono); color: var(--accent); background: var(--accent-bg); padding: 3px 10px; border-radius: 6px; }
+
+    /* Formats */
+    .formats { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .fmt { font: 600 .72rem var(--mono); padding: 6px 14px; border-radius: 8px; background: var(--bg2); border: 1px solid var(--border); color: var(--text2); }
+    .fmt.imp { border-left: 3px solid var(--blue); }
+    .fmt.exp { border-left: 3px solid var(--accent); }
+
+    /* Comparison */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); max-width: 800px; margin: 24px auto 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    thead { background: var(--bg3); }
+    th { padding: 12px 16px; text-align: left; font-weight: 700; font-size: .72rem; color: var(--text3); text-transform: uppercase; letter-spacing: .04em; }
+    td { padding: 10px 16px; border-top: 1px solid var(--border); }
+    .check { color: var(--accent); font-weight: 700; }
+    .cross { color: var(--text3); }
+
+    /* Templates */
+    .templates { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .tmpl { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; font-size: .82rem; font-weight: 500; color: var(--text2); transition: border-color .2s; display: flex; align-items: center; gap: 8px; }
+    .tmpl:hover { border-color: var(--accent-border); }
+    .tmpl-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+    /* Footer */
+    .footer { border-top: 1px solid var(--border); padding: 36px 24px; text-align: center; }
+    .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
+    .footer-links a { font-size: .82rem; color: var(--text3); display: flex; align-items: center; gap: 6px; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { font-size: .72rem; color: var(--text3); }
+    .share-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 20px; background: var(--accent-bg); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 8px; font: 600 .82rem var(--font); cursor: pointer; transition: all .2s; text-decoration: none; margin-top: 16px; }
+    .share-btn:hover { background: var(--accent); color: #fff; opacity: 1; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 1.8rem; }
+      .hero { padding: 52px 20px 40px; }
+      .perf-inner { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .features { grid-template-columns: 1fr; }
+      .surprises { grid-template-columns: 1fr; }
+      .stack { grid-template-columns: 1fr; }
+      .templates { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span class="nav-logo">Leaf</span>
+        <span class="nav-tag">BETA</span>
+      </div>
+      <div class="nav-right">
+        <button class="nav-btn" id="btn-lang">
+          <span class="show-ko">EN</span>
+          <span class="show-en">KO</span>
+        </button>
+        <button class="nav-btn" id="btn-theme"><span id="theme-icon">&#9788;</span></button>
+        <a class="nav-link" href="https://github.com/leaf-kit" target="_blank" title="GitHub">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+        <a class="nav-link" href="https://x.com/leafeditor" target="_blank" title="@leafeditor">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-icon">&#x1f343;</div>
+      <h1>
+        <span class="show-ko"><em>Leaf</em><br>생각이 흐르는<br>마크다운 에디터</span>
+        <span class="show-en"><em>Leaf</em><br>Where Thoughts<br>Flow Naturally</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="show-ko">
+          Tauri + Rust로 만든 네이티브 마크다운 에디터.<br>
+          Typora처럼 쓰고, Obsidian처럼 연결하고,<br>
+          Electron 없이 가볍게.
+        </span>
+        <span class="show-en">
+          A native markdown editor built with Tauri + Rust.<br>
+          Write like Typora, connect like Obsidian,<br>
+          lightweight without Electron.
+        </span>
+      </p>
+      <div class="hero-chips">
+        <span class="chip green">Tauri v2</span>
+        <span class="chip green">Rust Backend</span>
+        <span class="chip">CodeMirror 6</span>
+        <span class="chip">React 18</span>
+        <span class="chip">macOS</span>
+      </div>
+      <div class="hero-cta">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span class="show-ko">다운로드 (준비 중)</span>
+        <span class="show-en">Download (Coming Soon)</span>
+      </div>
+      <p class="hero-cta-note">
+        <span class="show-ko">macOS 지원 &middot; Windows/Linux 예정</span>
+        <span class="show-en">macOS supported &middot; Windows/Linux planned</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- Performance Strip -->
+  <div class="perf-strip">
+    <div class="perf-inner">
+      <div class="perf-item">
+        <div class="perf-val">&lt;300<small style="font-size:.5em">ms</small></div>
+        <div class="perf-label">
+          <span class="show-ko">콜드 스타트</span>
+          <span class="show-en">Cold Start</span>
+        </div>
+      </div>
+      <div class="perf-item">
+        <div class="perf-val">&lt;150<small style="font-size:.5em">MB</small></div>
+        <div class="perf-label">
+          <span class="show-ko">메모리 사용량</span>
+          <span class="show-en">Memory Usage</span>
+        </div>
+      </div>
+      <div class="perf-item">
+        <div class="perf-val">~0<small style="font-size:.5em">%</small></div>
+        <div class="perf-label">
+          <span class="show-ko">대기 시 CPU</span>
+          <span class="show-en">Idle CPU</span>
+        </div>
+      </div>
+      <div class="perf-item">
+        <div class="perf-val">&lt;16<small style="font-size:.5em">ms</small></div>
+        <div class="perf-label">
+          <span class="show-ko">입력 → 렌더링</span>
+          <span class="show-en">Type to Render</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Philosophy -->
+  <section class="philosophy">
+    <p class="bold">
+      <span class="show-ko">나는 복잡한 것을 좋아하지 않는다.</span>
+      <span class="show-en">I don't like complexity.</span>
+    </p>
+    <p>
+      <span class="show-ko">그래서 오히려 복잡한 문제를 해결하는 도구를 만든다.</span>
+      <span class="show-en">That's exactly why I build tools that solve complex problems.</span>
+    </p>
+    <p>
+      <span class="show-ko">
+        글을 쓰기 위한 도구가 아니라,<br>
+        생각이 자연스럽게 흐르고 실행까지 이어지게 만드는 환경을 만드는 중이다.
+      </span>
+      <span class="show-en">
+        Not a tool for writing,<br>
+        but an environment where thoughts flow naturally and lead to action.
+      </span>
+    </p>
+    <p class="indent">
+      <span class="show-ko">
+        개인 지식 관리는 거창하지 않다.<br>
+        잘 정리된 시스템보다,<br>
+        다시 열어보고 싶어지는 기록이 더 중요하다고 믿는다.
+      </span>
+      <span class="show-en">
+        Personal knowledge management doesn't have to be grand.<br>
+        A well-organized system matters less<br>
+        than notes you actually want to come back to.
+      </span>
+    </p>
+    <p class="bold">
+      <span class="show-ko">
+        짧게 쓰고, 자주 남기고, 바로 실행한다.
+      </span>
+      <span class="show-en">
+        Write short. Save often. Act immediately.
+      </span>
+    </p>
+    <p>
+      <span class="show-ko">
+        마크다운은 단순한 문법이 아니라<br>
+        생각을 가볍게 만들고, 행동을 빠르게 만드는 인터페이스다.
+      </span>
+      <span class="show-en">
+        Markdown isn't just syntax.<br>
+        It's an interface that lightens thought and accelerates action.
+      </span>
+    </p>
+    <p>
+      <span class="show-ko">Leaf는 아직 완성되지 않았다. 하지만 생각이 흘러가는 방식은 이미 바뀌고 있다.</span>
+      <span class="show-en">Leaf isn't finished yet. But the way thoughts flow has already changed.</span>
+    </p>
+    <div class="sig">— Leaf</div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Core Features -->
+  <section class="section">
+    <div class="section-header">
+      <h2>
+        <span class="show-ko">핵심 기능</span>
+        <span class="show-en">Core Features</span>
+      </h2>
+      <p>
+        <span class="show-ko">마크다운 에디터에 필요한 것, 그리고 기대하지 못한 것까지</span>
+        <span class="show-en">What you need in a markdown editor, and what you didn't expect</span>
+      </p>
+    </div>
+    <div class="features">
+      <div class="feat">
+        <div class="feat-icon">&#x270D;&#xFE0F;</div>
+        <h3>
+          <span class="show-ko">라이브 프리뷰</span>
+          <span class="show-en">Live Preview</span>
+        </h3>
+        <p>
+          <span class="show-ko">Typora 스타일의 인라인 WYSIWYG. 별도 미리보기 패널 없이 쓰는 그대로 보인다. Cmd+/ 로 소스 모드 전환.</span>
+          <span class="show-en">Typora-style inline WYSIWYG. No separate preview pane — what you type is what you see. Toggle source mode with Cmd+/.</span>
+        </p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">&#x1f578;&#xFE0F;</div>
+        <h3>
+          <span class="show-ko">지식 그래프</span>
+          <span class="show-en">Knowledge Graph</span>
+        </h3>
+        <p>
+          <span class="show-ko">[[위키링크]]로 문서를 연결하면 D3.js 기반 인터랙티브 그래프가 자동 생성된다. 로컬/글로벌 뷰 전환 가능.</span>
+          <span class="show-en">Connect documents with [[wikilinks]] and an interactive D3.js graph is auto-generated. Switch between local and global views.</span>
+        </p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">&#x1f4d0;</div>
+        <h3>
+          <span class="show-ko">머메이드 다이어그램</span>
+          <span class="show-en">Mermaid Diagrams</span>
+        </h3>
+        <p>
+          <span class="show-ko">플로차트, 시퀀스, 클래스, ER 다이어그램을 마크다운 안에서 바로 렌더링. Excalidraw 변환도 가능.</span>
+          <span class="show-en">Render flowcharts, sequences, class diagrams, ER diagrams inline. Excalidraw conversion available.</span>
+        </p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">&#x1f4DD;</div>
+        <h3>
+          <span class="show-ko">코넬 노트</span>
+          <span class="show-en">Cornell Notes</span>
+        </h3>
+        <p>
+          <span class="show-ko">Leaf만의 코넬 노트 포맷. Cue | Note | Summary 3단 레이아웃을 마크다운 안에서 직접 편집.</span>
+          <span class="show-en">Leaf-exclusive Cornell Notes format. Edit Cue | Note | Summary 3-column layout directly in markdown.</span>
+        </p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">&#x1f4CB;</div>
+        <h3>
+          <span class="show-ko">칸반 보드</span>
+          <span class="show-en">Kanban Board</span>
+        </h3>
+        <p>
+          <span class="show-ko">에디터를 떠나지 않고 인라인 칸반 보드로 작업을 관리한다. 메모 보드도 함께 지원.</span>
+          <span class="show-en">Manage tasks with inline Kanban boards without leaving the editor. Memo boards also supported.</span>
+        </p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">&#x1f3a8;</div>
+        <h3>
+          <span class="show-ko">17가지 테마</span>
+          <span class="show-en">17 Themes</span>
+        </h3>
+        <p>
+          <span class="show-ko">GitHub, Night, Forest, Aurora, Ocean, Moonlight 등 라이트/다크 테마. CSS 변수 기반으로 커스터마이징 가능.</span>
+          <span class="show-en">GitHub, Night, Forest, Aurora, Ocean, Moonlight and more. Customizable with CSS variables.</span>
+        </p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">&#x1f4CA;</div>
+        <h3>
+          <span class="show-ko">KaTeX 수식</span>
+          <span class="show-en">KaTeX Math</span>
+        </h3>
+        <p>
+          <span class="show-ko">인라인 $...$ 과 블록 $$...$$ 수식을 실시간 렌더링. 학술 논문과 기술 문서 작성에 적합.</span>
+          <span class="show-en">Real-time rendering of inline $...$ and block $$...$$ equations. Perfect for academic and technical writing.</span>
+        </p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">&#x1f4C1;</div>
+        <h3>
+          <span class="show-ko">멀티 탭</span>
+          <span class="show-en">Multi-Tab</span>
+        </h3>
+        <p>
+          <span class="show-ko">여러 문서를 동시에 열어서 작업. 파일 트리 + 탭 기반 탐색. 외부 파일 변경도 실시간 감지.</span>
+          <span class="show-en">Work with multiple documents simultaneously. File tree + tab navigation. Real-time external file change detection.</span>
+        </p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">&#x1f310;</div>
+        <h3>
+          <span class="show-ko">다국어 지원</span>
+          <span class="show-en">Multilingual</span>
+        </h3>
+        <p>
+          <span class="show-ko">한국어, 영어, 중국어, 일본어 완전 지원. 한글 번호 매기기(가나다, 일이삼)까지 네이티브로 처리.</span>
+          <span class="show-en">Full Korean, English, Chinese, Japanese support. Native Hangul numbering (가나다, 일이삼) included.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Surprises -->
+  <section class="section">
+    <div class="section-header">
+      <h2>
+        <span class="show-ko">마크다운 에디터에 이런 게?</span>
+        <span class="show-en">Wait, a Markdown Editor Has This?</span>
+      </h2>
+      <p>
+        <span class="show-ko">예상 밖의 기능들</span>
+        <span class="show-en">Unexpected features</span>
+      </p>
+    </div>
+    <div class="surprises">
+      <div class="surprise">
+        <div class="surprise-icon">&#x1f3ae;</div>
+        <div>
+          <h4>
+            <span class="show-ko">타이핑 게임</span>
+            <span class="show-en">Typing Game</span>
+          </h4>
+          <p>
+            <span class="show-ko">키보드 속도를 연습하는 미니 게임이 내장되어 있다. 글쓰기 워밍업용.</span>
+            <span class="show-en">Built-in typing speed mini-game. Perfect for writing warm-ups.</span>
+          </p>
+        </div>
+      </div>
+      <div class="surprise">
+        <div class="surprise-icon">&#x1f423;</div>
+        <div>
+          <h4>
+            <span class="show-ko">다마고치</span>
+            <span class="show-en">Tamagotchi</span>
+          </h4>
+          <p>
+            <span class="show-ko">글을 쓰면 성장하는 가상 펫. 글쓰기 동반자 역할을 한다.</span>
+            <span class="show-en">A virtual pet that grows as you write. Your writing companion.</span>
+          </p>
+        </div>
+      </div>
+      <div class="surprise">
+        <div class="surprise-icon">&#x1f3ac;</div>
+        <div>
+          <h4>
+            <span class="show-ko">스크린세이버 모드</span>
+            <span class="show-en">Screensaver Mode</span>
+          </h4>
+          <p>
+            <span class="show-ko">52개의 영감을 주는 문구가 화면에 순환 표시된다. 사무실에 켜놓으면 분위기가 달라진다.</span>
+            <span class="show-en">52 inspirational quotes rotate on screen. Leave it on in the office for ambient inspiration.</span>
+          </p>
+        </div>
+      </div>
+      <div class="surprise">
+        <div class="surprise-icon">&#x270B;</div>
+        <div>
+          <h4>
+            <span class="show-ko">헤밍웨이 모드</span>
+            <span class="show-en">Hemingway Mode</span>
+          </h4>
+          <p>
+            <span class="show-ko">Delete 키를 비활성화한다. 지우지 말고 앞으로만 써라. 분당 글쓰기 속도도 측정.</span>
+            <span class="show-en">Disables the Delete key. Don't erase — only move forward. Tracks your words per minute.</span>
+          </p>
+        </div>
+      </div>
+      <div class="surprise">
+        <div class="surprise-icon">&#x1f30A;</div>
+        <div>
+          <h4>
+            <span class="show-ko">물리 시뮬레이터</span>
+            <span class="show-en">Physics Simulator</span>
+          </h4>
+          <p>
+            <span class="show-ko">인터랙티브 물리 캔버스가 들어있다. 마크다운 에디터에 왜? 만들고 싶어서.</span>
+            <span class="show-en">Interactive physics canvas is built in. Why in a markdown editor? Because we wanted to.</span>
+          </p>
+        </div>
+      </div>
+      <div class="surprise">
+        <div class="surprise-icon">&#x1f3b5;</div>
+        <div>
+          <h4>
+            <span class="show-ko">ABC 악보</span>
+            <span class="show-en">ABC Music Notation</span>
+          </h4>
+          <p>
+            <span class="show-ko">ABC 문법으로 악보를 렌더링하고 재생까지 할 수 있다. 음악 수업 노트에 제격.</span>
+            <span class="show-en">Render sheet music with ABC notation and play it back. Perfect for music class notes.</span>
+          </p>
+        </div>
+      </div>
+      <div class="surprise">
+        <div class="surprise-icon">&#x1f468;&#x200D;&#x1f3A4;</div>
+        <div>
+          <h4>
+            <span class="show-ko">시니어 모드</span>
+            <span class="show-en">Senior Mode</span>
+          </h4>
+          <p>
+            <span class="show-ko">큰 글씨, 단순화된 UI. 접근성을 진지하게 고민한 결과물.</span>
+            <span class="show-en">Larger fonts, simplified UI. A serious take on accessibility.</span>
+          </p>
+        </div>
+      </div>
+      <div class="surprise">
+        <div class="surprise-icon">&#x1f4bb;</div>
+        <div>
+          <h4>
+            <span class="show-ko">내장 터미널</span>
+            <span class="show-en">Built-in Terminal</span>
+          </h4>
+          <p>
+            <span class="show-ko">xterm 기반 터미널이 에디터 안에 있다. 문서 쓰다가 바로 명령어 실행.</span>
+            <span class="show-en">xterm-based terminal right in the editor. Run commands while writing docs.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Import/Export -->
+  <section class="section">
+    <div class="section-header">
+      <h2>
+        <span class="show-ko">가져오기 &amp; 내보내기</span>
+        <span class="show-en">Import &amp; Export</span>
+      </h2>
+      <p>
+        <span class="show-ko">마크다운을 중심으로 다양한 형식과 연결된다</span>
+        <span class="show-en">Markdown at the center, connected to many formats</span>
+      </p>
+    </div>
+    <div class="formats">
+      <span class="fmt imp">
+        <span class="show-ko">가져오기</span>
+        <span class="show-en">Import</span>
+        &nbsp;.xlsx
+      </span>
+      <span class="fmt imp">
+        <span class="show-ko">가져오기</span>
+        <span class="show-en">Import</span>
+        &nbsp;.pptx
+      </span>
+      <span class="fmt imp">
+        <span class="show-ko">가져오기</span>
+        <span class="show-en">Import</span>
+        &nbsp;.docx
+      </span>
+      <span class="fmt imp">
+        <span class="show-ko">가져오기</span>
+        <span class="show-en">Import</span>
+        &nbsp;.pdf
+      </span>
+      <span class="fmt imp">
+        <span class="show-ko">가져오기</span>
+        <span class="show-en">Import</span>
+        &nbsp;.hwp
+      </span>
+    </div>
+    <div class="formats" style="margin-top: 10px;">
+      <span class="fmt exp">
+        <span class="show-ko">내보내기</span>
+        <span class="show-en">Export</span>
+        &nbsp;.pdf
+      </span>
+      <span class="fmt exp">
+        <span class="show-ko">내보내기</span>
+        <span class="show-en">Export</span>
+        &nbsp;.html
+      </span>
+      <span class="fmt exp">
+        <span class="show-ko">내보내기</span>
+        <span class="show-en">Export</span>
+        &nbsp;.docx
+      </span>
+      <span class="fmt exp">
+        <span class="show-ko">내보내기</span>
+        <span class="show-en">Export</span>
+        &nbsp;.hwp
+      </span>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Templates -->
+  <section class="section">
+    <div class="section-header">
+      <h2>
+        <span class="show-ko">14가지 내장 템플릿</span>
+        <span class="show-en">14 Built-in Templates</span>
+      </h2>
+      <p>
+        <span class="show-ko">빈 문서 앞에서 고민하지 않아도 된다</span>
+        <span class="show-en">No more staring at a blank page</span>
+      </p>
+    </div>
+    <div class="templates">
+      <div class="tmpl"><span class="tmpl-icon">&#x1f4C4;</span>
+        <span class="show-ko">빈 노트</span>
+        <span class="show-en">Blank Note</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f4C5;</span>
+        <span class="show-ko">주간 플래너</span>
+        <span class="show-en">Weekly Planner</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f4CA;</span>
+        <span class="show-ko">보고서</span>
+        <span class="show-en">Report</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f393;</span>
+        <span class="show-ko">학술 논문</span>
+        <span class="show-en">Academic Paper</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f3D7;&#xFE0F;</span>
+        <span class="show-ko">아키텍처 설계</span>
+        <span class="show-en">Architecture Design</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f50D;</span>
+        <span class="show-ko">코드 리뷰</span>
+        <span class="show-en">Code Review</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f343;</span>
+        <span class="show-ko">Leaf 쇼케이스</span>
+        <span class="show-en">Leaf Showcase</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f4DD;</span>
+        <span class="show-ko">코넬 노트</span>
+        <span class="show-en">Cornell Notes</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f4D4;</span>
+        <span class="show-ko">다이어리</span>
+        <span class="show-en">Diary</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f4DA;</span>
+        <span class="show-ko">독서 노트</span>
+        <span class="show-en">Book Notes</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f91D;</span>
+        <span class="show-ko">회의록</span>
+        <span class="show-en">Meeting Minutes</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f9EE;</span>
+        <span class="show-ko">수식 참조</span>
+        <span class="show-en">Formula Reference</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x1f4D0;</span>
+        <span class="show-ko">머메이드 패턴</span>
+        <span class="show-en">Mermaid Patterns</span>
+      </div>
+      <div class="tmpl"><span class="tmpl-icon">&#x23F0;</span>
+        <span class="show-ko">일정 관리</span>
+        <span class="show-en">Schedule</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Tech Stack -->
+  <section class="section">
+    <div class="section-header">
+      <h2>
+        <span class="show-ko">기술 스택</span>
+        <span class="show-en">Tech Stack</span>
+      </h2>
+      <p>
+        <span class="show-ko">가볍고 빠른 이유가 있다</span>
+        <span class="show-en">There's a reason it's fast and light</span>
+      </p>
+    </div>
+    <div class="stack">
+      <div class="stack-item"><span class="sl">Runtime</span><span class="sr">Tauri v2</span></div>
+      <div class="stack-item"><span class="sl">Backend</span><span class="sr">Rust</span></div>
+      <div class="stack-item"><span class="sl">Frontend</span><span class="sr">React 18</span></div>
+      <div class="stack-item"><span class="sl">Editor</span><span class="sr">CodeMirror 6</span></div>
+      <div class="stack-item"><span class="sl">Graph</span><span class="sr">D3.js v7</span></div>
+      <div class="stack-item"><span class="sl">State</span><span class="sr">Zustand</span></div>
+      <div class="stack-item"><span class="sl">Build</span><span class="sr">Vite</span></div>
+      <div class="stack-item"><span class="sl">i18n</span><span class="sr">i18next</span></div>
+    </div>
+
+    <div class="table-wrap" style="margin-top: 40px;">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Leaf</th>
+            <th>Obsidian</th>
+            <th>Typora</th>
+            <th>VS Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Runtime</strong></td>
+            <td><span class="check">Tauri (Rust)</span></td>
+            <td>Electron</td>
+            <td>Electron</td>
+            <td>Electron</td>
+          </tr>
+          <tr>
+            <td><strong>
+              <span class="show-ko">메모리</span>
+              <span class="show-en">Memory</span>
+            </strong></td>
+            <td><span class="check">&lt;150MB</span></td>
+            <td>~400MB</td>
+            <td>~250MB</td>
+            <td>~500MB</td>
+          </tr>
+          <tr>
+            <td><strong>
+              <span class="show-ko">라이브 프리뷰</span>
+              <span class="show-en">Live Preview</span>
+            </strong></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td><strong>
+              <span class="show-ko">지식 그래프</span>
+              <span class="show-en">Graph</span>
+            </strong></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td><strong>
+              <span class="show-ko">코넬 노트</span>
+              <span class="show-en">Cornell Notes</span>
+            </strong></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td><strong>
+              <span class="show-ko">칸반 보드</span>
+              <span class="show-en">Kanban</span>
+            </strong></td>
+            <td><span class="check">&#10003;</span></td>
+            <td>
+              <span class="show-ko">플러그인</span>
+              <span class="show-en">Plugin</span>
+            </td>
+            <td><span class="cross">&#10007;</span></td>
+            <td>
+              <span class="show-ko">확장</span>
+              <span class="show-en">Extension</span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>HWP</strong></td>
+            <td><span class="check">&#10003;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td><strong>
+              <span class="show-ko">한글 번호</span>
+              <span class="show-en">KR Numbering</span>
+            </strong></td>
+            <td><span class="check">가나다</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+            <td><span class="cross">&#10007;</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="https://github.com/leaf-kit" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="https://x.com/leafeditor" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        @leafeditor
+      </a>
+      <a href="https://leaf-kit.github.io">leaf-kit.github.io</a>
+    </div>
+    <a class="share-btn" href="https://twitter.com/intent/tweet?text=Leaf%20%E2%80%94%20Tauri%20%2B%20Rust%20%EA%B8%B0%EB%B0%98%20%EB%84%A4%EC%9D%B4%ED%8B%B0%EB%B8%8C%20%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%20%EC%97%90%EB%94%94%ED%84%B0.%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%20%ED%94%84%EB%A6%AC%EB%B7%B0%2C%20%EC%A7%80%EC%8B%9D%20%EA%B7%B8%EB%9E%98%ED%94%84%2C%20150MB%20%EB%AF%B8%EB%A7%8C%20%EB%A9%94%EB%AA%A8%EB%A6%AC.&url=https%3A%2F%2Fleaf-kit.github.io%2Fleafmd%2F&via=leafeditor&hashtags=Leaf,Markdown,Tauri,Rust" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      <span class="show-ko">트위터에 공유하기</span>
+      <span class="show-en">Share on X</span>
+    </a>
+    <p class="footer-copy" style="margin-top: 16px;">Leaf &middot; leaf-kit.github.io</p>
+  </footer>
+
+  <script>
+  (function() {
+    var html = document.documentElement;
+
+    // Theme
+    var btnTheme = document.getElementById('btn-theme');
+    var themeIcon = document.getElementById('theme-icon');
+    var savedTheme = localStorage.getItem('theme');
+    if (savedTheme) html.dataset.theme = savedTheme;
+    else if (matchMedia('(prefers-color-scheme: light)').matches) html.dataset.theme = 'light';
+    function updateThemeIcon() { themeIcon.textContent = html.dataset.theme === 'dark' ? '\u2600' : '\u263D'; }
+    updateThemeIcon();
+    btnTheme.addEventListener('click', function() {
+      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', html.dataset.theme);
+      updateThemeIcon();
+    });
+
+    // Language
+    var btnLang = document.getElementById('btn-lang');
+    var savedLang = localStorage.getItem('leafmd-lang');
+    if (savedLang) html.dataset.lang = savedLang;
+    btnLang.addEventListener('click', function() {
+      html.dataset.lang = html.dataset.lang === 'ko' ? 'en' : 'ko';
+      localStorage.setItem('leafmd-lang', html.dataset.lang);
+    });
+  })();
+  </script>
+</body>
+</html>
