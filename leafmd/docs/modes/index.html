@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark" data-lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>모드 & 패널 — Leaf Docs</title>
+  <meta name="description" content="Leaf 마크다운 에디터의 특수 모드(헤밍웨이, 포커스, 젠 등)와 20가지 사이드 패널 가이드.">
+  <link rel="canonical" href="https://leaf-kit.github.io/leafmd/docs/modes/">
+  <meta name="twitter:site" content="@leafeditor">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+:root{--bg:#FFFFFF;--bg2:#F8FAFB;--bg3:#F1F4F8;--text:#1A1A2E;--text2:#5A6070;--text3:#9BA3B0;--accent:#0D9F6E;--accent2:#34D399;--accent-bg:rgba(13,159,110,.05);--accent-border:rgba(13,159,110,.15);--border:#E8ECF0;--amber:#E67E22;--blue:#4A90D9;--purple:#7C5CFC;--shadow:0 8px 30px rgba(0,0,0,.06);--font:'Inter','Noto Sans KR',-apple-system,sans-serif;--mono:'JetBrains Mono',monospace;--radius:16px;--ease-out:cubic-bezier(0,.55,.45,1);--ease-bounce:cubic-bezier(.34,1.56,.64,1)}
+[data-theme="dark"]{--bg:#0A0D14;--bg2:#12151E;--bg3:#1A1E2A;--text:#EAEDF2;--text2:#8B92A0;--text3:#5A6070;--border:#242838;--accent-bg:rgba(52,211,153,.06);--accent-border:rgba(52,211,153,.18);--shadow:0 8px 30px rgba(0,0,0,.3)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{font-size:16px;scroll-behavior:smooth}body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent2)}
+[data-lang="ko"] .show-ko{display:initial}[data-lang="ko"] .show-en{display:none}[data-lang="en"] .show-en{display:initial}[data-lang="en"] .show-ko{display:none}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}.reveal.visible{opacity:1;transform:translateY(0)}
+.nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);backdrop-filter:blur(20px)}[data-theme="dark"] .nav{background:rgba(10,13,20,.9)}.nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}.nav-left{display:flex;align-items:center;gap:8px}.nav-logo{font:800 1.1rem var(--font);color:var(--accent)}.nav-sep{color:var(--text3);font-weight:300}.nav-title{font:500 .85rem var(--font);color:var(--text2)}.nav-right{display:flex;align-items:center;gap:6px}.nav-btn{height:34px;padding:0 10px;border:1px solid var(--border);background:transparent;border-radius:8px;cursor:pointer;font:600 .75rem var(--mono);color:var(--text2);transition:all .2s;display:flex;align-items:center}.nav-btn:hover{border-color:var(--accent);color:var(--accent)}.nav-icon{width:34px;height:34px;border:none;background:transparent;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:color .2s}.nav-icon:hover{color:var(--accent)}.nav-icon svg{width:18px;height:18px}
+.content{max-width:760px;margin:0 auto;padding:48px 24px 80px}.content h1{font-size:2rem;font-weight:900;letter-spacing:-.04em;margin-bottom:8px}.content .subtitle{font-size:1rem;color:var(--text2);margin-bottom:40px}.content h2{font-size:1.35rem;font-weight:800;margin:48px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent-bg)}.content h3{font-size:1.05rem;font-weight:700;margin:28px 0 10px}.content p{margin-bottom:16px;color:var(--text2)}.content ul{margin:12px 0 20px 20px;color:var(--text2)}.content li{margin-bottom:6px}.content li strong{color:var(--text)}
+code{font-family:var(--mono);font-size:.84rem;background:var(--bg3);padding:2px 7px;border-radius:5px;color:var(--accent)}
+.mode-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:16px 0;display:flex;gap:20px;align-items:flex-start;transition:border-color .2s}
+.mode-card:hover{border-color:var(--accent-border)}
+.mode-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;transition:transform .3s var(--ease-bounce)}
+.mode-card:hover .mode-icon{transform:scale(1.1) rotate(-3deg)}
+.mode-body h3{font-size:1rem;font-weight:700;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.mode-body p{font-size:.84rem;color:var(--text2);margin:0 0 6px;line-height:1.65}
+.mode-body .shortcut{font:600 .72rem var(--mono);color:var(--accent);background:var(--accent-bg);padding:2px 8px;border-radius:5px}
+.panel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:20px 0}
+.panel-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:.84rem;transition:all .25s;display:flex;align-items:center;gap:10px}
+.panel-item:hover{border-color:var(--accent-border);transform:translateY(-2px)}
+.panel-item .pi-icon{font-size:1.2rem;flex-shrink:0}
+.panel-item .pi-name{font-weight:600;color:var(--text)}
+.panel-item .pi-desc{font-size:.75rem;color:var(--text3);margin-top:2px}
+.doc-nav{display:flex;justify-content:space-between;margin-top:56px;padding-top:24px;border-top:1px solid var(--border)}.doc-nav a{font:500 .88rem var(--font);color:var(--text2);display:flex;align-items:center;gap:6px;padding:10px 16px;border:1px solid var(--border);border-radius:10px;transition:all .2s}.doc-nav a:hover{border-color:var(--accent);color:var(--accent)}
+.footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:.78rem;color:var(--text3)}.footer a{color:var(--text3)}.footer a:hover{color:var(--accent)}
+@media(max-width:768px){.content h1{font-size:1.5rem}.mode-card{flex-direction:column;gap:12px}.panel-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="nav"><div class="nav-inner"><div class="nav-left"><a href="/leafmd/" class="nav-logo">Leaf</a><span class="nav-sep">/</span><a href="/leafmd/docs/" class="nav-title">Docs</a><span class="nav-sep">/</span><span class="nav-title"><span class="show-ko">모드 & 패널</span><span class="show-en">Modes & Panels</span></span></div><div class="nav-right"><button class="nav-btn" id="btn-lang"><span class="show-ko">EN</span><span class="show-en">KO</span></button><button class="nav-icon" id="btn-theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button></div></div></nav>
+
+<main class="content">
+  <h1 class="reveal"><span class="show-ko">모드 & 패널</span><span class="show-en">Modes & Panels</span></h1>
+  <p class="subtitle reveal"><span class="show-ko">상황에 맞는 작업 환경을 선택한다. 각 모드는 UI 요소를 다르게 구성하여 집중력을 높인다.</span><span class="show-en">Choose the right environment for the task. Each mode configures UI elements differently to enhance focus.</span></p>
+
+  <h2 class="reveal"><span class="show-ko">편집 모드</span><span class="show-en">Editing Modes</span></h2>
+
+  <div class="mode-card reveal">
+    <div class="mode-icon" style="background:var(--accent-bg)">&#x270D;&#xFE0F;</div>
+    <div class="mode-body">
+      <h3><span class="show-ko">노멀 모드</span><span class="show-en">Normal Mode</span> <span class="shortcut">Cmd+Shift+E</span></h3>
+      <p><span class="show-ko">기본 모드. 사이드바, 툴바, 상태바가 모두 보인다. 일반적인 문서 작업에 적합.</span><span class="show-en">Default mode. Sidebar, toolbar, and status bar all visible. Suitable for regular document work.</span></p>
+    </div>
+  </div>
+
+  <div class="mode-card reveal">
+    <div class="mode-icon" style="background:rgba(74,144,217,.1)">&#x1f3af;</div>
+    <div class="mode-body">
+      <h3><span class="show-ko">포커스 모드</span><span class="show-en">Focus Mode</span> <span class="shortcut">Cmd+Shift+F</span></h3>
+      <p><span class="show-ko">사이드바와 툴바를 숨기고 에디터만 남긴다. 긴 글을 쓸 때 방해 요소를 제거한다.</span><span class="show-en">Hides sidebar and toolbar, leaving only the editor. Removes distractions for long writing sessions.</span></p>
+    </div>
+  </div>
+
+  <div class="mode-card reveal">
+    <div class="mode-icon" style="background:rgba(230,126,34,.1)">&#x270B;</div>
+    <div class="mode-body">
+      <h3><span class="show-ko">헤밍웨이 모드</span><span class="show-en">Hemingway Mode</span> <span class="shortcut">Cmd+Shift+W</span></h3>
+      <p><span class="show-ko"><strong>Delete 키를 비활성화한다.</strong> 지우지 않고 앞으로만 쓰게 강제한다. 분당 글쓰기 속도(WPM)와 타이머가 표시되어 글쓰기 생산성을 측정할 수 있다. "Write drunk, edit sober"의 정신.</span><span class="show-en"><strong>Disables the Delete key.</strong> Forces you to write forward without erasing. Shows words-per-minute (WPM) and a timer to measure writing productivity. The spirit of "Write drunk, edit sober."</span></p>
+    </div>
+  </div>
+
+  <div class="mode-card reveal">
+    <div class="mode-icon" style="background:rgba(124,92,252,.1)">&#x1f4D6;</div>
+    <div class="mode-body">
+      <h3><span class="show-ko">읽기 모드</span><span class="show-en">Reading Mode</span> <span class="shortcut">Cmd+Shift+G</span></h3>
+      <p><span class="show-ko">읽기 전용 모드. 편집 불가능하고, 페이지 넘기기 방식으로 문서를 탐색한다. 싱글/듀얼 페이지 레이아웃을 지원.</span><span class="show-en">Read-only mode. No editing, page-flip navigation. Supports single and dual-page layouts.</span></p>
+    </div>
+  </div>
+
+  <div class="mode-card reveal">
+    <div class="mode-icon" style="background:rgba(13,159,110,.1)">&#x1f9D8;</div>
+    <div class="mode-body">
+      <h3><span class="show-ko">미니멀 모드</span><span class="show-en">Minimal Mode</span> <span class="shortcut">Cmd+Shift+M</span></h3>
+      <p><span class="show-ko">모든 UI 크롬을 숨기고 에디터만 남긴다. 포커스 모드보다 더 극단적. 글쓰기에만 완전히 몰입.</span><span class="show-en">Hides all UI chrome, leaving only the editor. More extreme than Focus mode. Complete immersion in writing.</span></p>
+    </div>
+  </div>
+
+  <div class="mode-card reveal">
+    <div class="mode-icon" style="background:rgba(232,67,147,.1)">&#x1f3ac;</div>
+    <div class="mode-body">
+      <h3><span class="show-ko">프레젠테이션 모드</span><span class="show-en">Presentation Mode</span></h3>
+      <p><span class="show-ko">마크다운 문서를 슬라이드로 변환한다. <code>---</code> 수평선이 슬라이드 구분자가 된다. 전체 화면으로 발표 가능.</span><span class="show-en">Converts markdown to slides. <code>---</code> horizontal rules become slide separators. Full-screen presentation ready.</span></p>
+    </div>
+  </div>
+
+  <h2 class="reveal"><span class="show-ko">전문가 모드</span><span class="show-en">Professional Modes</span></h2>
+  <p class="reveal"><span class="show-ko">특정 작업 유형에 최적화된 UI 구성:</span><span class="show-en">UI configurations optimized for specific workflows:</span></p>
+  <ul class="reveal">
+    <li><strong><span class="show-ko">개발자 모드</span><span class="show-en">Developer Mode</span></strong> — <span class="show-ko">터미널 패널 + 개발 도구 통합</span><span class="show-en">Terminal panel + dev tools integration</span></li>
+    <li><strong><span class="show-ko">저널리스트 모드</span><span class="show-en">Journalist Mode</span></strong> — <span class="show-ko">기사 작성 도구</span><span class="show-en">Article composition tools</span></li>
+    <li><strong><span class="show-ko">프롬프트 엔지니어 모드</span><span class="show-en">Prompt Engineer Mode</span></strong> — <span class="show-ko">AI 프롬프트 최적화 도구</span><span class="show-en">AI prompt optimization</span></li>
+    <li><strong><span class="show-ko">아카데미 모드</span><span class="show-en">Academy Mode</span></strong> — <span class="show-ko">Q&A 플래시카드 + 퀴즈</span><span class="show-en">Q&A flashcards + quiz system</span></li>
+    <li><strong><span class="show-ko">다이어리 모드</span><span class="show-en">Diary Mode</span></strong> — <span class="show-ko">날짜별 일기 + 기분 트래킹</span><span class="show-en">Date-stamped journal + mood tracking</span></li>
+    <li><strong><span class="show-ko">시니어 모드</span><span class="show-en">Senior Mode</span></strong> — <span class="show-ko">큰 글씨 + 단순화된 UI (접근성)</span><span class="show-en">Large fonts + simplified UI (accessibility)</span></li>
+  </ul>
+
+  <h2 class="reveal"><span class="show-ko">사이드 패널</span><span class="show-en">Side Panels</span></h2>
+  <p class="reveal"><span class="show-ko"><code>Cmd+\</code>로 사이드바를 토글하고, 패널을 선택해서 전환한다.</span><span class="show-en">Toggle sidebar with <code>Cmd+\</code>, then select a panel to switch.</span></p>
+
+  <div class="panel-grid">
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f4C1;</span><div><div class="pi-name"><span class="show-ko">파일 트리</span><span class="show-en">Files</span></div><div class="pi-desc"><span class="show-ko">폴더/파일 탐색</span><span class="show-en">Folder/file navigation</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f50D;</span><div><div class="pi-name"><span class="show-ko">검색</span><span class="show-en">Search</span></div><div class="pi-desc"><span class="show-ko">파일명/내용 검색</span><span class="show-en">Name/content search</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f3f7;&#xFE0F;</span><div><div class="pi-name"><span class="show-ko">태그</span><span class="show-en">Tags</span></div><div class="pi-desc"><span class="show-ko">태그별 파일 분류</span><span class="show-en">Group files by tag</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f578;&#xFE0F;</span><div><div class="pi-name"><span class="show-ko">그래프</span><span class="show-en">Graph</span></div><div class="pi-desc"><span class="show-ko">위키링크 관계도</span><span class="show-en">Wikilink relationships</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f4DD;</span><div><div class="pi-name"><span class="show-ko">아웃라인</span><span class="show-en">Outline</span></div><div class="pi-desc"><span class="show-ko">제목 구조 탐색</span><span class="show-en">Heading structure</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f33F;</span><div><div class="pi-name"><span class="show-ko">잔디</span><span class="show-en">Grass</span></div><div class="pi-desc"><span class="show-ko">활동 히트맵</span><span class="show-en">Activity heatmap</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x2705;</span><div><div class="pi-name">TODOs</div><div class="pi-desc"><span class="show-ko">TODO/FIXME 스캔</span><span class="show-en">TODO/FIXME scanner</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f393;</span><div><div class="pi-name"><span class="show-ko">아카데미</span><span class="show-en">Academy</span></div><div class="pi-desc"><span class="show-ko">플래시카드 학습</span><span class="show-en">Flashcard learning</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f4D4;</span><div><div class="pi-name"><span class="show-ko">다이어리</span><span class="show-en">Diary</span></div><div class="pi-desc"><span class="show-ko">날짜별 일기</span><span class="show-en">Date journal</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f4bb;</span><div><div class="pi-name"><span class="show-ko">터미널</span><span class="show-en">Terminal</span></div><div class="pi-desc"><span class="show-ko">내장 xterm</span><span class="show-en">Built-in xterm</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f310;</span><div><div class="pi-name"><span class="show-ko">브라우저</span><span class="show-en">Browser</span></div><div class="pi-desc"><span class="show-ko">내장 웹 브라우저</span><span class="show-en">Built-in browser</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f4CA;</span><div><div class="pi-name">Git</div><div class="pi-desc"><span class="show-ko">Git 히스토리</span><span class="show-en">Git history</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f9EE;</span><div><div class="pi-name"><span class="show-ko">수학</span><span class="show-en">Math</span></div><div class="pi-desc"><span class="show-ko">수식 기호 선택기</span><span class="show-en">Formula symbol picker</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x270F;&#xFE0F;</span><div><div class="pi-name">Excalidraw</div><div class="pi-desc"><span class="show-ko">손그림 도구</span><span class="show-en">Hand-drawing tool</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f30A;</span><div><div class="pi-name"><span class="show-ko">물리</span><span class="show-en">Physics</span></div><div class="pi-desc"><span class="show-ko">물리 시뮬레이션</span><span class="show-en">Physics simulation</span></div></div></div>
+    <div class="panel-item reveal"><span class="pi-icon">&#x1f423;</span><div><div class="pi-name"><span class="show-ko">다마고치</span><span class="show-en">Tamagotchi</span></div><div class="pi-desc"><span class="show-ko">글쓰기 동반 펫</span><span class="show-en">Writing companion pet</span></div></div></div>
+  </div>
+
+  <div class="doc-nav reveal">
+    <a href="/leafmd/docs/custom-syntax/"><span class="show-ko">&larr; Leaf 전용 문법</span><span class="show-en">&larr; Custom Syntax</span></a>
+    <a href="/leafmd/docs/shortcuts/"><span class="show-ko">단축키 &rarr;</span><span class="show-en">Shortcuts &rarr;</span></a>
+  </div>
+</main>
+
+<footer class="footer"><a href="/leafmd/">Leaf</a> &middot; <a href="https://x.com/leafeditor" target="_blank">@leafeditor</a></footer>
+<script>
+(function(){var h=document.documentElement;var s=localStorage.getItem('theme');if(s)h.dataset.theme=s;else if(matchMedia('(prefers-color-scheme:light)').matches)h.dataset.theme='light';document.getElementById('btn-theme').addEventListener('click',function(){h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';localStorage.setItem('theme',h.dataset.theme)});var l=localStorage.getItem('leafmd-lang');if(l)h.dataset.lang=l;document.getElementById('btn-lang').addEventListener('click',function(){h.dataset.lang=h.dataset.lang==='ko'?'en':'ko';localStorage.setItem('leafmd-lang',h.dataset.lang)});var o=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(function(el){o.observe(el)})})();
+</script>
+</body>
+</html>

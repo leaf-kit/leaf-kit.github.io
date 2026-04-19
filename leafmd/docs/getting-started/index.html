@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark" data-lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>시작하기 — Leaf Docs</title>
+  <meta name="description" content="Leaf 마크다운 에디터 설치부터 첫 문서 만들기, 기본 워크플로우까지.">
+  <link rel="canonical" href="https://leaf-kit.github.io/leafmd/docs/getting-started/">
+  <meta name="twitter:site" content="@leafeditor">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+:root{--bg:#FFFFFF;--bg2:#F8FAFB;--bg3:#F1F4F8;--text:#1A1A2E;--text2:#5A6070;--text3:#9BA3B0;--accent:#0D9F6E;--accent2:#34D399;--accent-bg:rgba(13,159,110,.05);--accent-border:rgba(13,159,110,.15);--border:#E8ECF0;--shadow:0 8px 30px rgba(0,0,0,.06);--font:'Inter','Noto Sans KR',-apple-system,sans-serif;--mono:'JetBrains Mono',monospace;--radius:16px;--ease-out:cubic-bezier(0,.55,.45,1)}
+[data-theme="dark"]{--bg:#0A0D14;--bg2:#12151E;--bg3:#1A1E2A;--text:#EAEDF2;--text2:#8B92A0;--text3:#5A6070;--border:#242838;--accent-bg:rgba(52,211,153,.06);--accent-border:rgba(52,211,153,.18);--shadow:0 8px 30px rgba(0,0,0,.3)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{font-size:16px;scroll-behavior:smooth}body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent2)}
+[data-lang="ko"] .show-ko{display:initial}[data-lang="ko"] .show-en{display:none}[data-lang="en"] .show-en{display:initial}[data-lang="en"] .show-ko{display:none}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}.reveal.visible{opacity:1;transform:translateY(0)}
+.nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);backdrop-filter:blur(20px)}[data-theme="dark"] .nav{background:rgba(10,13,20,.9)}.nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}.nav-left{display:flex;align-items:center;gap:8px}.nav-logo{font:800 1.1rem var(--font);color:var(--accent)}.nav-sep{color:var(--text3);font-weight:300}.nav-title{font:500 .85rem var(--font);color:var(--text2)}.nav-right{display:flex;align-items:center;gap:6px}.nav-btn{height:34px;padding:0 10px;border:1px solid var(--border);background:transparent;border-radius:8px;cursor:pointer;font:600 .75rem var(--mono);color:var(--text2);transition:all .2s;display:flex;align-items:center}.nav-btn:hover{border-color:var(--accent);color:var(--accent)}.nav-icon{width:34px;height:34px;border:none;background:transparent;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:color .2s}.nav-icon:hover{color:var(--accent)}.nav-icon svg{width:18px;height:18px}
+.content{max-width:760px;margin:0 auto;padding:48px 24px 80px}.content h1{font-size:2rem;font-weight:900;letter-spacing:-.04em;margin-bottom:8px}.content .subtitle{font-size:1rem;color:var(--text2);margin-bottom:40px}.content h2{font-size:1.35rem;font-weight:800;margin:48px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent-bg)}.content h3{font-size:1.05rem;font-weight:700;margin:28px 0 10px}.content p{margin-bottom:16px;color:var(--text2)}.content ul,.content ol{margin:12px 0 20px 20px;color:var(--text2)}.content li{margin-bottom:8px}.content li strong{color:var(--text)}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:20px 0}.card.highlight{border-left:4px solid var(--accent)}.card h4{font-size:.95rem;font-weight:700;margin-bottom:8px}
+code{font-family:var(--mono);font-size:.84rem;background:var(--bg3);padding:2px 7px;border-radius:5px;color:var(--accent)}
+.code-block{background:#1a1e2a;color:#cdd6f4;border-radius:12px;padding:20px 24px;margin:16px 0;overflow-x:auto;font:400 .82rem/1.7 var(--mono);border:1px solid rgba(255,255,255,.06)}
+.step{display:flex;gap:20px;margin:24px 0;align-items:flex-start}.step-num{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:700 .85rem var(--mono);flex-shrink:0}.step-body{flex:1}.step-body h4{font-size:.95rem;font-weight:700;margin-bottom:4px}.step-body p{font-size:.88rem;margin:0;color:var(--text2)}
+.flow{display:flex;align-items:center;justify-content:center;gap:0;margin:28px 0;flex-wrap:wrap}.flow-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:.82rem;font-weight:600;text-align:center}.flow-arrow{color:var(--accent);font-size:1.2rem;padding:0 10px}
+.doc-nav{display:flex;justify-content:space-between;margin-top:56px;padding-top:24px;border-top:1px solid var(--border)}.doc-nav a{font:500 .88rem var(--font);color:var(--text2);display:flex;align-items:center;gap:6px;padding:10px 16px;border:1px solid var(--border);border-radius:10px;transition:all .2s}.doc-nav a:hover{border-color:var(--accent);color:var(--accent)}
+.footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:.78rem;color:var(--text3)}.footer a{color:var(--text3)}.footer a:hover{color:var(--accent)}
+@media(max-width:768px){.content h1{font-size:1.5rem}.step{flex-direction:column;gap:10px}.flow{flex-direction:column;gap:0}.flow-arrow{transform:rotate(90deg);padding:4px 0}}
+  </style>
+</head>
+<body>
+<nav class="nav"><div class="nav-inner"><div class="nav-left"><a href="/leafmd/" class="nav-logo">Leaf</a><span class="nav-sep">/</span><a href="/leafmd/docs/" class="nav-title">Docs</a><span class="nav-sep">/</span><span class="nav-title"><span class="show-ko">시작하기</span><span class="show-en">Getting Started</span></span></div><div class="nav-right"><button class="nav-btn" id="btn-lang"><span class="show-ko">EN</span><span class="show-en">KO</span></button><button class="nav-icon" id="btn-theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button></div></div></nav>
+
+<main class="content">
+  <h1 class="reveal"><span class="show-ko">시작하기</span><span class="show-en">Getting Started</span></h1>
+  <p class="subtitle reveal"><span class="show-ko">설치부터 첫 문서 만들기까지, 5분 안에 Leaf와 친해지기</span><span class="show-en">From installation to your first document in under 5 minutes</span></p>
+
+  <h2 class="reveal"><span class="show-ko">설치</span><span class="show-en">Installation</span></h2>
+  <div class="card highlight reveal">
+    <h4><span class="show-ko">시스템 요구사항</span><span class="show-en">System Requirements</span></h4>
+    <ul>
+      <li><strong>macOS</strong> 12.0 (Monterey) <span class="show-ko">이상</span><span class="show-en">or later</span></li>
+      <li><span class="show-ko">Apple Silicon (M1+) 및 Intel 모두 지원</span><span class="show-en">Apple Silicon (M1+) and Intel supported</span></li>
+      <li><span class="show-ko">디스크 공간: ~80MB</span><span class="show-en">Disk space: ~80MB</span></li>
+      <li><span class="show-ko">Windows/Linux 지원 예정</span><span class="show-en">Windows/Linux support planned</span></li>
+    </ul>
+  </div>
+  <p class="reveal"><span class="show-ko">다운로드 페이지에서 .dmg 파일을 받아 Applications 폴더로 드래그하면 된다. 설치 후 첫 실행 시 macOS 보안 경고가 뜰 수 있는데, 시스템 설정 &gt; 개인정보 보호 &gt; 보안에서 "확인 없이 열기"를 눌러주면 된다.</span><span class="show-en">Download the .dmg file and drag it to your Applications folder. On first launch, macOS may show a security warning — go to System Settings &gt; Privacy &gt; Security and click "Open Anyway."</span></p>
+
+  <h2 class="reveal"><span class="show-ko">첫 문서 만들기</span><span class="show-en">Creating Your First Document</span></h2>
+  <div class="step reveal"><div class="step-num">1</div><div class="step-body"><h4><span class="show-ko">폴더 열기</span><span class="show-en">Open a Folder</span></h4><p><span class="show-ko"><code>Cmd+O</code>로 작업 폴더를 연다. Leaf는 Obsidian처럼 폴더 단위로 문서를 관리한다. 어떤 폴더든 열 수 있다.</span><span class="show-en">Press <code>Cmd+O</code> to open a working folder. Like Obsidian, Leaf manages documents folder-by-folder. Any folder works.</span></p></div></div>
+  <div class="step reveal"><div class="step-num">2</div><div class="step-body"><h4><span class="show-ko">새 문서 생성</span><span class="show-en">Create a New Document</span></h4><p><span class="show-ko"><code>Cmd+N</code>으로 새 마크다운 파일을 만든다. 파일명을 입력하면 .md 확장자가 자동으로 붙는다.</span><span class="show-en">Press <code>Cmd+N</code> to create a new markdown file. The .md extension is added automatically.</span></p></div></div>
+  <div class="step reveal"><div class="step-num">3</div><div class="step-body"><h4><span class="show-ko">바로 쓰기 시작</span><span class="show-en">Start Writing</span></h4><p><span class="show-ko">마크다운을 입력하면 즉시 렌더링된다. <code># 제목</code>을 치면 바로 큰 제목이 되고, <code>**볼드**</code>는 즉시 굵게 보인다. 미리보기 패널이 따로 없다 — 쓰는 곳이 곧 보는 곳이다.</span><span class="show-en">Type markdown and it renders instantly. <code># Heading</code> becomes a heading immediately, <code>**bold**</code> appears bold right away. No preview pane — where you write is where you read.</span></p></div></div>
+  <div class="step reveal"><div class="step-num">4</div><div class="step-body"><h4><span class="show-ko">자동 저장</span><span class="show-en">Auto-Save</span></h4><p><span class="show-ko">1초 후 자동으로 저장된다. <code>Cmd+S</code>도 되지만, 거의 쓸 일이 없다.</span><span class="show-en">Auto-saved after 1 second of inactivity. <code>Cmd+S</code> works too, but you'll rarely need it.</span></p></div></div>
+
+  <h2 class="reveal"><span class="show-ko">기본 워크플로우</span><span class="show-en">Basic Workflow</span></h2>
+  <div class="flow reveal">
+    <div class="flow-item"><span class="show-ko">폴더 열기</span><span class="show-en">Open Folder</span></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-item"><span class="show-ko">문서 작성</span><span class="show-en">Write Docs</span></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-item"><span class="show-ko">[[링크]] 연결</span><span class="show-en">[[Link]] Docs</span></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-item"><span class="show-ko">그래프 탐색</span><span class="show-en">Explore Graph</span></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-item"><span class="show-ko">내보내기</span><span class="show-en">Export</span></div>
+  </div>
+
+  <h3 class="reveal"><span class="show-ko">문서 연결하기: 위키링크</span><span class="show-en">Connecting Documents: Wikilinks</span></h3>
+  <p class="reveal"><span class="show-ko"><code>[[문서이름]]</code>을 입력하면 다른 문서로의 링크가 생긴다. 존재하지 않는 문서를 링크하면 클릭 시 자동으로 생성된다. 호버하면 미니 그래프와 문서 미리보기가 팝업된다.</span><span class="show-en">Type <code>[[document-name]]</code> to create a link to another document. If the document doesn't exist, clicking it creates it automatically. Hovering shows a mini graph and document preview.</span></p>
+
+  <h3 class="reveal"><span class="show-ko">그래프 뷰</span><span class="show-en">Graph View</span></h3>
+  <p class="reveal"><span class="show-ko"><code>Cmd+G</code>로 지식 그래프를 연다. 위키링크로 연결된 문서들이 D3.js 기반 인터랙티브 그래프로 시각화된다. 노드를 드래그하고, 줌하고, 클릭하면 해당 문서로 이동한다.</span><span class="show-en">Press <code>Cmd+G</code> to open the knowledge graph. Documents connected via wikilinks are visualized as an interactive D3.js graph. Drag nodes, zoom, and click to navigate.</span></p>
+
+  <h2 class="reveal"><span class="show-ko">소스 모드 전환</span><span class="show-en">Source Mode Toggle</span></h2>
+  <p class="reveal"><span class="show-ko"><code>Cmd+/</code>로 라이브 프리뷰와 소스 코드 모드를 전환할 수 있다. 라이브 프리뷰 모드에서는 마크다운이 즉시 렌더링되고, 소스 모드에서는 원본 마크다운 텍스트를 직접 본다.</span><span class="show-en">Toggle between live preview and source code mode with <code>Cmd+/</code>. Live preview renders markdown instantly, while source mode shows raw markdown text.</span></p>
+
+  <h2 class="reveal"><span class="show-ko">템플릿으로 빠르게 시작</span><span class="show-en">Quick Start with Templates</span></h2>
+  <p class="reveal"><span class="show-ko">새 문서를 만들 때 40가지 이상의 내장 템플릿을 선택할 수 있다. 주간 플래너, 보고서, 학술 논문, 코넬 노트, 회의록 등 다양한 형식이 준비되어 있다. 모든 템플릿은 <code>{{date}}</code> 자동 치환을 지원한다.</span><span class="show-en">When creating a new document, choose from 40+ built-in templates. Weekly planners, reports, academic papers, Cornell Notes, meeting minutes and more. All templates support <code>{{date}}</code> auto-substitution.</span></p>
+
+  <h2 class="reveal"><span class="show-ko">내보내기</span><span class="show-en">Exporting</span></h2>
+  <p class="reveal"><span class="show-ko"><code>Cmd+E</code>로 내보내기 메뉴를 연다:</span><span class="show-en">Press <code>Cmd+E</code> to open the export menu:</span></p>
+  <ul class="reveal">
+    <li><strong>PDF</strong> — <span class="show-ko">A3/A4/A5/Letter/Legal, 가로/세로 설정</span><span class="show-en">A3/A4/A5/Letter/Legal, portrait/landscape</span></li>
+    <li><strong>HTML</strong> — <span class="show-ko">인라인 스타일 포함, 독립 실행 가능</span><span class="show-en">Inline styles, self-contained</span></li>
+    <li><strong>DOCX</strong> — <span class="show-ko">Microsoft Word 형식</span><span class="show-en">Microsoft Word format</span></li>
+    <li><strong>HWP</strong> — <span class="show-ko">한글 워드프로세서 형식</span><span class="show-en">Korean Hangul word processor format</span></li>
+  </ul>
+
+  <h2 class="reveal"><span class="show-ko">가져오기</span><span class="show-en">Importing</span></h2>
+  <p class="reveal"><span class="show-ko">다른 형식의 파일을 마크다운으로 변환해서 가져올 수 있다:</span><span class="show-en">Convert other file formats into markdown:</span></p>
+  <ul class="reveal">
+    <li><strong>.xlsx</strong> &rarr; <span class="show-ko">마크다운 테이블</span><span class="show-en">Markdown table</span></li>
+    <li><strong>.pptx</strong> &rarr; <span class="show-ko">슬라이드별 마크다운</span><span class="show-en">Markdown per slide</span></li>
+    <li><strong>.docx</strong> &rarr; <span class="show-ko">마크다운 변환</span><span class="show-en">Markdown conversion</span></li>
+    <li><strong>.pdf</strong> &rarr; <span class="show-ko">텍스트 추출 후 마크다운</span><span class="show-en">Text extraction to markdown</span></li>
+    <li><strong>.hwp</strong> &rarr; <span class="show-ko">마크다운 변환</span><span class="show-en">Markdown conversion</span></li>
+  </ul>
+
+  <div class="card reveal">
+    <h4><span class="show-ko">다음 단계</span><span class="show-en">Next Steps</span></h4>
+    <p style="margin:0"><span class="show-ko">기본 사용법을 익혔다면, <a href="/leafmd/docs/custom-syntax/">Leaf 전용 문법</a>에서 코넬 노트, 칸반 보드 등 Leaf만의 기능을 배워보자. 표준 마크다운 문법은 <a href="/markdown/">마크다운 가이드</a>를 참고하면 된다.</span><span class="show-en">Now that you know the basics, learn about <a href="/leafmd/docs/custom-syntax/">Leaf-only syntax</a> like Cornell Notes and Kanban boards. For standard markdown, see the <a href="/markdown/">Markdown Guide</a>.</span></p>
+  </div>
+
+  <div class="doc-nav reveal">
+    <a href="/leafmd/docs/why-leaf/"><span class="show-ko">&larr; 왜 Leaf인가</span><span class="show-en">&larr; Why Leaf</span></a>
+    <a href="/leafmd/docs/custom-syntax/"><span class="show-ko">Leaf 전용 문법 &rarr;</span><span class="show-en">Custom Syntax &rarr;</span></a>
+  </div>
+</main>
+
+<footer class="footer"><a href="/leafmd/">Leaf</a> &middot; <a href="https://x.com/leafeditor" target="_blank">@leafeditor</a></footer>
+<script>
+(function(){var h=document.documentElement;var s=localStorage.getItem('theme');if(s)h.dataset.theme=s;else if(matchMedia('(prefers-color-scheme:light)').matches)h.dataset.theme='light';document.getElementById('btn-theme').addEventListener('click',function(){h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';localStorage.setItem('theme',h.dataset.theme)});var l=localStorage.getItem('leafmd-lang');if(l)h.dataset.lang=l;document.getElementById('btn-lang').addEventListener('click',function(){h.dataset.lang=h.dataset.lang==='ko'?'en':'ko';localStorage.setItem('leafmd-lang',h.dataset.lang)});var o=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(function(el){o.observe(el)})})();
+</script>
+</body>
+</html>

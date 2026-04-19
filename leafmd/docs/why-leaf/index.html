@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark" data-lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>왜 Leaf인가 — Leaf Docs</title>
+  <meta name="description" content="Leaf 마크다운 에디터의 철학, 설계 원칙, 기존 에디터와의 차이점을 설명합니다.">
+  <link rel="canonical" href="https://leaf-kit.github.io/leafmd/docs/why-leaf/">
+  <meta property="og:title" content="왜 Leaf인가 — Leaf Docs">
+  <meta name="twitter:site" content="@leafeditor">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+:root{--bg:#FFFFFF;--bg2:#F8FAFB;--bg3:#F1F4F8;--text:#1A1A2E;--text2:#5A6070;--text3:#9BA3B0;--accent:#0D9F6E;--accent2:#34D399;--accent-bg:rgba(13,159,110,.05);--accent-border:rgba(13,159,110,.15);--border:#E8ECF0;--shadow:0 8px 30px rgba(0,0,0,.06);--font:'Inter','Noto Sans KR',-apple-system,sans-serif;--mono:'JetBrains Mono',monospace;--radius:16px;--ease-out:cubic-bezier(0,.55,.45,1)}
+[data-theme="dark"]{--bg:#0A0D14;--bg2:#12151E;--bg3:#1A1E2A;--text:#EAEDF2;--text2:#8B92A0;--text3:#5A6070;--border:#242838;--accent-bg:rgba(52,211,153,.06);--accent-border:rgba(52,211,153,.18);--shadow:0 8px 30px rgba(0,0,0,.3)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent2)}
+[data-lang="ko"] .show-ko{display:initial}[data-lang="ko"] .show-en{display:none}[data-lang="en"] .show-en{display:initial}[data-lang="en"] .show-ko{display:none}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}.reveal.visible{opacity:1;transform:translateY(0)}
+.nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);backdrop-filter:blur(20px)}[data-theme="dark"] .nav{background:rgba(10,13,20,.9)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-left{display:flex;align-items:center;gap:8px}.nav-logo{font:800 1.1rem var(--font);color:var(--accent)}.nav-sep{color:var(--text3);font-weight:300}.nav-title{font:500 .85rem var(--font);color:var(--text2)}
+.nav-right{display:flex;align-items:center;gap:6px}
+.nav-btn{height:34px;padding:0 10px;border:1px solid var(--border);background:transparent;border-radius:8px;cursor:pointer;font:600 .75rem var(--mono);color:var(--text2);transition:all .2s;display:flex;align-items:center}.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+.nav-icon{width:34px;height:34px;border:none;background:transparent;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:color .2s}.nav-icon:hover{color:var(--accent)}.nav-icon svg{width:18px;height:18px}
+.content{max-width:760px;margin:0 auto;padding:48px 24px 80px}
+.content h1{font-size:2rem;font-weight:900;letter-spacing:-.04em;margin-bottom:8px}
+.content .subtitle{font-size:1rem;color:var(--text2);margin-bottom:40px}
+.content h2{font-size:1.35rem;font-weight:800;margin:48px 0 16px;letter-spacing:-.02em;padding-bottom:8px;border-bottom:2px solid var(--accent-bg)}
+.content h3{font-size:1.05rem;font-weight:700;margin:28px 0 10px}
+.content p{margin-bottom:16px;color:var(--text2)}
+.content ul,.content ol{margin:12px 0 20px 20px;color:var(--text2)}.content li{margin-bottom:8px}.content li strong{color:var(--text)}
+blockquote{border-left:3px solid var(--accent);padding:16px 20px;margin:20px 0;background:var(--accent-bg);border-radius:0 10px 10px 0;font-size:.92rem;color:var(--text2)}blockquote strong{color:var(--text)}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:20px 0}
+.card.highlight{border-left:4px solid var(--accent)}
+.card h4{font-size:.95rem;font-weight:700;margin-bottom:8px}
+.vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+.vs-col{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.vs-col h4{font-size:.88rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.vs-col ul{margin:0 0 0 16px;font-size:.84rem;color:var(--text2)}
+.vs-col.leaf{border-color:var(--accent-border)}
+.vs-col.leaf h4{color:var(--accent)}
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);margin:20px 0}
+table{width:100%;border-collapse:collapse;font-size:.84rem}thead{background:var(--bg3)}
+th{padding:12px 16px;text-align:left;font:700 .72rem var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+td{padding:10px 16px;border-top:1px solid var(--border)}.check{color:var(--accent);font-weight:700}.cross{color:var(--text3);opacity:.5}
+.doc-nav{display:flex;justify-content:space-between;margin-top:56px;padding-top:24px;border-top:1px solid var(--border)}
+.doc-nav a{font:500 .88rem var(--font);color:var(--text2);display:flex;align-items:center;gap:6px;padding:10px 16px;border:1px solid var(--border);border-radius:10px;transition:all .2s}
+.doc-nav a:hover{border-color:var(--accent);color:var(--accent)}
+.footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:.78rem;color:var(--text3)}.footer a{color:var(--text3)}.footer a:hover{color:var(--accent)}
+@media(max-width:768px){.content h1{font-size:1.5rem}.vs-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="nav"><div class="nav-inner"><div class="nav-left"><a href="/leafmd/" class="nav-logo">Leaf</a><span class="nav-sep">/</span><a href="/leafmd/docs/" class="nav-title">Docs</a><span class="nav-sep">/</span><span class="nav-title"><span class="show-ko">왜 Leaf인가</span><span class="show-en">Why Leaf</span></span></div><div class="nav-right"><button class="nav-btn" id="btn-lang"><span class="show-ko">EN</span><span class="show-en">KO</span></button><button class="nav-icon" id="btn-theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button></div></div></nav>
+
+<main class="content">
+  <h1 class="reveal"><span class="show-ko">왜 Leaf인가</span><span class="show-en">Why Leaf</span></h1>
+  <p class="subtitle reveal"><span class="show-ko">Leaf가 풀려는 문제, 설계 철학, 그리고 다른 에디터와 다른 점</span><span class="show-en">The problems Leaf solves, its design philosophy, and what sets it apart</span></p>
+
+  <h2 class="reveal"><span class="show-ko">해결하려는 문제</span><span class="show-en">The Problem</span></h2>
+  <p class="reveal"><span class="show-ko">마크다운 에디터는 이미 많다. Obsidian, Typora, Notion, VS Code 확장까지. 그런데 왜 하나 더 만들었을까?</span><span class="show-en">There are plenty of markdown editors already. Obsidian, Typora, Notion, VS Code extensions. So why build another one?</span></p>
+  <div class="card highlight reveal">
+    <h4><span class="show-ko">핵심 문제 3가지</span><span class="show-en">Three Core Problems</span></h4>
+    <p><span class="show-ko"><strong>1. 무겁다.</strong> Electron 기반 에디터는 메모 하나 쓰는데 400MB 이상의 메모리를 먹는다. 브라우저 하나를 더 띄우는 것과 같다.<br><strong>2. 분산된다.</strong> 글쓰기, 작업 관리, 다이어그램, 수식이 전부 다른 도구에 있다. 컨텍스트 전환 비용이 쌓인다.<br><strong>3. 한국어가 부차적이다.</strong> 대부분의 에디터에서 한글은 2등 시민이다. 가나다 번호 매기기? HWP 변환? 없다.</span><span class="show-en"><strong>1. Heavy.</strong> Electron-based editors consume 400MB+ just to write a memo. That's another browser instance.<br><strong>2. Scattered.</strong> Writing, task management, diagrams, and math live in different tools. Context switching costs add up.<br><strong>3. Korean is an afterthought.</strong> Hangul is a second-class citizen in most editors. Korean numbering? HWP conversion? Nonexistent.</span></p>
+  </div>
+
+  <h2 class="reveal"><span class="show-ko">설계 원칙</span><span class="show-en">Design Principles</span></h2>
+
+  <h3 class="reveal"><span class="show-ko">1. 네이티브 성능은 타협할 수 없다</span><span class="show-en">1. Native Performance is Non-Negotiable</span></h3>
+  <p class="reveal"><span class="show-ko">Leaf는 Electron 대신 <strong>Tauri + Rust</strong>를 선택했다. 파일 I/O, 트리 인덱싱, 그래프 생성, Git 연동 같은 무거운 작업은 전부 Rust 백엔드에서 처리한다. 프론트엔드는 React + CodeMirror 6으로 렌더링만 담당한다.</span><span class="show-en">Leaf chose <strong>Tauri + Rust</strong> over Electron. Heavy operations — file I/O, tree indexing, graph generation, Git integration — all run in the Rust backend. The frontend (React + CodeMirror 6) handles rendering only.</span></p>
+  <blockquote class="reveal"><span class="show-ko"><strong>성능 목표 (타협 불가)</strong><br>콜드 스타트: &lt;300ms &middot; 10MB 파일 열기: &lt;100ms &middot; 입력→렌더링: &lt;16ms (60fps) &middot; 메모리: &lt;150MB &middot; 대기 CPU: ~0%</span><span class="show-en"><strong>Performance Targets (Non-Negotiable)</strong><br>Cold start: &lt;300ms &middot; Open 10MB file: &lt;100ms &middot; Type-to-render: &lt;16ms (60fps) &middot; Memory: &lt;150MB &middot; Idle CPU: ~0%</span></blockquote>
+
+  <h3 class="reveal"><span class="show-ko">2. 하나의 도구로 충분해야 한다</span><span class="show-en">2. One Tool Should Be Enough</span></h3>
+  <p class="reveal"><span class="show-ko">마크다운 에디터에 칸반 보드가 왜 있냐고? 문서를 쓰다가 할 일을 관리하려고 Trello를 열고, 다이어그램을 그리려고 draw.io를 열고, 수식을 쓰려고 LaTeX 에디터를 여는 게 비효율적이기 때문이다. Leaf는 이 모든 것을 마크다운 안에서 해결한다.</span><span class="show-en">Why does a markdown editor have a Kanban board? Because switching to Trello for tasks, draw.io for diagrams, and a LaTeX editor for equations while writing is inefficient. Leaf handles all of this within markdown.</span></p>
+
+  <h3 class="reveal"><span class="show-ko">3. 한국어 퍼스트</span><span class="show-en">3. Korean First</span></h3>
+  <p class="reveal"><span class="show-ko">Leaf는 한국어 사용자를 위해 만들어졌다. 한글 번호 매기기(가, 나, 다 / 일, 이, 삼), HWP 가져오기/내보내기, 한국 공문서 템플릿(기안문, 품의서, 보고서 등 18종), 네이티브 메뉴 한글화까지. "번역된" 한국어가 아니라 처음부터 한국어로 설계했다.</span><span class="show-en">Leaf was built for Korean users first. Hangul numbering (가나다 / 일이삼), HWP import/export, 18 Korean government document templates, fully localized menus. Not translated Korean — designed in Korean from day one.</span></p>
+
+  <h2 class="reveal"><span class="show-ko">다른 에디터와의 비교</span><span class="show-en">Comparison with Other Editors</span></h2>
+
+  <div class="vs-grid reveal">
+    <div class="vs-col">
+      <h4><span class="show-ko">기존 에디터의 한계</span><span class="show-en">Limitations of Others</span></h4>
+      <ul>
+        <li><span class="show-ko">Electron 기반 = 무거운 메모리</span><span class="show-en">Electron-based = heavy memory</span></li>
+        <li><span class="show-ko">칸반/다이어그램은 플러그인 의존</span><span class="show-en">Kanban/diagrams need plugins</span></li>
+        <li><span class="show-ko">한국어 지원 제한적</span><span class="show-en">Limited Korean support</span></li>
+        <li><span class="show-ko">HWP 변환 불가</span><span class="show-en">No HWP conversion</span></li>
+        <li><span class="show-ko">코넬 노트 미지원</span><span class="show-en">No Cornell Notes</span></li>
+      </ul>
+    </div>
+    <div class="vs-col leaf">
+      <h4>Leaf</h4>
+      <ul>
+        <li><span class="show-ko">Tauri + Rust = &lt;150MB</span><span class="show-en">Tauri + Rust = &lt;150MB</span></li>
+        <li><span class="show-ko">칸반/머메이드/KaTeX 내장</span><span class="show-en">Kanban/Mermaid/KaTeX built-in</span></li>
+        <li><span class="show-ko">한국어 퍼스트 설계</span><span class="show-en">Korean-first design</span></li>
+        <li><span class="show-ko">HWP 가져오기/내보내기</span><span class="show-en">HWP import/export</span></li>
+        <li><span class="show-ko">코넬 노트 네이티브 지원</span><span class="show-en">Native Cornell Notes</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="table-wrap reveal">
+    <table>
+      <thead><tr><th></th><th>Leaf</th><th>Obsidian</th><th>Typora</th><th>VS Code</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Runtime</strong></td><td class="check">Tauri (Rust)</td><td>Electron</td><td>Electron</td><td>Electron</td></tr>
+        <tr><td><strong><span class="show-ko">메모리</span><span class="show-en">Memory</span></strong></td><td class="check">&lt;150MB</td><td>~400MB</td><td>~250MB</td><td>~500MB</td></tr>
+        <tr><td><strong>WYSIWYG</strong></td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">지식 그래프</span><span class="show-en">Graph</span></strong></td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">코넬 노트</span><span class="show-en">Cornell</span></strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">칸반</span><span class="show-en">Kanban</span></strong></td><td class="check">&#10003;</td><td><span class="show-ko">플러그인</span><span class="show-en">Plugin</span></td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong>HWP</strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong>ABC <span class="show-ko">악보</span><span class="show-en">Music</span></strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+        <tr><td><strong><span class="show-ko">내장 터미널</span><span class="show-en">Terminal</span></strong></td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="reveal"><span class="show-ko">누구를 위한 에디터인가</span><span class="show-en">Who Is Leaf For</span></h2>
+  <ul class="reveal">
+    <li><span class="show-ko"><strong>개발자</strong> — 기술 문서, 아키텍처 다이어그램, 코드 리뷰 노트를 한 곳에서</span><span class="show-en"><strong>Developers</strong> — Tech docs, architecture diagrams, code review notes in one place</span></li>
+    <li><span class="show-ko"><strong>학생/연구자</strong> — 코넬 노트, KaTeX 수식, 학술 논문 템플릿</span><span class="show-en"><strong>Students/Researchers</strong> — Cornell Notes, KaTeX math, academic paper templates</span></li>
+    <li><span class="show-ko"><strong>기획자/PM</strong> — 칸반 보드, 회의록, 보고서 템플릿</span><span class="show-en"><strong>PMs/Planners</strong> — Kanban boards, meeting notes, report templates</span></li>
+    <li><span class="show-ko"><strong>작가/블로거</strong> — 헤밍웨이 모드, 포커스 모드, 프레젠테이션 모드</span><span class="show-en"><strong>Writers/Bloggers</strong> — Hemingway mode, Focus mode, Presentation mode</span></li>
+    <li><span class="show-ko"><strong>한국어 사용자</strong> — 한글 번호 매기기, HWP, 공문서 템플릿</span><span class="show-en"><strong>Korean users</strong> — Hangul numbering, HWP, government document templates</span></li>
+  </ul>
+
+  <div class="doc-nav reveal">
+    <a href="/leafmd/docs/"><span class="show-ko">&larr; 문서 목록</span><span class="show-en">&larr; All Docs</span></a>
+    <a href="/leafmd/docs/getting-started/"><span class="show-ko">시작하기 &rarr;</span><span class="show-en">Getting Started &rarr;</span></a>
+  </div>
+</main>
+
+<footer class="footer"><a href="/leafmd/">Leaf</a> &middot; <a href="https://x.com/leafeditor" target="_blank">@leafeditor</a></footer>
+<script>
+(function(){var h=document.documentElement;var s=localStorage.getItem('theme');if(s)h.dataset.theme=s;else if(matchMedia('(prefers-color-scheme:light)').matches)h.dataset.theme='light';document.getElementById('btn-theme').addEventListener('click',function(){h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';localStorage.setItem('theme',h.dataset.theme)});var l=localStorage.getItem('leafmd-lang');if(l)h.dataset.lang=l;document.getElementById('btn-lang').addEventListener('click',function(){h.dataset.lang=h.dataset.lang==='ko'?'en':'ko';localStorage.setItem('leafmd-lang',h.dataset.lang)});var o=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(function(el){o.observe(el)})})();
+</script>
+</body>
+</html>

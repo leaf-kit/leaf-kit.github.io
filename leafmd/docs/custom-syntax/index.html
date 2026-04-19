@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark" data-lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaf 전용 문법 — Leaf Docs</title>
+  <meta name="description" content="Leaf 마크다운 에디터에서만 지원하는 확장 문법. 코넬 노트, 칸반 보드, 메모 보드, 확장 알림 블록 등.">
+  <link rel="canonical" href="https://leaf-kit.github.io/leafmd/docs/custom-syntax/">
+  <meta name="twitter:site" content="@leafeditor">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+:root{--bg:#FFFFFF;--bg2:#F8FAFB;--bg3:#F1F4F8;--text:#1A1A2E;--text2:#5A6070;--text3:#9BA3B0;--accent:#0D9F6E;--accent2:#34D399;--accent-bg:rgba(13,159,110,.05);--accent-border:rgba(13,159,110,.15);--border:#E8ECF0;--amber:#E67E22;--blue:#4A90D9;--purple:#7C5CFC;--rose:#E84393;--shadow:0 8px 30px rgba(0,0,0,.06);--font:'Inter','Noto Sans KR',-apple-system,sans-serif;--mono:'JetBrains Mono',monospace;--radius:16px;--ease-out:cubic-bezier(0,.55,.45,1);--ease-bounce:cubic-bezier(.34,1.56,.64,1)}
+[data-theme="dark"]{--bg:#0A0D14;--bg2:#12151E;--bg3:#1A1E2A;--text:#EAEDF2;--text2:#8B92A0;--text3:#5A6070;--border:#242838;--accent-bg:rgba(52,211,153,.06);--accent-border:rgba(52,211,153,.18);--shadow:0 8px 30px rgba(0,0,0,.3)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{font-size:16px;scroll-behavior:smooth}body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent2)}
+[data-lang="ko"] .show-ko{display:initial}[data-lang="ko"] .show-en{display:none}[data-lang="en"] .show-en{display:initial}[data-lang="en"] .show-ko{display:none}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}.reveal.visible{opacity:1;transform:translateY(0)}
+.nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);backdrop-filter:blur(20px)}[data-theme="dark"] .nav{background:rgba(10,13,20,.9)}.nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}.nav-left{display:flex;align-items:center;gap:8px}.nav-logo{font:800 1.1rem var(--font);color:var(--accent)}.nav-sep{color:var(--text3);font-weight:300}.nav-title{font:500 .85rem var(--font);color:var(--text2)}.nav-right{display:flex;align-items:center;gap:6px}.nav-btn{height:34px;padding:0 10px;border:1px solid var(--border);background:transparent;border-radius:8px;cursor:pointer;font:600 .75rem var(--mono);color:var(--text2);transition:all .2s;display:flex;align-items:center}.nav-btn:hover{border-color:var(--accent);color:var(--accent)}.nav-icon{width:34px;height:34px;border:none;background:transparent;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:color .2s}.nav-icon:hover{color:var(--accent)}.nav-icon svg{width:18px;height:18px}
+.content{max-width:760px;margin:0 auto;padding:48px 24px 80px}.content h1{font-size:2rem;font-weight:900;letter-spacing:-.04em;margin-bottom:8px}.content .subtitle{font-size:1rem;color:var(--text2);margin-bottom:40px}.content h2{font-size:1.35rem;font-weight:800;margin:56px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent-bg)}.content h3{font-size:1.05rem;font-weight:700;margin:28px 0 10px}.content p{margin-bottom:16px;color:var(--text2)}.content ul{margin:12px 0 20px 20px;color:var(--text2)}.content li{margin-bottom:6px}.content li strong{color:var(--text)}
+.info{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;padding:14px 18px;margin:16px 0;font-size:.88rem;color:var(--text2)}
+.syntax-block{background:#1a1e2a;color:#cdd6f4;border-radius:12px;margin:16px 0;overflow:hidden;border:1px solid rgba(255,255,255,.06)}
+.syntax-header{background:rgba(255,255,255,.04);padding:8px 16px;font:600 .72rem var(--mono);color:#8b92a0;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+.syntax-body{padding:16px 20px;font:400 .82rem/1.7 var(--mono);white-space:pre;overflow-x:auto}
+.syntax-body .cm{color:#6c7086}.syntax-body .kw{color:#cba6f7}.syntax-body .st{color:#a6e3a1}.syntax-body .tag{color:#89b4fa}.syntax-body .hl{color:#f9e2af}
+.render-preview{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:12px 0 24px}
+.render-preview h4{font-size:.78rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+/* Cornell preview */
+.cornell-preview{display:grid;grid-template-columns:140px 1fr;grid-template-rows:auto auto;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:.82rem}
+.cornell-cue{grid-row:1;background:var(--bg3);padding:12px;border-right:1px solid var(--border);font-weight:600;color:var(--accent)}
+.cornell-note{grid-row:1;padding:12px;color:var(--text2)}
+.cornell-summary{grid-column:1/-1;padding:12px;background:var(--accent-bg);border-top:1px solid var(--border);font-style:italic;color:var(--text2)}
+/* Kanban preview */
+.kanban-preview{display:flex;gap:12px;overflow-x:auto;padding:4px 0}
+.kanban-col{min-width:160px;background:var(--bg3);border-radius:8px;padding:10px;flex-shrink:0}
+.kanban-col h5{font-size:.75rem;font-weight:700;margin-bottom:8px;color:var(--text3)}
+.kanban-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:6px;font-size:.78rem;color:var(--text2)}
+/* Alert preview */
+.alert-prev{border-left:3px solid var(--blue);padding:10px 14px;margin:8px 0;border-radius:0 8px 8px 0;font-size:.82rem;color:var(--text2)}
+.alert-prev.tip{border-color:var(--accent);background:var(--accent-bg)}
+.alert-prev.warn{border-color:var(--amber);background:rgba(230,126,34,.06)}
+.alert-prev.danger{border-color:var(--rose);background:rgba(232,67,147,.06)}
+.alert-prev strong{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;color:var(--text)}
+
+.tag{display:inline-block;font:600 .65rem var(--mono);padding:2px 8px;border-radius:6px;margin-right:4px}
+.tag.exclusive{color:var(--accent);background:var(--accent-bg)}
+.tag.extended{color:var(--purple);background:rgba(124,92,252,.08)}
+
+.doc-nav{display:flex;justify-content:space-between;margin-top:56px;padding-top:24px;border-top:1px solid var(--border)}.doc-nav a{font:500 .88rem var(--font);color:var(--text2);display:flex;align-items:center;gap:6px;padding:10px 16px;border:1px solid var(--border);border-radius:10px;transition:all .2s}.doc-nav a:hover{border-color:var(--accent);color:var(--accent)}
+.footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:.78rem;color:var(--text3)}.footer a{color:var(--text3)}.footer a:hover{color:var(--accent)}
+@media(max-width:768px){.content h1{font-size:1.5rem}.cornell-preview{grid-template-columns:1fr}.cornell-cue{border-right:none;border-bottom:1px solid var(--border)}.kanban-preview{flex-direction:column}.kanban-col{min-width:auto}}
+  </style>
+</head>
+<body>
+<nav class="nav"><div class="nav-inner"><div class="nav-left"><a href="/leafmd/" class="nav-logo">Leaf</a><span class="nav-sep">/</span><a href="/leafmd/docs/" class="nav-title">Docs</a><span class="nav-sep">/</span><span class="nav-title"><span class="show-ko">Leaf 전용 문법</span><span class="show-en">Custom Syntax</span></span></div><div class="nav-right"><button class="nav-btn" id="btn-lang"><span class="show-ko">EN</span><span class="show-en">KO</span></button><button class="nav-icon" id="btn-theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button></div></div></nav>
+
+<main class="content">
+  <h1 class="reveal"><span class="show-ko">Leaf 전용 문법</span><span class="show-en">Leaf-Only Syntax</span></h1>
+  <p class="subtitle reveal"><span class="show-ko">Leaf에서만 지원하는 확장 마크다운 문법. 표준 마크다운 문법은 <a href="/markdown/">마크다운 가이드</a>를 참고하세요.</span><span class="show-en">Extended markdown syntax exclusive to Leaf. For standard markdown, see the <a href="/markdown/">Markdown Guide</a>.</span></p>
+
+  <!-- Cornell Notes -->
+  <h2 class="reveal"><span class="show-ko">코넬 노트</span><span class="show-en">Cornell Notes</span> <span class="tag exclusive">Leaf Only</span></h2>
+  <p class="reveal"><span class="show-ko">코넬 대학교에서 개발한 3단 노트 포맷. 핵심어(Cue), 본문 노트(Note), 요약(Summary)을 구분하여 학습 효과를 높인다. Leaf에서 마크다운으로 직접 작성하고 렌더링할 수 있다.</span><span class="show-en">A 3-section note format developed at Cornell University. Separates keywords (Cue), main notes (Note), and summary to improve learning. Write and render directly in Leaf's markdown.</span></p>
+  <div class="syntax-block reveal">
+    <div class="syntax-header"><span>cornell-note.md</span><span>Markdown</span></div>
+    <div class="syntax-body"><span class="cm">---</span>
+<span class="kw">type</span>: <span class="st">cornell</span>
+<span class="kw">title</span>: <span class="st">React Hooks</span>
+<span class="kw">date</span>: <span class="st">2026-04-19</span>
+<span class="kw">subject</span>: <span class="st">Frontend</span>
+<span class="cm">---</span>
+
+<span class="tag">::: cue</span>
+useState
+useEffect
+<span class="hl">의존성 배열</span>
+<span class="tag">:::</span>
+
+<span class="tag">::: note</span>
+useState는 컴포넌트 상태를 관리한다.
+useEffect는 사이드 이펙트를 처리한다.
+의존성 배열이 비면 마운트 시 1회만 실행.
+<span class="tag">:::</span>
+
+<span class="tag">::: summary</span>
+Hooks는 함수형 컴포넌트에서 상태와
+사이드 이펙트를 관리하는 핵심 API다.
+<span class="tag">:::</span></div>
+  </div>
+  <div class="render-preview reveal">
+    <h4><span class="show-ko">렌더링 결과</span><span class="show-en">Rendered</span></h4>
+    <div class="cornell-preview">
+      <div class="cornell-cue">useState<br>useEffect<br><span style="color:var(--amber)">의존성 배열</span></div>
+      <div class="cornell-note">useState는 컴포넌트 상태를 관리한다.<br>useEffect는 사이드 이펙트를 처리한다.<br>의존성 배열이 비면 마운트 시 1회만 실행.</div>
+      <div class="cornell-summary">Hooks는 함수형 컴포넌트에서 상태와 사이드 이펙트를 관리하는 핵심 API다.</div>
+    </div>
+  </div>
+
+  <!-- Kanban -->
+  <h2 class="reveal"><span class="show-ko">칸반 보드</span><span class="show-en">Kanban Board</span> <span class="tag exclusive">Leaf Only</span></h2>
+  <p class="reveal"><span class="show-ko">마크다운 파일 안에서 칸반 보드를 만들어 작업을 관리한다. 컬럼별 색상, 체크리스트, 마크다운 서식을 지원한다.</span><span class="show-en">Create Kanban boards within markdown files to manage tasks. Supports column colors, checklists, and full markdown formatting in cards.</span></p>
+  <div class="syntax-block reveal">
+    <div class="syntax-header"><span>project-board.md</span><span>Markdown</span></div>
+    <div class="syntax-body"><span class="cm">---</span>
+<span class="kw">type</span>: <span class="st">kanban</span>
+<span class="kw">columns</span>: <span class="st">[할 일, 진행 중, 완료]</span>
+<span class="cm">---</span>
+
+<span class="cm">---</span>
+<span class="kw">column</span>: <span class="st">할 일</span>
+<span class="kw">color</span>: <span class="st">yellow</span>
+<span class="cm">---</span>
+<span class="hl">## API 설계</span>
+- [ ] 엔드포인트 정의
+- [ ] 스키마 작성
+
+<span class="cm">---</span>
+<span class="kw">column</span>: <span class="st">진행 중</span>
+<span class="kw">color</span>: <span class="st">blue</span>
+<span class="cm">---</span>
+<span class="hl">## DB 마이그레이션</span>
+- [x] 스키마 설계
+- [ ] 마이그레이션 스크립트</div>
+  </div>
+  <div class="render-preview reveal">
+    <h4><span class="show-ko">렌더링 결과</span><span class="show-en">Rendered</span></h4>
+    <div class="kanban-preview">
+      <div class="kanban-col"><h5 style="color:var(--amber)"><span class="show-ko">할 일</span><span class="show-en">To Do</span></h5><div class="kanban-card"><strong>API <span class="show-ko">설계</span><span class="show-en">Design</span></strong><br>&#9744; <span class="show-ko">엔드포인트 정의</span><span class="show-en">Define endpoints</span><br>&#9744; <span class="show-ko">스키마 작성</span><span class="show-en">Write schema</span></div></div>
+      <div class="kanban-col"><h5 style="color:var(--blue)"><span class="show-ko">진행 중</span><span class="show-en">In Progress</span></h5><div class="kanban-card"><strong>DB <span class="show-ko">마이그레이션</span><span class="show-en">Migration</span></strong><br><span style="color:var(--accent)">&#10003;</span> <span class="show-ko">스키마 설계</span><span class="show-en">Schema design</span><br>&#9744; <span class="show-ko">마이그레이션 스크립트</span><span class="show-en">Migration script</span></div></div>
+      <div class="kanban-col"><h5 style="color:var(--accent)"><span class="show-ko">완료</span><span class="show-en">Done</span></h5></div>
+    </div>
+  </div>
+
+  <!-- Memo Board -->
+  <h2 class="reveal"><span class="show-ko">메모 보드</span><span class="show-en">Memo Board</span> <span class="tag exclusive">Leaf Only</span></h2>
+  <p class="reveal"><span class="show-ko">Google Keep 스타일의 스티키 노트 보드. 카테고리와 색상으로 분류하고, 카드 안에서 마크다운 서식을 사용할 수 있다.</span><span class="show-en">Google Keep-style sticky note board. Categorize with colors, use full markdown inside cards.</span></p>
+  <div class="syntax-block reveal">
+    <div class="syntax-header"><span>ideas.md</span><span>Markdown</span></div>
+    <div class="syntax-body"><span class="cm">---</span>
+<span class="kw">type</span>: <span class="st">memo</span>
+<span class="kw">categories</span>: <span class="st">[아이디어, 리서치, 버그]</span>
+<span class="cm">---</span>
+
+<span class="cm">---</span>
+<span class="kw">color</span>: <span class="st">yellow</span>
+<span class="kw">category</span>: <span class="st">아이디어</span>
+<span class="cm">---</span>
+<span class="hl">## 다크모드 자동 전환</span>
+시스템 설정 연동해서 자동으로 전환
+
+<span class="cm">---</span>
+<span class="kw">color</span>: <span class="st">pink</span>
+<span class="kw">category</span>: <span class="st">버그</span>
+<span class="cm">---</span>
+<span class="hl">## 테이블 정렬 깨짐</span>
+3열 이상에서 우측 정렬 안 됨</div>
+  </div>
+
+  <!-- Extended Alerts -->
+  <h2 class="reveal"><span class="show-ko">확장 알림 블록</span><span class="show-en">Extended Alert Blocks</span> <span class="tag extended">Extended</span></h2>
+  <p class="reveal"><span class="show-ko">GitHub 스타일의 기본 알림(NOTE, TIP, WARNING, IMPORTANT, CAUTION) 외에 Leaf만의 확장 알림 20종을 지원한다.</span><span class="show-en">Beyond GitHub's standard alerts (NOTE, TIP, WARNING, IMPORTANT, CAUTION), Leaf supports 20 additional alert types.</span></p>
+  <div class="syntax-block reveal">
+    <div class="syntax-header"><span><span class="show-ko">기본 + 확장</span><span class="show-en">Standard + Extended</span></span><span>Markdown</span></div>
+    <div class="syntax-body"><span class="cm">&gt; [!NOTE]</span>
+<span class="cm">&gt;</span> 참고할 내용
+
+<span class="cm">&gt; [!TODO]</span>        <span class="cm">← Leaf 확장</span>
+<span class="cm">&gt;</span> 처리할 작업
+
+<span class="cm">&gt; [!BUG]</span>         <span class="cm">← Leaf 확장</span>
+<span class="cm">&gt;</span> 알려진 버그
+
+<span class="cm">&gt; [!DEFINITION]</span>  <span class="cm">← Leaf 확장</span>
+<span class="cm">&gt;</span> 용어 정의
+
+<span class="cm">&gt; [!THEOREM]</span>     <span class="cm">← Leaf 확장</span>
+<span class="cm">&gt;</span> 수학 정리</div>
+  </div>
+  <div class="render-preview reveal">
+    <h4><span class="show-ko">확장 알림 카테고리</span><span class="show-en">Extended Alert Categories</span></h4>
+    <div class="alert-prev tip"><strong>DEFINITION</strong><span class="show-ko">용어의 정의를 설명합니다</span><span class="show-en">Explains the definition of a term</span></div>
+    <div class="alert-prev warn"><strong>TODO</strong><span class="show-ko">처리해야 할 작업입니다</span><span class="show-en">A task that needs to be completed</span></div>
+    <div class="alert-prev danger"><strong>BUG</strong><span class="show-ko">알려진 버그에 대한 설명입니다</span><span class="show-en">Description of a known bug</span></div>
+    <p style="margin-top:12px;font-size:.82rem"><span class="show-ko"><strong>학습용:</strong> DEFINITION, EXAMPLE, QUESTION, SUMMARY, KEYPOINT, THEOREM, PROOF<br><strong>계획용:</strong> TODO, GOAL, DEADLINE, PROGRESS<br><strong>개발용:</strong> BUG, REFERENCE, QUOTE, IDEA</span><span class="show-en"><strong>Learning:</strong> DEFINITION, EXAMPLE, QUESTION, SUMMARY, KEYPOINT, THEOREM, PROOF<br><strong>Planning:</strong> TODO, GOAL, DEADLINE, PROGRESS<br><strong>Dev:</strong> BUG, REFERENCE, QUOTE, IDEA</span></p>
+  </div>
+
+  <!-- Inline Extensions -->
+  <h2 class="reveal"><span class="show-ko">인라인 확장 문법</span><span class="show-en">Inline Extensions</span> <span class="tag extended">Extended</span></h2>
+  <div class="syntax-block reveal">
+    <div class="syntax-header"><span><span class="show-ko">표준 마크다운에 없는 문법</span><span class="show-en">Beyond standard markdown</span></span><span>Markdown</span></div>
+    <div class="syntax-body"><span class="hl">++밑줄++</span>          → <u>밑줄</u>
+<span class="hl">==하이라이트==</span>      → <mark>하이라이트</mark>
+<span class="hl">[[문서이름]]</span>        → 위키링크 (클릭→이동, 호버→미리보기)
+<span class="hl">[[문서|표시텍스트]]</span>  → 별칭 위키링크
+<span class="hl">$E = mc^2$</span>         → KaTeX 인라인 수식
+<span class="hl">$$\int_0^\infty$$</span>   → KaTeX 블록 수식
+<span class="hl">[^1]</span>               → 각주 참조
+<span class="hl">[^1]: 내용</span>         → 각주 정의</div>
+  </div>
+
+  <!-- Heading Alignment -->
+  <h2 class="reveal"><span class="show-ko">제목 정렬</span><span class="show-en">Heading Alignment</span> <span class="tag exclusive">Leaf Only</span></h2>
+  <div class="syntax-block reveal">
+    <div class="syntax-header"><span><span class="show-ko">제목 정렬 문법</span><span class="show-en">Heading alignment</span></span><span>Markdown</span></div>
+    <div class="syntax-body"><span class="hl">#&gt; 가운데 정렬 제목</span>    → 중앙 정렬
+<span class="hl">#&gt;&gt; 오른쪽 정렬 제목</span>  → 우측 정렬
+<span class="hl"># 기본 제목</span>             → 좌측 정렬 (기본)</div>
+  </div>
+
+  <!-- Frontmatter -->
+  <h2 class="reveal"><span class="show-ko">프론트매터 속성</span><span class="show-en">Frontmatter Properties</span> <span class="tag extended">Extended</span></h2>
+  <p class="reveal"><span class="show-ko">Leaf는 YAML 프론트매터에 확장 속성을 지원한다. 유용성 별점, 상태 관리, 댓글 등을 메타데이터로 관리할 수 있다.</span><span class="show-en">Leaf supports extended frontmatter properties. Manage usefulness ratings, status, comments and more as metadata.</span></p>
+  <div class="syntax-block reveal">
+    <div class="syntax-header"><span>frontmatter</span><span>YAML</span></div>
+    <div class="syntax-body"><span class="cm">---</span>
+<span class="kw">title</span>: <span class="st">프로젝트 설계 문서</span>
+<span class="kw">tags</span>: <span class="st">[architecture, design, v2]</span>
+<span class="kw">date</span>: <span class="st">2026-04-19</span>
+<span class="kw">status</span>: <span class="st">active</span>        <span class="cm"># active|draft|outdated|archived</span>
+<span class="kw">usefulness</span>: <span class="st">4</span>         <span class="cm"># 1~5 별점</span>
+<span class="kw">aliases</span>: <span class="st">[설계문서, arch-doc]</span>
+<span class="kw">comments</span>:
+  - <span class="st">"2026-04-15: 1차 리뷰 완료"</span>
+  - <span class="st">"팀 공유 필요"</span>
+<span class="cm">---</span></div>
+  </div>
+
+  <!-- ABC Music -->
+  <h2 class="reveal"><span class="show-ko">ABC 악보</span><span class="show-en">ABC Music Notation</span> <span class="tag exclusive">Leaf Only</span></h2>
+  <p class="reveal"><span class="show-ko">ABC 문법으로 악보를 렌더링하고 재생까지 할 수 있다. BPM 조정, 일시정지, 노트 하이라이트를 지원한다.</span><span class="show-en">Render and play sheet music with ABC notation. Supports BPM adjustment, pause, and note highlighting.</span></p>
+  <div class="syntax-block reveal">
+    <div class="syntax-header"><span>music.md</span><span>Markdown</span></div>
+    <div class="syntax-body">```abc
+X:1
+T:Twinkle Twinkle Little Star
+M:4/4
+L:1/4
+K:C
+C C G G|A A G2|F F E E|D D C2|]
+```</div>
+  </div>
+
+  <!-- Table Features -->
+  <h2 class="reveal"><span class="show-ko">인터랙티브 테이블</span><span class="show-en">Interactive Tables</span> <span class="tag extended">Extended</span></h2>
+  <p class="reveal"><span class="show-ko">표준 마크다운 테이블 문법을 쓰되, Leaf에서는 셀 클릭 편집, 우클릭 행/열 추가/삭제, 정렬 제어, 수식(<code>=</code> 접두어)까지 지원한다.</span><span class="show-en">Standard markdown table syntax, but Leaf adds click-to-edit, right-click row/column operations, alignment control, and formulas (prefix with <code>=</code>).</span></p>
+
+  <div class="info reveal"><span class="show-ko">표준 마크다운 문법(제목, 목록, 링크, 이미지, 코드 블록 등)은 <a href="/markdown/">마크다운 가이드</a>를 참고하세요. 이 페이지에서는 Leaf에서만 동작하는 확장 문법만 다룹니다.</span><span class="show-en">For standard markdown syntax (headings, lists, links, images, code blocks, etc.), see the <a href="/markdown/">Markdown Guide</a>. This page covers only Leaf-exclusive extensions.</span></div>
+
+  <div class="doc-nav reveal">
+    <a href="/leafmd/docs/getting-started/"><span class="show-ko">&larr; 시작하기</span><span class="show-en">&larr; Getting Started</span></a>
+    <a href="/leafmd/docs/modes/"><span class="show-ko">모드 & 패널 &rarr;</span><span class="show-en">Modes & Panels &rarr;</span></a>
+  </div>
+</main>
+
+<footer class="footer"><a href="/leafmd/">Leaf</a> &middot; <a href="https://x.com/leafeditor" target="_blank">@leafeditor</a></footer>
+<script>
+(function(){var h=document.documentElement;var s=localStorage.getItem('theme');if(s)h.dataset.theme=s;else if(matchMedia('(prefers-color-scheme:light)').matches)h.dataset.theme='light';document.getElementById('btn-theme').addEventListener('click',function(){h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';localStorage.setItem('theme',h.dataset.theme)});var l=localStorage.getItem('leafmd-lang');if(l)h.dataset.lang=l;document.getElementById('btn-lang').addEventListener('click',function(){h.dataset.lang=h.dataset.lang==='ko'?'en':'ko';localStorage.setItem('leafmd-lang',h.dataset.lang)});var o=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(function(el){o.observe(el)})})();
+</script>
+</body>
+</html>

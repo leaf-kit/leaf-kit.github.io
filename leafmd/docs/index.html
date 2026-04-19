@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark" data-lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaf Docs — 가이드 문서</title>
+  <meta name="description" content="Leaf 마크다운 에디터 공식 가이드. 설치, 사용법, 커스텀 문법, 단축키, 특수 모드까지.">
+  <link rel="canonical" href="https://leaf-kit.github.io/leafmd/docs/">
+  <meta property="og:title" content="Leaf Docs — 가이드 문서">
+  <meta property="og:url" content="https://leaf-kit.github.io/leafmd/docs/">
+  <meta name="twitter:site" content="@leafeditor">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+:root{--bg:#FFFFFF;--bg2:#F8FAFB;--bg3:#F1F4F8;--text:#1A1A2E;--text2:#5A6070;--text3:#9BA3B0;--accent:#0D9F6E;--accent2:#34D399;--accent-bg:rgba(13,159,110,.05);--accent-border:rgba(13,159,110,.15);--border:#E8ECF0;--shadow:0 8px 30px rgba(0,0,0,.06);--shadow-sm:0 2px 8px rgba(0,0,0,.05);--font:'Inter','Noto Sans KR',-apple-system,sans-serif;--mono:'JetBrains Mono',monospace;--radius:16px;--ease:cubic-bezier(.4,0,.2,1);--ease-out:cubic-bezier(0,.55,.45,1)}
+[data-theme="dark"]{--bg:#0A0D14;--bg2:#12151E;--bg3:#1A1E2A;--text:#EAEDF2;--text2:#8B92A0;--text3:#5A6070;--border:#242838;--accent-bg:rgba(52,211,153,.06);--accent-border:rgba(52,211,153,.18);--shadow:0 8px 30px rgba(0,0,0,.3);--shadow-sm:0 2px 8px rgba(0,0,0,.25)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent2)}
+[data-lang="ko"] .show-ko{display:initial}[data-lang="ko"] .show-en{display:none}
+[data-lang="en"] .show-en{display:initial}[data-lang="en"] .show-ko{display:none}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* Nav */
+.nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);backdrop-filter:blur(20px)}
+[data-theme="dark"] .nav{background:rgba(10,13,20,.9)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-left{display:flex;align-items:center;gap:8px}
+.nav-logo{font:800 1.1rem var(--font);color:var(--accent);letter-spacing:-.03em}
+.nav-sep{color:var(--text3);font-weight:300}
+.nav-title{font:500 .88rem var(--font);color:var(--text2)}
+.nav-right{display:flex;align-items:center;gap:6px}
+.nav-btn{height:34px;padding:0 10px;border:1px solid var(--border);background:transparent;border-radius:8px;cursor:pointer;font:600 .75rem var(--mono);color:var(--text2);transition:all .2s;display:flex;align-items:center}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+.nav-icon{width:34px;height:34px;border:none;background:transparent;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:color .2s}
+.nav-icon:hover{color:var(--accent)}
+.nav-icon svg{width:18px;height:18px}
+
+/* Hero */
+.docs-hero{padding:64px 24px 48px;text-align:center;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--bg2),var(--bg))}
+.docs-hero h1{font-size:2.4rem;font-weight:900;letter-spacing:-.04em;margin-bottom:12px}
+.docs-hero h1 em{font-style:normal;color:var(--accent)}
+.docs-hero p{font-size:1rem;color:var(--text2);max-width:480px;margin:0 auto}
+
+/* Cards */
+.docs-grid{max-width:900px;margin:0 auto;padding:48px 24px 80px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.doc-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:32px 28px;display:block;transition:all .3s var(--ease);position:relative;overflow:hidden}
+.doc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.doc-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--accent-border);color:var(--text)}
+.doc-card:hover::before{transform:scaleX(1)}
+.doc-card-icon{font-size:2rem;margin-bottom:16px;display:block}
+.doc-card h2{font-size:1.1rem;font-weight:700;margin-bottom:8px;letter-spacing:-.02em}
+.doc-card p{font-size:.84rem;color:var(--text2);line-height:1.7;margin:0}
+.doc-card .card-tag{display:inline-block;font:600 .65rem var(--mono);color:var(--accent);background:var(--accent-bg);padding:2px 8px;border-radius:6px;margin-top:12px}
+
+/* Footer */
+.footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:.78rem;color:var(--text3)}
+.footer a{color:var(--text3)}
+.footer a:hover{color:var(--accent)}
+
+@media(max-width:768px){.docs-hero h1{font-size:1.7rem}.docs-hero{padding:40px 20px 32px}.docs-grid{padding:32px 20px 60px}}
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <a href="/leafmd/" class="nav-logo">Leaf</a>
+      <span class="nav-sep">/</span>
+      <span class="nav-title">Docs</span>
+    </div>
+    <div class="nav-right">
+      <button class="nav-btn" id="btn-lang"><span class="show-ko">EN</span><span class="show-en">KO</span></button>
+      <button class="nav-icon" id="btn-theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
+      <a class="nav-icon" href="https://x.com/leafeditor" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    </div>
+  </div>
+</nav>
+
+<section class="docs-hero">
+  <h1 class="reveal">
+    <span class="show-ko"><em>Leaf</em> 가이드</span>
+    <span class="show-en"><em>Leaf</em> Guide</span>
+  </h1>
+  <p class="reveal">
+    <span class="show-ko">Leaf 마크다운 에디터를 200% 활용하기 위한 가이드 문서</span>
+    <span class="show-en">Everything you need to get the most out of Leaf</span>
+  </p>
+</section>
+
+<main class="docs-grid">
+  <a class="doc-card reveal" href="/leafmd/docs/why-leaf/">
+    <span class="doc-card-icon">&#x1f331;</span>
+    <h2><span class="show-ko">왜 Leaf인가</span><span class="show-en">Why Leaf</span></h2>
+    <p><span class="show-ko">Leaf의 철학, 다른 에디터와의 차이점, 그리고 어떤 문제를 해결하는지.</span><span class="show-en">Leaf's philosophy, how it differs from others, and what problems it solves.</span></p>
+    <span class="card-tag"><span class="show-ko">콘셉트</span><span class="show-en">Concept</span></span>
+  </a>
+
+  <a class="doc-card reveal" href="/leafmd/docs/getting-started/">
+    <span class="doc-card-icon">&#x1f680;</span>
+    <h2><span class="show-ko">시작하기</span><span class="show-en">Getting Started</span></h2>
+    <p><span class="show-ko">설치, 첫 문서 만들기, 기본 워크플로우, 프로젝트 관리까지.</span><span class="show-en">Installation, first document, basic workflow, and project management.</span></p>
+    <span class="card-tag"><span class="show-ko">입문</span><span class="show-en">Beginner</span></span>
+  </a>
+
+  <a class="doc-card reveal" href="/leafmd/docs/custom-syntax/">
+    <span class="doc-card-icon">&#x2728;</span>
+    <h2><span class="show-ko">Leaf 전용 문법</span><span class="show-en">Leaf-Only Syntax</span></h2>
+    <p><span class="show-ko">코넬 노트, 칸반 보드, 메모 보드, 확장 알림 등 Leaf에서만 지원하는 마크다운 문법.</span><span class="show-en">Cornell Notes, Kanban, Memo Board, extended alerts and more — exclusive to Leaf.</span></p>
+    <span class="card-tag"><span class="show-ko">문법</span><span class="show-en">Syntax</span></span>
+  </a>
+
+  <a class="doc-card reveal" href="/leafmd/docs/modes/">
+    <span class="doc-card-icon">&#x1f3ad;</span>
+    <h2><span class="show-ko">모드 & 패널</span><span class="show-en">Modes & Panels</span></h2>
+    <p><span class="show-ko">헤밍웨이, 포커스, 젠, 프레젠테이션 등 특수 모드와 20가지 패널.</span><span class="show-en">Hemingway, Focus, Zen, Presentation and 20+ panels explained.</span></p>
+    <span class="card-tag"><span class="show-ko">기능</span><span class="show-en">Features</span></span>
+  </a>
+
+  <a class="doc-card reveal" href="/leafmd/docs/shortcuts/">
+    <span class="doc-card-icon">&#x2328;&#xFE0F;</span>
+    <h2><span class="show-ko">단축키 레퍼런스</span><span class="show-en">Shortcuts Reference</span></h2>
+    <p><span class="show-ko">파일, 편집, 뷰, 포맷팅 — 전체 키보드 단축키 모음.</span><span class="show-en">File, editing, view, formatting — complete keyboard shortcuts.</span></p>
+    <span class="card-tag"><span class="show-ko">레퍼런스</span><span class="show-en">Reference</span></span>
+  </a>
+
+  <a class="doc-card reveal" href="/markdown/" style="border-style:dashed">
+    <span class="doc-card-icon">&#x1f4D6;</span>
+    <h2><span class="show-ko">마크다운 문법 가이드</span><span class="show-en">Markdown Syntax Guide</span></h2>
+    <p><span class="show-ko">표준 마크다운 문법은 별도 마크다운 가이드를 참고하세요.</span><span class="show-en">For standard markdown syntax, see our separate Markdown guide.</span></p>
+    <span class="card-tag"><span class="show-ko">외부 링크</span><span class="show-en">External</span></span>
+  </a>
+</main>
+
+<footer class="footer">
+  <a href="/leafmd/">Leaf</a> &middot; <a href="https://x.com/leafeditor" target="_blank">@leafeditor</a> &middot; <a href="https://leaf-kit.github.io">leaf-kit.github.io</a>
+</footer>
+
+<script>
+(function(){
+  var html=document.documentElement;
+  var s=localStorage.getItem('theme');if(s)html.dataset.theme=s;else if(matchMedia('(prefers-color-scheme:light)').matches)html.dataset.theme='light';
+  document.getElementById('btn-theme').addEventListener('click',function(){html.dataset.theme=html.dataset.theme==='dark'?'light':'dark';localStorage.setItem('theme',html.dataset.theme)});
+  var l=localStorage.getItem('leafmd-lang');if(l)html.dataset.lang=l;
+  document.getElementById('btn-lang').addEventListener('click',function(){html.dataset.lang=html.dataset.lang==='ko'?'en':'ko';localStorage.setItem('leafmd-lang',html.dataset.lang)});
+  var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el)});
+})();
+</script>
+</body>
+</html>
