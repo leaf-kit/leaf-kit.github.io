@@ -1,191 +1,167 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>소개 — leaf-kit</title>
-  <meta name="description" content="leaf-kit 프로젝트의 전체 콘텐츠를 한눈에 살펴보세요. AI 리스크 분석, 채용 트렌드, 기술 키워드 추적 등 다양한 서비스를 소개합니다.">
+  <meta name="description" content="leaf-kit 프로젝트의 전체 콘텐츠를 한눈에 살펴보세요. AI 리스크 분석, 채용 트렌드, Leaf 에디터, 마크다운 가이드 등 다양한 서비스를 소개합니다.">
   <meta property="og:title" content="소개 | leaf-kit">
-  <meta property="og:description" content="AI 리스크, 채용 트렌드, 기술 아카이브 등 leaf-kit의 모든 콘텐츠를 소개합니다">
+  <meta property="og:description" content="AI 리스크, 채용 트렌드, Leaf 에디터, 기술 아카이브 등 leaf-kit의 모든 콘텐츠를 소개합니다">
+  <meta name="twitter:site" content="@leafeditor">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    :root{--bg:#fff;--surface:#F9FAFB;--surface2:#F1F5F9;--text:#111827;--text2:#6B7280;--text3:#9CA3AF;--primary:#22C55E;--border:#E5E7EB;--radius:10px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04)}
-    html{font-size:16px;scroll-behavior:smooth}
-    body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
-    a{color:inherit;text-decoration:none}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#FFFFFF;--bg2:#F8FAFB;--bg3:#F1F5F9;--text:#111827;--text2:#6B7280;--text3:#9CA3AF;--accent:#22C55E;--accent2:#4ADE80;--border:#E5E7EB;--radius:14px;--shadow:0 2px 8px rgba(0,0,0,.05);--shadow-md:0 8px 24px rgba(0,0,0,.07);--font:'Inter','Noto Sans KR',sans-serif;--mono:'JetBrains Mono',monospace;--ease:cubic-bezier(.4,0,.2,1);--ease-out:cubic-bezier(0,.55,.45,1);--ease-bounce:cubic-bezier(.34,1.56,.64,1)}
+[data-theme="dark"]{--bg:#0A0D14;--bg2:#12151E;--bg3:#1A1E2A;--text:#EAEDF2;--text2:#8B92A0;--text3:#5A6070;--border:#242838;--shadow:0 2px 8px rgba(0,0,0,.25);--shadow-md:0 8px 24px rgba(0,0,0,.35)}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
 
-    /* Nav */
-    .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;height:52px;display:flex;align-items:center;justify-content:space-between}
-    .nav-brand{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem;color:var(--text)}
-    .nav-brand:hover{text-decoration:none}
-    .nav-actions{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
-    .nav-actions::-webkit-scrollbar{display:none}
-    .nav-actions a{color:var(--text2);font-size:.8rem;font-weight:500;padding:.4rem .7rem;border-radius:5px;white-space:nowrap;transition:all .15s}
-    .nav-actions a:hover,.nav-actions a.active{color:var(--text);background:var(--surface)}
+/* Scroll progress */
+.scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:300;width:0}
 
-    /* Hero */
-    .hero{
-      position:relative;overflow:hidden;
-      background:linear-gradient(160deg,#fff 0%,#F0FDF4 30%,#ECFDF5 60%,#F0FDF4 80%,#fff 100%);
-      padding:4rem 2rem 3rem;text-align:center;
-      border-bottom:1px solid var(--border);
-    }
-    .hero::before{
-      content:'';position:absolute;top:-40%;right:-15%;width:500px;height:500px;
-      background:radial-gradient(circle,rgba(34,197,94,.06) 0%,transparent 70%);pointer-events:none;
-    }
-    .hero-icon{
-      width:52px;height:52px;margin:0 auto 1rem;
-      opacity:0;animation:fadeUp .6s ease forwards .1s;
-    }
-    .hero-icon svg{width:100%;height:100%}
-    .hero h1{
-      font-size:2rem;font-weight:800;color:var(--text);
-      opacity:0;animation:fadeUp .6s ease forwards .2s;
-    }
-    .hero .subtitle{
-      color:var(--text2);font-size:.92rem;margin-top:.5rem;font-weight:400;max-width:500px;margin-left:auto;margin-right:auto;
-      opacity:0;animation:fadeUp .6s ease forwards .35s;
-    }
-    .hero .stat-pills{
-      display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem;
-      opacity:0;animation:fadeUp .6s ease forwards .5s;
-    }
-    .stat-pill{
-      display:inline-flex;align-items:center;gap:.3rem;
-      font-size:.72rem;font-weight:500;color:var(--text2);
-      background:#fff;padding:.3rem .65rem;border-radius:2rem;
-      border:1px solid var(--border);
-    }
-    .stat-pill strong{color:var(--text);font-weight:700}
+/* Nav */
+.nav{position:sticky;top:0;z-index:200;background:var(--bg);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;transition:box-shadow .3s}
+[data-theme="dark"] .nav{background:rgba(10,13,20,.88)}
+.nav.scrolled{box-shadow:var(--shadow)}
+.nav-brand{font:700 1rem var(--font);display:flex;align-items:center;gap:.5rem;color:var(--accent)}
+.nav-brand svg{width:22px;height:22px}
+.nav-actions{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-actions::-webkit-scrollbar{display:none}
+.nav-actions a{color:var(--text3);font:500 .78rem var(--font);padding:6px 12px;border-radius:8px;white-space:nowrap;transition:all .2s var(--ease)}
+.nav-actions a:hover,.nav-actions a.active{color:var(--text);background:var(--bg3)}
+.nav-right{display:flex;align-items:center;gap:6px;margin-left:12px}
+.nav-icon{width:34px;height:34px;border:none;background:transparent;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:color .2s}
+.nav-icon:hover{color:var(--accent)}
+.nav-icon svg{width:18px;height:18px}
 
-    @keyframes fadeUp{
-      from{opacity:0;transform:translateY(14px)}
-      to{opacity:1;transform:translateY(0)}
-    }
+/* Hero */
+.hero{position:relative;overflow:hidden;padding:5rem 2rem 4rem;text-align:center;border-bottom:1px solid var(--border)}
+.hero-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.3;animation:orbFloat 20s ease-in-out infinite}
+[data-theme="dark"] .hero-orb{opacity:.15}
+.hero-orb-1{width:400px;height:400px;background:var(--accent);top:-100px;right:-80px}
+.hero-orb-2{width:300px;height:300px;background:#7C3AED;bottom:-80px;left:-60px;animation-delay:-7s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(20px,-30px) scale(1.04)}50%{transform:translate(-15px,20px) scale(.96)}75%{transform:translate(25px,15px) scale(1.02)}}
+.hero-content{position:relative;z-index:1}
+.hero-icon{width:56px;height:56px;margin:0 auto 1.2rem;opacity:0;animation:fadeUp .7s var(--ease-out) .1s forwards}
+.hero-icon svg{width:100%;height:100%}
+.hero h1{font-size:2.4rem;font-weight:900;letter-spacing:-.04em;opacity:0;animation:fadeUp .7s var(--ease-out) .2s forwards}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .subtitle{color:var(--text2);font-size:.95rem;margin-top:.6rem;max-width:520px;margin-left:auto;margin-right:auto;opacity:0;animation:fadeUp .7s var(--ease-out) .35s forwards}
+.hero .stat-pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;opacity:0;animation:fadeUp .7s var(--ease-out) .5s forwards}
+.stat-pill{display:inline-flex;align-items:center;gap:.35rem;font:500 .74rem var(--font);color:var(--text2);background:var(--bg2);padding:.35rem .8rem;border-radius:2rem;border:1px solid var(--border);transition:border-color .2s}
+.stat-pill:hover{border-color:var(--accent)}
+.stat-pill strong{color:var(--accent);font-weight:700}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-    /* Container */
-    .container{max-width:960px;margin:0 auto;padding:2.5rem 2rem 4rem}
+/* Container */
+.container{max-width:960px;margin:0 auto;padding:3rem 2rem 4rem}
 
-    /* Section label */
-    .section-label{
-      font-size:.68rem;font-weight:600;color:var(--primary);letter-spacing:.08em;
-      text-transform:uppercase;margin-bottom:.75rem;
-    }
+/* Section label */
+.section-label{font:600 .68rem var(--mono);color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.8rem}
 
-    /* Card grid */
-    .card-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+/* Card grid */
+.card-grid{display:grid;grid-template-columns:1fr;gap:14px}
 
-    .intro-card{
-      position:relative;
-      background:#fff;border:1px solid var(--border);border-radius:var(--radius);
-      padding:1.5rem;
-      box-shadow:var(--shadow);
-      transition:box-shadow .2s,border-color .2s,transform .15s;
-      display:flex;gap:1.25rem;align-items:flex-start;
-      opacity:0;transform:translateY(12px);
-    }
-    .intro-card.visible{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease,box-shadow .2s,border-color .2s}
-    .intro-card:hover{box-shadow:var(--shadow-md);border-color:#D1D5DB;transform:translateY(-2px)}
+/* Card */
+.intro-card{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 1.75rem;box-shadow:var(--shadow);display:flex;gap:1.25rem;align-items:flex-start;opacity:0;transform:translateY(20px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out),box-shadow .2s,border-color .2s;overflow:hidden}
+.intro-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.intro-card.visible{opacity:1;transform:translateY(0)}
+.intro-card:hover{box-shadow:var(--shadow-md);border-color:rgba(34,197,94,.2);transform:translateY(-3px)!important}
+.intro-card:hover::before{transform:scaleX(1)}
+.card-icon{width:52px;height:52px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.6rem;transition:transform .3s var(--ease-bounce)}
+.intro-card:hover .card-icon{transform:scale(1.1) rotate(-3deg)}
+.card-body{flex:1;min-width:0}
+.card-title{font:700 1.05rem var(--font);color:var(--text);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.card-title .badge{font:600 .58rem var(--mono);padding:.2rem .5rem;border-radius:4px;letter-spacing:.02em}
+.card-desc{color:var(--text2);font-size:.85rem;margin-top:.4rem;line-height:1.7}
+.card-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.65rem}
+.card-tag{font:500 .68rem var(--font);padding:.2rem .55rem;border-radius:5px;background:var(--bg3);color:var(--text3);border:1px solid var(--border);transition:all .2s}
+.intro-card:hover .card-tag{border-color:rgba(34,197,94,.15)}
+.card-link{display:inline-flex;align-items:center;gap:.3rem;font:600 .78rem var(--font);color:var(--accent);margin-top:.7rem;transition:gap .2s}
+.card-link:hover{gap:.5rem}
+.card-link svg{width:14px;height:14px}
 
-    .card-icon{
-      width:48px;height:48px;border-radius:12px;flex-shrink:0;
-      display:flex;align-items:center;justify-content:center;
-      font-size:1.5rem;
-    }
+/* Icon colors */
+.icon-red{background:rgba(239,68,68,.08);color:#EF4444}
+.icon-green{background:rgba(34,197,94,.08);color:#22C55E}
+.icon-blue{background:rgba(37,99,235,.08);color:#2563EB}
+.icon-purple{background:rgba(124,58,237,.08);color:#7C3AED}
+.icon-amber{background:rgba(245,158,11,.08);color:#F59E0B}
+.icon-cyan{background:rgba(6,182,212,.08);color:#06B6D4}
+.icon-emerald{background:rgba(16,185,129,.08);color:#10B981}
+.icon-leaf{background:rgba(13,159,110,.08);color:#0D9F6E}
 
-    .card-body{flex:1;min-width:0}
-    .card-title{font-size:1.05rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:.4rem}
-    .card-title .badge{
-      font-size:.6rem;font-weight:600;padding:.15rem .4rem;border-radius:3px;
-      letter-spacing:.02em;
-    }
-    .card-desc{color:var(--text2);font-size:.85rem;margin-top:.3rem;line-height:1.65}
-    .card-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.6rem}
-    .card-tag{
-      font-size:.68rem;font-weight:500;padding:.2rem .5rem;border-radius:4px;
-      background:var(--surface);color:var(--text2);border:1px solid var(--border);
-    }
-    .card-link{
-      display:inline-flex;align-items:center;gap:.25rem;
-      font-size:.78rem;font-weight:600;color:var(--primary);
-      margin-top:.6rem;transition:gap .15s;
-    }
-    .card-link:hover{gap:.4rem}
-    .card-link svg{width:14px;height:14px}
+/* Divider */
+.section-divider{border:none;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:2.5rem 0}
 
-    /* Color themes for icons */
-    .icon-red{background:rgba(239,68,68,.08);color:#EF4444}
-    .icon-green{background:rgba(34,197,94,.08);color:#22C55E}
-    .icon-blue{background:rgba(37,99,235,.08);color:#2563EB}
-    .icon-purple{background:rgba(124,58,237,.08);color:#7C3AED}
-    .icon-amber{background:rgba(245,158,11,.08);color:#F59E0B}
-    .icon-cyan{background:rgba(6,182,212,.08);color:#06B6D4}
-    .icon-emerald{background:rgba(16,185,129,.08);color:#10B981}
+/* Footer */
+.footer{border-top:1px solid var(--border);padding:2rem;text-align:center;color:var(--text3);font-size:.75rem;background:var(--bg2)}
+.footer a{color:var(--text3);font-weight:500;transition:color .15s}
+.footer a:hover{color:var(--accent)}
+.footer-links{display:flex;gap:1.5rem;justify-content:center;margin-bottom:.6rem;flex-wrap:wrap}
+.footer-links a{display:flex;align-items:center;gap:5px}
+.footer-links svg{width:14px;height:14px}
 
-    /* Divider */
-    .section-divider{
-      border:none;border-top:1px solid var(--border);
-      margin:2.5rem 0;
-    }
-
-    /* Footer */
-    .footer{
-      border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;
-      color:var(--text3);font-size:.75rem;
-    }
-    .footer a{color:var(--text2);font-weight:500;transition:color .15s}
-    .footer a:hover{color:var(--text)}
-    .footer-links{display:flex;gap:1rem;justify-content:center;margin-bottom:.5rem}
-
-    /* Responsive */
-    @media(min-width:640px){
-      .card-grid{grid-template-columns:1fr}
-    }
-    @media(max-width:600px){
-      .hero{padding:3rem 1.5rem 2rem}
-      .hero h1{font-size:1.5rem}
-      .container{padding:2rem 1.25rem 3rem}
-      .intro-card{flex-direction:column;gap:.75rem}
-      .card-icon{width:40px;height:40px;font-size:1.25rem}
-      .nav{padding:0 1rem}
-    }
+/* Responsive */
+@media(max-width:600px){
+  .hero{padding:3rem 1.5rem 2.5rem}
+  .hero h1{font-size:1.7rem}
+  .container{padding:2rem 1.25rem 3rem}
+  .intro-card{flex-direction:column;gap:.8rem;padding:1.25rem}
+  .card-icon{width:44px;height:44px;font-size:1.3rem}
+  .nav{padding:0 1rem;height:50px}
+  .nav-right{margin-left:8px}
+}
   </style>
 </head>
 <body>
 
-<nav class="nav">
+<div class="scroll-progress" id="scroll-progress"></div>
+
+<nav class="nav" id="nav">
   <a class="nav-brand" href="/">
-    <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2C7 7 4 12 5 17c1 2 3 4 7 5 4-1 6-3 7-5 1-5-2-10-7-15z" stroke="#22C55E" stroke-width="1.5" fill="#22C55E" fill-opacity=".1"/><path d="M12 6v16" stroke="#22C55E" stroke-width=".8" opacity=".5"/></svg>
+    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C7 7 4 12 5 17c1 2 3 4 7 5 4-1 6-3 7-5 1-5-2-10-7-15z" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity=".1"/><path d="M12 6v16" stroke="currentColor" stroke-width=".8" opacity=".5"/></svg>
     leaf-kit
   </a>
   <div class="nav-actions">
-    <a href="/" >홈</a>
+    <a href="/">홈</a>
     <a href="/intro/" class="active">소개</a>
     <a href="/airisk/">AI 리스크</a>
     <a href="/recruit/">채용 트렌드</a>
+    <a href="/leafmd/">Leaf Editor</a>
     <a href="/trend/">데이터</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-icon" id="btn-theme" title="테마 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
+    <a class="nav-icon" href="https://x.com/leafeditor" target="_blank" title="@leafeditor"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-icon">
-    <svg viewBox="0 0 48 48" fill="none">
-      <path d="M24 4C14 14 8 24 10 34C12 38 16 42 24 44C32 42 36 38 38 34C40 24 34 14 24 4Z" fill="#22C55E" opacity=".12"/>
-      <path d="M24 4C14 14 8 24 10 34C12 38 16 42 24 44C32 42 36 38 38 34C40 24 34 14 24 4Z" stroke="#22C55E" stroke-width="1.5" fill="none"/>
-      <path d="M24 12V38" stroke="#22C55E" stroke-width="1" opacity=".5"/>
-      <path d="M24 20C20 18 16 20 14 24" stroke="#22C55E" stroke-width="1" opacity=".35" fill="none"/>
-      <path d="M24 26C28 24 32 26 34 30" stroke="#22C55E" stroke-width="1" opacity=".35" fill="none"/>
-    </svg>
+  <div class="hero-bg">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
   </div>
-  <h1>leaf-kit 소개</h1>
-  <p class="subtitle">IT 트렌드, AI 리스크, 채용 분석부터 개발 가이드까지 — 이 사이트에서 다루는 콘텐츠를 한눈에 살펴보세요.</p>
-  <div class="stat-pills">
-    <span class="stat-pill"><strong>7</strong> 섹션</span>
-    <span class="stat-pill"><strong>30+</strong> 페이지</span>
-    <span class="stat-pill"><strong>주간</strong> 업데이트</span>
+  <div class="hero-content">
+    <div class="hero-icon">
+      <svg viewBox="0 0 48 48" fill="none">
+        <path d="M24 4C14 14 8 24 10 34C12 38 16 42 24 44C32 42 36 38 38 34C40 24 34 14 24 4Z" fill="currentColor" opacity=".12"/>
+        <path d="M24 4C14 14 8 24 10 34C12 38 16 42 24 44C32 42 36 38 38 34C40 24 34 14 24 4Z" stroke="currentColor" stroke-width="1.5" fill="none" color="var(--accent)"/>
+        <path d="M24 12V38" stroke="var(--accent)" stroke-width="1" opacity=".5"/>
+        <path d="M24 20C20 18 16 20 14 24" stroke="var(--accent)" stroke-width="1" opacity=".35" fill="none"/>
+        <path d="M24 26C28 24 32 26 34 30" stroke="var(--accent)" stroke-width="1" opacity=".35" fill="none"/>
+      </svg>
+    </div>
+    <h1><em>leaf-kit</em> 소개</h1>
+    <p class="subtitle">IT 트렌드, AI 리스크, 채용 분석, Leaf 에디터, 개발 가이드까지 — 이 사이트에서 다루는 콘텐츠를 한눈에 살펴보세요.</p>
+    <div class="stat-pills">
+      <span class="stat-pill"><strong>9</strong> 섹션</span>
+      <span class="stat-pill"><strong>40+</strong> 페이지</span>
+      <span class="stat-pill"><strong>주간</strong> 업데이트</span>
+    </div>
   </div>
 </section>
 
@@ -195,69 +171,32 @@
   <div class="section-label">데이터 & 분석</div>
   <div class="card-grid">
 
-    <!-- AI 리스크 -->
     <a href="/airisk/" class="intro-card">
-      <div class="card-icon icon-red">🔴</div>
+      <div class="card-icon icon-red">&#x1f534;</div>
       <div class="card-body">
-        <div class="card-title">
-          AI 직업 대체 위험도 분석
-          <span class="badge" style="background:rgba(239,68,68,.1);color:#EF4444">182개 직업</span>
-        </div>
-        <div class="card-desc">
-          AI가 각 직업을 얼마나 대체할 수 있는지를 뉴스 근거 기반으로 분석합니다. 직업별 위험도 점수, 학과별 영향도, AI 도구 매핑, 생존 전략 가이드까지 포함된 종합 분석 서비스입니다.
-        </div>
-        <div class="card-tags">
-          <span class="card-tag">직업 위험도</span>
-          <span class="card-tag">뉴스 근거</span>
-          <span class="card-tag">학과 분석</span>
-          <span class="card-tag">AI 도구</span>
-          <span class="card-tag">생존 가이드</span>
-          <span class="card-tag">건강 관리</span>
-        </div>
+        <div class="card-title">AI 직업 대체 위험도 분석 <span class="badge" style="background:rgba(239,68,68,.1);color:#EF4444">182개 직업</span></div>
+        <div class="card-desc">AI가 각 직업을 얼마나 대체할 수 있는지를 뉴스 근거 기반으로 분석합니다. 직업별 위험도 점수, 학과별 영향도, AI 도구 매핑, 생존 전략 가이드까지 포함된 종합 분석 서비스입니다.</div>
+        <div class="card-tags"><span class="card-tag">직업 위험도</span><span class="card-tag">뉴스 근거</span><span class="card-tag">학과 분석</span><span class="card-tag">AI 도구</span><span class="card-tag">생존 가이드</span></div>
         <span class="card-link">분석 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
       </div>
     </a>
 
-    <!-- 채용 트렌드 -->
     <a href="/recruit/" class="intro-card">
-      <div class="card-icon icon-green">💼</div>
+      <div class="card-icon icon-green">&#x1f4BC;</div>
       <div class="card-body">
-        <div class="card-title">
-          리프취준랩 — 채용 트렌드
-          <span class="badge" style="background:rgba(34,197,94,.1);color:#16A34A">실시간</span>
-        </div>
-        <div class="card-desc">
-          IT 직군별 채용 수요와 핵심 스킬을 추적합니다. 주요 기업의 조직도, 채용 페이지 링크, 직군별 수요 변화, 역량 매칭까지 취업 준비에 필요한 정보를 한 곳에서 확인할 수 있습니다.
-        </div>
-        <div class="card-tags">
-          <span class="card-tag">직군별 수요</span>
-          <span class="card-tag">기업 조직도</span>
-          <span class="card-tag">스킬 매칭</span>
-          <span class="card-tag">채용 링크</span>
-          <span class="card-tag">취업 팁</span>
-        </div>
+        <div class="card-title">리프취준랩 — 채용 트렌드 <span class="badge" style="background:rgba(34,197,94,.1);color:#16A34A">실시간</span></div>
+        <div class="card-desc">IT 직군별 채용 수요와 핵심 스킬을 추적합니다. 주요 기업의 조직도, 채용 페이지 링크, 직군별 수요 변화, 역량 매칭까지 취업 준비에 필요한 정보를 한 곳에서 확인할 수 있습니다.</div>
+        <div class="card-tags"><span class="card-tag">직군별 수요</span><span class="card-tag">기업 조직도</span><span class="card-tag">스킬 매칭</span><span class="card-tag">채용 링크</span></div>
         <span class="card-link">트렌드 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
       </div>
     </a>
 
-    <!-- 데이터 아카이브 -->
     <a href="/trend/" class="intro-card">
-      <div class="card-icon icon-blue">📊</div>
+      <div class="card-icon icon-blue">&#x1f4CA;</div>
       <div class="card-body">
-        <div class="card-title">
-          데이터 아카이브
-          <span class="badge" style="background:rgba(37,99,235,.1);color:#2563EB">주간 수집</span>
-        </div>
-        <div class="card-desc">
-          글로벌·국내 100대 IT 기업의 기술 키워드를 주간 단위로 수집하고 누적합니다. 기술 트렌드 변화를 타임라인과 차트로 시각화하며, 각 회차별 상세 데이터를 아카이브합니다.
-        </div>
-        <div class="card-tags">
-          <span class="card-tag">글로벌 Top 100</span>
-          <span class="card-tag">국내 Top 100</span>
-          <span class="card-tag">기술 키워드</span>
-          <span class="card-tag">트렌드 차트</span>
-          <span class="card-tag">타임라인</span>
-        </div>
+        <div class="card-title">데이터 아카이브 <span class="badge" style="background:rgba(37,99,235,.1);color:#2563EB">주간 수집</span></div>
+        <div class="card-desc">글로벌/국내 100대 IT 기업의 기술 키워드를 주간 단위로 수집하고 누적합니다. 기술 트렌드 변화를 타임라인과 차트로 시각화하며, 각 회차별 상세 데이터를 아카이브합니다.</div>
+        <div class="card-tags"><span class="card-tag">글로벌 Top 100</span><span class="card-tag">국내 Top 100</span><span class="card-tag">기술 키워드</span><span class="card-tag">트렌드 차트</span></div>
         <span class="card-link">아카이브 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
       </div>
     </a>
@@ -266,59 +205,74 @@
 
   <hr class="section-divider">
 
-  <!-- 가이드 & 도구 -->
-  <div class="section-label">가이드 & 도구</div>
+  <!-- 도구 & 에디터 -->
+  <div class="section-label">도구 & 에디터</div>
   <div class="card-grid">
 
-    <!-- Context Engineering -->
-    <a href="/context-engineering/" class="intro-card">
-      <div class="card-icon icon-purple">⚙️</div>
+    <a href="/leafmd/" class="intro-card">
+      <div class="card-icon icon-leaf">&#x1f343;</div>
       <div class="card-body">
-        <div class="card-title">Context Engineering</div>
-        <div class="card-desc">
-          CLAUDE.md, AGENTS.md, Cursor Rules, Copilot Instructions 등 AI 코딩 에이전트의 컨텍스트 설정 파일을 비교·분석합니다. 각 도구별 실전 예제와 작성 가이드를 제공합니다.
-        </div>
-        <div class="card-tags">
-          <span class="card-tag">CLAUDE.md</span>
-          <span class="card-tag">AGENTS.md</span>
-          <span class="card-tag">Cursor Rules</span>
-          <span class="card-tag">실전 예제</span>
-        </div>
+        <div class="card-title">Leaf 마크다운 에디터 <span class="badge" style="background:rgba(13,159,110,.1);color:#0D9F6E">Beta</span></div>
+        <div class="card-desc">Tauri + Rust 기반 네이티브 마크다운 에디터. Typora의 라이브 프리뷰와 Obsidian의 지식 그래프를 흡수하면서, 코넬 노트, 칸반 보드, 뽀모도로, ASMR, 내장 터미널까지 갖췄습니다. 150MB 미만 메모리로 Electron보다 3배 가볍습니다.</div>
+        <div class="card-tags"><span class="card-tag">Tauri + Rust</span><span class="card-tag">라이브 프리뷰</span><span class="card-tag">지식 그래프</span><span class="card-tag">코넬 노트</span><span class="card-tag">에이전트 코딩</span><span class="card-tag">60+ 테마</span></div>
+        <span class="card-link">Leaf 소개 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </div>
+    </a>
+
+    <a href="/markdown/" class="intro-card">
+      <div class="card-icon icon-cyan">&#x1f4D6;</div>
+      <div class="card-body">
+        <div class="card-title">마크다운 가이드</div>
+        <div class="card-desc">마크다운 문법의 기초부터 확장 문법, 한국 공문서 적용, AI 시대 마크다운 전략까지. 치트시트, 인터랙티브 플레이그라운드, 타이핑 배틀 게임까지 포함된 종합 마크다운 가이드입니다.</div>
+        <div class="card-tags"><span class="card-tag">문법 가이드</span><span class="card-tag">치트시트</span><span class="card-tag">플레이그라운드</span><span class="card-tag">타이핑 게임</span></div>
         <span class="card-link">가이드 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
       </div>
     </a>
 
-    <!-- Claude Code Design Patterns -->
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- 가이드 & 분석 -->
+  <div class="section-label">가이드 & 분석</div>
+  <div class="card-grid">
+
+    <a href="/context-engineering/" class="intro-card">
+      <div class="card-icon icon-purple">&#x2699;&#xFE0F;</div>
+      <div class="card-body">
+        <div class="card-title">Context Engineering</div>
+        <div class="card-desc">CLAUDE.md, AGENTS.md, Cursor Rules, Copilot Instructions 등 AI 코딩 에이전트의 컨텍스트 설정 파일을 비교/분석합니다. 각 도구별 실전 예제와 작성 가이드를 제공합니다.</div>
+        <div class="card-tags"><span class="card-tag">CLAUDE.md</span><span class="card-tag">AGENTS.md</span><span class="card-tag">Cursor Rules</span><span class="card-tag">실전 예제</span></div>
+        <span class="card-link">가이드 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </div>
+    </a>
+
     <a href="/claude-code/design-patterns/" class="intro-card">
-      <div class="card-icon icon-amber">🧩</div>
+      <div class="card-icon icon-amber">&#x1f9E9;</div>
       <div class="card-body">
         <div class="card-title">Claude Code 디자인 패턴</div>
-        <div class="card-desc">
-          Claude Code의 소스코드 1,902개 파일을 분석하여 추출한 16가지 에이전트 AI 디자인 패턴을 인터랙티브 다이어그램으로 시각화합니다. 에이전트 아키텍처 설계에 참고할 수 있는 실전 패턴입니다.
-        </div>
-        <div class="card-tags">
-          <span class="card-tag">에이전트 패턴</span>
-          <span class="card-tag">소스 분석</span>
-          <span class="card-tag">인터랙티브</span>
-          <span class="card-tag">다이어그램</span>
-        </div>
+        <div class="card-desc">Claude Code의 소스코드 1,902개 파일을 분석하여 추출한 16가지 에이전트 AI 디자인 패턴을 인터랙티브 다이어그램으로 시각화합니다.</div>
+        <div class="card-tags"><span class="card-tag">에이전트 패턴</span><span class="card-tag">소스 분석</span><span class="card-tag">인터랙티브</span><span class="card-tag">다이어그램</span></div>
         <span class="card-link">패턴 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
       </div>
     </a>
 
-    <!-- MarkVibe -->
+    <a href="/claude/claude-design-anthropic-labs/" class="intro-card">
+      <div class="card-icon icon-amber">&#x1f3A8;</div>
+      <div class="card-body">
+        <div class="card-title">Claude Design 심층 분석</div>
+        <div class="card-desc">Anthropic Labs의 Claude Design을 엔지니어 관점에서 분석합니다. Opus 4.7 비전 모델 기반 디자인 도구의 기능, 아키텍처, 워크플로우를 다룹니다.</div>
+        <div class="card-tags"><span class="card-tag">Claude Design</span><span class="card-tag">Opus 4.7</span><span class="card-tag">프로토타이핑</span></div>
+        <span class="card-link">분석 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </div>
+    </a>
+
     <a href="/markvibe/" class="intro-card">
-      <div class="card-icon icon-cyan">📝</div>
+      <div class="card-icon icon-cyan">&#x1f4DD;</div>
       <div class="card-body">
         <div class="card-title">MarkVibe Coding</div>
-        <div class="card-desc">
-          마크다운만으로 소프트웨어 개발을 수행하는 새로운 패러다임을 소개합니다. 마크 바이브 코딩의 이론과 실무 가이드, 그리고 실제 적용 사례를 다룹니다.
-        </div>
-        <div class="card-tags">
-          <span class="card-tag">마크다운</span>
-          <span class="card-tag">바이브 코딩</span>
-          <span class="card-tag">개발 방법론</span>
-        </div>
+        <div class="card-desc">마크다운만으로 소프트웨어 개발을 수행하는 새로운 패러다임을 소개합니다. 마크 바이브 코딩의 이론과 실무 가이드, 그리고 실제 적용 사례를 다룹니다.</div>
+        <div class="card-tags"><span class="card-tag">마크다운</span><span class="card-tag">바이브 코딩</span><span class="card-tag">개발 방법론</span></div>
         <span class="card-link">소개 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
       </div>
     </a>
@@ -331,19 +285,12 @@
   <div class="section-label">체험</div>
   <div class="card-grid">
 
-    <!-- AI Wars -->
     <a href="/aiwars/" class="intro-card">
-      <div class="card-icon icon-emerald">🎮</div>
+      <div class="card-icon icon-emerald">&#x1f3AE;</div>
       <div class="card-body">
         <div class="card-title">AI WARS: THE SIMULATION</div>
-        <div class="card-desc">
-          AI 시대의 생존을 주제로 한 인터랙티브 시뮬레이션 게임입니다. 터미널 스타일의 몰입감 있는 UI에서 AI와 인간의 경쟁을 체험해 볼 수 있습니다.
-        </div>
-        <div class="card-tags">
-          <span class="card-tag">시뮬레이션</span>
-          <span class="card-tag">인터랙티브</span>
-          <span class="card-tag">게임</span>
-        </div>
+        <div class="card-desc">AI 시대의 생존을 주제로 한 인터랙티브 시뮬레이션 게임입니다. 터미널 스타일의 몰입감 있는 UI에서 AI와 인간의 경쟁을 체험해 볼 수 있습니다.</div>
+        <div class="card-tags"><span class="card-tag">시뮬레이션</span><span class="card-tag">인터랙티브</span><span class="card-tag">게임</span></div>
         <span class="card-link">플레이하기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
       </div>
     </a>
@@ -354,30 +301,50 @@
 
 <footer class="footer">
   <div class="footer-links">
-    <a href="https://github.com/leaf-kit" target="_blank">GitHub</a>
-    <a href="https://x.com/leafeditor" target="_blank">Twitter</a>
+    <a href="https://github.com/leaf-kit" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg> GitHub</a>
+    <a href="https://x.com/leafeditor" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> @leafeditor</a>
   </div>
   <span>leaf-kit.github.io</span>
 </footer>
 
 <script>
-// Scroll fade-in
 (function(){
-  const cards = document.querySelectorAll('.intro-card');
-  if(!cards.length) return;
+  // Theme
+  var html = document.documentElement;
+  var saved = localStorage.getItem('theme');
+  if(saved) html.dataset.theme = saved;
+  else if(matchMedia('(prefers-color-scheme:light)').matches) html.dataset.theme = 'light';
+  document.getElementById('btn-theme').addEventListener('click',function(){
+    html.dataset.theme = html.dataset.theme==='dark'?'light':'dark';
+    localStorage.setItem('theme', html.dataset.theme);
+  });
 
-  const observer = new IntersectionObserver(function(entries){
-    entries.forEach(function(entry){
-      if(entry.isIntersecting){
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
+  // Scroll progress
+  var bar = document.getElementById('scroll-progress');
+  window.addEventListener('scroll',function(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (window.scrollY/h*100)+'%';
+  },{passive:true});
+
+  // Nav scroll
+  var nav = document.getElementById('nav');
+  window.addEventListener('scroll',function(){
+    nav.classList.toggle('scrolled', window.scrollY > 30);
+  },{passive:true});
+
+  // Card reveal with stagger
+  var cards = document.querySelectorAll('.intro-card');
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
       }
     });
-  }, {threshold:0.1, rootMargin:'0px 0px -40px 0px'});
-
-  cards.forEach(function(card, i){
-    card.style.transitionDelay = (i * 0.08) + 's';
-    observer.observe(card);
+  },{threshold:0.08, rootMargin:'0px 0px -30px 0px'});
+  cards.forEach(function(c,i){
+    c.style.transitionDelay = (i%4 * .08)+'s';
+    obs.observe(c);
   });
 })();
 </script>
