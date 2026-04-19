@@ -240,7 +240,19 @@ C C G G|A A G2|F F E E|D D C2|]
 
   <!-- Table Features -->
   <h2 class="reveal"><span class="show-ko">인터랙티브 테이블</span><span class="show-en">Interactive Tables</span> <span class="tag extended">Extended</span></h2>
-  <p class="reveal"><span class="show-ko">표준 마크다운 테이블 문법을 쓰되, Leaf에서는 셀 클릭 편집, 우클릭 행/열 추가/삭제, 정렬 제어, 수식(<code>=</code> 접두어)까지 지원한다.</span><span class="show-en">Standard markdown table syntax, but Leaf adds click-to-edit, right-click row/column operations, alignment control, and formulas (prefix with <code>=</code>).</span></p>
+  <p class="reveal"><span class="show-ko">표준 마크다운 테이블 문법을 쓰되, Leaf에서는 셀 클릭 편집, 우클릭 행/열 추가/삭제, 정렬 제어, 수식까지 지원한다.</span><span class="show-en">Standard markdown table syntax, but Leaf adds click-to-edit, right-click row/column operations, alignment control, and formulas.</span></p>
+  <div class="syntax-block reveal">
+    <div class="syntax-header"><span><span class="show-ko">테이블 수식</span><span class="show-en">Table Formulas</span></span><span>Markdown</span></div>
+    <div class="syntax-body"><span class="cm">| 항목 | 1분기 | 2분기 | 합계 |</span>
+<span class="cm">|------|------:|------:|-----:|</span>
+<span class="cm">| 매출 |   100 |   150 |      |</span>
+<span class="cm">| 비용 |    60 |    80 |      |</span>
+
+<span class="hl">셀 클릭 → = 입력 → 수식 선택</span>
+<span class="st">Σ↓ 열 합계</span>  <span class="st">x̄↓ 열 평균</span>
+<span class="st">Σ→ 행 합계</span>  <span class="st">x̄→ 행 평균</span>
+<span class="st">Max↓ 최대</span>   <span class="st">Min↓ 최소</span>   <span class="st">Count↓ 개수</span></div>
+  </div>
 
   <div class="info reveal"><span class="show-ko">표준 마크다운 문법(제목, 목록, 링크, 이미지, 코드 블록 등)은 <a href="/markdown/">마크다운 가이드</a>를 참고하세요. 이 페이지에서는 Leaf에서만 동작하는 확장 문법만 다룹니다.</span><span class="show-en">For standard markdown syntax (headings, lists, links, images, code blocks, etc.), see the <a href="/markdown/">Markdown Guide</a>. This page covers only Leaf-exclusive extensions.</span></div>
 
