@@ -509,10 +509,20 @@ body::after {
 .dl-btn {
   display:inline-flex; align-items:center; gap:8px;
   padding:11px 22px; border-radius:10px; cursor:not-allowed;
-  font:600 .85rem var(--font-sans); color:var(--text3);
+  font:600 .85rem var(--font-sans); color:var(--ink2) !important;
   background:var(--paper3); border:1px dashed var(--border2);
-  transition:all .2s var(--ease); opacity:.8;
+  transition:all .2s var(--ease); opacity:1;
+  appearance:none; -webkit-appearance:none;
 }
+.dl-btn:disabled { opacity:1; color:var(--ink2); }
+.dl-btn svg { color:var(--ink2); }
+[data-theme="dark"] .dl-btn,
+[data-theme="dark"] .dl-btn:disabled {
+  color:var(--text) !important;
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.18);
+}
+[data-theme="dark"] .dl-btn svg { color:var(--text); }
 .dl-card .coming {
   position:absolute; top:16px; right:16px;
   font:700 .62rem var(--font-mono); color:var(--gold);
