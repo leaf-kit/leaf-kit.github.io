@@ -241,9 +241,16 @@ body::after {
 }
 .btn svg { width:18px; height:18px; }
 .btn-primary {
-  background:var(--ink); color:var(--paper); border-color:var(--ink);
+  background:var(--ink); color:#FDFCF7; border-color:var(--ink);
 }
 .btn-primary:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
+[data-theme="dark"] .btn-primary {
+  background:var(--red); color:#FFFFFF; border-color:var(--red);
+}
+[data-theme="dark"] .btn-primary:hover {
+  background:#E8404E; border-color:#E8404E;
+  box-shadow:0 12px 32px rgba(232,64,78,.3);
+}
 .btn-ghost {
   background:transparent; color:var(--text); border-color:var(--border2);
 }
