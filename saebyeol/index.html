@@ -620,6 +620,58 @@ body::after {
   padding:4px 10px; border-radius:20px; letter-spacing:.1em;
   text-transform:uppercase;
 }
+.dl-card .version {
+  position:absolute; top:16px; right:16px;
+  font:700 .68rem var(--font-mono); color:#FFFFFF;
+  background:var(--red); border:1px solid var(--red);
+  padding:5px 12px; border-radius:20px; letter-spacing:.06em;
+  box-shadow:0 4px 12px rgba(205,46,58,.25);
+}
+.dl-card.dl-active {
+  border-color:var(--red); border-width:2px;
+  background:linear-gradient(180deg, var(--paper) 0%, rgba(205,46,58,.02) 100%);
+}
+[data-theme="dark"] .dl-card.dl-active {
+  background:linear-gradient(180deg, var(--paper) 0%, rgba(232,64,78,.04) 100%);
+}
+.dl-card.dl-active:hover { border-color:var(--red); transform:translateY(-4px); box-shadow:0 16px 40px rgba(205,46,58,.18); }
+.dl-active-btns {
+  display:flex; flex-direction:column; gap:10px;
+  margin-bottom:18px;
+}
+.dl-btn-primary {
+  display:flex !important; align-items:center !important; justify-content:center;
+  gap:10px !important; padding:12px 20px !important;
+  background:var(--ink) !important; color:#FFFFFF !important;
+  border:1px solid var(--ink) !important; border-radius:10px !important;
+  cursor:pointer !important; opacity:1 !important;
+  font:600 .9rem var(--font-sans) !important;
+  text-decoration:none !important;
+  transition:all .2s var(--ease) !important;
+}
+.dl-btn-primary:hover {
+  background:var(--red) !important; border-color:var(--red) !important;
+  transform:translateY(-1px); box-shadow:0 8px 20px rgba(205,46,58,.3);
+}
+[data-theme="dark"] .dl-btn-primary {
+  background:var(--red) !important; color:#FFFFFF !important; border-color:var(--red) !important;
+}
+[data-theme="dark"] .dl-btn-primary:hover {
+  background:#E8404E !important; border-color:#E8404E !important;
+}
+.dl-btn-primary svg { width:16px; height:16px; color:#FFFFFF !important; }
+.dl-arch {
+  font:600 .68rem var(--font-mono);
+  background:rgba(255,255,255,.18); padding:2px 8px; border-radius:10px;
+  letter-spacing:.05em;
+}
+.dl-all-releases {
+  display:inline-block; font:500 .8rem var(--font-mono);
+  color:var(--text2); margin-top:4px;
+  border-bottom:1px solid transparent; padding-bottom:1px;
+  transition:color .2s, border-color .2s;
+}
+.dl-all-releases:hover { color:var(--red); border-color:var(--red); }
 
 .dl-note {
   max-width:700px; margin:48px auto 0; text-align:center;
@@ -1154,22 +1206,33 @@ body::after {
   <div class="section-inner">
     <div class="section-head reveal">
       <div class="section-tag">설치</div>
-      <h2 class="section-title">곧 손에 쥐실 수 있습니다</h2>
-      <p class="section-sub">지금은 코어 엔진과 에디터를 가다듬는 중입니다. 세 플랫폼 모두에서 동일한 Rust 코어로 작동합니다.</p>
+      <h2 class="section-title">지금 macOS부터 만나보세요</h2>
+      <p class="section-sub">Apple Silicon / Intel 빌드가 준비되어 있습니다. Windows · Linux는 곧 같은 Rust 코어로 따라갑니다.</p>
     </div>
 
     <div class="download-grid">
-      <div class="dl-card reveal reveal-d1">
-        <span class="coming">준비중</span>
+      <div class="dl-card dl-active reveal reveal-d1" id="dlMac">
+        <span class="version" id="dlVersion">v0.1.0</span>
         <svg class="dl-os-icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M17.67 20.63c-.94 1.37-1.92 2.74-3.47 2.76-1.52.03-2.01-.9-3.76-.9-1.74 0-2.29.88-3.73.93-1.5.05-2.64-1.48-3.59-2.84C1.2 17.82-.25 12.73 1.73 9.28c.97-1.7 2.71-2.78 4.61-2.81 1.47-.03 2.86 1 3.76 1 .89 0 2.58-1.23 4.36-1.05.74.03 2.83.3 4.18 2.26-.11.07-2.49 1.46-2.46 4.35.03 3.45 3.03 4.6 3.06 4.62-.03.08-.48 1.64-1.57 3.24zM13 3.5c.77-.95 2.06-1.63 3.13-1.67.13 1.21-.35 2.44-1.11 3.33-.73.93-1.98 1.64-3.12 1.54-.15-1.18.42-2.4 1.1-3.2z"/>
         </svg>
         <h3 class="dl-os-name">macOS</h3>
-        <div class="dl-os-sub">Intel / Apple Silicon · .dmg</div>
-        <button class="dl-btn" disabled>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          추후 제공 예정
-        </button>
+        <div class="dl-os-sub">.dmg · 항상 최신 빌드</div>
+        <div class="dl-active-btns">
+          <a class="dl-btn dl-btn-primary" id="dlMacArm" href="https://github.com/leaf-kit/saebyeol.md/releases/latest" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Apple Silicon</span>
+            <span class="dl-arch">arm64</span>
+          </a>
+          <a class="dl-btn dl-btn-primary" id="dlMacX64" href="https://github.com/leaf-kit/saebyeol.md/releases/latest" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Intel</span>
+            <span class="dl-arch">x64</span>
+          </a>
+        </div>
+        <a class="dl-all-releases" href="https://github.com/leaf-kit/saebyeol.md/releases" target="_blank" rel="noopener">
+          모든 릴리스 보기 →
+        </a>
       </div>
 
       <div class="dl-card reveal reveal-d2">
@@ -1200,7 +1263,7 @@ body::after {
     </div>
 
     <div class="dl-note reveal reveal-d4">
-      세 플랫폼 모두 <strong>동일한 Rust 코어</strong>를 공유하며, 현재는 코어 엔진 · 자판 시스템 · 에디터 통합을 차례로 다듬고 있습니다. 빌드가 준비되는 대로 <a href="https://github.com/leaf-kit/saebyeol.md" target="_blank" rel="noopener" style="color:var(--red);text-decoration:underline;">GitHub 저장소</a>의 Releases로 올라옵니다. 출시 알림을 받고 싶다면 저장소에 ⭐와 Watch 부탁드립니다.
+      macOS 빌드는 <strong>항상 최신 릴리스</strong>를 가리킵니다 — 새 버전이 올라오면 같은 버튼이 자동으로 새 빌드를 받아옵니다. Windows · Linux도 동일한 <strong>Rust 코어</strong>를 공유하며, 빌드가 준비되는 대로 <a href="https://github.com/leaf-kit/saebyeol.md/releases" target="_blank" rel="noopener" style="color:var(--red);text-decoration:underline;">GitHub Releases</a>에 올라옵니다. 출시 알림을 받고 싶다면 저장소에 ⭐와 Watch 부탁드립니다.
     </div>
   </div>
 </section>
@@ -1293,6 +1356,36 @@ for (let i = 0; i < 14; i++) {
   p.style.height = size + 'px';
   heroBg.appendChild(p);
 }
+
+// GitHub Releases — 항상 최신 버전 가져오기
+(async function fetchLatestRelease() {
+  const macArmBtn = document.getElementById('dlMacArm');
+  const macX64Btn = document.getElementById('dlMacX64');
+  const versionEl = document.getElementById('dlVersion');
+  const fallback = 'https://github.com/leaf-kit/saebyeol.md/releases/latest';
+
+  try {
+    const res = await fetch('https://api.github.com/repos/leaf-kit/saebyeol.md/releases/latest', {
+      headers: { 'Accept': 'application/vnd.github+json' }
+    });
+    if (!res.ok) throw new Error('release fetch failed');
+    const data = await res.json();
+    const assets = data.assets || [];
+
+    // .dmg 파일을 아키텍처별로 매칭 (aarch64 / arm64 → Apple Silicon, x64 / x86_64 → Intel)
+    const armAsset = assets.find(a => /\.dmg$/i.test(a.name) && /(aarch64|arm64)/i.test(a.name));
+    const x64Asset = assets.find(a => /\.dmg$/i.test(a.name) && /(x64|x86_64|amd64)/i.test(a.name));
+
+    if (armAsset) macArmBtn.href = armAsset.browser_download_url;
+    if (x64Asset) macX64Btn.href = x64Asset.browser_download_url;
+
+    if (data.tag_name) versionEl.textContent = data.tag_name;
+  } catch (err) {
+    // API 실패 시: 릴리스 페이지로 폴백 (이미 fallback URL이 기본 href)
+    macArmBtn.href = fallback;
+    macX64Btn.href = fallback;
+  }
+})();
 
 // 트위터 공유
 const tweetBtn = document.getElementById('tweetBtn');
