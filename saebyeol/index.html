@@ -1030,12 +1030,11 @@ body::after {
 </footer>
 
 <script>
-// 테마 토글
+// 테마 토글 — 기본은 라이트, 사용자가 토글했을 때만 저장된 값을 따라감
 const themeBtn = document.getElementById('themeBtn');
 const root = document.documentElement;
 const saved = localStorage.getItem('saebyeol-theme');
-if (saved) root.setAttribute('data-theme', saved);
-else if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.setAttribute('data-theme', 'dark');
+root.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
 themeBtn.addEventListener('click', () => {
   const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   root.setAttribute('data-theme', next);
