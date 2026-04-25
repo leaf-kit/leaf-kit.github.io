@@ -344,16 +344,44 @@ body::after {
   margin-bottom:44px;
 }
 
+.demo-example {
+  margin-bottom:28px;
+}
+.demo-step {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  margin-bottom:14px;
+}
+.demo-step-num {
+  font:700 .7rem var(--font-mono); color:var(--paper);
+  background:var(--ink); padding:4px 10px; border-radius:20px;
+  letter-spacing:.1em; text-transform:uppercase;
+}
+.demo-step-num.four { background:var(--red); }
+.demo-step-desc {
+  font:500 .85rem var(--font-serif); color:var(--text2);
+}
+
+.demo-divider {
+  display:flex; align-items:center; justify-content:center; gap:16px;
+  margin:8px 0 24px; opacity:.5;
+}
+.demo-divider::before, .demo-divider::after {
+  content:''; flex:1; max-width:80px; height:1px; background:var(--border2);
+}
+.demo-divider span {
+  font:600 .7rem var(--font-mono); color:var(--text3); letter-spacing:.18em;
+}
+
 .keystrokes {
-  display:flex; justify-content:center; align-items:center; gap:16px;
-  flex-wrap:wrap; margin-bottom:28px;
+  display:flex; justify-content:center; align-items:center; gap:12px;
+  flex-wrap:wrap;
 }
 .keystroke {
-  min-width:68px; height:68px; padding:0 16px;
+  min-width:60px; height:60px; padding:0 14px;
   border:2px solid var(--ink); border-radius:12px;
   background:var(--paper2);
   display:flex; align-items:center; justify-content:center;
-  font:700 1.8rem var(--font-serif); color:var(--ink);
+  font:700 1.6rem var(--font-serif); color:var(--ink);
   box-shadow:0 3px 0 var(--ink);
   transition:transform .2s var(--ease);
 }
@@ -362,17 +390,42 @@ body::after {
 .keystroke.shift { border-style:dashed; }
 .keystroke.vowel { color:var(--red); border-color:var(--red); box-shadow:0 3px 0 var(--red); }
 .keystroke.jong { color:var(--blue); border-color:var(--blue); box-shadow:0 3px 0 var(--blue); }
-.keystroke-plus { font:700 1.6rem var(--font-mono); color:var(--text3); }
-.keystroke-arrow { font:900 2rem var(--font-mono); color:var(--red); margin:0 8px; }
-
-.demo-result {
-  text-align:center; font:900 4rem var(--font-serif); color:var(--ink);
-  letter-spacing:-.04em; margin:20px 0;
+.keystroke-plus { font:700 1.3rem var(--font-mono); color:var(--text3); }
+.keystroke-arrow { font:900 1.8rem var(--font-mono); color:var(--red); margin:0 6px; }
+.keystroke-result {
+  min-width:68px; height:68px; padding:0 16px;
+  border:2.5px solid var(--red); border-radius:12px;
+  background:linear-gradient(135deg, rgba(205,46,58,.06), rgba(0,71,160,.04));
+  display:flex; align-items:center; justify-content:center;
+  font:900 2rem var(--font-serif); color:var(--red);
+  box-shadow:0 4px 0 var(--red);
 }
-[data-theme="dark"] .demo-result { color:var(--text); }
+
+.demo-result-row {
+  display:flex; justify-content:center; align-items:baseline; gap:36px;
+  margin:36px 0 24px; padding:20px 0;
+  border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+}
+.demo-big {
+  font:900 4.2rem var(--font-serif); color:var(--ink);
+  letter-spacing:-.04em;
+  background:linear-gradient(135deg, var(--red) 0%, var(--blue) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:popIn .6s var(--ease-bounce) backwards;
+}
+.demo-big:nth-child(1) { animation-delay:.1s; }
+.demo-big:nth-child(2) { animation-delay:.25s; }
+.demo-big:nth-child(3) { animation-delay:.4s; }
+@keyframes popIn {
+  from { opacity:0; transform:scale(.6) translateY(20px); }
+  to { opacity:1; transform:scale(1) translateY(0); }
+}
+
 .demo-note {
-  text-align:center; font-size:.88rem; color:var(--text2);
-  font-family:var(--font-serif); line-height:1.8;
+  text-align:center; font-size:.9rem; color:var(--text2);
+  font-family:var(--font-serif); line-height:1.85;
+  max-width:680px; margin:0 auto;
 }
 
 /* ============ 특징 그리드 ============ */
@@ -535,8 +588,13 @@ body::after {
   .hero-title { font-size:2.5rem; }
   .hero-sub { font-size:1rem; }
   .demo-box { padding:36px 20px; }
-  .keystroke { min-width:52px; height:52px; font-size:1.4rem; }
-  .demo-result { font-size:2.8rem; }
+  .keystroke { min-width:46px; height:46px; font-size:1.25rem; padding:0 10px; }
+  .keystroke-result { min-width:56px; height:56px; font-size:1.5rem; }
+  .keystroke-plus { font-size:1rem; }
+  .keystroke-arrow { font-size:1.4rem; margin:0 2px; }
+  .keystrokes { gap:7px; }
+  .demo-result-row { gap:18px; }
+  .demo-big { font-size:2.6rem; }
   .section { padding:72px 20px; }
   .quote-text { font-size:1.3rem; }
   .nav-btn { display:none; }
@@ -640,7 +698,7 @@ body::after {
       <div class="why-card reveal reveal-d1">
         <div class="why-icon">모</div>
         <h3 class="why-title">모아치기 (동시타)</h3>
-        <p class="why-desc">ㅁ·ㅏ·ᆰ을 동시에 눌러도 "맑"이 됩니다. 순서에 얽매이지 않고 한 음절을 한 번에 입력합니다. 30ms 윈도우 안의 키 집합을 화음으로 인식합니다.</p>
+        <p class="why-desc">3자모 "맑"은 물론, 복합 모음이 들어간 <strong style="color:var(--red)">4자모 "광·원"</strong>도 동시에 눌러 한 음절로 모읍니다. 30ms 윈도우 안의 키 집합을 화음으로 인식합니다.</p>
       </div>
       <div class="why-card reveal reveal-d2">
         <div class="why-icon">세</div>
@@ -660,24 +718,75 @@ body::after {
 <section class="demo-section" id="demo">
   <div class="demo-box reveal">
     <span class="demo-label">모아치기 시연</span>
-    <h3 class="demo-title">"맑"은 세 개의 자음·모음이 만나 이루는 한 음절</h3>
-    <p class="demo-sub">초성 · 중성 · 종성을 동시에 눌러보세요. 키 순서와 무관하게 한 번에 찍힙니다.</p>
+    <h3 class="demo-title">3자모든 4자모든, 한 번에 찍어냅니다</h3>
+    <p class="demo-sub">초성·중성·종성에 복합 모음까지. 자모가 몇 개든 동시에 눌러 한 음절로 모읍니다.</p>
 
-    <div class="keystrokes">
-      <div class="keystroke">ㅁ</div>
-      <span class="keystroke-plus">+</span>
-      <div class="keystroke vowel">ㅏ</div>
-      <span class="keystroke-plus">+</span>
-      <div class="keystroke jong shift">ᆰ</div>
-      <span class="keystroke-arrow">→</span>
-      <div class="keystroke" style="font-size:2.4rem;">맑</div>
+    <!-- 예시 1: 3자모 "맑" -->
+    <div class="demo-example">
+      <div class="demo-step">
+        <span class="demo-step-num">3자모</span>
+        <span class="demo-step-desc">초성 + 중성 + 종성(겹받침)</span>
+      </div>
+      <div class="keystrokes">
+        <div class="keystroke">ㅁ</div>
+        <span class="keystroke-plus">+</span>
+        <div class="keystroke vowel">ㅏ</div>
+        <span class="keystroke-plus">+</span>
+        <div class="keystroke jong shift">ᆰ</div>
+        <span class="keystroke-arrow">→</span>
+        <div class="keystroke-result">맑</div>
+      </div>
     </div>
 
-    <div class="demo-result">맑</div>
+    <div class="demo-divider"><span>AND</span></div>
+
+    <!-- 예시 2: 4자모 "광" -->
+    <div class="demo-example">
+      <div class="demo-step">
+        <span class="demo-step-num four">4자모</span>
+        <span class="demo-step-desc">복합 모음(ㅗ+ㅏ=ㅘ)을 포함한 한 음절</span>
+      </div>
+      <div class="keystrokes">
+        <div class="keystroke">ㄱ</div>
+        <span class="keystroke-plus">+</span>
+        <div class="keystroke vowel">ㅗ</div>
+        <span class="keystroke-plus">+</span>
+        <div class="keystroke vowel">ㅏ</div>
+        <span class="keystroke-plus">+</span>
+        <div class="keystroke jong">ㅇ</div>
+        <span class="keystroke-arrow">→</span>
+        <div class="keystroke-result">광</div>
+      </div>
+    </div>
+
+    <!-- 예시 3: 4자모 "원" -->
+    <div class="demo-example">
+      <div class="demo-step">
+        <span class="demo-step-num four">4자모</span>
+        <span class="demo-step-desc">복합 모음(ㅜ+ㅓ=ㅝ)을 포함한 한 음절</span>
+      </div>
+      <div class="keystrokes">
+        <div class="keystroke">ㅇ</div>
+        <span class="keystroke-plus">+</span>
+        <div class="keystroke vowel">ㅜ</div>
+        <span class="keystroke-plus">+</span>
+        <div class="keystroke vowel">ㅓ</div>
+        <span class="keystroke-plus">+</span>
+        <div class="keystroke jong">ㄴ</div>
+        <span class="keystroke-arrow">→</span>
+        <div class="keystroke-result">원</div>
+      </div>
+    </div>
+
+    <div class="demo-result-row">
+      <span class="demo-big">맑</span>
+      <span class="demo-big">광</span>
+      <span class="demo-big">원</span>
+    </div>
 
     <p class="demo-note">
-      초성 <strong style="color:var(--ink)">ㅁ</strong>, 중성 <strong style="color:var(--red)">ㅏ</strong>, 종성 <strong style="color:var(--blue)">ᆰ</strong>(Shift+ㅆ)이 30ms 이내에 같이 눌리면 새별은 세 자모를 하나로 합쳐 "맑"을 만듭니다.<br/>
-      순서와 상관없이, 동시에. 한국어는 원래 한 번에 떠올리는 글자입니다.
+      3자모(<strong style="color:var(--ink)">맑</strong>)뿐 아니라 <strong style="color:var(--red)">복합 모음</strong>이 들어간 4자모(<strong style="color:var(--ink)">광 · 원</strong>)도 동시에 눌러 한 번에 찍힙니다.<br/>
+      <span style="color:var(--red);font-weight:700">ㅘ, ㅙ, ㅚ, ㅝ, ㅞ, ㅟ, ㅢ</span> — 두 모음이 결합하는 음절도 30ms 윈도우 안에서 화음처럼 합쳐집니다. 손가락이 먼저 도착하든 늦게 도착하든 결과는 같습니다.
     </p>
   </div>
 </section>
